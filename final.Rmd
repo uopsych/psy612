@@ -1,0 +1,38 @@
+---
+title: "Final project description"
+output: 
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+    toc_float: TRUE
+    theme: cosmo
+---
+
+## Description
+
+For your final project, you will analyze your own data and write a short report of the results. The goal of this assignment is to translate the skills you have learned in PSY 611 and PSY 612 into your own work as a scientist. It is also an opportunity to get feedback on your current research. This project emphasizes careful examination of data _prior to analysis_, interpretation of statistical tests, and communication of results.
+
+## Analysis
+
+Your analysis must include 
+  
+  1. appropriate descriptive statistics.
+  2. one inferential test using continuous predictors.
+  3. one inferential test using at least one categorical predictor.
+  
+Be sure to include the statistical tests, interpretation of statistical tests, and any information on diagnoistics or assumptions. 
+
+## Report format
+
+Your report should be written in Rmarkdown. It is strongly recommended that you use the `papaja` template, but if you have your own formatting preferences, you may use those instead. Be sure to include each of the following:
+
+  1. a brief (one paragraph maximum) description of the research design, including the measurement of variables.
+  2. your research question and hypotheses.
+  3. at least one table.
+  4. at least one figure. 
+  
+Be sure to interpret any information -- statistical tests, figures, and tables -- that you provide. Please note -- this should not be a full manuscript (no introduction and discussion needed!), and you will certainly provide more information in this report regarding the analyses than you would in a traditional research article. 
+
+## I don't have data
+  
+If you do not have data of your own to analyze at this point, please email Sara, and she will provide data for you.

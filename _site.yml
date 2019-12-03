@@ -1,0 +1,22 @@
+name: Data Analysis II
+output_dir: "."
+navbar:
+  title: "PSY 612"
+  left:
+    - text: Syllabus
+      href: schedule.html
+    - text: Lectures
+    - text: Labs
+    - text: Homework
+      href: homework.html
+    - text: Final Project
+      href: final.html
+    - text: Useful Material
+      href: bonus.html
+  right:
+    - icon: fa-github
+      href: https://github.com/uopsych/psy612
+output:
+  html_document:
+    lib_dir: site_libs
+    self_contained: no
