@@ -34,13 +34,13 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | -    | 2/14 | _Lab: Diagnostics_                |                    |            |  HW 2 Due   |             
 | 7    | 2/18 | Causal models                     |                    |  Quiz  6   |             |
 | -    | 2/20 | Interactions                      |                    |            |             |
-| -    | 2/21 | _Lab: papaja_                     |                    |            |             |
+| -    | 2/21 | _Lab: Interactions_               |                    |            |             |
 | 8    | 2/25 | Interactions                      |                    |  Quiz 7    |             |
 | -    | 2/27 | Interactions                      |                    |            |             |
-| -    | 2/28 | _Lab: Interactions_               |                    |            |             |
+| -    | 2/28 | _Lab: ANOVA_                      |                    |            |             |
 | 9    | 3/03 | Interactions                      |                    |  Quiz 8    |             |
 | -    | 3/05 | Interactions                      |                    |            |             |
-| -    | 3/06 | _Lab: ANOVA_                      |                    |            |  HW 3 Due   |
+| -    | 3/06 | _Lab: papaja                      |                    |            |  HW 3 Due   |
 | 10   | 3/10 | Bootstrapping                     |                    |            |             |
 | -    | 3/12 | Bootstrapping                     |                    |  Quiz 9    |             |
 | -    | 3/13 | _Lab: Bootstrapping_              |                    |            |             |
