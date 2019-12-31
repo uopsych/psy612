@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Psy 612: Data Analysis II</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Psy 612: Data Analysis II
+
+---
+
+
+## Welcome back!
+
+**Last term:**
+
+- Probability, sampling, hypothesis testing
+- Descriptive statistics
+- A little matrix algebra
+
+**This term:**
+
+- Model building
+
+--
+- Correlations
+- Linear regression
+- General linear model
+- Multiple regresesion
+
+---
+
+## Website
+
+[UOpsych.github.io/psy612/](uopsych.github.io/psy612/)
+
+Structure of this course:
+ - Lectures, Labs, Reading 
+ - Weekly quizzes (T/F)
+ - Homework assignments (2)
+ - Final project (1)
+ 
+If you took PSY 611 in Fall 2018 or earlier, take a look at the materials for last term:
+[UOpsych.github.io/psy611/](uopsych.github.io/psy611/)
+
+
+---
+## Relationships
+
+- What is the relationship between IV and DV?
+
+- Measuring relationships depend on type of measurement
+
+- You have primarily been working wtih categorical IVs (*t*-test, chi-square)
+
+---
+## Scatter Plot with best fit line
+
+
+![](1-correlation_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+---
+## Review of Dispersion
+
+Variation (sum of squares)
+
+`$$SS = {\sum{(x-\bar{x})^2}}$$`
+`$$SS = {\sum{(x-\mu)^2}}$$`
+---
+
+## Review of Dispersion
+Variance
+
+`$$\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}$$`
+
+`$$\large\sigma^{2} = {\frac{\sum{(x-\mu)^2}}{N}}$$`
+
+---
+
+## Review of Dispersion
+
+Standard Deviation
+
+`$$\large s = \sqrt{\frac{\sum{(x-\bar{x})^2}}{N-1}}$$`
+
+`$$\large\sigma = \sqrt{\frac{\sum{(x-\mu)^2}}{N}}$$`
+
+---
+
+class: center
+
+Formula for standard error of the mean?
+
+--
+
+`$$\sigma_M = \frac{\sigma}{\sqrt{N}}$$`
+
+`$$\sigma_M = \frac{\hat{s}}{\sqrt{N}}$$`
+
+---
+## Associations
+
+- i.e., relationships
+- to look at continuous variable associations we need to think in terms of how variables relate to one another
+
+---
+## Associations
+
+Covariation (cross products)
+
+**Sample:**
+
+`$$\large SS = {\sum{(x-\bar{x})(y-\bar{y})}}$$`
+
+**Population:**
+
+`$$SS = {\sum{{(x-\mu_{x}})(y-\mu_{y})}}$$`
+
+---
+## Associations
+
+Covariance
+
+**Sample:**
+
+`$$\large cov_{xy}^{2} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}$$`
+
+**Population:**
+
+`$$\large \sigma_{xy}^{2} = {\frac{\sum{(x-\mu_{x})(y-\mu_{y})}}{N}}$$`
+
+&gt;- Covariance matrix is basis for many analyses
+&gt;- What are some issues that may arise when comparing covariances?
+
+---
+## Associations
+Correlations
+
+**Sample:**
+
+`$$\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}$$`
+
+**Population:**
+
+`$$\large \rho_{xy} = {\frac{cov(X,Y)}{\sigma_{x}\sigma_{y}}}$$`
+
+
+Many other formulas exist for specific types of data, these were more helpful when we computed everything by hand (more on this later).
+
+
+---
+
+## Correlations
+
+
+- How much two variables are linearly related
+- -1 to 1
+- Invariant to changes in mean or scaling
+- Most common (and basic) effect size measure
+- Will use to build our regression model
+
+---
+
+## Correlations
+
+![](1-correlation_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+
+---
+## Statistical test
+Hypothesis testing
+
+`$$\large H_{0}: \rho_{xy} = 0$$`
+
+`$$\large H_{A}: \rho_{xy} \neq 0$$`
+
+Assumes:
+- Observations are independent
+- Symmetric bivariate distribution (joint probability distribution)
+    - Not necessarily normal
+
+---
+
+Recall the assumption of normality for a *t*-test:
+
+![](1-correlation_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+![](1-correlation_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+---
+## Statistical test
+
+
+`$$\large H_{0}: \rho_{xy} = 0$$`
+
+`$$\large H_{A}: \rho_{xy} \neq 0$$`
+
+
+Test statistic
+
+`$$\large t = {\frac{r}{SE_{r}}}$$`
+--
+.pull-left[
+`$$\large SE_r = \sqrt{\frac{1-r^2}{N-2}}$$`
+
+`$$\large t = {\frac{r}{\sqrt{\frac{1-r^{2}}{N-2}}}}$$`
+]
+
+
+--
+
+.pull-right[
+`$$\large DF = N-2$$`
+]
+
+---
+## Effect size
+
+- The strength of relationship between two variables
+
+- `\(\eta^2\)`, cohen’s d, cohen’s f, hedges g, `\(R^2\)` , Risk-ratio, etc
+
+- Significance is a function of effect size and sample size
+
+- Statistical significance `\(\neq\)` practical significance
+
+---
+## Effect size
+How big is practical?
+
+- Cohen (.1, .3., .5)
+- Meyer &amp; Hemphill .3 is average
+- Rosenthaul:
+
+Drug TX?  | Alive |  Dead
+----------|-------|--------
+Treatment |  65   |  35
+No Tx     |  35   |  65
+
+
+---
+## What is the size of the correlation?
+- Chemotherapy and breast cancer survival?
+- Batting ability and hit success on a single at bat?
+- Antihistamine use and reduced sneezing/runny nose?
+- Combat exposure and PTSD?
+- Ibuprofen on pain reduction?
+- Gender and weight?
+- Therapy and well being?
+- Observer ratings of attractiveness?
+- Gender and arm strength?
+- Nearness to equator and daily temperature for U.S.?
+
+---
+## What is the size of the correlation?
+- Chemotherapy and breast cancer survival? (.03)
+- Batting ability and hit success on a single at bat? (.06)
+- Antihistamine use and reduced sneezing/runny nose? (.11)
+- Combat exposure and PTSD? (.11)
+- Ibuprofen on pain reduction? (.14)
+- Gender and weight? (.26)
+- Therapy and well being? (.32)
+- Observer ratings of attractiveness? (.39)
+- Gender and arm strength? (.55)
+- Nearness to equator and daily temperature for U.S.? (.60)
+
+---
+## Questions to ask yourself:
+- What is your N?
+- What is the typical effect size in the field?
+- Study design?
+- What is your DV?
+- Importance?
+- Same method as IV (method variance)?
+
+---
+## Power calculations
+
+```r
+library(pwr)
+pwr.r.test(n = , r = .1, sig.level = .05 , power = .8)
+```
+
+```
+## 
+##      approximate correlation power calculation (arctangh transformation) 
+## 
+##               n = 781.7516
+##               r = 0.1
+##       sig.level = 0.05
+##           power = 0.8
+##     alternative = two.sided
+```
+
+```r
+pwr.r.test(n = , r = .3, sig.level = .05 , power = .8)
+```
+
+```
+## 
+##      approximate correlation power calculation (arctangh transformation) 
+## 
+##               n = 84.07364
+##               r = 0.3
+##       sig.level = 0.05
+##           power = 0.8
+##     alternative = two.sided
+```
+
+---
+## Power calculations
+- But what is your confidence?
+- N = 84 gives you CI[.09, .48]
+- Schönbrodt &amp; Perugini (2013) suggest correlations 'stabilize' at 250+ regardless of effect size
+- CI[.19, .39]
+
+---
+## Fisher’s r to z’ transformation
+.left-column[If we want to make calculations based on `\(\rho \neq 0\)` then we will run into a skewed sampling distribution]
+
+![](1-correlation_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+## Fisher’s r to z’ transformation
+- Skewed sampling distribution will rear its head when:
+    * `\(H_{0}: \rho \neq 0\)`
+    * Calculating confidence intervals
+    * Testing two correlations against one another
+
+---
+
+
+```
+## 
+## Attaching package: 'psych'
+```
+
+```
+## The following objects are masked from 'package:ggplot2':
+## 
+##     %+%, alpha
+```
+
+![](1-correlation_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+
+---
+## Fisher’s r to z’ transformation
+
+- r to z':
+
+`$$\largez^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}$$`
+
+---
+## Fisher’s r to z’ transformation
+
+
+```r
+r = seq(-.99,.99,.01)
+z = psych::fisherz(r)
+data.frame(r,z) %&gt;%
+  ggplot(aes(x = r, y = z)) +
+  geom_line() +
+  scale_x_continuous(expr(r))+
+  scale_y_continuous(expr(z_r))+
+  theme_bw()
+```
+
+![](1-correlation_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+
+---
+##  Steps for computing confidence interval
+
+1. Transform r into z'
+2. Compute CI as you normally would using z'
+3. revert back to r
+
+`$$\larger = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$`
+
+---
+## Other correlation tests:
+1. Set of correlations
+2. Dependent correlations (i.e., within same group)
+  These are more easily tested via Structural Equation Modeling (SEM)
+3. Intra Class Correlation (ICC)
+
+- Again, best to do these tests in another framework (e.g., interaction, SEM, MLM)
+
+---
+## Factors that influence r (and most other test statistics)
+1. Restriction of range (GRE scores and success)
+2. Very skewed distributions (smoking and health)
+3. Non-linear associations
+4. Measurement overlap (modality and content)
+5. Reliability
+
+---
+## Reliability
+- All measurement includes error
+- Score = true score + measurement error (CTT version)
+- Reliability assesses the consistency of measurement
+
+--
+  Which would you rather have?
+  - 1-item final exam versus 30-item?
+  - assessment via trained clinician vs tarot cards?
+  - fMRI during minor earthquake vs no earthquake?
+
+---
+## Reliability
+
+- Cannot correlate error (randomness) with something
+- Because we do not measure our variables perfectly we get lower correlations compared to true correlations
+- If we want to have a valid measure it better be a reliable measure
+
+---
+## Reliability
+
+- think of reliability as a correlation with a measure and itself in a different world, at a different time, or a different but equal version
+
+`$$\larger_{XX}$$`
+
+---
+## Reliability
+
+- true score variance divided by observed variance
+- how do you assess theoretical variance i.e., true score variance?
+
+`$$\larger_{XY} = r_{X_{T} Y_{T}} {\sqrt{r_{XX}r_{YY}}}$$`
+`$$\larger_{XY} = .6 {\sqrt {(.70) (.70)}}$$`
+
+---
+## Reliability
+
+`$$\larger_{X_{T} Y_{T}} =  = {\frac {r_{XY}} {\sqrt{r_{XX}r_{YY}}}}$$`
+
+
+`$$\larger_{X_{T} Y_{T}} =  = {\frac {.30} {\sqrt{(.70)(.70)}}}$$`
+
+---
+## Most common ways to assess
+
+- cronbachs alpha
+
+```r
+library (psych)
+alpha(measure)
+## Gives average split half correlation
+## Can tell you if you are assessing a single construct
+```
+- test - retest reliability
+- Kappa or ICC
+
+---
+## Reliability
+
+- if you are going to measure something do it well
+- applies to ALL IVs and DVs, and all designs
+- remember this when interpretting other's research
+
+---
+## Types of correlations
+- Many ways to get at relationship between two variables
+- Statistically the different types are almost exactly the same
+- Exist for historical reasons
+
+---
+## Types of correlations
+1. Point Biserial
+    +  continuous and dichtomous
+2. Phi coefficient
+    + both dichotomous
+3. Spearman rank order
+    + ranked data (nonparametric)
+4. Biserial (assumes dichotomous is continous)
+5. Tetrachoric (assumes dichotomous is continous)
+    + both dichotomous
+6. Polychoric (assumes continous)
+    + ordinal
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
