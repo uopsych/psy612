@@ -10,3 +10,16 @@ output:
 
 This page contains links to journal articles, blog posts, webpages, etc., that we (the instructors) believe may be useful to you, or at the very least interesting. **Bold** articles are ones that we consider **must-reads** but don't have enough time to actually assign. And to be clear, must-read means that people will probably assume you've read this and know the basic points.  
 
+## On coding and data science
+
+Peters (2004) ["The Zen of Python."](https://www.python.org/dev/peps/pep-0020/) -- A list of 19 principles for writing better Python code; the principles also apply to writing better R code. 
+
+Hill (2019) ["Meet xaringan."](https://arm.rbind.io/slides/xaringan.html#1) -- There are a ton of resource for learning how to make slides using R. Too many to list here. I like this one because it's accessible, funny, visually appealing, and will help you make slides that you're proud of. (By the way, UO has theme you can use.)
+
+Bryan (2019) ["Happy Git with R."](https://happygitwithr.com) -- Interested in using GitHub for version control? Jenny Bryan will guide you through the process and metaphorically hand you a tissue when you're screaming with frustration.
+
+## On basic statistics
+
+[YouTube series on linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
+
+[PSY 611](https://uopsych.github.io/psy611/) -- Don't forget everything we covered last term!

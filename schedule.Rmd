@@ -14,10 +14,10 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 
 | Week | Date |  Topic                            |Readings            | Quiz       | Homework    |
 -------|------|-----------------------------------|--------------------|------------|-------------|
-| 1    | 1/07 | Correlation                       |                    |            |             |
+| 1    | 1/07 | Correlation                       | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
 | -    | 1/09 | Correlation                       |                    |            |             |
 | -    | 1/10 | _Lab: Correlations_               |                    |            |             |
-| 2    | 1/14 | Univariate regression             |                    |  Quiz 1    |             |
+| 2    | 1/14 | Univariate regression             |  LSR Chapter 15    |  Quiz 1    |             |
 | -    | 1/16 | Univariate regression             |                    |            |             |
 | -    | 1/17 | _Lab: Univariate regression_      |                    |            |             |
 | 3    | 1/21 | Univariate regression             |                    |  Quiz 2    |             |
@@ -26,22 +26,22 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | 4    | 1/28 | Partial correlations              |                    |  Quiz 3    |             |
 | -    | 1/30 | Multiple regression               |                    |            |             |
 | -    | 1/31 | _Lab: Two continuous predictors_  |                    |            |             |
-| 5    | 2/04 | Multiple regression               |                    |  Quiz 4    |             |
-| -    | 2/06 | Multiple regression               |                    |            |             |
+| 5    | 2/04 | Multiple regression               | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 4    |             |
+| -    | 2/06 | Multiple regression               |  LSR Chapter 14    |            |             |
 | -    | 2/07 | _Lab: Categorical predictors_     |                    |            |  HW 1 Due   |
 | 6    | 2/11 | Assumptions and diagnostics       |                    |  Quiz 5    |             |
 | -    | 2/13 | Assumptions and diagnostics       |                    |            |             |
 | -    | 2/14 | _Lab: Diagnostics_                |                    |            |             |             
-| 7    | 2/18 | Causal models                     |                    |  Quiz  6   |             |
+| 7    | 2/18 | Causal models                     | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |
 | -    | 2/20 | Interactions                      |                    |            |             |
 | -    | 2/21 | _Lab: Interactions_               |                    |            |             |
-| 8    | 2/25 | Interactions                      |                    |  Quiz 7    |             |
-| -    | 2/27 | Interactions                      |                    |            |             |
+| 8    | 2/25 | Interactions                      | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf) |  Quiz 7    |             |
+| -    | 2/27 | Interactions                      | [McCabe et al (2018)](readings/AMPPS.pdf) |            |             |
 | -    | 2/28 | _Lab: ANOVA_                      |                    |            |             |
-| 9    | 3/03 | Interactions                      |                    |  Quiz 8    |             |
+| 9    | 3/03 | Interactions                      | LSR Chapter 16     |  Quiz 8    |             |
 | -    | 3/05 | Interactions                      |                    |            |             |
 | -    | 3/06 | _Lab: papaja_                     |                    |            |  HW 2 Due   |
-| 10   | 3/10 | Bootstrapping                     |                    |            |             |
+| 10   | 3/10 | Bootstrapping                     | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
 | -    | 3/12 | Bootstrapping                     |                    |  Quiz 9    |             |
 | -    | 3/13 | _Lab: Bootstrapping_              |                    |            |             |
 |Finals| 3/16 |                                   |                    |            |             |         

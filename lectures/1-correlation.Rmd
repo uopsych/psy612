@@ -11,6 +11,11 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r, echo = F, warning = F, message = F}
+library(psych)
+```
+
+
 ## Welcome back!
 
 **Last term:**
@@ -58,6 +63,7 @@ If you took PSY 611 in Fall 2018 or earlier, take a look at the materials for la
 ## Scatter Plot with best fit line
 ```{r,echo=FALSE, message=FALSE, cache=TRUE}
 library(psych)
+library(psychTools)
 library(tidyverse)
 library(RColorBrewer)
 galton.data <- galton
@@ -142,6 +148,7 @@ $$\large cov_{xy}^{2} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}$$
 
 $$\large \sigma_{xy}^{2} = {\frac{\sum{(x-\mu_{x})(y-\mu_{y})}}{N}}$$
 
+--
 >- Covariance matrix is basis for many analyses
 >- What are some issues that may arise when comparing covariances?
 
@@ -160,16 +167,19 @@ $$\large \rho_{xy} = {\frac{cov(X,Y)}{\sigma_{x}\sigma_{y}}}$$
 
 Many other formulas exist for specific types of data, these were more helpful when we computed everything by hand (more on this later).
 
-
 ---
 
 ## Correlations
 
 
 - How much two variables are linearly related
+
 - -1 to 1
+
 - Invariant to changes in mean or scaling
+
 - Most common (and basic) effect size measure
+
 - Will use to build our regression model
 
 ---
@@ -182,12 +192,33 @@ ggplot(galton.data, aes(x=parent, y=child)) +
     geom_smooth(method=lm,   # Add linear regression line
                 se=FALSE) +     # Don't add shaded confidence region
     labs(x = "parent height", y = "child height") +
-  theme_bw()
+  theme_bw(base_size = 20)
 ```
 
+---
+
+## Conceptually 
+
+Ways to think about a correlation:
+
+* How two vectors of numbers co-relate
+
+* Product of z-scores
+  
+  + Mathematically, it is
+  
+* The average squared distance between two vectors in the same space
+
+* The cosine of the angle between Y and the projected Y from X $(\hat{Y})$. 
 
 ---
+
+![](images/cosine.png)
+
+---
+
 ## Statistical test
+
 Hypothesis testing
 
 $$\large H_{0}: \rho_{xy} = 0$$
@@ -197,33 +228,51 @@ $$\large H_{A}: \rho_{xy} \neq 0$$
 Assumes:
 - Observations are independent
 - Symmetric bivariate distribution (joint probability distribution)
-    - Not necessarily normal
 
 ---
 
-Recall the assumption of normality for a *t*-test:
+Univariate distributions
 
 ```{r, echo = F, message = F, warning = F}
 library(tidyverse)
-ggplot(data.frame(x = seq(-10, 10)), aes(x)) +
-  stat_function(fun = function(x) dnorm(x, m = 0, sd = 10/sqrt(10)),
+pop = ggplot(data.frame(x = seq(-30, 30)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = 0, sd = 10),
                 geom = "area", fill = purples[3]) +
-  scale_x_continuous("X", labels = NULL, limits = c(-10,10)) +
+  scale_x_continuous("X") +
   scale_y_continuous("density", labels = NULL) +
-  theme_bw()
+  ggtitle("Population")+
+  theme_bw(base_size = 20)
+sample = data.frame(x = rnorm(n = 30, m = 0, sd = 10)) %>%
+  ggplot(aes(x = x)) +
+  geom_histogram(fill = purples[2], color = "black", bins = 20) +
+  scale_x_continuous("X", limits = c(-30, 30)) +
+  scale_y_continuous("frequency", labels = NULL) +
+  ggtitle("Sample")+
+  theme_bw(base_size = 20)
+sampling = ggplot(data.frame(x = seq(-30, 30)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = 0, sd = 10/sqrt(30)),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous("X") +
+  scale_y_continuous("density", labels = NULL) +
+  ggtitle("Sampling")+
+  theme_bw(base_size = 20)
+
+ggpubr::ggarrange(pop, sample, sampling, ncol = 1)
 ```
 
 
 
 ---
 
+### Population
+
 ```{r, echo=FALSE,cache=TRUE}
 mu1<-0 # setting the expected value of x1
 mu2<-0 # setting the expected value of x2
-s11<-10 # setting the variance of x1
-s12<-15 # setting the covariance between x1 and x2
-s22<-10 # setting the variance of x2
-rho<-0.5 # setting the correlation coefficient between x1 and x2
+s11<-4 # setting the variance of x1
+s12<-2 # setting the covariance between x1 and x2
+s22<-5 # setting the variance of x2
+rho<-0.1 # setting the correlation coefficient between x1 and x2
 x1<-seq(-10,10,length=41) # generating the vector series x1
 x2<-x1 # copying x1 to x2
 f<-function(x1,x2)
@@ -252,19 +301,45 @@ ticktype="detailed",
 nticks=5)
 
 # produces the 3-D plot
-mtext(expression(list(mu[1]==0,mu[2]==0,sigma[11]==10,sigma[22]==10,sigma[12 ]==15,rho==0.5)), side=3)
+mtext(expression(list(mu[1]==0,mu[2]==0,sigma[11]==4,sigma[22]==5,sigma[12 ]==2,rho==0.1)), side=3)
 # adding a text line to the graph
-
-
 ```
 
 ---
+
+### Sample
+
+```{r, echo = F}
+sigma <- matrix( c( 4, 2,
+                    2, 5 ), 2, 2 )  # covariance matrix
+
+sample = BDgraph::rmvnorm(n = 30, mean = c(0,0), sigma = sigma)
+
+sample %>% as.data.frame() %>%
+  ggplot(aes(x = V1, y = V2)) +
+  geom_smooth(method = "lm", se = F, color = purples[2])+
+  geom_point(color = purples[3]) +
+  scale_x_continuous("X1") + 
+  scale_y_continuous("X2")+
+  theme_bw(base_size = 20)
+```
+
+---
+
+### Sampling distribution?
+
+--
+
+The sampling distribution we use depends on our null hypothesis.
+
+--
+
+If our null hypothesis is the nil $(\rho = 0)$ , then we can use a ***t*-distribution** to estimate the statistical significance of a correlation. 
+
+
+
+---
 ## Statistical test
-
-
-$$\large H_{0}: \rho_{xy} = 0$$
-
-$$\large H_{A}: \rho_{xy} \neq 0$$
 
 
 Test statistic
@@ -283,6 +358,245 @@ $$\large t = {\frac{r}{\sqrt{\frac{1-r^{2}}{N-2}}}}$$
 .pull-right[
 $$\large DF = N-2$$
 ]
+
+
+
+---
+## Power calculations
+```{r}
+library(pwr)
+pwr.r.test(n = , r = .1, sig.level = .05 , power = .8)
+pwr.r.test(n = , r = .3, sig.level = .05 , power = .8)
+```
+
+---
+## Power calculations
+- But what is your confidence?
+
+- N = 84 gives you CI[.09, .48]
+
+- Schönbrodt & Perugini (2013) suggest correlations 'stabilize' at 250+ regardless of effect size
+
+- CI[.19, .39]
+
+---
+## Fisher's r to z' transformation
+.left-column[
+If we want to make calculations based on $\rho \neq 0$ then we will run into a skewed sampling distribution.
+]
+
+```{r, echo = F}
+r_sampling = function(x, r, n){
+  z = fisherz(r)
+  se = 1/(sqrt(n-3))
+  x_z = fisherz(x)
+  density = dnorm(x_z, mean = z, sd = se)
+  return(density)
+}
+
+cor_75 = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .75, 
+                                             n = 30),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .75, n = 30") +
+  theme_bw(base_size = 20)
+
+cor_32 = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .32, 
+                                             n = 30),
+                geom = "area", fill = purples[2]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .32, n = 30")+
+  theme_bw(base_size = 20)
+
+
+cor_n85 = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = -.85, 
+                                             n = 30),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = -.85, n = 30")+
+  theme_bw(base_size = 20)
+
+cor_75b = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .75, 
+                                             n = 150),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .75, n = 150") +
+  theme_bw(base_size = 20)
+
+cor_32b = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .32, 
+                                             n = 150),
+                geom = "area", fill = purples[2]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .32, n = 150")+
+  theme_bw(base_size = 20)
+
+
+cor_n85b = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = -.85, 
+                                             n = 150),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = -.85, n = 150")+
+  theme_bw(base_size = 20)
+
+
+ggpubr::ggarrange(cor_n85, cor_32, cor_75, 
+                  cor_n85b, cor_32b, cor_75b)
+```
+
+
+---
+## Fisher's r to z' transformation
+
+- Skewed sampling distribution will rear its head when:
+
+    * $H_{0}: \rho \neq 0$
+
+    * Calculating confidence intervals
+
+    * Testing two correlations against one another
+
+---
+
+```{r, echo = F}
+ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .75, 
+                                             n = 30),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .75, n = 30") +
+  theme_bw(base_size = 20)
+```
+
+
+---
+## Fisher’s r to z’ transformation
+
+- r to z':
+
+$$\large z^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}$$
+
+---
+## Fisher’s r to z’ transformation
+
+```{r, echo = F}
+r = seq(-.99,.99,.01)
+z = psych::fisherz(r)
+data.frame(r,z) %>%
+  ggplot(aes(x = r, y = z)) +
+  geom_line() +
+  scale_x_continuous(expr(r))+
+  scale_y_continuous(expr(z_r))+
+  theme_bw(base_size = 20)
+```
+
+
+---
+##  Steps for computing confidence interval
+
+1. Transform r into z'
+2. Compute CI as you normally would using z'
+3. revert back to r
+
+$$ SE_z = \frac{1}{\sqrt{N-3}}$$
+
+$$\large r = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$
+---
+
+### Example
+
+In a sample of 42 students, you calculate a correlation of 0.44 between hours spent outside on Saturday and self-rated health. What is the precision of your estimate?
+
+```{r, echo = F}
+r = .44
+N = 42
+z = fisherz(r)
+se = 1/(sqrt(N-3))
+ct = qt(p = .975, df = N-2, lower.tail = T)
+lbz = z-(se*ct)
+ubz = z+(se*ct)
+lb = fisherz2r(lbz)
+ub = fisherz2r(ubz)
+```
+
+
+.pull-left[
+$$z = {\frac{1}{2}}ln{\frac{1+.74}{1-.74}} = `r round(z,2)`$$
+$$SE_z = \frac{1}{\sqrt{42-3}} = `r round(se,2)`$$
+
+$$CI_{Z_{LB}} = `r round(z,2)`-(`r round(ct,3)`)`r round(se,2)` = `r round(lbz,2)`$$
+
+$$CI_{Z_{UB}} = `r round(z,2)`+(`r round(ct,3)`)`r round(se,2)` = `r round(ubz,2)`$$
+]
+
+---
+
+
+$$CI_{r_{LB}} = {\frac{e^{2(`r round(lbz,2)`)}-1}{e^{2(`r round(lbz,2)`)}+1}} = `r round(lb,2)`$$
+
+$$CI_{r_{UB}} = = {\frac{e^{2(`r round(ubz,2)`)}-1}{e^{2(`r round(ubz,2)`)}+1}} = `r round(ub,2)`$$
+
+---
+
+## Comparing two correlations
+
+Again, we use the Fisher’s r to z’ transformation. Here, we're transforming the correlations into z's, then using the difference between z's to calculate the test statistic. 
+
+$$Z = \frac{z_1^{'}- z_2^{'}}{se_{z_1-z_2}}$$
+
+$$se_{z_1-z_2} = \sqrt{se_{z_1}+se_{z_2}} = \sqrt{\frac{1}{n_1-3}+\frac{1}{n_2-3}}$$
+---
+
+## Example
+
+Replication of Hill et al. (2012) where they found that the correlation between narcissism and happiness was greater for young adults compared to older adults
+
+.pull-left[
+### Young adults
+$$N = 327$$
+$$r = .402$$
+]
+
+.pull-right[
+### Older adults
+$$N = 273$$
+$$r = .283$$
+]
+
+
+
+$$H_0:\rho_1 = \rho_2$$
+$$H_1:\rho_1 \neq \rho_2$$
+
+---
+
+```{r, echo = F}
+z1 = fisherz(.402)
+z2 = fisherz(.283)
+n1 = 327
+n2 = 273
+se = sqrt(1/(n1-3) + 1/(n2-3))
+
+zstat = (z1-z2)/se
+```
+
+
+$$z_1^{'} = {\frac{1}{2}}ln{\frac{1+.402}{1-.402}} = `r round(z1,3)`$$
+
+$$z_2^{'} = {\frac{1}{2}}ln{\frac{1+.283}{1-.283}} = `r round(z2,3)`$$
+
+$$se_{z_1-z_2} = \sqrt{\frac{1}{327-3}+\frac{1}{273-3}} = `r round(se,3)`$$
+
+$$\text{Test statistic} = \frac{z_1^{'}-z_2^{'}}{se_{z_1-z_2}} = \frac{`r round(z1,3)`- `r round(z2,3)`}{`r round(se,3)`} = `r round(zstat,3)`$$
+
+```{r}
+pnorm(abs(zstat), lower.tail = F)*2
+```
 
 ---
 ## Effect size
@@ -345,97 +659,77 @@ No Tx     |  35   |  65
 - Same method as IV (method variance)?
 
 ---
-## Power calculations
+
+## Correlation matrices
+
+Correlations are both a descriptive and an inferential statistic. As a descriptive statistic, they're useful for understanding what's going on in a larger dataset. 
+
+Like we use the `summary()` or `describe()` (psych) functions to examine our dataset _before we run any infernetial tests_, we should also look at the correlation matrix. 
+
+---
+
 ```{r}
-library(pwr)
-pwr.r.test(n = , r = .1, sig.level = .05 , power = .8)
-pwr.r.test(n = , r = .3, sig.level = .05 , power = .8)
-```
-
----
-## Power calculations
-- But what is your confidence?
-- N = 84 gives you CI[.09, .48]
-- Schönbrodt & Perugini (2013) suggest correlations 'stabilize' at 250+ regardless of effect size
-- CI[.19, .39]
-
----
-## Fisher’s r to z’ transformation
-.left-column[If we want to make calculations based on $\rho \neq 0$ then we will run into a skewed sampling distribution]
-
-```{r,echo=FALSE, cache=TRUE }
-library(ggplot2)
-
-r=0.95
-n=50
-rep=10000
-z=.5*log((1+r)/(1-r))
-se=1/sqrt(n-3)
-zvec=rnorm(rep)*se+z
-ivec=(exp(2*zvec)-1)/(exp(2*zvec)+1)
-correlation <- as.data.frame(ivec)
-correlation$cor <- correlation$ivec
-ggplot(correlation, aes(cor)) + geom_histogram(breaks=seq(.85, .99, by = .001), aes(y = ..density..)) + geom_density()
-```
-
----
-## Fisher’s r to z’ transformation
-- Skewed sampling distribution will rear its head when:
-    * $H_{0}: \rho \neq 0$
-    * Calculating confidence intervals
-    * Testing two correlations against one another
-
----
-
-```{r, echo = F}
 library(psych)
-data.frame(r_val = c(-.3, 0, .9)) %>%
-  mutate(N = 25,
-         z_se = 1/sqrt(N-3),
-         z_mean = fisherz(r_val)) %>%
-  mutate(density = map2(z_mean, z_se,
-                        function(x,y) dnorm(x = seq(-2,2, by = .1),
-                                            mean = x, sd = y))) %>%
-  unnest(cols = c(density)) %>%
-  mutate(r_density = rep(fisherz2r(seq(-2,2, by = .1)), 3)) %>%
-  ggplot(aes(x = r_density, y = density, color = r_val)) +
-  facet_wrap(~r_val)
-
-
+data(bfi)
+head(bfi)
 ```
 
-
 ---
-## Fisher’s r to z’ transformation
-
-- r to z':
-
-$$\largez^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}$$
-
----
-## Fisher’s r to z’ transformation
 
 ```{r}
-r = seq(-.99,.99,.01)
-z = psych::fisherz(r)
-data.frame(r,z) %>%
-  ggplot(aes(x = r, y = z)) +
-  geom_line() +
-  scale_x_continuous(expr(r))+
-  scale_y_continuous(expr(z_r))+
-  theme_bw()
+cor(bfi)
 ```
 
+---
+
+```{r}
+round(cor(bfi, use = "pairwise"),2)
+```
 
 ---
-##  Steps for computing confidence interval
 
-1. Transform r into z'
-2. Compute CI as you normally would using z'
-3. revert back to r
+```{r}
+round(cor(bfi, use = "complete"),2)
+```
 
-$$\larger = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$
+---
 
+With **pairwise deletion**, different sets of cases contribute to different correlations.  That maximizes the sample sizes, but can lead to problems if the data are missing for some systematic reason.
+
+**Listwise deletion** (often referred to in `R` as use complete cases) doesn't have the same issue of biasing correlations, but does result in smaller samples and potentially limited generalizability.
+
+A good practice is comparing the different matrices; if the correlation values are very different, this suggests that the missingness that affects pairwise deletion is systematic.
+
+---
+
+```{r}
+round(cor(bfi, use = "pairwise")- cor(bfi, use = "complete"),2)
+```
+---
+
+## Visualizing correlation matrices
+
+A single correlation can be informative; a correlation matrix is more than the sum of its parts. 
+
+Correlation matrices can be used to infer larger patterns of relationships. You may be one of the gifted who can look at a matrix of numbers and see those patterns immediately. Or you can use **heat maps** to visualize correlation matrices. 
+
+```{r, results = 'hide'}
+library(corrplot)
+```
+
+---
+
+```{r}
+corrplot(cor(bfi, use = "pairwise"), method = "square")
+```
+
+---
+
+![](images/comm plot-1.png)
+
+.small[
+[Beck, Condon, & Jackson, 2019](https://psyarxiv.com/857ev/)
+]
 ---
 ## Other correlation tests:
 1. Set of correlations
@@ -447,29 +741,42 @@ $$\larger = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$
 
 ---
 ## Factors that influence r (and most other test statistics)
+
 1. Restriction of range (GRE scores and success)
+
 2. Very skewed distributions (smoking and health)
+
 3. Non-linear associations
+
 4. Measurement overlap (modality and content)
+
 5. Reliability
 
 ---
 ## Reliability
+
 - All measurement includes error
+
 - Score = true score + measurement error (CTT version)
+
 - Reliability assesses the consistency of measurement
 
 --
   Which would you rather have?
+
   - 1-item final exam versus 30-item?
+
   - assessment via trained clinician vs tarot cards?
+
   - fMRI during minor earthquake vs no earthquake?
 
 ---
 ## Reliability
 
 - Cannot correlate error (randomness) with something
+
 - Because we do not measure our variables perfectly we get lower correlations compared to true correlations
+
 - If we want to have a valid measure it better be a reliable measure
 
 ---
@@ -477,7 +784,7 @@ $$\larger = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$
 
 - think of reliability as a correlation with a measure and itself in a different world, at a different time, or a different but equal version
 
-$$\larger_{XX}$$
+$$\large r_{XX}$$
 
 ---
 ## Reliability
@@ -485,16 +792,17 @@ $$\larger_{XX}$$
 - true score variance divided by observed variance
 - how do you assess theoretical variance i.e., true score variance?
 
-$$\larger_{XY} = r_{X_{T} Y_{T}} {\sqrt{r_{XX}r_{YY}}}$$
-$$\larger_{XY} = .6 {\sqrt {(.70) (.70)}}$$
+$$\large r_{XY} = r_{X_{T} Y_{T}} {\sqrt{r_{XX}r_{YY}}}$$
+
+$$\large r_{XY} = .6 {\sqrt {(.70) (.70)}}$$
 
 ---
 ## Reliability
 
-$$\larger_{X_{T} Y_{T}} =  = {\frac {r_{XY}} {\sqrt{r_{XX}r_{YY}}}}$$
+$$\large r_{X_{T} Y_{T}} =  = {\frac {r_{XY}} {\sqrt{r_{XX}r_{YY}}}}$$
 
 
-$$\larger_{X_{T} Y_{T}} =  = {\frac {.30} {\sqrt{(.70)(.70)}}}$$
+$$\large r_{X_{T} Y_{T}} =  = {\frac {.30} {\sqrt{(.70)(.70)}}} = .42$$
 
 ---
 ## Most common ways to assess
@@ -513,16 +821,22 @@ alpha(measure)
 ## Reliability
 
 - if you are going to measure something do it well
+
 - applies to ALL IVs and DVs, and all designs
+
 - remember this when interpretting other's research
 
 ---
 ## Types of correlations
+
 - Many ways to get at relationship between two variables
+
 - Statistically the different types are almost exactly the same
+
 - Exist for historical reasons
 
 ---
+
 ## Types of correlations
 1. Point Biserial
     +  continuous and dichtomous
@@ -536,4 +850,11 @@ alpha(measure)
 6. Polychoric (assumes continous)
     + ordinal
 
+---
+
+class: inverse
+
+## Next time....
+
+Univariate regression
 

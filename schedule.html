@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -88,7 +88,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -237,6 +236,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -249,48 +249,9 @@ $(document).ready(function () {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -304,6 +265,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -385,7 +352,18 @@ div.tocify {
         <li>
   <a href="schedule.html">Syllabus</a>
 </li>
-<li class="dropdown-header">Lectures</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="lectures/1-correlation.html">1-Correlation</a>
+    </li>
+  </ul>
+</li>
 <li class="dropdown-header">Labs</li>
 <li>
   <a href="homework.html">Homework</a>
@@ -437,7 +415,7 @@ div.tocify {
 <td>1</td>
 <td>1/07</td>
 <td>Correlation</td>
-<td></td>
+<td><a href="readings/Correlation%20chapter4%20Revelle.pdf">Revelle Chapter 4</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -461,7 +439,7 @@ div.tocify {
 <td>2</td>
 <td>1/14</td>
 <td>Univariate regression</td>
-<td></td>
+<td>LSR Chapter 15</td>
 <td>Quiz 1</td>
 <td></td>
 </tr>
@@ -533,7 +511,7 @@ div.tocify {
 <td>5</td>
 <td>2/04</td>
 <td>Multiple regression</td>
-<td></td>
+<td><a href="readings/Lynam-2006-Assessment.pdf">Lynam et al (2006)</a></td>
 <td>Quiz 4</td>
 <td></td>
 </tr>
@@ -541,7 +519,7 @@ div.tocify {
 <td>-</td>
 <td>2/06</td>
 <td>Multiple regression</td>
-<td></td>
+<td>LSR Chapter 14</td>
 <td></td>
 <td></td>
 </tr>
@@ -581,7 +559,7 @@ div.tocify {
 <td>7</td>
 <td>2/18</td>
 <td>Causal models</td>
-<td></td>
+<td><a href="https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629">Rohrer (2018)</a>, <a href="http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/">Rohrer (2017)</a></td>
 <td>Quiz 6</td>
 <td></td>
 </tr>
@@ -605,7 +583,7 @@ div.tocify {
 <td>8</td>
 <td>2/25</td>
 <td>Interactions</td>
-<td></td>
+<td><a href="readings/McClelland-1993-Psychol%20Bull.pdf">McClelland &amp; Judd (1993)</a></td>
 <td>Quiz 7</td>
 <td></td>
 </tr>
@@ -613,7 +591,7 @@ div.tocify {
 <td>-</td>
 <td>2/27</td>
 <td>Interactions</td>
-<td></td>
+<td><a href="readings/AMPPS.pdf">McCabe et al (2018)</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -629,7 +607,7 @@ div.tocify {
 <td>9</td>
 <td>3/03</td>
 <td>Interactions</td>
-<td></td>
+<td>LSR Chapter 16</td>
 <td>Quiz 8</td>
 <td></td>
 </tr>
@@ -653,7 +631,7 @@ div.tocify {
 <td>10</td>
 <td>3/10</td>
 <td>Bootstrapping</td>
-<td></td>
+<td><a href="readings/Yarkoni%20Westfall%20PPS.pdf">Yarkoni &amp; Westfall (2017)</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -744,6 +722,49 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
