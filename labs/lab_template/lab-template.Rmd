@@ -1,0 +1,60 @@
+---
+title: "Lab X: Title"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+---
+
+# Purpose
+
+[Briefly introduce what the lab is about.]
+
+To quickly navigate to the desired section, click one of the following links:
+
+1. [Section 1](#section1)
+1. [Section 2](#section2)
+
+***
+
+# Section 1{#section1}
+
+[Section 1 content here]. Create links that [open in new tabs](https://www.tidyverse.org/){target="_blank"}.
+
+## Sub-heading for section 1
+
+* Center images
+
+<center>
+![](images/example_image.png)
+</center>
+
+***
+
+# Section 2{#section2}
+
+* Import data using `rio::import()`. Insert a chunk that students can copy and paste. 
+
+```{r eval = FALSE}
+library(rio)
+example_data <- rio::import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab_template/data/example_data.csv")
+```
+
+***
+
+# Minihacks
+
+[Include any relevant overview of the minihacks here. e.g. have students read in a dataset that they will need]
+
+## Minihack 1
+
+***
+
+## Minihack 2
+
+***
+
+## Minihack 3
