@@ -28,11 +28,12 @@ Your report should be written in Rmarkdown. It is strongly recommended that you 
 
   1. a brief (one paragraph maximum) description of the research design, including the measurement of variables.
   2. your research question and hypotheses.
-  3. at least one table.
-  4. at least one figure. 
+  3. written description of the results, including APA-formatted results of statistical tests and your interpretation of those results.
+  4. at least one table in APA format.
+  5. at least one figure, with a title and caption. 
   
 Be sure to interpret any information -- statistical tests, figures, and tables -- that you provide. Please note -- this should not be a full manuscript (no introduction and discussion needed!), and you will certainly provide more information in this report regarding the analyses than you would in a traditional research article. 
 
 ## I don't have data
   
-If you do not have data of your own to analyze at this point, please email Sara, and she will provide data for you.
+If you will have data of your own to analyze in time for this assignment, please come see me (Sara).

@@ -1,0 +1,377 @@
+---
+title: 'Univariate regression'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo = F, warning = F, message = F, results = 'hide'}
+library(psych)
+library(tidyverse)
+library(broom)
+```
+
+
+## Last time
+
+- Correlation as inferential test
+   - Power 
+   
+- Fisher's r to z transformation
+
+- Correlation matrices
+
+- Interpreting effect size
+
+---
+
+## Today
+
+**Regression**
+
+- What is it? Why is it useful
+
+- Nuts and bolts
+
+  - Equation
+
+  - Ordinary least squares
+
+  - Interpretation
+  
+---
+
+## Regression
+
+Regression is a general data analytic system, meaning lots of things fall under the umbrella of regression. This system can handle a vareity of forms of relations, although all forms have to be specified in a linear way. Usefully, we can incorporate IVs of all nature -- continuous, categorical, nominal, orderinal....
+
+The output of regression includes both effect sizes and, if using frequentist or Bayesian software, statistial significance. We can also incorporate multiple influences (IVs) and account for their intercorrelations. 
+
+---
+
+### Regression
+
+- **Scientific** use: explaining the influence of one or more variables on some outcome. 
+
+  + Does this intervention affect reaction time?
+  + Does self-esteem predict relationship quality?
+  
+- **Predicti on** use: We can develop models based on what's happened in the past to predict what will happen in the fugure.
+
+  + Insurance premiums
+  + Graduate school... success?
+  
+- **Adjustment**: Statistically control for known effects
+
+  + If everyone had the same level of SES, would abuse still be associated with criminal behavior?
+
+---
+
+## Regression equation
+
+What is a regression equation?
+
+- Functional relatioship
+
+  - Ideally like a physical law $(E = MC^2)$
+  
+  - In practice, it's never as robust as that
+  
+How do we uncover the relationship?
+
+---
+
+### How does Y vary with X?
+
+- The regression of Y (DV) on X (IV) corresponds to the line that gives the mean value of Y corresponding to each possible value of X
+
+- $\large E(Y|X)$
+
+- "Our best guess" regardless of whether our model includes categories or continuous predictor variables
+
+---
+
+## Regression Equation
+
+$$\Large Y = b_{0} + b_{1}X +e$$
+
+$$\Large \hat{Y} = b_{0} + b_{1}X$$
+
+???
+
+$\hat{Y}$ signifies the predicted score -- no error
+
+The difference between the predicted and observed score is the residual ($e_i$)
+
+There is a different e value for each observation in the dataset
+---
+
+## OLS
+- How do we find the regression estimates? 
+- Ordinary Least Squares (OLS) estimation
+- Minimizes deviations 
+
+$$ min\sum(Y_{i}-\hat{Y})^{2} $$ 
+
+- Other estimation procedures possible (and necessary in some cases)
+
+---
+
+ 
+```{r,echo=FALSE, message=FALSE, cache=TRUE, warning = F}
+set.seed(123)
+x.1 <- rnorm(10, 0, 1)
+e.1 <- rnorm(10, 0, 2)
+y.1 <- .5 + .55 * x.1 + e.1
+d.1 <- data.frame(x.1,y.1)
+m.1 <- lm(y.1 ~ x.1, data = d.1)
+d1.f<- augment(m.1)
+```
+
+```{r plot1, echo=FALSE, cache=TRUE, eval = F}
+ggplot(d1.f , aes(x=x.1, y=y.1)) +
+    geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  theme_bw(base_size = 20)
+```
+
+---
+
+```{r, echo=FALSE}
+ggplot(d1.f , aes(x=x.1, y=y.1)) +
+    geom_point() +
+  geom_point(aes(y = .fitted), shape = 1) +
+  theme_bw(base_size = 20)
+```
+
+
+---
+
+```{r, echo=FALSE}
+ggplot(d1.f , aes(x=x.1, y=y.1)) +
+    geom_point() +
+  geom_point(aes(y = .fitted), shape = 1) +
+  geom_segment(aes( xend = x.1, yend = .fitted))+
+  theme_bw(base_size = 20)
+```
+
+
+
+---
+
+```{r, echo=FALSE}
+ggplot(d1.f , aes(x=x.1, y=y.1)) +
+    geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  geom_point(aes(y = .fitted), shape = 1) +
+  geom_segment(aes( xend = x.1, yend = .fitted))+
+  theme_bw(base_size = 20)
+```
+
+
+---
+$$\Large Y = b_{0} + b_{1}X +e$$
+
+$$\Large \hat{Y} = b_{0} + b_{1}X$$
+
+$$\Large Y_i = \hat{Y_i} + e_i$$
+
+$$\Large e_i = Y_i - \hat{Y_i}$$
+
+---
+
+## OLS
+
+The line that yields the smallest sum of squared deviations
+
+$$\Large \Sigma(Y_i - \hat{Y_i})^2 = \Sigma(Y_i - (b_0+b_{1}X_i))^2 = \Sigma(e_i)^2$$
+
+--
+
+In order to find the OLS solutoin, you could try many different coefficients $(b_0 \text{ and } b_yx)$ until you find the one with the smallest sum squared deviation. Luckily, there are simple calculations that will yield the OLS solution every time.
+
+---
+## Regression coefficient, $b_{1}$
+
+$$\large b_{1} = \frac{cov_{XY}}{s_{x}^{2}} = r_{xy} \frac{s_{y}}{s_{x}}$$
+
+$$\large r_{xy} = \frac{s_{xy}}{s_xs_y}$$
+
+- The regression coefficient (slope) equals the estimated change in Y for a 1-unit change in X  
+
+---
+
+$$\large b_{1} = r_{xy} \frac{s_{y}}{s_{x}}$$
+
+
+If the variance of both X and Y is equal to 1: 
+
+$$\large b_1 = \frac{s_{xy}}{s_x^2}=\frac{r_{xy}}{1^2} = \beta_{yx} = b_{yx}^*$$
+
+---
+
+## Standardized regression equation
+
+$$\large Y = b_{yx}^*X+e$$
+
+$$\large b_{yx}^* = b_{yx}\frac{s_x}{s_y}$$
+--
+
+According to this regression equation, when $X = 0, Y = 0$. Our interpretation of the coefficient is that a one-standard deviation increase in X is associated with a $b_{yx}^*$ standard deviation increase in Y. Our regression coefficient is equivlant to the correlation coefficient *when we have only one predictor in our model.*
+
+---
+
+## Estimating the intercept, $b_0$
+
+- intercept serves to adjust for differences in means between X and Y
+
+$$\Large \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$
+- if standardized, intercept drops out  
+
+- otherwise, intercept is where regression line crosses the y-axis at X = 0  
+
+- Also, notice that when $X = \bar{X}$ the regression line goes through  $\bar{Y}$
+
+???
+$$\Large b_0 = \bar{Y} - b_1\bar{X}$$
+
+---
+
+## Example
+
+
+
+```{r}
+galton.data <- psychTools::galton
+head(galton.data)
+describe(galton.data, fast = T)
+cor(galton.data)
+```
+
+---
+
+If we regress child height onto parents':
+
+```{r}
+r = cor(galton.data)[2,1]
+m_parent = mean(galton.data$parent)
+m_child = mean(galton.data$child)
+s_parent = sd(galton.data$parent)
+s_child = sd(galton.data$child)
+
+(b1 = r*(s_child/s_parent))
+(b0 = m_child - b1*m_parent)
+```
+
+
+How will this change if we regress parent height onto children's?
+
+---
+
+```{r}
+(b1 = r*(s_child/s_parent))
+(b0 = m_child - b1*m_parent)
+```
+
+
+```{r}
+(b1 = r*(s_parent/s_child))
+(b0 = m_parent - b1*m_child)
+```
+
+---
+## In `R`
+
+```{r}
+fit.1 <- lm(child ~ parent, data = galton.data)
+summary(fit.1)
+```
+
+???
+
+## Things to discuss
+
+- Coefficient estimates
+- Statistical tests (covered in more detail soon)
+
+---
+
+
+```{r, echo=FALSE, cache=TRUE}
+ggplot(galton.data, aes(x=child, y=parent)) +
+    geom_point() +    
+    geom_smooth(method=lm,   # Add linear regression line
+                se=FALSE) +
+  theme_bw(base_size = 20)
+```
+
+---
+
+## Data, predicted, and residuals
+
+```{r}
+library(broom)
+model_info = augment(fit.1)
+head(model_info)
+```
+
+---
+
+```{r}
+model_info %>% ggplot(aes(x = parent, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste("X is related to ", hat(Y))))+
+  scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+---
+
+```{r}
+model_info %>% ggplot(aes(x = parent, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle("X is always unrelated to e")+
+  scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
+```
+
+---
+
+```{r}
+model_info %>% ggplot(aes(x = child, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste("Y can be related to ", hat(Y))))+
+  scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+---
+
+```{r}
+model_info %>% ggplot(aes(x = child, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle("Y is sometimes related to e")+
+  scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 30)
+```
+
+---
+
+```{r}
+model_info %>% ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste(hat(Y), " is always unrelated to e")))+
+  scale_y_continuous("e") + scale_x_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+---
+
+```{r}
+model_info %>% rename(y = child, x = parent) %>% select(x,y,.fitted,.resid) %>% gather("key", "value") %>%
+  ggplot(aes(value, fill = key)) + geom_histogram(bins = 25) + guides(fill = F)+
+  facet_wrap(~key, scales = "free") + theme_bw(base_size = 20)
+```
+
+---
+
+class: inverse
+
+## Next time... 
+
+Statistical inferences with regression
