@@ -64,7 +64,7 @@ The output of regression includes both effect sizes and, if using frequentist or
   + Does this intervention affect reaction time?
   + Does self-esteem predict relationship quality?
   
-- **Predicti on** use: We can develop models based on what's happened in the past to predict what will happen in the fugure.
+- **Prediction** use: We can develop models based on what's happened in the past to predict what will happen in the fugure.
 
   + Insurance premiums
   + Graduate school... success?
@@ -128,7 +128,7 @@ $$ min\sum(Y_{i}-\hat{Y})^{2} $$
  
 
 
-
+![](3-regression_files/figure-html/plot1-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -161,11 +161,13 @@ $$ min\sum(Y_{i}-\hat{Y})^{2} $$
 
 The line that yields the smallest sum of squared deviations
 
-`$$\Large \Sigma(Y_i - \hat{Y_i})^2 = \Sigma(Y_i - (b_0+b_{1}X_i))^2 = \Sigma(e_i)^2$$`
+`$$\Large \Sigma(Y_i - \hat{Y_i})^2$$`
+`$$\Large = \Sigma(Y_i - (b_0+b_{1}X_i))^2$$`
+`$$\Large = \Sigma(e_i)^2$$`
 
 --
 
-In order to find the OLS solutoin, you could try many different coefficients `\((b_0 \text{ and } b_yx)\)` until you find the one with the smallest sum squared deviation. Luckily, there are simple calculations that will yield the OLS solution every time.
+In order to find the OLS solution, you could try many different coefficients `\((b_0 \text{ and } b_{1})\)` until you find the one with the smallest sum squared deviation. Luckily, there are simple calculations that will yield the OLS solution every time.
 
 ---
 ## Regression coefficient, `\(b_{1}\)`
@@ -207,6 +209,8 @@ According to this regression equation, when `\(X = 0, Y = 0\)`. Our interpretati
 
 - otherwise, intercept is where regression line crosses the y-axis at X = 0  
 
+???
+##Make this point
 - Also, notice that when `\(X = \bar{X}\)` the regression line goes through  `\(\bar{Y}\)`
 
 ???
