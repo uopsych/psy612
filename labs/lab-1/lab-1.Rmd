@@ -1,5 +1,5 @@
 ---
-title: "Lab X: Title"
+title: "Lab 1: Correlations"
 output: 
   html_document: 
     fig_caption: yes
@@ -11,43 +11,81 @@ output:
 
 # Purpose
 
-[Briefly introduce what the lab is about.]
+Today's lab will focus on correlations. We will discuss how to calculate a correlation coefficient between two variables, how to assess statistical significance of correlations, and a variety of tools for visualizing correlations, especially among large groups of variables. 
 
 To quickly navigate to the desired section, click one of the following links:
 
-1. [Section 1](#section1)
-1. [Section 2](#section2)
+1. [Calculating a correlation coefficient](#corcoeff)
+1. [Statistical tests of correlations](#stats)
+1. [Visualizing correlations](#plot)
 
-***
+You will need to load the following libraries to follow along with today's lab:
 
-# Section 1{#section1}
-
-[Section 1 content here]. Create links that [open in new tabs](https://www.tidyverse.org/){target="_blank"}.
-
-## Sub-heading for section 1
-
-* Center images
-
-<center>
-![](images/example_image.png)
-</center>
-
-***
-
-# Section 2{#section2}
-
-* Import data using `rio::import()`. Insert a chunk that students can copy and paste. 
-
-```{r eval = FALSE}
+```{r message=FALSE}
+library(tidyverse)
 library(rio)
-example_data <- rio::import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab_template/data/example_data.csv")
+library(psych)
 ```
+
+
+***
+
+# Calculating a correlation coefficient{#corcoeff}
+
+## Calculate by "hand"
+
+* Covariance (sample)
+
+$$\large cov_{xy} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}$$
+
+* Correlation coefficient (sample)
+
+$$\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}$$
+
+## Using R functions
+
+### `stats::cov()`
+
+### `stats::cor()`
+
+*** 
+
+# Statistical tests of correlations{#stats}
+
+To illustrate how to assess statistical significance of correlations, we are going to work with a dataset about the relationship between conscientiousness and physical health. We've collected data from 60 people (30 men and 30 women) on their self-reported conscientiousness (using the BFI) and their self-reported physical health. We want to know if there is a significant correlation between these variables, and then whether or not that correlation differs between men and women.
+
+* Import the data using the following code:
+
+```{r}
+health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
+```
+
+
+***
+
+## Steps of hypothesis testing
+
+## Power calculation 
+
+## R functions
+
+### `stats::cor.test()`
+
+### `psych::corr.test()`
+
+## Confidence intervals
+
+## Comparing correlations by group
+
+### `psych::r.test()`
+
+***
+
+# Visualizing correlations{#plot}
 
 ***
 
 # Minihacks
-
-[Include any relevant overview of the minihacks here. e.g. have students read in a dataset that they will need]
 
 ## Minihack 1
 
