@@ -9,6 +9,8 @@ navbar:
       menu:
       - text: "1-Correlation"
         href: "lectures/1-correlation.html"
+      - text: "2-Correlation"
+        href: "lectures/2-correlation.html"
     - text: Labs
     - text: Homework
       href: homework.html
