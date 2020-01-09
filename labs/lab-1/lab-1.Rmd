@@ -15,7 +15,7 @@ Today's lab will focus on correlations. We will discuss how to calculate a corre
 
 To quickly navigate to the desired section, click one of the following links:
 
-1. [Calculating a correlation coefficient](#corcoeff)
+1. [Calculating covariances and correlations](#corcoeff)
 1. [Hypothesis testing with correlations](#stats)
 1. [Visualizing correlations](#plot)
 
@@ -29,7 +29,7 @@ library(psych)
 
 ***
 
-# Calculating a correlation coefficient{#corcoeff}
+# Calculating covariances and correlations{#corcoeff}
 
 ## Covariance
 
