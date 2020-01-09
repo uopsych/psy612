@@ -357,7 +357,7 @@ All measurement includes error
 
 - Score = true score + measurement error (CTT version)
 
-- Reliability assesses the consistency of measurement; low reliability indicates less error
+- Reliability assesses the consistency of measurement; high reliability indicates less error
 
 ---
 

@@ -299,7 +299,7 @@ summary(fit.1)
 
 ???
 
-## Things to discuss
+**Things to discuss**
 
 - Coefficient estimates
 - Statistical tests (covered in more detail soon)
@@ -317,13 +317,21 @@ ggplot(galton.data, aes(x=parent, y=child)) +
 
 ---
 
-## Data, predicted, and residuals
+### Data, predicted, and residuals
 
 ```{r}
 library(broom)
 model_info = augment(fit.1)
 head(model_info)
 ```
+
+```{r}
+describe(model_info)
+```
+
+???
+
+Point out the average of the residuals is 0, just like average deviation from the mean is 0. 
 
 ---
 

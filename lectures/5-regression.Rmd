@@ -1,0 +1,513 @@
+---
+title: 'Univariate regression III'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r, echo = F, warning = F, message = F}
+library(tidyverse)
+```
+
+## Last time...
+
+- Partitioning variance
+
+    - $SS_Y, SS_\hat{Y}$
+    
+    - $R^2$
+    
+
+- Statistical inference and regression
+
+    - NHST: does this model fit the data?
+    
+---
+## Terminology
+
+- $R^2$
+--
+  - **coefficient of determination**
+  - squared correlation between $Y$ and $\hat{Y}$
+  - proportion of variance in Y accounted for by the model
+  
+- $s_{Y|X}$ 
+
+--
+  - **standard error of the estimate** or standard deviation of the residuals.
+  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation. )
+  
+- $MSE$
+
+--
+  - **mean square error** or unbiased estimate of error variance
+  - measure of discrepancy between model and data
+  - variance around fitted regression line
+---
+## Example
+ 
+*Overclaiming* occurs when people claim that they know something that is impossible to know; are experts susceptible to overclaiming?
+
+Participants completed a measure of self-perceived knowledge, in which they indicate their level of knowledge in the area of personal finance. Next participants indicated how much they knew about 15 terms related to personal finance (e.g., home equity). Included in the 15 items were three terms that do not actually exist (e.g., annualized credit). Thus, overclaiming occurred when participants said that they were knowledgeable about the non-existent terms. Finally, participants completed a test of financial literacy called the FINRA.
+
+.small[
+Atir, S., Rosenzweig, E., & Dunning, D. (2015). [When knowledge knows no bounds: Self-perceived expertise predicts claims of impossible knowledge.](https://journals.sagepub.com/stoken/default+domain/ZtrwAQcGwtzhkvv8vgKq/full) Psychological Science, 26, 1295-1303. ]
+
+
+---
+
+```{r,  message = F}
+library(here)
+expertise = read.csv(here("data/expertise.csv"))
+psych::describe(expertise)
+
+cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion")])
+```
+
+---
+
+```{r}
+fit.1 = lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
+summary(fit.1)
+```
+
+---
+
+```{r}
+anova(fit.1)
+```
+
+---
+
+```{r, results = 'hide', message = F, warning = F}
+library(sjPlot)
+set_theme(base = theme_bw())
+plot_model(fit.1, type = "pred", show.data = T, jitter = T) 
+```
+
+
+---
+
+## $SE_b$
+
+- standard errors for the slope coefficient
+
+- represent our uncertainty (noise) in our estimate of the regression coefficient 
+
+- different from residual standard error/deviation (but proportional to)  
+
+- much like previously we can take our estimate (b) and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
+
+---
+
+```{r, highlight.output = c(12,13)}
+summary(fit.1)
+```
+
+
+---
+## Confidence interval for coefficents
+
+- same equation as we've been working with:
+
+$$CI_b = b \pm CV(SE_b)$$
+
+- How do we estimate the critical value?
+
+- After a certain sample size, the CV can be assumed to be what?
+
+---
+## $SE_{\hat{Y_i}}$
+
+In addition to estimating precision around the our coefficients, we can also estimate our precision around our predicted values, $\hat{Y_i}$. Why might this be a useful exercise?
+
+--
+
+The formula to estimate the standard error of any particular $\hat{Y_i}$ is
+
+$$s_{\hat{Y}_X} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+---
+
+```{r, highlight.output = 8}
+model_info = broom::augment(fit.1)
+psych::describe(model_info, fast=T)
+```
+```{r}
+head(model_info[,c("overclaiming_proportion", ".fitted", ".sigma")])
+```
+
+
+We can string these together in a figure and create **confidence bands**.
+
+---
+
+```{r, echo = F}
+expertise %>%
+  ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) + 
+  geom_jitter(size = .5, color = "darkgrey") + 
+  geom_smooth(method = "lm") +
+  scale_x_continuous("Self-perceived knowledge") +
+  scale_y_continuous("Proportion of overclaiming") +
+  ggtitle("Using geom_smooth(se = TRUE)")+
+  theme_bw()
+```
+
+
+---
+```{r}
+confint(fit.1)
+```
+
+---
+
+```{r, echo = F}
+ci = confint(fit.1)
+expertise %>%
+  ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) + 
+  geom_jitter(size = .5, color = "darkgrey") + 
+  geom_smooth(method = "lm") +
+  geom_abline(aes(intercept = ci[1,1], slope = ci[2,2])) +
+  geom_abline(aes(intercept = ci[1,2], slope = ci[2,1])) +
+  scale_x_continuous("Self-perceived knowledge") +
+  scale_y_continuous("Proportion of overclaiming") +
+  theme_bw()
+```
+
+---
+## Confidence Bands for regression line
+```{r, echo=FALSE, message=FALSE, warning = F, fig.width = 10}
+set.seed(123)
+
+px.1 <- rnorm(1000, 0, 1)
+pe.1 <- rnorm(1000, 0, 1)
+py.1 <- .5 + .55 * px.1 + pe.1
+pd.1 <- data.frame(px.1,py.1)
+
+px.2 <- rnorm(100, 0, 1)
+pe.2 <- rnorm(100, 0, 1)
+py.2 <- .5 + .55 * px.2 + pe.2
+pd.2 <- data.frame(px.2,py.2)
+
+
+p1 <- ggplot(pd.1, aes(x = px.1,y =  py.1)) +
+    geom_point() +    
+    geom_smooth(method = lm) +
+   scale_x_continuous(limits = c(-3, 3))  +
+  scale_y_continuous(limits = c(-3, 3))
+
+p2 <- ggplot(pd.2, aes(x=px.2, y=py.2)) +
+    geom_point() +    
+    geom_smooth(method=lm) +
+  scale_x_continuous(limits = c(-3, 3))  +
+  scale_y_continuous(limits = c(-3, 3))
+
+library(cowplot)
+plot_grid(p1, p2, ncol=2, labels = c("N = 1000", "N = 100"))
+
+```
+---
+Compare mean estimate for self-perceived knowledge based on regression vs binning
+
+```{r, echo=FALSE, fig.width = 10}
+p1 = ggplot(expertise, aes(x=self_perceived_knowledge, y=overclaiming_proportion)) +
+      geom_point() +   
+  geom_smooth(method=lm,   # Add linear regression line
+                se=TRUE) +
+  scale_y_continuous(limits = c(-.12, 1.1))
+p2 = expertise %>%
+  mutate(self_perceived_knowledge = cut_interval(self_perceived_knowledge, length = 1)) %>%
+  group_by(self_perceived_knowledge) %>%
+  summarize(m = mean(overclaiming_proportion), 
+          s = sd(overclaiming_proportion), 
+          n = n(),
+          se = s/sqrt(n),
+          cv = qt(p = .975, df = n-2),
+          moe = se*cv) %>%
+  ggplot(aes(x = self_perceived_knowledge, y = m)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = m-moe, ymax = m+moe)) +
+  scale_y_continuous("overclaiming_proportion", limits = c(-.12, 1.1))
+
+ggpubr::ggarrange(p1, p2, align = "v")
+```
+---
+## Confidence Bands
+
+$$\Large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+
+
+---
+## Prediction bands
+
+- very similar to confidence bands around regressions line
+
+- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new Yi given x, rather than Ybar given x)
+
+- Because there is greater variation in predicting an individual value rather than a collection of individual values (ie the mean) the prediction band is greater
+
+- Combines unknown variability in 1) the estimated mean (as reflected in se of b) 2) peoples scores around  mean (residual standard error) 
+
+$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+---
+
+```{r, warning=FALSE, echo = F, fig.width = 10}
+temp_var <- predict(fit.1, interval="prediction")
+new_df <- cbind(expertise, temp_var)
+pred <- ggplot(new_df, aes(x=self_perceived_knowledge, y=overclaiming_proportion))+
+       geom_point() +   
+  geom_smooth(method=lm,se=TRUE) +
+ geom_ribbon(aes(ymin = lwr, ymax = upr), 
+               fill = "blue", alpha = 0.1) +
+  theme_bw(base_size = 20)
+
+pred
+```
+
+---
+
+## Matrix algebra
+
+Recall that $Y$ is a vector of values, which can be represented as an $n\times1$ matrix, $\mathbf{y}$. Similarly, X can be represented as an $n\times1$ matrix, $\mathbf{X}$.
+
+Consider now our regression equation:
+
+$$\mathbf{y} = b_0 + b_1\mathbf{x} + e$$
+
+If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the first column is filled with 1's, we can simplify this equation:
+
+$$\mathbf{y} = \mathbf{b}\mathbf{X}$$
+
+Where $\mathbf{b}$ is a $1 \times 2$ matrix containing our estimates of the intercept and slope. 
+
+If we solve for b, we find that
+
+$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
+
+???
+One property of the residuals is that the the average residual is 0, so we can remove this from the equation as well.
+
+---
+
+### A simple example
+
+.pull-left[
+| X | 6 | 7 | 8 | 9 | 7 |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| Y | 1 | 2 | 3 | 3 | 4 |
+]
+
+.pull-right[
+$$\mathbf{X} = \left(\begin{array}
+{rr}
+1 & 6  \\
+1 & 7 \\
+1 & 8 \\
+1 & 9 \\
+1 & 7 \\
+\end{array}\right)$$
+]
+
+--
+
+$$\mathbf{X'X} = \left(\begin{array}
+{rrrrr}
+1 & 1 & 1 & 1 & 1  \\
+6 & 7 & 8 & 9 & 7 \\
+\end{array}\right) \left(\begin{array}
+{rr}
+1 & 6  \\
+1 & 7 \\
+1 & 8 \\
+1 & 9 \\
+1 & 7 \\
+\end{array}\right) = 
+\left(\begin{array}
+{rr}
+5 & 37  \\
+37 & 279 \\
+\end{array}\right)$$
+
+
+
+???
+
+$$
+\mathbf{X'X} = \left(\begin{array}
+{rr}
+N & \Sigma X  \\
+\Sigma X & \Sigma X^2 \\
+\end{array}\right)
+$$
+
+
+---
+
+$$\mathbf{X'X} = 
+\left(\begin{array}
+{rr}
+5 & 37  \\
+37 & 279 \\
+\end{array}\right)$$
+
+```{r}
+m = matrix(c(5,37,37,279), nrow = 2)
+solve(m)
+```
+
+
+$$\mathbf{X'X}^{-1} = 
+\left(\begin{array}
+{rr}
+10.73 & -1.42  \\
+-1.42 & .19 \\
+\end{array}\right)$$
+
+---
+
+.pull-left[
+$$\mathbf{X} = \left(\begin{array}
+{rr}
+1 & 6  \\
+1 & 7 \\
+1 & 8 \\
+1 & 9 \\
+1 & 7 \\
+\end{array}\right)$$
+]
+.pull-right[
+$$\mathbf{y} = \left(\begin{array}
+{r}
+1   \\
+2  \\
+3  \\
+3  \\
+4  \\
+\end{array}\right)$$
+]
+
+$$\mathbf{X'y} = \left(\begin{array}
+{rrrrr}
+1 & 1 & 1 & 1 & 1  \\
+6 & 7 & 8 & 9 & 7 \\
+\end{array}\right) \left(\begin{array}
+{r}
+1   \\
+2  \\
+3  \\
+3  \\
+4  \\
+\end{array}\right) = 
+\left(\begin{array}
+{r}
+13   \\
+99 \\
+\end{array}\right)$$
+
+???
+
+$$
+\mathbf{X'y} = \left(\begin{array}
+{rr}
+\Sigma Y   \\
+\Sigma XY  \\
+\end{array}\right)
+$$
+---
+$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
+
+$$\mathbf{X'y} = \left(\begin{array}
+{rr}
+10.73 & -1.42   \\
+-1.42 & .19  \\
+\end{array}\right) \left(\begin{array}
+{r}
+13   \\
+99  \\
+\end{array}\right) = 
+\left(\begin{array}
+{r}
+-1.38   \\
+0.54 \\
+\end{array}\right)$$
+
+```{r, echo = T, eval = T}
+x = c(6,7,8,9,7)
+y = c(1,2,3,3,4)
+summary(lm(y ~ x))
+```
+
+---
+
+## Matrix algebra
+
+In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. 
+
+However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit. 
+
+
+
+---
+## Model Comparison
+
+- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick wtih a parsimonious model.   
+
+- Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
+
+---
+
+```{r}
+fit.1 <- lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
+
+fit.0 <- lm(overclaiming_proportion ~ 1, data = expertise)
+```
+
+
+---
+
+```{r}
+summary(fit.0)
+```
+
+---
+```{r}
+summary(fit.1)
+```
+
+
+---
+```{r}
+anova(fit.0)
+```
+
+---
+```{r}
+anova(fit.1)
+```
+
+
+---
+```{r}
+anova(fit.1, fit.0)
+```
+---
+## Model Comparisons 
+
+- Model comparisons are redundent with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
+
+- Key is to start thikning about your implicit alternative models
+
+- The ultimate goal would be to create two models that represent two equally plausible theories. 
+
+- Theory A is made up of components XYZ, whereas theory B has QRS components. You can then ask which theory (model) is better? 
+
+---
+class: inverse
+
+## Next time
+
+The general linear model

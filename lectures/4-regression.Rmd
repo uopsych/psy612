@@ -11,6 +11,12 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r, echo = F, message = F, warning=F}
+library(tidyverse)
+library(broom)
+```
+
+
 ## Last time...
 
 - Introduction to univariate regression
@@ -49,10 +55,12 @@ When it comes to partitioning variance, we often use the sum of the squared devi
 
 For one, minimizing the total residual squared deviations is the goal of OLS. 
 
-For another, squared deviations are additive, making the math relatively simple. The total squared deviations of Y is equal to the total residual squared deviations plus the variance of $\hat{Y}$:
+For another, squared deviations are additive, making the math relatively simple. The total variation of Y is equal to the total residual squared deviations plus the variation of $\hat{Y}$:
 
 $$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
+???
 
+This is where you draw the **pie chart**
 ---
 
 $$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
@@ -83,20 +91,64 @@ $$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$
 
 $$\Large \frac{s_{Model}^2}{s_{y}^2} = \frac{SS_{Model}}{SS_{Y}} = R^2$$
 
+$R^2$ represents the proportion of variance in Y that is explained by the model. 
+
+--
+
+$\sqrt{R^2} = R$ is the correlation between the predicted values of Y from the model and the actual values of Y
+
+$$\large \sqrt{R^2} = r_{Y\hat{Y}}$$
+---
+
+```{r, echo = F}
+set.seed(123)
+x.1 <- rnorm(10, 0, 1)
+e.1 <- rnorm(10, 0, 2)
+y.1 <- .5 + .55 * x.1 + e.1
+d.1 <- data.frame(x.1,y.1)
+m.1 <- lm(y.1 ~ x.1, data = d.1)
+d1.f<- augment(m.1)
+```
+
+.pull-left[
+```{r, echo = F}
+d1.f %>%
+  ggplot(aes(x = x.1, y = y.1)) +
+  geom_smooth(se = F, method = "lm")+
+  geom_point(shape = 1, size = 2.5) +
+  geom_point(aes(y = .fitted), color = "red", size = 2.5)+
+  theme_bw(base_size = 20)
+```
+]
+
+--
+
+.pull-right[
+```{r, echo = F}
+d1.f %>%
+  ggplot(aes(x = y.1, y = .fitted)) +
+  geom_smooth(se = F, method = "lm")+
+  geom_point(color = "black", size = 2.5) +
+  theme_bw(base_size = 20)
+```
+]
+
+
+
 
 ---
 ## Example
-```{r, echo = 2:4}
-galton.data = psychTools::galton
-fit.1 <- lm(child ~ parent, data = galton.data)
-summary(fit.1)
+```{r, echo = 2:4, highlight.output = 17}
+galton.data <- psychTools::galton
+fit.1 = lm(child ~ parent, data = galton.data)
+summary(fit.1) 
 summary(fit.1)$r.squared
 ```
 
 ---
 ## Example
 
-```{r}
+```{r, highlight.output = 11}
 cor.test(galton.data$parent, galton.data$child)
 ```
 
@@ -147,7 +199,7 @@ ggplot(d1.f , aes(x=x.1, y=y.1)) +
 ---
 ## residual standard error
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, highlight.output = 16}
 summary(fit.1)
 ```
 
@@ -155,22 +207,24 @@ summary(fit.1)
 ## residual standard error/deviation 
 
 - aka standard deviation of the residual
-- aka standard error of the estimate
+- aka **standard error of the estimate**
 
-$$\Large \hat{\sigma_e}$$
+$$ \hat{\sigma} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$
 
 - interpreted in original units (unlike $R^2$)
+
 - standard deviation of Y not accounted by model
 
 ---
 
-## residual standard error/deviation  
+## residual standard error/deviation or standard error of the estimate
 
 
 ```{r}
 summary(fit.1)$sigma 
 galton.data.1 = broom::augment(fit.1)
 psych::describe(galton.data.1$.resid)
+sd(galton.data$child)
 ```
 
 ---
@@ -202,13 +256,18 @@ data.frame(r2 = r2, rsd = rsd) %>%
   ggplot(aes(x = r2, y = rsd)) + 
   geom_line() +
   scale_x_continuous(expression(paste(R^2))) + 
-  scale_y_continuous(expression(hat(sigma_e))) 
+  scale_y_continuous(expression(hat(sigma[e])))  +
+  theme_bw(base_size = 20)
 ```
 ---
 ## $R^2$ and residual standard deviation
+
 - two sides of same coin
+
 - one in original units, the other standardized 
+
 - $R^2$ can be tricky because the numerator and denominator can be changed in different ways. 
+
 - for example if variance in Y is changed but with the same model and residual standard error $R^2$ could decline or increase
 
 ---
@@ -240,7 +299,7 @@ However, historically we use a different probability distribution -- **the _F_ d
 
 ---
 
-```{r}
+```{r, echo = F}
 data.frame(x = c(0, 5)) %>%
   ggplot(aes(x = x)) +
   stat_function(fun = function(x) df(x, df1 = 3, df2 = 10), 
@@ -256,13 +315,13 @@ data.frame(x = c(0, 5)) %>%
   stat_function(fun = function(x) df(x, df1 = 5, df2 = 50), 
                 geom = "line", aes(color = "df1 = 5", linetype = "df2 = 50")) +
   scale_y_continuous("density")+
-  theme_bw()
+  theme_bw(base_size = 20)
 ```
 
 
 ---
 
-## _F_ Distribution review
+## _F _ Distribution review
 
 The F probability distribution represents all possible ratios of two variances:
 
@@ -271,161 +330,54 @@ Each variance estimate in the ratio is $\chi^2$ distributed, if the data are nor
 
 $$F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$
 As a result, _F_ has two degrees of freedom, $\nu_1$ and $\nu_2$
----
 
-$$\Large F = \frac{MS_{Model}}{MS_{residial}}$$
----
-## model comparison
-
-- Last semester you looked at different models to see how their F and SSs changed depending on what predictors were included. We can do the same thing with regression models!   
-
-- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick wtih a parsimonious model.   
-
-- Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
+???
 
 ---
-```{r}
-fit.1 <- lm(parent ~ child, data = galton.data)
-fit.0 <- lm(parent ~ 1, data = galton.data)
-```
 
+## _F_  Distributions and regression
 
----
-```{r}
-summary(fit.0)
-```
+Recall that when using a _z_ or _t_ distribution, we were interested in whether one mean was equal to another mean -- sometimes the second mean was calculated from another sample or hypothesized (i.e., the value of the null). In this comparison, we compared the _difference of two means_ to 0 (or whatever our null hypothesis dictates), and if the difference was not 0, we concluded significance. 
+
+_F_ statistics are not testing the likelihood of differences; they test the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. Which variance?
 
 ---
-```{r}
-summary(fit.1)
-```
 
+$$F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$
+$$F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$
+
+$$\Large F = \frac{MS_{Model}}{MS_{residual}}$$
+---
+
+.pull-left[
+The degrees of freedom for our model are 
+
+$$DF_1 = k - 1$$
+$$DF_2 = N-k$$
+
+Where k is the number of IV's in your model, and N is the sample size. ]
+
+.pull-right[
+
+Mean squares are calculated by taking the relevant Sums of Squares and dividing by their respective degrees of freedom.
+
+- $SS_{\text{Model}}$ is divided by $DF_1$
+
+- $SS_{\text{Residual}}$ is divided by $DF_2$
+]
 
 ---
-```{r}
-anova(fit.0)
-```
 
----
 ```{r}
 anova(fit.1)
 ```
 
-
----
-```{r}
-anova(fit.1, fit.0)
-```
----
-## model comparisons 
-
-- Model comparisons are redundent with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
-- Key is to start thikning about your implicit alternative models
-- The ultimate goal would be to create two models that represent two equally plausible theories. 
-- Theory A is made up of components XYZ, whereas theory B has QRS components. You can then ask which theory(model) is better? 
----
-## regression coefficient
-
-$$\Large H_{0}: \beta_{1}= 0$$
-$$\Large H_{1}: \beta_{1} \neq 0$$
----
-## What does the regression coefficient test?
-- Does X provide any predictive information? 
-- Does X provide any explanatory power regarding the variability of Y? 
-- Is the the average value the best guess (i.e., is Y bar equal to the predicted value of Y?)
-- Is the regression line flat? 
-- Are X and Y correlated?  
----
-## Regression coefficient
-$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
-$$\Large t(n-2) = \frac{b_{1}}{se_{b}}$$
-** what is standardized equation? 
----
-## Intercept
-
-- same idea, more complex se calculation as the calculation depends on how far the X value (here zero) is away from the mean of X
-- farther from the mean, less information, thus more uncertainty 
-- we will come back and see this equation later
----
-## Confidence interval for coefficents
-
-- same equation as we've been working with
-- estimate plus minus 1.96*se
----
-## Confidence Bands for regression line
-```{r, echo=FALSE, message=FALSE}
-set.seed(123)
-
-px.1 <- rnorm(1000, 0, 1)
-pe.1 <- rnorm(1000, 0, 1)
-py.1 <- .5 + .55 * px.1 + pe.1
-pd.1 <- data.frame(px.1,py.1)
-
-px.2 <- rnorm(100, 0, 1)
-pe.2 <- rnorm(100, 0, 1)
-py.2 <- .5 + .55 * px.2 + pe.2
-pd.2 <- data.frame(px.2,py.2)
-
-
-p1 <- ggplot(pd.1, aes(x = px.1,y =  py.1)) +
-    geom_point() +    
-    geom_smooth(method = lm) +
-   scale_x_continuous(limits = c(-3, 3))  +
-  scale_y_continuous(limits = c(-3, 3))
-
-p2 <- ggplot(pd.2, aes(x=px.2, y=py.2)) +
-    geom_point() +    
-    geom_smooth(method=lm) +
-  scale_x_continuous(limits = c(-3, 3))  +
-  scale_y_continuous(limits = c(-3, 3))
-
-library(cowplot)
-plot_grid(p1, p2, ncol=2, labels = c("N = 1000", "N = 100"))
-
-```
----
-## Confidence Bands
-- Compare mean estimate for height of 70 based on regression vs binning
-- Model uses all data where binning uses much less
-
-```{r, echo=FALSE}
-ggplot(galton.data, aes(x=child, y=parent)) +
-      geom_point() +   
-  geom_smooth(method=lm,   # Add linear regression line
-                se=TRUE) 
-```
----
-## Confidence Bands
-
-$$\Large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}} $$
-
-
----
-## Prediction
-- very similar to confidence bands around regressions line
-- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new Yi given x, rather than Ybar given x)
-- Because there is greater variation in predicting an individual value rather than a collection of individual values (ie the mean) the prediction band is greater
-- Combines unknown variability in 1) the estimated mean (as reflected in se of b) 2) peoples scores around  mean (residual standard error) 
-
-$$\Large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}} $$
-
 ---
 
-```{r, warning=FALSE}
-temp_var <- predict(fit.1, interval="prediction")
-new_df <- cbind(galton.data, temp_var)
-pred <- ggplot(new_df, aes(x=child, y=parent))+
-       geom_point() +   
-  geom_smooth(method=lm,se=TRUE) +
- geom_ribbon(aes(ymin = lwr, ymax = upr), 
-               fill = "blue", alpha = 0.1)
+```{r,highlight.output=18}
+summary(fit.1)
 ```
 
-
----
-```{r}
-pred
-```
 
 ---
 ## Mean square error (MSE)
@@ -435,15 +387,73 @@ pred
 
 - unbiased estimate of error variance
 
-- measure of discrepancy between the data and the model
+    - measure of discrepancy between the data and the model
 
 - the MSE is the variance around the fitted regression line
 
-- just like $\text{MS}_{\text{within}}$ was variance around predicted group means
+- Note: this is not the same thing as the residual standard error
 
 ---
-## standard errors for b
+## regression coefficient
+
+$$\Large H_{0}: \beta_{1}= 0$$
+$$\Large H_{1}: \beta_{1} \neq 0$$
+---
+## What does the regression coefficient test?
+- Does X provide any predictive information? 
+
+- Does X provide any explanatory power regarding the variability of Y? 
+
+- Is the the average value the best guess (i.e., is Y bar equal to the predicted value of Y?)
+
+- Is the regression line flat? 
+
+- Are X and Y correlated?  
+
+---
+## Regression coefficient
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
+$$\Large t(n-2) = \frac{b_{1}}{se_{b}}$$
+** what is standardized equation? 
+
+---
+
+## $SE_b$
+
+- standard errors for the slope coefficient
+
 - represent our uncertainty (noise) in our estimate of the regression coefficient 
+
 - different from residual standard error/deviation (but proportional to)  
+
 - much like previously we can take our estimate (b) and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
-- (see equation later)
+
+---
+## Intercept
+
+- more complex standard error calculation as the calculation depends on how far the X value (here zero) is away from the mean of X
+
+    - farther from the mean, less information, thus more uncertainty 
+    
+---
+```{r, highlight.output = c(11,12)}
+summary(fit.1)
+```
+
+---
+
+class: inverse
+
+## Next time...
+
+Even more univariate regression!
+
+--
+
+- Confidence intervals 
+
+- Confidence amd prediction _bands_
+
+- Model comparison
+
+- **Matrix algebra**
