@@ -16,15 +16,16 @@ Today's lab will focus on correlations. We will discuss how to calculate a corre
 To quickly navigate to the desired section, click one of the following links:
 
 1. [Covariance and correlation](#corcoeff)
-1. [Hypothesis testing with correlations](#stats)
 1. [Visualizing correlations](#plot)
+1. [Hypothesis testing with correlations](#stats)
 
-You will need to load the following libraries to follow along with today's lab:
+You will need to load the following libraries to follow along with today's lab. If you don't have any of these packages installed, please do so now. 
 
 ```{r message=FALSE}
 library(tidyverse)
 library(rio)
 library(psych)
+library(apaTables)
 ```
 
 ***
@@ -43,6 +44,8 @@ $$\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
 
 * To calculate covariance, use `cov()`. This function comes from the `{stats}` package, which is already loaded when you open R. We'll use the `mtcars` dataset as an example:
 
+<br>
+
 * Calculate the covariance between `mtcars$mpg` and `mtcars$hp`:
 
 ####  {.tabset .tabset-fade .tabset-pills}
@@ -60,6 +63,7 @@ cov(mtcars$mpg, mtcars$hp)
 ```
 
 ####
+<br>
 
 * Feeding `cov()` a data frame (of numeric variables), will generate a covariance matrix. Let's start with a data frame that only includes `mpg` and `hp`. We'll also round to two decimal places for convenience. 
 
@@ -84,8 +88,9 @@ mtcars %>%
 ```
 
 ####
-
 >**Question:** In the above output, what do the numbers along the diagonal represent? 
+
+<br>
 
 * We can also easily generate a covariance matrix of more than 2 variables:
 
@@ -106,12 +111,14 @@ cov(mtcars) %>%
 ```
 
 ####
+<br>
 
 ## Correlation      
 
 * Correlations are *standardized* covariances. Because correlations are in standardized units, we can compare them across scales of measurements and across studies. Recall that mathematically, a correlation is the product of two z-scored variables.
 
 $$\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}$$
+<br>
 
 * To calculate a correlation coefficient, use `cor()` (again, from the `{stats}` package).
 
@@ -130,6 +137,7 @@ cor(mtcars$mpg, mtcars$hp)
 ```
 
 ####
+<br>
 
 * As with covariances, we can generate a matrix of correlations by feeding a data frame to `cor()`. The following code will give us a correlation matrix of `mpg` and `hp`. 
 
@@ -154,6 +162,7 @@ mtcars %>%
 ```
 
 ####
+<br>
 
 * To get a correlation of all the variables in our data frame:
 
@@ -174,6 +183,7 @@ cor(mtcars) %>%
 ```
 
 ####
+<br>
 
 * If are given a covariance matrix, we can easily convert it to a correlation matrix using `cov2cor()`.
 
@@ -203,12 +213,33 @@ cov2cor(cov_mat) %>%
 ```
 
 ####
+<br>
 
 *** 
 
+# Visualizing correlations{#plot}
+
+* As Sara mentioned in class, it is very important to *always* visualize your data. There might be patterns in your data that are not apparent just from looking at a correlation between two variables, or even a correlation matrix for that matter.
+
+## Scatter plots
+
+## SPLOM plots
+
+`pairs.panels()`
+
+## Heat maps
+
+`corPlot()`
+
+## APA Tables
+
+`apa.cor.table()`
+
+***
+
 # Hypothesis testing with correlations{#stats}
 
-* Recall as Sara mentioned in lecture that correlations can be considered both a descriptive and inferential statistic. So far we've talked about how to calculate correlations, but we haven't mentioned how to assess whether correlations are statisticall meaningful. 
+* A correlation can be considered both a descriptive and inferential statistic. So far we've talked about how to calculate correlations, but we haven't mentioned how to assess whether correlations are statisticall meaningful. 
 
 To illustrate how to assess statistical significance of correlations, we are going to work with a dataset about the relationship between conscientiousness and physical health. We've collected data from 60 people (30 men and 30 women) on their self-reported conscientiousness (using the BFI) and their self-reported physical health. We want to know if there is a significant correlation between these variables, and then whether or not that correlation differs between men and women.
 
@@ -217,9 +248,6 @@ To illustrate how to assess statistical significance of correlations, we are goi
 ```{r}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
 ```
-
-
-***
 
 ## Steps of hypothesis testing
 
@@ -236,10 +264,6 @@ health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/l
 ## Comparing correlations by group
 
 ### `psych::r.test()`
-
-***
-
-# Visualizing correlations{#plot}
 
 ***
 

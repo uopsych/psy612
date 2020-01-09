@@ -1531,13 +1531,14 @@ div.tocify {
 <p>To quickly navigate to the desired section, click one of the following links:</p>
 <ol style="list-style-type: decimal">
 <li><a href="#corcoeff">Covariance and correlation</a></li>
-<li><a href="#stats">Hypothesis testing with correlations</a></li>
 <li><a href="#plot">Visualizing correlations</a></li>
+<li><a href="#stats">Hypothesis testing with correlations</a></li>
 </ol>
-<p>You will need to load the following libraries to follow along with today’s lab:</p>
+<p>You will need to load the following libraries to follow along with today’s lab. If you don’t have any of these packages installed, please do so now.</p>
 <pre class="r"><code>library(tidyverse)
 library(rio)
-library(psych)</code></pre>
+library(psych)
+library(apaTables)</code></pre>
 <hr />
 </div>
 <div id="corcoeff" class="section level1">
@@ -1553,8 +1554,11 @@ library(psych)</code></pre>
 </ul>
 <p><span class="math display">\[\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}\]</span></p>
 <ul>
-<li><p>To calculate covariance, use <code>cov()</code>. This function comes from the <code>{stats}</code> package, which is already loaded when you open R. We’ll use the <code>mtcars</code> dataset as an example:</p></li>
-<li><p>Calculate the covariance between <code>mtcars$mpg</code> and <code>mtcars$hp</code>:</p></li>
+<li>To calculate covariance, use <code>cov()</code>. This function comes from the <code>{stats}</code> package, which is already loaded when you open R. We’ll use the <code>mtcars</code> dataset as an example:</li>
+</ul>
+<p><br></p>
+<ul>
+<li>Calculate the covariance between <code>mtcars$mpg</code> and <code>mtcars$hp</code>:</li>
 </ul>
 <div id="section" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
@@ -1569,6 +1573,7 @@ library(psych)</code></pre>
 </div>
 <div id="section-1" class="section level4">
 <h4></h4>
+<p><br></p>
 <ul>
 <li>Feeding <code>cov()</code> a data frame (of numeric variables), will generate a covariance matrix. Let’s start with a data frame that only includes <code>mpg</code> and <code>hp</code>. We’ll also round to two decimal places for convenience.</li>
 </ul>
@@ -1594,6 +1599,7 @@ library(psych)</code></pre>
 <blockquote>
 <p><strong>Question:</strong> In the above output, what do the numbers along the diagonal represent?</p>
 </blockquote>
+<p><br></p>
 <ul>
 <li>We can also easily generate a covariance matrix of more than 2 variables:</li>
 </ul>
@@ -1635,6 +1641,7 @@ library(psych)</code></pre>
 </div>
 <div id="section-5" class="section level4">
 <h4></h4>
+<p><br></p>
 </div>
 </div>
 <div id="correlation" class="section level2">
@@ -1642,7 +1649,7 @@ library(psych)</code></pre>
 <ul>
 <li>Correlations are <em>standardized</em> covariances. Because correlations are in standardized units, we can compare them across scales of measurements and across studies. Recall that mathematically, a correlation is the product of two z-scored variables.</li>
 </ul>
-<p><span class="math display">\[\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}\]</span></p>
+<p><span class="math display">\[\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}\]</span> <br></p>
 <ul>
 <li>To calculate a correlation coefficient, use <code>cor()</code> (again, from the <code>{stats}</code> package).</li>
 </ul>
@@ -1659,6 +1666,7 @@ library(psych)</code></pre>
 </div>
 <div id="section-7" class="section level4">
 <h4></h4>
+<p><br></p>
 <ul>
 <li>As with covariances, we can generate a matrix of correlations by feeding a data frame to <code>cor()</code>. The following code will give us a correlation matrix of <code>mpg</code> and <code>hp</code>.</li>
 </ul>
@@ -1681,6 +1689,7 @@ library(psych)</code></pre>
 </div>
 <div id="section-9" class="section level4">
 <h4></h4>
+<p><br></p>
 <ul>
 <li>To get a correlation of all the variables in our data frame:</li>
 </ul>
@@ -1710,6 +1719,7 @@ library(psych)</code></pre>
 </div>
 <div id="section-11" class="section level4">
 <h4></h4>
+<p><br></p>
 <ul>
 <li>If are given a covariance matrix, we can easily convert it to a correlation matrix using <code>cov2cor()</code>.</li>
 </ul>
@@ -1744,21 +1754,43 @@ cov2cor(cov_mat) %&gt;%
 </div>
 <div id="section-13" class="section level4">
 <h4></h4>
+<p><br></p>
 <hr />
 </div>
+</div>
+</div>
+<div id="plot" class="section level1">
+<h1>Visualizing correlations</h1>
+<ul>
+<li>As Sara mentioned in class, it is very important to <em>always</em> visualize your data. There might be patterns in your data that are not apparent just from looking at a correlation between two variables, or even a correlation matrix for that matter.</li>
+</ul>
+<div id="scatter-plots" class="section level2">
+<h2>Scatter plots</h2>
+</div>
+<div id="splom-plots" class="section level2">
+<h2>SPLOM plots</h2>
+<p><code>pairs.panels()</code></p>
+</div>
+<div id="heat-maps" class="section level2">
+<h2>Heat maps</h2>
+<p><code>corPlot()</code></p>
+</div>
+<div id="apa-tables" class="section level2">
+<h2>APA Tables</h2>
+<p><code>apa.cor.table()</code></p>
+<hr />
 </div>
 </div>
 <div id="stats" class="section level1">
 <h1>Hypothesis testing with correlations</h1>
 <ul>
-<li>Recall as Sara mentioned in lecture that correlations can be considered both a descriptive and inferential statistic. So far we’ve talked about how to calculate correlations, but we haven’t mentioned how to assess whether correlations are statisticall meaningful.</li>
+<li>A correlation can be considered both a descriptive and inferential statistic. So far we’ve talked about how to calculate correlations, but we haven’t mentioned how to assess whether correlations are statisticall meaningful.</li>
 </ul>
 <p>To illustrate how to assess statistical significance of correlations, we are going to work with a dataset about the relationship between conscientiousness and physical health. We’ve collected data from 60 people (30 men and 30 women) on their self-reported conscientiousness (using the BFI) and their self-reported physical health. We want to know if there is a significant correlation between these variables, and then whether or not that correlation differs between men and women.</p>
 <ul>
 <li>Import the data using the following code:</li>
 </ul>
 <pre class="r"><code>health &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv&quot;)</code></pre>
-<hr />
 <div id="steps-of-hypothesis-testing" class="section level2">
 <h2>Steps of hypothesis testing</h2>
 </div>
@@ -1784,10 +1816,6 @@ cov2cor(cov_mat) %&gt;%
 <hr />
 </div>
 </div>
-</div>
-<div id="plot" class="section level1">
-<h1>Visualizing correlations</h1>
-<hr />
 </div>
 <div id="minihacks" class="section level1">
 <h1>Minihacks</h1>
