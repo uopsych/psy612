@@ -1531,7 +1531,7 @@ div.tocify {
 <p>To quickly navigate to the desired section, click one of the following links:</p>
 <ol style="list-style-type: decimal">
 <li><a href="#corcoeff">Calculating a correlation coefficient</a></li>
-<li><a href="#stats">Statistical tests of correlations</a></li>
+<li><a href="#stats">Hypothesis testing with correlations</a></li>
 <li><a href="#plot">Visualizing correlations</a></li>
 </ol>
 <p>You will need to load the following libraries to follow along with today’s lab:</p>
@@ -1542,30 +1542,129 @@ library(psych)</code></pre>
 </div>
 <div id="corcoeff" class="section level1">
 <h1>Calculating a correlation coefficient</h1>
-<div id="calculate-by-hand" class="section level2">
-<h2>Calculate by “hand”</h2>
+<div id="covariance" class="section level2">
+<h2>Covariance</h2>
 <ul>
-<li>Covariance (sample)</li>
+<li>Before we talk about correlations, let’s review the concept of <strong>covariance</strong>. Simply put, covariance captures how the variances of two variables are related, i.e. how they <em>co</em>-vary.</li>
 </ul>
 <p><span class="math display">\[\large cov_{xy} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}\]</span></p>
 <ul>
-<li>Correlation coefficient (sample)</li>
+<li>You’ll notice that this formula looks very similar to the formula for calculating the <strong>variance</strong> of a single variable:</li>
+</ul>
+<p><span class="math display">\[\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}\]</span></p>
+<ul>
+<li>To calculate covariance, use <code>cov()</code>. This function comes from the <code>{stats}</code> package, which is already loaded when you open R.</li>
+</ul>
+<p>Let’s use the <code>mtcars</code> dataset as a quick example:</p>
+<pre class="r"><code>cars &lt;- mtcars %&gt;% 
+  select_if(is.numeric)</code></pre>
+<ul>
+<li>Calculate the covariance between <code>cars$mpg</code> and <code>cars$hp</code>:</li>
+</ul>
+<pre class="r"><code>cov(cars$mpg, cars$hp)</code></pre>
+<pre><code>## [1] -320.7321</code></pre>
+<ul>
+<li>Feeding <code>cov()</code> a data frame (of numeric variables), will generate a covariance matrix. Let’s start with a data frame that only includes <code>mpg</code> and <code>hp</code>. We’ll also round to two decimal places for convenience.</li>
+</ul>
+<pre class="r"><code>round(cov(cars %&gt;% select(mpg, hp)), 2)</code></pre>
+<pre><code>##         mpg      hp
+## mpg   36.32 -320.73
+## hp  -320.73 4700.87</code></pre>
+<pre class="r"><code># alternatively...
+#cov(cars[, c(&quot;mpg&quot;, &quot;hp&quot;)])</code></pre>
+<p><strong>Question:</strong> What do the numbers <code>36.32</code> and <code>4700.87</code> along the diagonal represent?</p>
+<ul>
+<li>We can also easily generate a covariance matrix of more than 2 variables:</li>
+</ul>
+<div id="section" class="section level4 tabset tabset-fade tabset-pills">
+<h4></h4>
+<div id="code" class="section level5">
+<h5>Code</h5>
+<pre class="r"><code>round(cov(cars), 2)</code></pre>
+</div>
+<div id="output" class="section level5">
+<h5>Output</h5>
+<pre><code>##          mpg    cyl     disp      hp   drat     wt   qsec     vs     am
+## mpg    36.32  -9.17  -633.10 -320.73   2.20  -5.12   4.51   2.02   1.80
+## cyl    -9.17   3.19   199.66  101.93  -0.67   1.37  -1.89  -0.73  -0.47
+## disp -633.10 199.66 15360.80 6721.16 -47.06 107.68 -96.05 -44.38 -36.56
+## hp   -320.73 101.93  6721.16 4700.87 -16.45  44.19 -86.77 -24.99  -8.32
+## drat    2.20  -0.67   -47.06  -16.45   0.29  -0.37   0.09   0.12   0.19
+## wt     -5.12   1.37   107.68   44.19  -0.37   0.96  -0.31  -0.27  -0.34
+## qsec    4.51  -1.89   -96.05  -86.77   0.09  -0.31   3.19   0.67  -0.20
+## vs      2.02  -0.73   -44.38  -24.99   0.12  -0.27   0.67   0.25   0.04
+## am      1.80  -0.47   -36.56   -8.32   0.19  -0.34  -0.20   0.04   0.25
+## gear    2.14  -0.65   -50.80   -6.36   0.28  -0.42  -0.28   0.08   0.29
+## carb   -5.36   1.52    79.07   83.04  -0.08   0.68  -1.89  -0.46   0.05
+##        gear  carb
+## mpg    2.14 -5.36
+## cyl   -0.65  1.52
+## disp -50.80 79.07
+## hp    -6.36 83.04
+## drat   0.28 -0.08
+## wt    -0.42  0.68
+## qsec  -0.28 -1.89
+## vs     0.08 -0.46
+## am     0.29  0.05
+## gear   0.54  0.33
+## carb   0.33  2.61</code></pre>
+</div>
+</div>
+<div id="section-1" class="section level4">
+<h4></h4>
+</div>
+</div>
+<div id="correlation" class="section level2">
+<h2>Correlation</h2>
+<ul>
+<li>Correlations are <em>standardized</em> covariances. Because correlations are in standardized units, we can compare them across scales of measurements and across studies. Recall that mathematically, a correlation is the product of two z-scored variables.</li>
 </ul>
 <p><span class="math display">\[\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}\]</span></p>
+<ul>
+<li>To calculate a correlation coefficient, use <code>cor()</code> (again, from the <code>{stats}</code> package).</li>
+</ul>
+<pre class="r"><code>cor(cars$mpg, cars$hp)</code></pre>
+<pre><code>## [1] -0.7761684</code></pre>
+<ul>
+<li>As with covariances, we can generate a matrix of correlations by feeding a data frame to <code>cor()</code>. The following code will give us a correlation matrix of <code>mpg</code> and <code>hp</code>.</li>
+</ul>
+<pre class="r"><code>round(cor(cars %&gt;% select(mpg, hp)), 2)</code></pre>
+<pre><code>##       mpg    hp
+## mpg  1.00 -0.78
+## hp  -0.78  1.00</code></pre>
+<ul>
+<li>To get a correlation of all the variables in our data frame:</li>
+</ul>
+<div id="section-2" class="section level4 tabset tabset-fade tabset-pills">
+<h4></h4>
+<div id="code-1" class="section level5">
+<h5>Code</h5>
+<pre class="r"><code>round(cor(cars), 2)</code></pre>
 </div>
-<div id="using-r-functions" class="section level2">
-<h2>Using R functions</h2>
-<div id="statscov" class="section level3">
-<h3><code>stats::cov()</code></h3>
+<div id="output-1" class="section level5">
+<h5>Output</h5>
+<pre><code>##        mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+## mpg   1.00 -0.85 -0.85 -0.78  0.68 -0.87  0.42  0.66  0.60  0.48 -0.55
+## cyl  -0.85  1.00  0.90  0.83 -0.70  0.78 -0.59 -0.81 -0.52 -0.49  0.53
+## disp -0.85  0.90  1.00  0.79 -0.71  0.89 -0.43 -0.71 -0.59 -0.56  0.39
+## hp   -0.78  0.83  0.79  1.00 -0.45  0.66 -0.71 -0.72 -0.24 -0.13  0.75
+## drat  0.68 -0.70 -0.71 -0.45  1.00 -0.71  0.09  0.44  0.71  0.70 -0.09
+## wt   -0.87  0.78  0.89  0.66 -0.71  1.00 -0.17 -0.55 -0.69 -0.58  0.43
+## qsec  0.42 -0.59 -0.43 -0.71  0.09 -0.17  1.00  0.74 -0.23 -0.21 -0.66
+## vs    0.66 -0.81 -0.71 -0.72  0.44 -0.55  0.74  1.00  0.17  0.21 -0.57
+## am    0.60 -0.52 -0.59 -0.24  0.71 -0.69 -0.23  0.17  1.00  0.79  0.06
+## gear  0.48 -0.49 -0.56 -0.13  0.70 -0.58 -0.21  0.21  0.79  1.00  0.27
+## carb -0.55  0.53  0.39  0.75 -0.09  0.43 -0.66 -0.57  0.06  0.27  1.00</code></pre>
 </div>
-<div id="statscor" class="section level3">
-<h3><code>stats::cor()</code></h3>
+</div>
+<div id="section-3" class="section level4">
+<h4></h4>
 <hr />
 </div>
 </div>
 </div>
 <div id="stats" class="section level1">
-<h1>Statistical tests of correlations</h1>
+<h1>Hypothesis testing with correlations</h1>
 <p>To illustrate how to assess statistical significance of correlations, we are going to work with a dataset about the relationship between conscientiousness and physical health. We’ve collected data from 60 people (30 men and 30 women) on their self-reported conscientiousness (using the BFI) and their self-reported physical health. We want to know if there is a significant correlation between these variables, and then whether or not that correlation differs between men and women.</p>
 <ul>
 <li>Import the data using the following code:</li>
