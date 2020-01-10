@@ -116,7 +116,9 @@ cov(mtcars) %>%
 
 ## Correlation      
 
-* Correlations are *standardized* covariances. Because correlations are in standardized units, we can compare them across scales of measurements and across studies. Recall that mathematically, a correlation is the product of two z-scored variables.
+* Correlations are *standardized* covariances. Because correlations are in standardized units, we can compare them across scales of measurements and across studies. Recall that mathematically, a correlation is the covariance divided by the product of the standard deviations. It is also equivalent to the product of two z-scored variables.
+
+$$\large r_{xy} = {\frac{cov(X,Y)}{\hat\sigma_{x}\hat\sigma_{y}}}$$
 
 $$\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}$$
 <br>
@@ -220,7 +222,7 @@ cov2cor(cov_mat) %>%
 
 # Visualizing correlations{#plot}
 
-* As Sara mentioned in class, it is very important to *always* visualize your data. There might be patterns in your data that are not apparent just from looking at a correlation between two variables, or even a correlation matrix for that matter.
+* As Sara mentioned in class, it is very important to *always* visualize your data. There might be patterns in your data that are not apparent just from looking at a correlation between two variables, or even a correlation matrix for that matter. We will go over just a few basic examples here, but there are many different options for visualizing correlations. See [here](http://www.sthda.com/english/wiki/correlation-matrix-a-quick-start-guide-to-analyze-format-and-visualize-a-correlation-matrix-using-r-software#use-corrplot-function-draw-a-correlogram){target="_blank"} if you want to explore more options. 
 
 ## Scatter plots
 
@@ -271,15 +273,61 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ## SPLOM plots
 
-`pairs.panels()`
+* "SPLOM" stands for scatter plot matrix. The `pairs.panel()` function from the `{psych}` package allows a quick way to visualize relationships among all the continous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal. 
+
+* Note that this function is not ideal with very large data sets, as it becomes difficult to read the plots. (Also, we actually already learned this function in [PSY 611](https://uopsych.github.io/psy611/labs/lab-2.html#pairspanels()_function){target="_blank"}!
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+pairs.panels(mtcars, lm = TRUE)
+```
+
+##### Output
+
+```{r echo=FALSE}
+pairs.panels(mtcars, lm = TRUE)
+```
+
+####
+<br>
 
 ## Heat maps
 
-`corPlot()`
+* Heat maps are a great way to get a high-level visualization of a correlation matrix. They are particularly useful for visualizing the number of "clusters" in your data if that's something you're looking for. For example the `Thurstone` dataset, built into the `{psych}` package, is a correlation matrix of items that assess different aspects of cognitive ability. We can plot a heatmap of this correlation matrix using the `corPlot()` function:
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+corPlot(Thurstone)
+```
+
+##### Output
+
+```{r echo=FALSE}
+corPlot(Thurstone)
+```
+
+####
+>**Question:** What do you notice about the structure of this data?
+
+<br>
 
 ## APA Tables
 
-`apa.cor.table()`
+* The package `{apaTables}` has a very useful function `apa.cor.table()` that creates nicely formatted tables of correlation matrices in APA format. 
+
+```{r eval=FALSE}
+apa.cor.table(mtcars, filename = "cars.doc", table.number = 1)
+```
+
+<center>
+![](images/cars_table.png)
+</center>
 
 ***
 
@@ -560,11 +608,14 @@ r.test(n = 30, r12 = r_women, r34 = r_men)
 >**Question:** What does this test suggest about the correlation between conscientiousness and health across genders?
 
 <br>
+
 ***
 
 # Minihacks
 
 ## Minihack 1
+
+
 
 ***
 
@@ -573,3 +624,8 @@ r.test(n = 30, r12 = r_women, r34 = r_men)
 ***
 
 ## Minihack 3
+
+```{r}
+
+```
+
