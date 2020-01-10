@@ -655,17 +655,29 @@ ci_r_upper <-fisherz2r(ci_z_upper)
 
 ## Minihack 3
 
-```{r}
-dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015.csv")
+Check out [this paper](https://journals.sagepub.com/doi/pdf/10.1177/0956797615586560?casa_token=UgWG-wLWieQAAAAA%3AfOBMH6ehSkk6qp7WtJrABcxdeefuzRJzHKOl6revQ7-d8cT7IfE1ejWPRbUQWmivgaWjp7OyR3LB&){target="_blank"} from Dawtry et al. (2015). Focus on Table 1 from Study 1a (see below). Your task is to replicate the correlation matrix from Table 1. For an extra bonus, format your correlation matrix using `apa.cor.table()` and open it in Microsoft Word. 
 
-dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015.csv")
+<center>
+![](images/dawtry_table1.png)
+</center>
+
+
+You can import the data using the following code:
+
+```{r}
+dawtry_clean <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_clean.csv")
 ```
 
+The data above has been cleaned somewhat for you. For an extra data wrangling challenge, import the raw form of the data (not required):
+
 ```{r}
+dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_raw.csv")
+```
 
-dawtry
+Note: If you use the raw data, note that you will have to create some composite variables. Also note that items `redist2` and `redist4` must be reverse-coded. 
 
-dawtry_cor <- dawtry %>% 
+```{r}
+dawtry_cor_vars <- dawtry_raw %>% 
   mutate(redist2 = 7 - redist2, 
          redist4 = 7 - redist4) %>% # reverse-score these two items
   mutate(`Fairness_Satisfaction` = rowMeans(select(., fairness, satisfaction), na.rm = TRUE),
@@ -679,7 +691,10 @@ dawtry_cor <- dawtry %>%
          Support_Redistribution,
          Political_Preference)
 
-cor(dawtry_cor, use = "pairwise.complete.obs") %>% 
+dawtry_cor <- cor(dawtry_clean, use = "pairwise.complete.obs") %>% 
+  round(2)
+
+dawtry_cor <- cor(dawtry_cor_vars, use = "pairwise.complete.obs") %>% 
   round(2)
 ```
 
@@ -687,8 +702,4 @@ cor(dawtry_cor, use = "pairwise.complete.obs") %>%
 apa.cor.table(dawtry_cor, "dawtry_cor.doc", table.number = 1)
 ```
 
-
 ***
-
-
-
