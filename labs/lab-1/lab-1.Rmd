@@ -656,8 +656,37 @@ ci_r_upper <-fisherz2r(ci_z_upper)
 ## Minihack 3
 
 ```{r}
+dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015.csv")
 
+dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015.csv")
 ```
+
+```{r}
+
+dawtry
+
+dawtry_cor <- dawtry %>% 
+  mutate(redist2 = 7 - redist2, 
+         redist4 = 7 - redist4) %>% # reverse-score these two items
+  mutate(`Fairness_Satisfaction` = rowMeans(select(., fairness, satisfaction), na.rm = TRUE),
+         `Support_Redistribution` = rowMeans(select(., redist1, redist2, redist3, redist4), na.rm = TRUE)) %>% 
+  select(Household_Income, 
+         Social_Circle_Mean_Income,
+         Population_Mean_Income,
+         Social_Circle_Inequality_Gini_Index,
+         Population_Inequality_Gini_Index,
+         Fairness_Satisfaction,
+         Support_Redistribution,
+         Political_Preference)
+
+cor(dawtry_cor, use = "pairwise.complete.obs") %>% 
+  round(2)
+```
+
+```{r eval=FALSE}
+apa.cor.table(dawtry_cor, "dawtry_cor.doc", table.number = 1)
+```
+
 
 ***
 
