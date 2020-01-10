@@ -321,13 +321,21 @@ corPlot(Thurstone)
 
 * The package `{apaTables}` has a very useful function `apa.cor.table()` that creates nicely formatted tables of correlation matrices in APA format. 
 
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
 ```{r eval=FALSE}
 apa.cor.table(mtcars, filename = "cars.doc", table.number = 1)
 ```
 
+##### Output
+
 <center>
 ![](images/cars_table.png)
 </center>
+
+####
 
 ***
 
