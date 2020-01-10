@@ -1693,7 +1693,7 @@ library(pwr) # for power calculation</code></pre>
 <h4></h4>
 <p><br></p>
 <ul>
-<li>To get a correlation of all the variables in our data frame:</li>
+<li>To get a correlation matrix of all the variables in our data frame:</li>
 </ul>
 </div>
 <div id="section-10" class="section level4 tabset tabset-fade tabset-pills">
@@ -1811,7 +1811,7 @@ cov2cor(cov_mat) %&gt;%
 <div id="splom-plots" class="section level2">
 <h2>SPLOM plots</h2>
 <ul>
-<li><p>“SPLOM” stands for scatter plot matrix. The <code>pairs.panel()</code> function from the <code>{psych}</code> package allows a quick way to visualize relationships among all the continous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal.</p></li>
+<li><p>“SPLOM” stands for scatter plot matrix. The <code>pairs.panel()</code> function from the <code>{psych}</code> package allows a quick way to visualize relationships among all the continuous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal.</p></li>
 <li><p>Note that this function is not ideal with very large data sets, as it becomes difficult to read the plots. (Also, we actually already learned this function in <a href="https://uopsych.github.io/psy611/labs/lab-2.html#pairspanels()_function" target="_blank">PSY 611</a>!</p></li>
 </ul>
 <div id="section-18" class="section level4 tabset tabset-fade tabset-pills">
@@ -2049,7 +2049,7 @@ str(health)</code></pre>
 <h4></h4>
 <p><br></p>
 <ul>
-<li>It is often very useful to save the ouput of a statistical test to an object that you can then pull useful information out of.</li>
+<li>It is often very useful to save the output of a statistical test to an object that you can then pull useful information out of.</li>
 </ul>
 </div>
 <div id="section-34" class="section level4 tabset tabset-fade tabset-pills">
@@ -2185,7 +2185,7 @@ r_consc_health$ci</code></pre>
 <div id="comparing-correlations-by-group" class="section level2">
 <h2>Comparing correlations by group</h2>
 <ul>
-<li>We saw above that there is a significant positive relationship between conscientiosness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significanly different for men and women.</li>
+<li>We saw above that there is a significant positive relationship between conscientiousness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significantly different for men and women.</li>
 </ul>
 <div id="visualizing-by-group" class="section level3">
 <h3>Visualizing by group</h3>

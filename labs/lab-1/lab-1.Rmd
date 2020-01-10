@@ -167,7 +167,7 @@ mtcars %>%
 ####
 <br>
 
-* To get a correlation of all the variables in our data frame:
+* To get a correlation matrix of all the variables in our data frame:
 
 #### {.tabset .tabset-fade .tabset-pills}
 
@@ -273,7 +273,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ## SPLOM plots
 
-* "SPLOM" stands for scatter plot matrix. The `pairs.panel()` function from the `{psych}` package allows a quick way to visualize relationships among all the continous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal. 
+* "SPLOM" stands for scatter plot matrix. The `pairs.panel()` function from the `{psych}` package allows a quick way to visualize relationships among all the continuous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal. 
 
 * Note that this function is not ideal with very large data sets, as it becomes difficult to read the plots. (Also, we actually already learned this function in [PSY 611](https://uopsych.github.io/psy611/labs/lab-2.html#pairspanels()_function){target="_blank"}!
 
@@ -483,7 +483,7 @@ health %>%
 ####
 <br> 
 
-* It is often very useful to save the ouput of a statistical test to an object that you can then pull useful information out of. 
+* It is often very useful to save the output of a statistical test to an object that you can then pull useful information out of. 
 
 ####  {.tabset .tabset-fade .tabset-pills}
 
@@ -539,7 +539,7 @@ mtcars %>%
 
 ## Comparing correlations by group
 
-* We saw above that there is a significant positive relationship between conscientiosness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significanly different for men and women. 
+* We saw above that there is a significant positive relationship between conscientiousness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significantly different for men and women. 
 
 ### Visualizing by group
 
