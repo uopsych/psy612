@@ -539,7 +539,7 @@ mtcars %>%
 
 ## Comparing correlations by group
 
-* We saw above that there is a significant positive relationship between conscientiousness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significantly different for men and women. 
+* We saw above that there is a significant positive relationship between conscientiousness and self-reported health. However, now we want to know whether or not this correlation is significantly different for men and women. 
 
 ### Visualizing by group
 
