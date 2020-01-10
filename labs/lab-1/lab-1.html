@@ -2285,7 +2285,7 @@ r_men &lt;- cor(health_men$consc, health_men$sr_health)</code></pre>
 <pre class="r"><code>dawtry_clean &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_clean.csv&quot;)</code></pre>
 <p>The data above has been cleaned somewhat for you. For an extra data wrangling challenge, import the raw form of the data (not required):</p>
 <pre class="r"><code>dawtry_raw &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_raw.csv&quot;)</code></pre>
-<p>Note: If you use the raw data, note that you will have to create some composite variables. Also note that items <code>redist2</code> and <code>redist4</code> must be reverse-coded.</p>
+<p>Note: If you use the raw data, note that you will have to create some composite variables (check out the <code>rowMeans()</code> function). Also note that items <code>redist2</code> and <code>redist4</code> must be reverse-coded before creating a composite score.</p>
 <pre class="r"><code># Your code here</code></pre>
 <hr />
 </div>

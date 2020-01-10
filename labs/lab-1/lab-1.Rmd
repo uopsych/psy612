@@ -663,7 +663,7 @@ The data above has been cleaned somewhat for you. For an extra data wrangling ch
 dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_raw.csv")
 ```
 
-Note: If you use the raw data, note that you will have to create some composite variables. Also note that items `redist2` and `redist4` must be reverse-coded. 
+Note: If you use the raw data, note that you will have to create some composite variables (check out the `rowMeans()` function). Also note that items `redist2` and `redist4` must be reverse-coded before creating a composite score. 
 
 ```{r}
 # Your code here
