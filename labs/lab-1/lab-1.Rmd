@@ -615,11 +615,41 @@ r.test(n = 30, r12 = r_women, r34 = r_men)
 
 ## Minihack 1
 
+For this minihack, calculate a 95% CI "by hand" for the correlation between conscientiousness and self-reported health from our earlier `health()` dataset. Make sure you get the same answer that was given by `cor.test()`. Hint: when calculating CI's, use the functions `fisherz()` and `fisherz2r()` from `{psych}`.
+
+To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}.
 
 
-***
+```{r}
+r <- cor(health$consc, health$sr_health)
+z <- fisherz(r)
+n <- nrow(health)
+se_z <- 1/(sqrt(n-3))
+
+ci_z_lower <- z - se_z * qnorm(.975)
+ci_z_upper <- z + se_z * qnorm(.975)
+  
+ci_r_lower <- fisherz2r(ci_z_lower)
+ci_r_upper <-fisherz2r(ci_z_upper)
+```
+
 
 ## Minihack 2
+
+Now pretend that we had collected data about conscientiousness and self-reported health from 600 people instead of only 60. If we were to obtain the same point estimate of the correlation between conscientiousness and health, what would the 95% CI be of our estimate if N = 600? Explain to your neighbor how and why these confidence intervals are different.
+
+```{r}
+r <- cor(health$consc, health$sr_health)
+z <- fisherz(r)
+n <- 600
+se_z <- 1/(sqrt(n-3))
+
+ci_z_lower <- z - se_z * qnorm(.975)
+ci_z_upper <- z + se_z * qnorm(.975)
+  
+ci_r_lower <- fisherz2r(ci_z_lower)
+ci_r_upper <-fisherz2r(ci_z_upper)
+```
 
 ***
 
@@ -628,4 +658,8 @@ r.test(n = 30, r12 = r_women, r34 = r_men)
 ```{r}
 
 ```
+
+***
+
+
 

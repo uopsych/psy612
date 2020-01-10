@@ -2253,14 +2253,37 @@ r_men &lt;- cor(health_men$consc, health_men$sr_health)</code></pre>
 <h1>Minihacks</h1>
 <div id="minihack-1" class="section level2">
 <h2>Minihack 1</h2>
-<hr />
+<p>For this minihack, calculate a 95% CI “by hand” for the correlation between conscientiousness and self-reported health from our earlier <code>health()</code> dataset. Make sure you get the same answer that was given by <code>cor.test()</code>. Hint: when calculating CI’s, use the functions <code>fisherz()</code> and <code>fisherz2r()</code> from <code>{psych}</code>.</p>
+<p>To review the steps of calculating confidence intervals using Fisher’s transformation, see <a href="https://uopsych.github.io/psy612/lectures/1-correlation.html#38" target="_blank">here</a>.</p>
+<pre class="r"><code>r &lt;- cor(health$consc, health$sr_health)
+z &lt;- fisherz(r)
+n &lt;- nrow(health)
+se_z &lt;- 1/(sqrt(n-3))
+
+ci_z_lower &lt;- z - se_z * qnorm(.975)
+ci_z_upper &lt;- z + se_z * qnorm(.975)
+  
+ci_r_lower &lt;- fisherz2r(ci_z_lower)
+ci_r_upper &lt;-fisherz2r(ci_z_upper)</code></pre>
 </div>
 <div id="minihack-2" class="section level2">
 <h2>Minihack 2</h2>
+<p>Now pretend that we had collected data about conscientiousness and self-reported health from 600 people instead of only 60. If we were to obtain the same point estimate of the correlation between conscientiousness and health, what would the 95% CI be of our estimate if N = 600? Explain to your neighbor how and why these confidence intervals are different.</p>
+<pre class="r"><code>r &lt;- cor(health$consc, health$sr_health)
+z &lt;- fisherz(r)
+n &lt;- 600
+se_z &lt;- 1/(sqrt(n-3))
+
+ci_z_lower &lt;- z - se_z * qnorm(.975)
+ci_z_upper &lt;- z + se_z * qnorm(.975)
+  
+ci_r_lower &lt;- fisherz2r(ci_z_lower)
+ci_r_upper &lt;-fisherz2r(ci_z_upper)</code></pre>
 <hr />
 </div>
 <div id="minihack-3" class="section level2">
 <h2>Minihack 3</h2>
+<hr />
 </div>
 </div>
 
