@@ -412,7 +412,7 @@ pwr.r.test(n = nrow(health), sig.level = .05 , power = .8)
 
 ### `stats::cor.test()`
 
-* By default, `cor.test()` from the `{stats}` package runs a statistical test to determine whether the observed correlation between two variables is significantly different from 0 (the null hypothesis). In addition to the original output, it also returns a 95% CI for the correlation coefficient based on a [Fisher's r to z' transformation](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}. 
+* By default, `cor.test()` from the `{stats}` package runs a statistical test to determine whether the observed correlation between two variables is significantly different from 0 (the null hypothesis). In addition to the usual output, it also returns a 95% CI for the correlation coefficient based on a [Fisher's r to z' transformation](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}. 
 
 ####  {.tabset .tabset-fade .tabset-pills}
 
