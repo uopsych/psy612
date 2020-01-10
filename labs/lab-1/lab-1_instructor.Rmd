@@ -627,8 +627,18 @@ For this minihack, calculate a 95% CI "by hand" for the correlation between cons
 
 To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}.
 
+
 ```{r}
-# Your code here
+r <- cor(health$consc, health$sr_health)
+z <- fisherz(r)
+n <- nrow(health)
+se_z <- 1/(sqrt(n-3))
+
+ci_z_lower <- z - se_z * qnorm(.975)
+ci_z_upper <- z + se_z * qnorm(.975)
+  
+ci_r_lower <- fisherz2r(ci_z_lower)
+ci_r_upper <-fisherz2r(ci_z_upper)
 ```
 
 
@@ -637,7 +647,16 @@ To review the steps of calculating confidence intervals using Fisher's transform
 Now pretend that we had collected data about conscientiousness and self-reported health from 600 people instead of only 60. If we were to obtain the same point estimate of the correlation between conscientiousness and health, what would the 95% CI be of our estimate if N = 600? Explain to your neighbor how and why these confidence intervals are different.
 
 ```{r}
-# Your code here
+r <- cor(health$consc, health$sr_health)
+z <- fisherz(r)
+n <- 600
+se_z <- 1/(sqrt(n-3))
+
+ci_z_lower <- z - se_z * qnorm(.975)
+ci_z_upper <- z + se_z * qnorm(.975)
+  
+ci_r_lower <- fisherz2r(ci_z_lower)
+ci_r_upper <-fisherz2r(ci_z_upper)
 ```
 
 ***
@@ -666,7 +685,29 @@ dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/la
 Note: If you use the raw data, note that you will have to create some composite variables. Also note that items `redist2` and `redist4` must be reverse-coded. 
 
 ```{r}
-# Your code here
+dawtry_cor_vars <- dawtry_raw %>% 
+  mutate(redist2 = 7 - redist2, 
+         redist4 = 7 - redist4) %>% # reverse-score these two items
+  mutate(`Fairness_Satisfaction` = rowMeans(select(., fairness, satisfaction), na.rm = TRUE),
+         `Support_Redistribution` = rowMeans(select(., redist1, redist2, redist3, redist4), na.rm = TRUE)) %>% 
+  select(Household_Income, 
+         Social_Circle_Mean_Income,
+         Population_Mean_Income,
+         Social_Circle_Inequality_Gini_Index,
+         Population_Inequality_Gini_Index,
+         Fairness_Satisfaction,
+         Support_Redistribution,
+         Political_Preference)
+
+dawtry_cor <- cor(dawtry_clean, use = "pairwise.complete.obs") %>% 
+  round(2)
+
+dawtry_cor <- cor(dawtry_cor_vars, use = "pairwise.complete.obs") %>% 
+  round(2)
+```
+
+```{r eval=FALSE}
+apa.cor.table(dawtry_cor, "dawtry_cor.doc", table.number = 1)
 ```
 
 ***

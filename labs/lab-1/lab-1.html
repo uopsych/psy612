@@ -2267,30 +2267,12 @@ r_men &lt;- cor(health_men$consc, health_men$sr_health)</code></pre>
 <h2>Minihack 1</h2>
 <p>For this minihack, calculate a 95% CI “by hand” for the correlation between conscientiousness and self-reported health from our earlier <code>health()</code> dataset. Make sure you get the same answer that was given by <code>cor.test()</code>. Hint: when calculating CI’s, use the functions <code>fisherz()</code> and <code>fisherz2r()</code> from <code>{psych}</code>.</p>
 <p>To review the steps of calculating confidence intervals using Fisher’s transformation, see <a href="https://uopsych.github.io/psy612/lectures/1-correlation.html#38" target="_blank">here</a>.</p>
-<pre class="r"><code>r &lt;- cor(health$consc, health$sr_health)
-z &lt;- fisherz(r)
-n &lt;- nrow(health)
-se_z &lt;- 1/(sqrt(n-3))
-
-ci_z_lower &lt;- z - se_z * qnorm(.975)
-ci_z_upper &lt;- z + se_z * qnorm(.975)
-  
-ci_r_lower &lt;- fisherz2r(ci_z_lower)
-ci_r_upper &lt;-fisherz2r(ci_z_upper)</code></pre>
+<pre class="r"><code># Your code here</code></pre>
 </div>
 <div id="minihack-2" class="section level2">
 <h2>Minihack 2</h2>
 <p>Now pretend that we had collected data about conscientiousness and self-reported health from 600 people instead of only 60. If we were to obtain the same point estimate of the correlation between conscientiousness and health, what would the 95% CI be of our estimate if N = 600? Explain to your neighbor how and why these confidence intervals are different.</p>
-<pre class="r"><code>r &lt;- cor(health$consc, health$sr_health)
-z &lt;- fisherz(r)
-n &lt;- 600
-se_z &lt;- 1/(sqrt(n-3))
-
-ci_z_lower &lt;- z - se_z * qnorm(.975)
-ci_z_upper &lt;- z + se_z * qnorm(.975)
-  
-ci_r_lower &lt;- fisherz2r(ci_z_lower)
-ci_r_upper &lt;-fisherz2r(ci_z_upper)</code></pre>
+<pre class="r"><code># Your code here</code></pre>
 <hr />
 </div>
 <div id="minihack-3" class="section level2">
@@ -2304,26 +2286,7 @@ ci_r_upper &lt;-fisherz2r(ci_z_upper)</code></pre>
 <p>The data above has been cleaned somewhat for you. For an extra data wrangling challenge, import the raw form of the data (not required):</p>
 <pre class="r"><code>dawtry_raw &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_raw.csv&quot;)</code></pre>
 <p>Note: If you use the raw data, note that you will have to create some composite variables. Also note that items <code>redist2</code> and <code>redist4</code> must be reverse-coded.</p>
-<pre class="r"><code>dawtry_cor_vars &lt;- dawtry_raw %&gt;% 
-  mutate(redist2 = 7 - redist2, 
-         redist4 = 7 - redist4) %&gt;% # reverse-score these two items
-  mutate(`Fairness_Satisfaction` = rowMeans(select(., fairness, satisfaction), na.rm = TRUE),
-         `Support_Redistribution` = rowMeans(select(., redist1, redist2, redist3, redist4), na.rm = TRUE)) %&gt;% 
-  select(Household_Income, 
-         Social_Circle_Mean_Income,
-         Population_Mean_Income,
-         Social_Circle_Inequality_Gini_Index,
-         Population_Inequality_Gini_Index,
-         Fairness_Satisfaction,
-         Support_Redistribution,
-         Political_Preference)
-
-dawtry_cor &lt;- cor(dawtry_clean, use = &quot;pairwise.complete.obs&quot;) %&gt;% 
-  round(2)
-
-dawtry_cor &lt;- cor(dawtry_cor_vars, use = &quot;pairwise.complete.obs&quot;) %&gt;% 
-  round(2)</code></pre>
-<pre class="r"><code>apa.cor.table(dawtry_cor, &quot;dawtry_cor.doc&quot;, table.number = 1)</code></pre>
+<pre class="r"><code># Your code here</code></pre>
 <hr />
 </div>
 </div>
