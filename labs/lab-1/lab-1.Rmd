@@ -22,10 +22,11 @@ To quickly navigate to the desired section, click one of the following links:
 You will need to load the following libraries to follow along with today's lab. If you don't have any of these packages installed, please do so now. 
 
 ```{r message=FALSE}
-library(tidyverse)
-library(rio)
-library(psych)
-library(apaTables)
+library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+library(psych) # for covariance and correlation functions
+library(apaTables) # for correlation tables
+library(pwr) # for power calculation
 ```
 
 ***
@@ -223,6 +224,51 @@ cov2cor(cov_mat) %>%
 
 ## Scatter plots
 
+* Scatter plots allow us to visualize the relationship between two variables. By now we are all familiar with scatter plots, but let's create a simple one using `ggplot()` just to jog our memory. To continue with our running example...
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval = FALSE}
+ggplot(data = mtcars, aes(x = mpg, y = hp)) +
+  geom_point()
+```
+
+
+##### Output
+
+```{r echo=FALSE}
+ggplot(data = mtcars, aes(x = mpg, y = hp)) +
+  geom_point()
+```
+
+####
+<br> 
+
+* It is often useful to add a best fit line. We can do this by adding `geom_smooth(method = "lm")`. (`"lm"` stands for "linear model".) Put a pin in that for now...we'll discuss more what this line represents in a future lab.
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+ggplot(data = mtcars, aes(x = mpg, y = hp)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+##### Output
+
+```{r echo=FALSE}
+ggplot(data = mtcars, aes(x = mpg, y = hp)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+#### 
+<br> 
+
 ## SPLOM plots
 
 `pairs.panels()`
@@ -239,32 +285,281 @@ cov2cor(cov_mat) %>%
 
 # Hypothesis testing with correlations{#stats}
 
-* A correlation can be considered both a descriptive and inferential statistic. So far we've talked about how to calculate correlations, but we haven't mentioned how to assess whether correlations are statisticall meaningful. 
+* A correlation can be considered both a descriptive and inferential statistic. So far we've talked about how to calculate correlations between pairs of continuous variables and how to interpret them descriptively, but we haven't mentioned how to assess whether correlations are statistically meaningful. 
+<br>
 
-To illustrate how to assess statistical significance of correlations, we are going to work with a dataset about the relationship between conscientiousness and physical health. We've collected data from 60 people (30 men and 30 women) on their self-reported conscientiousness (using the BFI) and their self-reported physical health. We want to know if there is a significant correlation between these variables, and then whether or not that correlation differs between men and women.
+* To illustrate how to assess statistical significance of correlations, we are going to work with a dataset about the relationship between conscientiousness and physical health. We've collected data from 60 people (30 men and 30 women) on their self-reported conscientiousness (using the BFI) and their self-reported physical health. We want to know if there is a significant correlation between these variables, and then whether or not that correlation differs between men and women.
+<br>
 
-* Import the data using the following code:
+* Import the data using the following code and check out the structure of the data. 
 
-```{r}
+```{r results='hide'}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
+
+str(health)
 ```
 
-## Steps of hypothesis testing
+## Visualize the data
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+ggplot(data = health, aes(x = consc, y = sr_health)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+##### Output
+
+```{r echo=FALSE}
+ggplot(data = health, aes(x = consc, y = sr_health)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+#### 
+<br> 
+
+## Statistical hypotheses
+
+$$\large H_{0}: \rho_{xy} = 0$$
+
+$$\large H_{A}: \rho_{xy} \neq 0$$
 
 ## Power calculation 
 
-## R functions
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+pwr.r.test(n = nrow(health), sig.level = .05 , power = .8)
+```
+
+##### Output
+
+```{r echo=FALSE}
+pwr.r.test(n = nrow(health), sig.level = .05 , power = .8)
+```
+
+####
+
+>**Question:** If our sample size were doubled (120 instead of 60), what would happen to the value of `r` in the above output? Why? What if we decreased our significance level to `.01`?
+
+<br>
+
+## Relevant functions
+
+* There are a couple different functions to be aware for running statistical tests of correlations.
 
 ### `stats::cor.test()`
 
+* By default, `cor.test()` from the `{stats}` package runs a statistical test to determine whether the observed correlation between two variables is significantly different from 0 (the null hypothesis). In addition to the original output, it also returns a 95% CI for the correlation coefficient based on a [Fisher's r to z' transformation](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}. 
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+cor.test(health$consc, health$sr_health)
+```
+
+##### Output
+
+```{r echo=FALSE}
+cor.test(health$consc, health$sr_health)
+```
+
+####
+>**Question:** What can we conclude about the relationship between conscientiousness and health from this data? 
+
+<br>
+
 ### `psych::corr.test()`
 
-## Confidence intervals
+* `corr.test()` from the `{psych}` package gives the same information, but in slightly different format. 
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+health %>% 
+  select(consc, sr_health) %>% 
+  corr.test()
+```
+
+##### Output
+
+```{r echo=FALSE}
+health %>% 
+  select(consc, sr_health) %>% 
+  corr.test()
+```
+
+####
+<br> 
+
+* Note that in order to actually see the confidence intervals, we have to print the output of `corr.test()` and add the argument `short = FALSE`. 
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+health %>% 
+  select(consc, sr_health) %>% 
+  corr.test() %>% 
+  print(short = FALSE)
+```
+
+##### Output
+
+```{r echo=FALSE}
+health %>% 
+  select(consc, sr_health) %>% 
+  corr.test() %>% 
+  print(short = FALSE)
+```
+
+####
+<br> 
+
+* It is often very useful to save the ouput of a statistical test to an object that you can then pull useful information out of. 
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+# store the results of the corr.test() as a list
+r_consc_health <- health %>% 
+  select(consc, sr_health) %>% 
+  corr.test() 
+
+# Now we can pull out just the confidence intervals (or any other information we want!)
+r_consc_health$ci
+```
+
+##### Output
+
+```{r echo=FALSE}
+# store the results of the corr.test() as a list
+r_consc_health <- health %>% 
+  select(consc, sr_health) %>% 
+  corr.test() 
+
+# Now we can pull out just the confidence intervals (or any other information we want!)
+r_consc_health$ci
+```
+
+####
+<br> 
+
+* `psych::corr.test()` is also a more flexible function because it can take in an entire data frame of continuous variables and run many statistical tests at once. Let's look again at the `mtcars` dataset, which has 11 variables.
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+mtcars %>% 
+  corr.test() %>% 
+  print(short = FALSE)
+```
+
+##### Output
+
+```{r echo=FALSE}
+mtcars %>% 
+  corr.test() %>% 
+  print(short = FALSE)
+```
+
+####
+<br> 
 
 ## Comparing correlations by group
 
+* We saw above that there is a significant positive relationship between conscientiosness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significanly different for men and women. 
+
+### Visualizing by group
+
+* First let's plot our data again, but this time split the data by gender. 
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+health %>% 
+  ggplot(aes(consc, sr_health, col = gender)) + 
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", alpha = 0.2) + 
+  labs(x = "Conscientiousness", y = "Self-reported Health") +
+  theme_minimal()
+```
+
+##### Output
+
+```{r echo=FALSE}
+health %>% 
+  ggplot(aes(consc, sr_health, col = gender)) + 
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", alpha = 0.2) + 
+  labs(x = "Conscientiousness", y = "Self-reported Health") +
+  theme_minimal()
+```
+
+####
+>**Question:** What can we conclude from this graph?
+
+<br>
+
 ### `psych::r.test()`
 
+* To statistically compare the correlations between conscientiousness and self-reported health for men and women, we can use the `r.test()` function. This particular function requires the sample size, and the two correlations we're testing against each other (i.e., we can't simply pass in the dataset). So, we'll need to run the correlation separately for men and women, save those values, and then use them in the `r.test()` function.
+
+```{r}
+health_women <- health %>% 
+  filter(gender == "female") 
+
+health_men <- health %>% 
+  filter(gender == "male")
+
+r_women <- cor(health_women$consc, health_women$sr_health)
+
+r_men <- cor(health_men$consc, health_men$sr_health)
+```
+
+* The argument names for `r.test()` are a little confusing. In our case, we need to supply 3 pieces of information:
+
+1. `n` = sample size of first group 
+<br>
+2.`r12` = r for variable 1 and variable 2 (e.g., r for women's consc and women's health) 
+<br>
+3.`r34` = r for variable 3 and variable 4 (e.g., r for men's consc and men's health)
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+r.test(n = 30, r12 = r_women, r34 = r_men)
+```
+
+##### Output
+
+```{r echo=FALSE}
+r.test(n = 30, r12 = r_women, r34 = r_men)
+```
+
+####
+>**Question:** What does this test suggest about the correlation between conscientiousness and health across genders?
+
+<br>
 ***
 
 # Minihacks
