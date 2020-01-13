@@ -18,6 +18,10 @@ Hill (2019) ["Meet xaringan."](https://arm.rbind.io/slides/xaringan.html#1) -- T
 
 Bryan (2019) ["Happy Git with R."](https://happygitwithr.com) -- Interested in using GitHub for version control? Jenny Bryan will guide you through the process and metaphorically hand you a tissue when you're screaming with frustration.
 
+## On creating useful graphics
+
+Patil (2020) ["ggstatsplot"](https://indrajeetpatil.github.io/ggstatsplot/index.html) -- A very useful R package for creating visuals to display some basic univariate and bivariate descriptives. 
+
 ## On basic statistics
 
 [YouTube series on linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)

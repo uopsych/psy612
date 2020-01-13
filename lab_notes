@@ -1,0 +1,32 @@
+notes for lab materials
+
+regression and glm
+
+saving lm() output as a list 
+  * how to explore this using View()
+  * specific functions for extracting information
+      * coefficients(mod.1)       # coefficients
+      * residuals(mod.1)          # residuals
+      * fitted.values(mod.1)      # fitted values ie predicted
+      * summary(mod.1)$r.squared  # R-sq for the model
+      * summary(mod.1)$sigma      # se of the model
+  * broom::tidy() and broom::augment()
+    * reason for using these is that extracting information from lm() output is messy -- list form, missingness problems
+    
+APA worthy tables
+  * stargazer::stargazer()
+    * can you make this work with an HTML RMarkdown?
+    * using `out = file.html` argument to save to external file (show them how to open with Word)
+  * sjPlot::tab_model()
+    * using argument `file = file.doc` argument to save to external file
+    * this one doesn't work with Rmarkdown (that saves using pandoc, which is what's used to create HTML and Word files)
+
+APA graphics
+
+  *sjPlot::plot_model()
+    * for now, don't worry about different types of plots
+      * in fact, most arguments don't work right for univariate regression
+    * show.data = T
+  * ggpubr::ggscatter()
+    * add stat_cor() so they can add the text of the correlation to it
+    

@@ -1,0 +1,434 @@
+---
+title: 'General Linear Model'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo = F, results='hide',warning=FALSE,message=FALSE}
+library(tidyverse)
+library(knitr)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+```
+
+
+## Last time
+
+Wrap up univariate regression
+
+- Confidence and prediction bands
+
+- Matrix algebra
+
+- Model comparison
+
+---
+
+## Today
+
+General linear model
+
+---
+
+## Models
+
+- Thus far you have used t-tests, correlations, and regressions to test basic questions about the world. 
+
+- These types of tests can be thought of as a model for how you think "the world works"
+
+- Our DV (Y) is what we are trying to understand
+
+- We hypothesize it has some relationship with your IV(s) (Xs)  
+
+$$Y = X + E$$
+
+---
+
+
+.pull-left[
+### Independent samples t-test
+```{r, eval=FALSE}
+
+t.1 <- t.test(y ~ x, data = d) 
+
+```
+
+- Y is continuous 
+- X is a categoriocal/nominal (dichotomous) factor
+]
+
+.pull-left[
+### Univariate regression
+```{r, eval=FALSE}
+
+r.1 <- lm(y ~ x, data = d) 
+```
+
+- Y is continuous 
+- X is continuous
+]
+
+---
+
+## General linear model
+
+This model (equation) can be very simple as in a treatment/control experiment. It can be very complex in terms of trying to understand something like academic achievment  
+
+The majority of our models fall under the umbrella of a general(ized) linear model
+
+  + The **general linear model** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. 
+    
+  + This is a subset of the **generalized linear model** which allows for non-linear associations and non-normally distributed outcomes. 
+
+All models imply our theory about how the data are generated (i.e., how the world works)
+
+---
+
+## Example
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+library(here)
+traffic = read.csv(here("data/traffic.csv"))
+```
+
+```{r}
+psych::describe(traffic, fast = T)
+```
+
+---
+
+```{r, warning=FALSE}
+ggplot(traffic) +
+  aes(x = as.factor(tx), y = traffic.risk) +
+  geom_violin() + geom_boxplot() + geom_jitter() +
+  theme_bw(base_size = 20)
+```
+
+---
+## example
+```{r}
+t.1 <- t.test(traffic.risk ~ tx, data = traffic, var.equal = TRUE) 
+t.1
+
+```
+
+---
+## example
+```{r}
+r.1 <- cor.test(~ traffic.risk + tx, data = traffic) 
+r.1
+```
+
+---
+## example
+
+```{r, eval = T}
+a.1 <- aov(traffic.risk ~ tx, data = traffic)
+summary(a.1)
+```
+
+---
+## example cont
+```{r}
+mod.1 <- lm(traffic.risk ~ tx, data = traffic)
+anova(mod.1)
+```
+
+---
+## example summary
+
+Same p-values for each test; same SS; same test!  
+
+- correlation gives you an effect size $(r)$ and $df$
+
+- *t*-test gives you a *t* & *df* (output may give you group *M* and *s*)    
+
+- ANOVA gives you an $F$ (and $SS$s)  
+
+- linear model (regression) gives you an equation in addition to $F$ and $SS$  
+
+---
+## *t*-test as regression
+
+$$Y_i = b_{0} + b_{1}X_i + e_i$$
+
+$$T.risk_i = b_{0} + b_{1}TX_i + e_i$$
+
+- Each individual has a unique Y value an X value and a residual/error term  
+
+- The model only has a single $b_{0}$ and $b_{1}$ term. These are the regression parameters. $b_{0}$ is the intercept and $b_{1}$ quantifies the relationship between your model of the world and the DV. 
+
+---
+
+## What do the estimates tell us? 
+
+```{r, echo = FALSE, highlight.output = c(11:12)}
+summary(mod.1)
+```
+```{r, echo = F}
+traffic %>% 
+  group_by(tx) %>% 
+  summarise(M = mean(traffic.risk, na.rm=TRUE))
+```
+
+---
+## How to interpret regression estimates
+
+- Intercept is the mean of group of variable tx that is coded 0
+
+- Regression coefficient is the difference in means between the groups (i.e., slope)
+
+---
+```{r, warning=FALSE, echo = FALSE}
+ggplot(traffic %>% filter(!is.na(tx))) +
+  aes(x = as.factor(tx), y = traffic.risk) +
+  geom_violin() + geom_boxplot() + geom_jitter() + theme_bw(base_size = 20)
+```
+
+---
+
+```{r, echo=FALSE, cache=TRUE, warning= FALSE}
+ggplot(traffic, aes(x=tx, y=traffic.risk)) +
+    geom_point() +    
+    geom_smooth(method=lm)  +  # Don't add shaded confidence region 
+theme_bw(base_size = 20)
+    
+```
+
+---
+
+## How to interpret regression estimates
+
+- Intercept $(b_0)$ signifies the level of Y when your model IVs (Xs) are zero 
+
+- Regression $(b_1)$ signifies the difference for a one unit change in your X
+
+- as with last semester you have estimates (like $\bar{x}$) and standard errors, which you can then ask whether they are likely assuming a null or create a CI
+---
+
+## *t*-test as regression
+
+Regression coefficients are another way of presenting the expected means of each group, but instead of $M_1$ and $M_2$, we're given $M_1$ and $\Delta$ or the difference.
+
+Now let's compare the inferential test of the two.
+
+???
+
+Matrix algebra for independent samples t-test
+$$\large (T'T)^{-1}T'X = (b)$$
+
+Matrix algebra for linear regression
+$$\large (\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
+---
+
+```{r, highlight.output=c(12,19)}
+summary(mod.1)
+```
+
+---
+```{r, highlight.output = 5}
+t.test(traffic.risk ~ tx, data = traffic)
+```
+
+
+---
+## Statistical Inference
+
+The *p*-values for the two tests are the same, because they are the same test. 
+
+The probability distribution may differ, however. 
+  - *t*-test uses a *t*-distribution
+  - regression uses an *F*-distribution for the omnibus test
+  - regression uses a *t*-distributoin for the test of the coefficients
+  
+In the case of a single binary predictor, the *t*-statistic for the *t*-test will be identical to the *t*-statistic of the regression coefficient test.
+
+The *F*-statistic of the omnibus test will be the *t*-statistic squared: $F = t^2$
+
+---
+
+```{r, highlight.output = 5}
+library(here)
+expertise = read.csv(here("data/expertise.csv"))
+cor.test(expertise$self_perceived_knowledge, expertise$overclaiming_proportion, use = "pairwise")
+```
+
+---
+
+```{r}
+mod.2 = lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
+```
+
+```{r, highlight.output=c(13,19)}
+summary(mod.2)
+```
+
+---
+
+```{r}
+mod.3 = lm(self_perceived_knowledge ~ overclaiming_proportion, data = expertise)
+```
+
+```{r, highlight.output=c(13,19)}
+summary(mod.3)
+```
+
+---
+Regression models provide all the same information as the *t*-test or correlation. But they provide additional information. 
+
+Regression omnibus test are the same as *t*- or *r*-tests, even the same as ANOVAs. But the coefficient tests give you additional information, like intercepts, and make it easier to calculate predicted values and to assess relative fit.
+
+---
+## Predictions
+
+- predictions $\hat{Y}$ are of the form of $E(Y|X)$
+
+- They are created by simply plugging a persons X's into the created model
+
+- If you have b's and have X's you can create a prediction
+
+$\large \hat{Y}_{i} = 2.6506410 + -0.4811057X_{i}$
+
+```{r, output.lines = c(10:13)}
+mod.1 <- lm(traffic.risk ~ tx, data = traffic)
+summary(mod.1)
+```
+
+
+---
+## Predictions
+- We want our predictions to be close to our actual data for each person $(Y_{i})$
+
+- The difference between the actual data and our our prediction $(Y_{i}  - \hat{Y}_{i} = e)$ is the residual, how far we are "off". This tells us how good our fit is. 
+
+- You can have the same estimates for two models but completely different fit. 
+
+---
+
+## Which one has better fit? 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 10}
+twogroup_fun = function(nrep = 100, b0 = 6, b1 = -2, sigma = 1) {
+     ngroup = 2
+     group = rep( c("group1", "group2"), each = nrep)
+     eps = rnorm(ngroup*nrep, 0, sigma)
+     traffic = b0 + b1*(group == "group2") + eps
+     growthfit = lm(traffic ~ group)
+     growthfit
+}
+
+
+twogroup_fun2 = function(nrep = 100, b0 = 6, b1 = -2, sigma = 2) {
+     ngroup = 2
+     group = rep( c("group1", "group2"), each = nrep)
+     eps = rnorm(ngroup*nrep, 0, sigma)
+     traffic = b0 + b1*(group == "group2") + eps
+     growthfit = lm(traffic ~ group)
+     growthfit
+}
+
+set.seed(16)
+library(broom)
+lm1 <- augment(twogroup_fun())
+
+set.seed(16)
+lm2 <- augment(twogroup_fun2())
+
+plot1<- ggplot(lm1) +
+  aes(x = group, y = traffic) +
+  geom_violin() + geom_boxplot() + geom_jitter() + ylim(-1, 11)+ theme_bw(base_size = 20)
+
+plot2<- ggplot(lm2) +
+  aes(x = group, y = traffic) +
+  geom_violin() + geom_boxplot() + geom_jitter() + ylim(-1, 11)+ theme_bw(base_size = 20)
+
+
+library(gridExtra)
+ grid.arrange(plot1, plot2, ncol=2)
+```
+
+
+
+---
+## Calculating predicted values
+
+$$\hat{Y}_{i} = b_{0} + b_{1}X_{i}$$
+
+$$Y_{i} = b_{0} + b_{1}X_{i} +e_{i}$$
+
+$$Y_{i}  - \hat{Y}_{i} = e$$
+
+- can you plug in numbers and calculate subject 3's predicted and residual scores without explicitly asking for lm object residuals and fitted values?
+
+```{r}
+traffic[3, ]
+```
+
+---
+
+## Statistical Inference
+- In making predictions, we have to compare our prediction to some alternative prediction to see if we are doing well or not. 
+
+- What is our best guess (i.e., prediction) if we didn't collect any data? 
+
+$$\hat{Y} = \bar{Y}$$
+
+- Regression can be thought of as: is $E(Y|X)$ better than $E(Y)$?
+
+- To the extent that we can generate different predicted values of Y based on the values of the predictors, our model is doing well. Said differently, the closer our model is to the "actual" data generating model, our guesses $(\hat{Y})$ will be closer to our actual data $(Y)$  
+
+---
+
+## Partitioning variation 
+
+$$\sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
+
+- SS total = SS between + SS within
+
+- SS total = SS regression + SS residual (or error)
+
+Technically, we haven't gotten to ANOVA yet, but you can run and interpret an ANOVA with no problems given what we've talked about already. 
+
+---
+```{r}
+set.seed(0214)
+traffic$new_tx = sample(c("1","2","3"), size = nrow(traffic), replace = T)
+
+a.2 = aov(traffic.risk ~ new_tx, data = traffic)
+summary(a.2)
+```
+
+---
+## summary
+
+The general linear model is a way of mathematically building a theorecal model and testing it with data. GLMs assume the relationship between your IVs and DV is linear
+
+- *t*-tests, ANOVAs, even $\chi^2$ tests are special cases of the general linear model. The benefit to looking at these tests through the perspective of a linear model is that it provides us with all the information of those tests and more! Plus it provides a more systematic way at 1) building and testing your theoretical model and 2) comparing between alternative theoretical models
+
+You can get 1) estimates and 2) fit statistics from the model. Both are important. 
+

@@ -450,7 +450,6 @@ In the case of a single predictor (univariate regression), the matrix algebra me
 However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit. 
 
 
-
 ---
 ## Model Comparison
 

@@ -49,23 +49,24 @@ To assess how well our model fits the data, we simply take all the variability i
 
 ---
 
-## Partitioning variance (variability)
+## Partitioning variation 
 
-When it comes to partitioning variance, we often use the sum of the squared deviations for the math.
+- We formally test how well we are doing with our guesses by partitioning variation
 
-For one, minimizing the total residual squared deviations is the goal of OLS. 
+$$Y = \hat{Y} + e$$
 
-For another, squared deviations are additive, making the math relatively simple. The total variation of Y is equal to the total residual squared deviations plus the variation of $\hat{Y}$:
+$$Y = \hat{Y} + (Y - \hat{Y})$$
 
-$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
-???
+$$Y - \bar{Y} = (\hat{Y} -\bar{Y}) + (Y - \hat{Y})$$
 
-This is where you draw the **pie chart**
+$$(Y - \bar{Y})^2 = [(\hat{Y} -\bar{Y}) + (Y - \hat{Y})]^2$$
+
+$$\sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
 ---
 
 $$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
 
-For simplicity and readability, we may abbreviate these:
+Each of these is the sum of a squared deviation from an expected value of Y. We can abbreviate the sum of squared deviations:
 
 $$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$
 
