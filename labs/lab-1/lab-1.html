@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -1422,6 +1421,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -1450,6 +1450,12 @@ summary {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -1614,30 +1620,30 @@ library(pwr) # for power calculation</code></pre>
 </div>
 <div id="output-2" class="section level5">
 <h5>Output</h5>
-<pre><code>##          mpg    cyl     disp      hp   drat     wt   qsec     vs     am
-## mpg    36.32  -9.17  -633.10 -320.73   2.20  -5.12   4.51   2.02   1.80
-## cyl    -9.17   3.19   199.66  101.93  -0.67   1.37  -1.89  -0.73  -0.47
-## disp -633.10 199.66 15360.80 6721.16 -47.06 107.68 -96.05 -44.38 -36.56
-## hp   -320.73 101.93  6721.16 4700.87 -16.45  44.19 -86.77 -24.99  -8.32
-## drat    2.20  -0.67   -47.06  -16.45   0.29  -0.37   0.09   0.12   0.19
-## wt     -5.12   1.37   107.68   44.19  -0.37   0.96  -0.31  -0.27  -0.34
-## qsec    4.51  -1.89   -96.05  -86.77   0.09  -0.31   3.19   0.67  -0.20
-## vs      2.02  -0.73   -44.38  -24.99   0.12  -0.27   0.67   0.25   0.04
-## am      1.80  -0.47   -36.56   -8.32   0.19  -0.34  -0.20   0.04   0.25
-## gear    2.14  -0.65   -50.80   -6.36   0.28  -0.42  -0.28   0.08   0.29
-## carb   -5.36   1.52    79.07   83.04  -0.08   0.68  -1.89  -0.46   0.05
-##        gear  carb
-## mpg    2.14 -5.36
-## cyl   -0.65  1.52
-## disp -50.80 79.07
-## hp    -6.36 83.04
-## drat   0.28 -0.08
-## wt    -0.42  0.68
-## qsec  -0.28 -1.89
-## vs     0.08 -0.46
-## am     0.29  0.05
-## gear   0.54  0.33
-## carb   0.33  2.61</code></pre>
+<pre><code>##          mpg    cyl     disp      hp   drat     wt   qsec     vs     am   gear
+## mpg    36.32  -9.17  -633.10 -320.73   2.20  -5.12   4.51   2.02   1.80   2.14
+## cyl    -9.17   3.19   199.66  101.93  -0.67   1.37  -1.89  -0.73  -0.47  -0.65
+## disp -633.10 199.66 15360.80 6721.16 -47.06 107.68 -96.05 -44.38 -36.56 -50.80
+## hp   -320.73 101.93  6721.16 4700.87 -16.45  44.19 -86.77 -24.99  -8.32  -6.36
+## drat    2.20  -0.67   -47.06  -16.45   0.29  -0.37   0.09   0.12   0.19   0.28
+## wt     -5.12   1.37   107.68   44.19  -0.37   0.96  -0.31  -0.27  -0.34  -0.42
+## qsec    4.51  -1.89   -96.05  -86.77   0.09  -0.31   3.19   0.67  -0.20  -0.28
+## vs      2.02  -0.73   -44.38  -24.99   0.12  -0.27   0.67   0.25   0.04   0.08
+## am      1.80  -0.47   -36.56   -8.32   0.19  -0.34  -0.20   0.04   0.25   0.29
+## gear    2.14  -0.65   -50.80   -6.36   0.28  -0.42  -0.28   0.08   0.29   0.54
+## carb   -5.36   1.52    79.07   83.04  -0.08   0.68  -1.89  -0.46   0.05   0.33
+##       carb
+## mpg  -5.36
+## cyl   1.52
+## disp 79.07
+## hp   83.04
+## drat -0.08
+## wt    0.68
+## qsec -1.89
+## vs   -0.46
+## am    0.05
+## gear  0.33
+## carb  2.61</code></pre>
 </div>
 </div>
 <div id="section-5" class="section level4">
@@ -1732,7 +1738,6 @@ library(pwr) # for power calculation</code></pre>
 <h5>Code</h5>
 <pre class="r"><code># covariance matrix
 cov_mat &lt;- cov(mtcars)
-cov_mat
 
 # convert to correlation matrix
 cov2cor(cov_mat) %&gt;% 
