@@ -21,7 +21,7 @@ To quickly navigate to the desired section, click one of the following links:
 
 You will need to load the following libraries to follow along with today's lab. If you don't have any of these packages installed, please do so now. 
 
-```{r message=FALSE}
+```{r lab-1-1, message=FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for covariance and correlation functions
@@ -53,14 +53,13 @@ $$\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-2, eval=FALSE}
 cov(mtcars$mpg, mtcars$hp)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-cov(mtcars$mpg, mtcars$hp)
+```{r lab-1-3, echo=FALSE, ref.label='lab-1-2'}
 ```
 
 ####
@@ -72,7 +71,7 @@ cov(mtcars$mpg, mtcars$hp)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-4, eval=FALSE}
 mtcars %>% 
   select(mpg, hp) %>% # select only our variables on interest
   cov() %>% # calculate covariance
@@ -81,11 +80,7 @@ mtcars %>%
 
 ##### Output
 
-```{r echo=FALSE}
-mtcars %>% 
-  select(mpg, hp) %>% # select only our variables on interest
-  cov() %>% # calculate covariance
-  round(2) # round all values to 2 decimal places
+```{r lab-1-5, echo=FALSE, ref.label='lab-1-4'}
 ```
 
 ####
@@ -99,16 +94,14 @@ mtcars %>%
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-6, eval=FALSE}
 cov(mtcars) %>% 
   round(2)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-cov(mtcars) %>% 
-  round(2)
+```{r lab-1-7, echo=FALSE, ref.label='lab-1-6'}
 ```
 
 ####
@@ -129,14 +122,13 @@ $$\large r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}$$
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-8, eval=FALSE}
 cor(mtcars$mpg, mtcars$hp)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-cor(mtcars$mpg, mtcars$hp)
+```{r lab-1-9, echo=FALSE, ref.label='lab-1-8'}
 ```
 
 ####
@@ -148,7 +140,7 @@ cor(mtcars$mpg, mtcars$hp)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-10, eval=FALSE}
 mtcars %>% 
   select(mpg, hp) %>% 
   cor() %>% 
@@ -157,32 +149,26 @@ mtcars %>%
 
 ##### Output
 
-```{r echo=FALSE}
-mtcars %>% 
-  select(mpg, hp) %>% 
-  cor() %>% 
-  round(2)
+```{r lab-1-11, echo=FALSE, ref.label='lab-1-10'}
 ```
 
 ####
 <br>
 
-* To get a correlation of all the variables in our data frame:
+* To get a correlation matrix of all the variables in our data frame:
 
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-12, eval=FALSE}
 cor(mtcars) %>% 
   round(2)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-cor(mtcars) %>% 
-  round(2)
+```{r lab-1-13, echo=FALSE, ref.label='lab-1-12'}
 ```
 
 ####
@@ -194,10 +180,9 @@ cor(mtcars) %>%
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-14, eval=FALSE}
 # covariance matrix
 cov_mat <- cov(mtcars)
-cov_mat
 
 # convert to correlation matrix
 cov2cor(cov_mat) %>% 
@@ -206,13 +191,7 @@ cov2cor(cov_mat) %>%
 
 ##### Output
 
-```{r echo=FALSE}
-# covariance matrix
-cov_mat <- cov(mtcars)
-
-# convert to correlation matrix
-cov2cor(cov_mat) %>% 
-  round(2)
+```{r lab-1-15, echo=FALSE, ref.label='lab-1-14'}
 ```
 
 ####
@@ -232,7 +211,7 @@ cov2cor(cov_mat) %>%
 
 ##### Code
 
-```{r eval = FALSE}
+```{r lab-1-16, eval = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
   geom_point()
 ```
@@ -240,9 +219,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ##### Output
 
-```{r echo=FALSE}
-ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point()
+```{r lab-1-17, echo=FALSE, ref.label='lab-1-16'}
 ```
 
 ####
@@ -254,7 +231,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-18, eval=FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
   geom_point() + 
   geom_smooth(method = "lm")
@@ -262,10 +239,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ##### Output
 
-```{r echo=FALSE}
-ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point() + 
-  geom_smooth(method = "lm")
+```{r lab-1-19, echo=FALSE, ref.label='lab-1-18'}
 ```
 
 #### 
@@ -273,7 +247,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ## SPLOM plots
 
-* "SPLOM" stands for scatter plot matrix. The `pairs.panel()` function from the `{psych}` package allows a quick way to visualize relationships among all the continous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal. 
+* "SPLOM" stands for scatter plot matrix. The `pairs.panel()` function from the `{psych}` package allows a quick way to visualize relationships among all the continuous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal. 
 
 * Note that this function is not ideal with very large data sets, as it becomes difficult to read the plots. (Also, we actually already learned this function in [PSY 611](https://uopsych.github.io/psy611/labs/lab-2.html#pairspanels()_function){target="_blank"}!
 
@@ -281,14 +255,13 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-20, eval=FALSE}
 pairs.panels(mtcars, lm = TRUE)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-pairs.panels(mtcars, lm = TRUE)
+```{r lab-1-21, echo=FALSE, ref.label='lab-1-20'}
 ```
 
 ####
@@ -302,14 +275,13 @@ pairs.panels(mtcars, lm = TRUE)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-22, eval=FALSE}
 corPlot(Thurstone)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-corPlot(Thurstone)
+```{r lab-1-23, echo=FALSE, ref.label='lab-1-22'}
 ```
 
 ####
@@ -325,7 +297,7 @@ corPlot(Thurstone)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-24, eval=FALSE}
 apa.cor.table(mtcars, filename = "cars.doc", table.number = 1)
 ```
 
@@ -349,7 +321,7 @@ apa.cor.table(mtcars, filename = "cars.doc", table.number = 1)
 
 * Import the data using the following code and check out the structure of the data. 
 
-```{r results='hide'}
+```{r lab-1-25, results='hide'}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
 
 str(health)
@@ -361,7 +333,7 @@ str(health)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-26, eval=FALSE}
 ggplot(data = health, aes(x = consc, y = sr_health)) +
   geom_point() + 
   geom_smooth(method = "lm")
@@ -369,10 +341,7 @@ ggplot(data = health, aes(x = consc, y = sr_health)) +
 
 ##### Output
 
-```{r echo=FALSE}
-ggplot(data = health, aes(x = consc, y = sr_health)) +
-  geom_point() + 
-  geom_smooth(method = "lm")
+```{r lab-1-27, echo=FALSE, ref.label='lab-1-26'}
 ```
 
 #### 
@@ -390,14 +359,13 @@ $$\large H_{A}: \rho_{xy} \neq 0$$
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-28, eval=FALSE}
 pwr.r.test(n = nrow(health), sig.level = .05 , power = .8)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-pwr.r.test(n = nrow(health), sig.level = .05 , power = .8)
+```{r lab-1-29, echo=FALSE, ref.label='lab-1-28'}
 ```
 
 ####
@@ -412,20 +380,19 @@ pwr.r.test(n = nrow(health), sig.level = .05 , power = .8)
 
 ### `stats::cor.test()`
 
-* By default, `cor.test()` from the `{stats}` package runs a statistical test to determine whether the observed correlation between two variables is significantly different from 0 (the null hypothesis). In addition to the original output, it also returns a 95% CI for the correlation coefficient based on a [Fisher's r to z' transformation](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}. 
+* By default, `cor.test()` from the `{stats}` package runs a statistical test to determine whether the observed correlation between two variables is significantly different from 0 (the null hypothesis). In addition to the usual output, it also returns a 95% CI for the correlation coefficient based on a [Fisher's r to z' transformation](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}. 
 
 ####  {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-30, eval=FALSE}
 cor.test(health$consc, health$sr_health)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-cor.test(health$consc, health$sr_health)
+```{r lab-1-31, echo=FALSE, ref.label='lab-1-30'}
 ```
 
 ####
@@ -441,7 +408,7 @@ cor.test(health$consc, health$sr_health)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-32, eval=FALSE}
 health %>% 
   select(consc, sr_health) %>% 
   corr.test()
@@ -449,10 +416,7 @@ health %>%
 
 ##### Output
 
-```{r echo=FALSE}
-health %>% 
-  select(consc, sr_health) %>% 
-  corr.test()
+```{r lab-1-33, echo=FALSE, ref.label='lab-1-32'}
 ```
 
 ####
@@ -464,7 +428,7 @@ health %>%
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-34, eval=FALSE}
 health %>% 
   select(consc, sr_health) %>% 
   corr.test() %>% 
@@ -473,23 +437,19 @@ health %>%
 
 ##### Output
 
-```{r echo=FALSE}
-health %>% 
-  select(consc, sr_health) %>% 
-  corr.test() %>% 
-  print(short = FALSE)
+```{r lab-1-35, echo=FALSE, ref.label='lab-1-34'}
 ```
 
 ####
 <br> 
 
-* It is often very useful to save the ouput of a statistical test to an object that you can then pull useful information out of. 
+* It is often very useful to save the output of a statistical test to an object that you can then pull useful information out of. 
 
 ####  {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-36, eval=FALSE}
 # store the results of the corr.test() as a list
 r_consc_health <- health %>% 
   select(consc, sr_health) %>% 
@@ -501,14 +461,7 @@ r_consc_health$ci
 
 ##### Output
 
-```{r echo=FALSE}
-# store the results of the corr.test() as a list
-r_consc_health <- health %>% 
-  select(consc, sr_health) %>% 
-  corr.test() 
-
-# Now we can pull out just the confidence intervals (or any other information we want!)
-r_consc_health$ci
+```{r lab-1-37, echo=FALSE, ref.label='lab-1-36'}
 ```
 
 ####
@@ -520,7 +473,7 @@ r_consc_health$ci
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-38, eval=FALSE}
 mtcars %>% 
   corr.test() %>% 
   print(short = FALSE)
@@ -528,10 +481,7 @@ mtcars %>%
 
 ##### Output
 
-```{r echo=FALSE}
-mtcars %>% 
-  corr.test() %>% 
-  print(short = FALSE)
+```{r lab-1-39, echo=FALSE, ref.label='lab-1-38'}
 ```
 
 ####
@@ -539,7 +489,7 @@ mtcars %>%
 
 ## Comparing correlations by group
 
-* We saw above that there is a significant positive relationship between conscientiosness and self-reported health. However, now we want to know whether or not the correlation between conscientiousness and self-rated health is significanly different for men and women. 
+* We saw above that there is a significant positive relationship between conscientiousness and self-reported health. However, now we want to know whether or not this correlation is significantly different for men and women. 
 
 ### Visualizing by group
 
@@ -549,7 +499,7 @@ mtcars %>%
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-40, eval=FALSE}
 health %>% 
   ggplot(aes(consc, sr_health, col = gender)) + 
   geom_point(size = 3, alpha = 0.7) +
@@ -560,13 +510,7 @@ health %>%
 
 ##### Output
 
-```{r echo=FALSE}
-health %>% 
-  ggplot(aes(consc, sr_health, col = gender)) + 
-  geom_point(size = 3, alpha = 0.7) +
-  geom_smooth(method = "lm", alpha = 0.2) + 
-  labs(x = "Conscientiousness", y = "Self-reported Health") +
-  theme_minimal()
+```{r lab-1-41, echo=FALSE, ref.label='lab-1-40'}
 ```
 
 ####
@@ -578,7 +522,7 @@ health %>%
 
 * To statistically compare the correlations between conscientiousness and self-reported health for men and women, we can use the `r.test()` function. This particular function requires the sample size, and the two correlations we're testing against each other (i.e., we can't simply pass in the dataset). So, we'll need to run the correlation separately for men and women, save those values, and then use them in the `r.test()` function.
 
-```{r}
+```{r lab-1-42}
 health_women <- health %>% 
   filter(gender == "female") 
 
@@ -602,14 +546,13 @@ r_men <- cor(health_men$consc, health_men$sr_health)
 
 ##### Code
 
-```{r eval=FALSE}
+```{r lab-1-43, eval=FALSE}
 r.test(n = 30, r12 = r_women, r34 = r_men)
 ```
 
 ##### Output
 
-```{r echo=FALSE}
-r.test(n = 30, r12 = r_women, r34 = r_men)
+```{r lab-1-44, echo=FALSE, ref.label='lab-1-43'}
 ```
 
 ####
@@ -628,7 +571,7 @@ For this minihack, calculate a 95% CI "by hand" for the correlation between cons
 To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#38){target="_blank"}.
 
 
-```{r}
+```{r lab-1-45}
 r <- cor(health$consc, health$sr_health)
 z <- fisherz(r)
 n <- nrow(health)
@@ -646,7 +589,7 @@ ci_r_upper <-fisherz2r(ci_z_upper)
 
 Now pretend that we had collected data about conscientiousness and self-reported health from 600 people instead of only 60. If we were to obtain the same point estimate of the correlation between conscientiousness and health, what would the 95% CI be of our estimate if N = 600? Explain to your neighbor how and why these confidence intervals are different.
 
-```{r}
+```{r lab-1-46}
 r <- cor(health$consc, health$sr_health)
 z <- fisherz(r)
 n <- 600
@@ -672,19 +615,19 @@ Check out [this paper](https://journals.sagepub.com/doi/pdf/10.1177/095679761558
 
 You can import the data using the following code:
 
-```{r}
+```{r lab-1-47}
 dawtry_clean <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_clean.csv")
 ```
 
 The data above has been cleaned somewhat for you. For an extra data wrangling challenge, import the raw form of the data (not required):
 
-```{r}
+```{r lab-1-48}
 dawtry_raw <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/dawtry_2015_raw.csv")
 ```
 
 Note: If you use the raw data, note that you will have to create some composite variables. Also note that items `redist2` and `redist4` must be reverse-coded. 
 
-```{r}
+```{r lab-1-49}
 dawtry_cor_vars <- dawtry_raw %>% 
   mutate(redist2 = 7 - redist2, 
          redist4 = 7 - redist4) %>% # reverse-score these two items
@@ -706,7 +649,7 @@ dawtry_cor <- cor(dawtry_cor_vars, use = "pairwise.complete.obs") %>%
   round(2)
 ```
 
-```{r eval=FALSE}
+```{r lab-1-50, eval=FALSE}
 apa.cor.table(dawtry_cor, "dawtry_cor.doc", table.number = 1)
 ```
 
