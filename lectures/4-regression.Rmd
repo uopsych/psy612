@@ -29,11 +29,94 @@ library(broom)
 
 ### Today...
 
+Regression to the mean
+
 Statistical inferences with regression
 
 - Partitioning the variance
 
 - Testing $b_{xy}$
+
+---
+
+## Regression to the mean
+
+Galton's observation about heights was part of the motivation to develop the regression equation: If you selected a parent who was exceptionally tall (or short), their child was almost always not as tall (or as short).
+
+```{r, echo = F, warning = F, message = F, fig.height = 4}
+library(psychTools)
+library(tidyverse)
+galton = psychTools::galton
+mod = lm(child~parent, data = galton)
+point = 902
+galton = broom::augment(mod)
+
+
+galton %>%
+  ggplot(aes(x = parent, y = child)) +
+  geom_point(alpha = .3) +
+  geom_hline(aes(yintercept = 72), color = "red") +
+  geom_vline(aes(xintercept = 72), color = "red") +
+  theme_bw(base_size = 20)
+```
+
+
+---
+
+## Regression to the mean
+
+This phenomenon is known as **regression to the mean.** This describes the phenomenon in which an random variable produces an extreme score on a first measurement, but a lower score on a second measurement. 
+
+.pull-left[
+We can see this in the standardized regression equation:
+
+$$\hat{Y} = r_{xy}(X) + e$$
+In that the slope coefficient can never be greater than 1. 
+
+]
+
+.pull-right[
+![](images/quincunx.png)
+]
+
+---
+
+## Regression to the mean
+
+This can be a threat to internal validity if interventions are applied based on first measurement scores. 
+
+.pull-left[
+```{r, echo = F, message = F, warning =F}
+set.seed(011620)
+true_score = rnorm(m = 75, sd = 7, n = 35)
+midterm = true_score + rnorm(sd = 4, n = 35)
+final = true_score + rnorm(sd = 4, n = 35)
+grades = data.frame(midterm = midterm, final = final, 
+                    tutor = ifelse(midterm < 70, "yes", "no")) 
+
+grades$change = final-midterm
+library(ggpubr)
+ggpubr::ggerrorplot(data = grades, 
+                    x = "tutor", 
+                    y = "change", 
+                    desc_stat = "mean_ci", 
+                    color = "tutor", 
+                    ylab = "Change in grade between final and midterm", size = 2) + 
+  theme_minimal(base_size = 20)
+```
+]
+--
+
+.pull-right[
+```{r, echo = F}
+ggpubr::ggscatter(data = grades, 
+                  x = "midterm", 
+                  y = "final", 
+                  color = "tutor",
+                  size = 3) + theme_minimal(base_size = 20)
+```
+
+]
 
 ---
 
@@ -278,7 +361,7 @@ NHST is about making decisions:
   
   - these two means are/are not different
   - this correlation is/is not significant
-  - the distribution of this categorical variabe is/is not different between these groups
+  - the distribution of this categorical variable is/is not different between these groups
   
 --
 
@@ -296,7 +379,7 @@ It is possible to calculate the significance of your regression with a correlati
 
 --
 
-However, historically we use a different probability distribution -- **the _F_ distribution** to estimate the signifiance of our model. It's important to know that these methods are mathematically equivalent. But the _F_ distribution is useful here, because it works with our ability to partition variance.
+However, historically we use a different probability distribution -- **the _F_ distribution** to estimate the significance of our model. It's important to know that these methods are mathematically equivalent. But the _F_ distribution is useful here, because it works with our ability to partition variance.
 
 ---
 
@@ -453,7 +536,7 @@ Even more univariate regression!
 
 - Confidence intervals 
 
-- Confidence amd prediction _bands_
+- Confidence and prediction _bands_
 
 - Model comparison
 

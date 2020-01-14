@@ -1,0 +1,66 @@
+---
+title: 'Partial correlations'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- path diagrams
+- partial and semi-partial correlations
+
+---
+
+## Causal relationships
+
+Does parent socioeconomic status *cause* better grades?
+
+  * $r_{GPA,SES} = .33, b = .41$
+  
+--
+
+Potential confound: Peer relationships
+
+   - $r_{SES, peer} = .29$
+   - $r_{GPA, peer} = .37$
+
+???
+
+Don't know how variables are related, only know that they are
+
+in a perfect world, we would want to **hold constant** peer relationships
+- control for
+- partial out
+
+---
+### Does parent SES cause better grades?
+
+
+
+---
+
+## Venn diagrams
+
+---
+
+## Semi-partial correlations
+
+---
+
+## Partial
+
+---
+
+## When we use tese
+
+---
+
+## Relationship between partial and semi-partial
+

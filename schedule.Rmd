@@ -14,11 +14,11 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 
 | Week | Date |  Topic                            |Readings            | Quiz       | Homework    |
 -------|------|-----------------------------------|--------------------|------------|-------------|
-| 1    | 1/07 | Correlation                       | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
-| -    | 1/09 | Correlation                       |                    |            |             |
+| 1    | 1/07 | Correlation (statistical test, power)                      | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
+| -    | 1/09 | Correlation II (correlation matrix, reliability)                      |                    |            |             |
 | -    | 1/10 | _Lab: Correlations_               |                    |            |             |
-| 2    | 1/14 | Univariate regression             |  LSR Chapter 15    |  Quiz 1    |             |
-| -    | 1/16 | Univariate regression             |                    |            |             |
+| 2    | 1/14 | Univariate regression (equation, $\hat{Y}$, $e$)            |  LSR Chapter 15    |  Quiz 1    |             |
+| -    | 1/16 | Univariate regression II (inferential tests)            |                    |            |             |
 | -    | 1/17 | _Lab: Univariate regression_      |                    |            |             |
 | 3    | 1/21 | Univariate regression             |                    |  Quiz 2    |             |
 | -    | 1/23 | General linear model              |                    |            |             |

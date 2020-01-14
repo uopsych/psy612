@@ -1,6 +1,6 @@
 notes for lab materials
 
-regression and glm
+2-lab.html
 
 saving lm() output as a list 
   * how to explore this using View()
@@ -20,13 +20,17 @@ APA worthy tables
   * sjPlot::tab_model()
     * using argument `file = file.doc` argument to save to external file
     * this one doesn't work with Rmarkdown (that saves using pandoc, which is what's used to create HTML and Word files)
+    
+3-lab.html
 
 APA graphics
-
   *sjPlot::plot_model()
     * for now, don't worry about different types of plots
       * in fact, most arguments don't work right for univariate regression
     * show.data = T
   * ggpubr::ggscatter()
     * add stat_cor() so they can add the text of the correlation to it
-    
+
+* confint()
+* predict() -- within and out-of sample
+* 

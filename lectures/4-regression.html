@@ -32,11 +32,56 @@ class: center, middle, inverse, title-slide
 
 ### Today...
 
+Regression to the mean
+
 Statistical inferences with regression
 
 - Partitioning the variance
 
 - Testing `\(b_{xy}\)`
+
+---
+
+## Regression to the mean
+
+Galton's observation about heights was part of the motivation to develop the regression equation: If you selected a parent who was exceptionally tall (or short), their child was almost always not as tall (or as short).
+
+![](4-regression_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+
+---
+
+## Regression to the mean
+
+This phenomenon is known as **regression to the mean.** This describes the phenomenon in which an random variable produces an extreme score on a first measurement, but a lower score on a second measurement. 
+
+.pull-left[
+We can see this in the standardized regression equation:
+
+`$$\hat{Y} = r_{xy}(X) + e$$`
+In that the slope coefficient can never be greater than 1. 
+
+]
+
+.pull-right[
+![](images/quincunx.png)
+]
+
+---
+
+## Regression to the mean
+
+This can be a threat to internal validity if interventions are applied based on first measurement scores. 
+
+.pull-left[
+![](4-regression_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+]
+--
+
+.pull-right[
+![](4-regression_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+]
 
 ---
 
@@ -52,23 +97,24 @@ To assess how well our model fits the data, we simply take all the variability i
 
 ---
 
-## Partitioning variance (variability)
+## Partitioning variation 
 
-When it comes to partitioning variance, we often use the sum of the squared deviations for the math.
+- We formally test how well we are doing with our guesses by partitioning variation
 
-For one, minimizing the total residual squared deviations is the goal of OLS. 
+`$$Y = \hat{Y} + e$$`
 
-For another, squared deviations are additive, making the math relatively simple. The total variation of Y is equal to the total residual squared deviations plus the variation of `\(\hat{Y}\)`:
+`$$Y = \hat{Y} + (Y - \hat{Y})$$`
 
-`$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
-???
+`$$Y - \bar{Y} = (\hat{Y} -\bar{Y}) + (Y - \hat{Y})$$`
 
-This is where you draw the **pie chart**
+`$$(Y - \bar{Y})^2 = [(\hat{Y} -\bar{Y}) + (Y - \hat{Y})]^2$$`
+
+`$$\sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
 ---
 
 `$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
 
-For simplicity and readability, we may abbreviate these:
+Each of these is the sum of a squared deviation from an expected value of Y. We can abbreviate the sum of squared deviations:
 
 `$$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$`
 
@@ -106,13 +152,13 @@ The relative magnitude of sums of squares, especially in more complex designs, p
 
 
 .pull-left[
-![](4-regression_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 ]
 
 --
 
 .pull-right[
-![](4-regression_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
 ]
 
 
@@ -216,7 +262,7 @@ cor(galton.data$parent, galton.data$child)^2
 
 
 
-![](4-regression_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 
 ---
 ## residual standard error
@@ -247,16 +293,17 @@ cor(galton.data$parent, galton.data$child)^2
 ## residual standard error/deviation 
 
 - aka standard deviation of the residual
-- aka standard error of the estimate
+- aka **standard error of the estimate**
 
-`$$\Large \hat{\sigma_e}$$`
+$$ \hat{\sigma} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$
 
 - interpreted in original units (unlike `\(R^2\)`)
+
 - standard deviation of Y not accounted by model
 
 ---
 
-## residual standard error/deviation  
+## residual standard error/deviation or standard error of the estimate
 
 
 
@@ -276,6 +323,14 @@ psych::describe(galton.data.1$.resid)
 ```
 ##    vars   n mean   sd median trimmed  mad   min  max range  skew kurtosis   se
 ## X1    1 928    0 2.24   0.05    0.06 2.26 -7.81 5.93 13.73 -0.24    -0.23 0.07
+```
+
+```r
+sd(galton.data$child)
+```
+
+```
+## [1] 2.517941
 ```
 
 ---
@@ -301,7 +356,7 @@ psych::describe(galton.data$parent)
 ---
 
 
-![](4-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 ---
 ## `\(R^2\)` and residual standard deviation
 
@@ -320,7 +375,7 @@ NHST is about making decisions:
   
   - these two means are/are not different
   - this correlation is/is not significant
-  - the distribution of this categorical variabe is/is not different between these groups
+  - the distribution of this categorical variable is/is not different between these groups
   
 --
 
@@ -338,11 +393,11 @@ It is possible to calculate the significance of your regression with a correlati
 
 --
 
-However, historically we use a different probability distribution -- **the _F_ distribution** to estimate the signifiance of our model. It's important to know that these methods are mathematically equivalent. But the _F_ distribution is useful here, because it works with our ability to partition variance.
+However, historically we use a different probability distribution -- **the _F_ distribution** to estimate the significance of our model. It's important to know that these methods are mathematically equivalent. But the _F_ distribution is useful here, because it works with our ability to partition variance.
 
 ---
 
-![](4-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -477,6 +532,18 @@ summary(fit.1)
 ** what is standardized equation? 
 
 ---
+
+## `\(SE_b\)`
+
+- standard errors for the slope coefficient
+
+- represent our uncertainty (noise) in our estimate of the regression coefficient 
+
+- different from residual standard error/deviation (but proportional to)  
+
+- much like previously we can take our estimate (b) and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
+
+---
 ## Intercept
 
 - more complex standard error calculation as the calculation depends on how far the X value (here zero) is away from the mean of X
@@ -520,11 +587,13 @@ Even more univariate regression!
 
 --
 
-- Confidence amd prediction _bands_
+- Confidence intervals 
+
+- Confidence and prediction _bands_
 
 - Model comparison
 
-- Matrix algebra
+- **Matrix algebra**
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
