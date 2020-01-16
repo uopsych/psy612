@@ -406,8 +406,8 @@ Which variance?
 .pull-left[
 The degrees of freedom for our model are 
 
-`$$DF_1 = k - 1$$`
-`$$DF_2 = N-k$$`
+`$$DF_1 = k$$`
+`$$DF_2 = N-k-1$$`
 
 Where k is the number of IV's in your model, and N is the sample size. ]
 
@@ -502,8 +502,6 @@ summary(fit.1)
 ## Regression coefficient
 `$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$`
 `$$\Large t(n-2) = \frac{b_{1}}{se_{b}}$$`
-** what is standardized equation? 
-
 ---
 
 ## `\(SE_b\)`
