@@ -159,14 +159,15 @@ $$\Large s^2_Y = s^2_{\hat{Y}} + s^2_{e}$$
 ---
 
 ## Partitioning variance in Y
-- Consider the case with no correlation between X and Y
+Consider the case with no correlation between X and Y
 
 $$\Large \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$
+--
 $$\Large \hat{Y} = \bar{Y}$$
 
-- To the extent that we can generate different predicted values of Y based on the values of the predictors, we are doing well in our prediction
+To the extent that we can generate different predicted values of Y based on the values of the predictors, we are doing well in our prediction
 
-$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
+$$\large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
 
 $$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$
 
@@ -199,9 +200,9 @@ d1.f<- augment(m.1)
 d1.f %>%
   ggplot(aes(x = x.1, y = y.1)) +
   geom_smooth(se = F, method = "lm")+
-  geom_point(shape = 1, size = 2.5) +
-  geom_point(aes(y = .fitted), color = "red", size = 2.5)+
-  theme_bw(base_size = 20)
+  geom_point(shape = 1, size = 4) +
+  geom_point(aes(y = .fitted), color = "red", size = 4)+
+  theme_bw(base_size = 35)
 ```
 ]
 
@@ -212,8 +213,8 @@ d1.f %>%
 d1.f %>%
   ggplot(aes(x = y.1, y = .fitted)) +
   geom_smooth(se = F, method = "lm")+
-  geom_point(color = "black", size = 2.5) +
-  theme_bw(base_size = 20)
+  geom_point(color = "black", size = 4) +
+  theme_bw(base_size = 35)
 ```
 ]
 
@@ -232,8 +233,8 @@ summary(fit.1)$r.squared
 ---
 ## Example
 
-```{r, highlight.output = 11}
-cor.test(galton.data$parent, galton.data$child)
+```{r}
+cor(galton.data$parent, galton.data$child, use = "pairwise")
 ```
 
 --
@@ -293,7 +294,7 @@ summary(fit.1)
 - aka standard deviation of the residual
 - aka **standard error of the estimate**
 
-$$ \hat{\sigma} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$
+$$\hat{\sigma} = \sqrt{\frac{SS_{\text{Residual}}}{df_{\text{Residual}}}} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$
 
 - interpreted in original units (unlike $R^2$)
 
@@ -311,13 +312,6 @@ psych::describe(galton.data.1$.resid)
 sd(galton.data$child)
 ```
 
----
-## residual standard error/deviation 
-
-```{r}
-summary(fit.1)$sigma 
-psych::describe(galton.data$parent)
-```
 ---
 
 
@@ -423,12 +417,14 @@ As a result, _F_ has two degrees of freedom, $\nu_1$ and $\nu_2$
 
 Recall that when using a _z_ or _t_ distribution, we were interested in whether one mean was equal to another mean -- sometimes the second mean was calculated from another sample or hypothesized (i.e., the value of the null). In this comparison, we compared the _difference of two means_ to 0 (or whatever our null hypothesis dictates), and if the difference was not 0, we concluded significance. 
 
-_F_ statistics are not testing the likelihood of differences; they test the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. Which variance?
+_F_ statistics are not testing the likelihood of differences; they test the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. 
+
+Which variance?
 
 ---
 
-$$F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$
-$$F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$
+$$\Large F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$
+$$\Large F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$
 
 $$\Large F = \frac{MS_{Model}}{MS_{residual}}$$
 ---

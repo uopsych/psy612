@@ -124,14 +124,15 @@ The relative magnitude of sums of squares, especially in more complex designs, p
 ---
 
 ## Partitioning variance in Y
-- Consider the case with no correlation between X and Y
+Consider the case with no correlation between X and Y
 
 `$$\Large \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$`
+--
 `$$\Large \hat{Y} = \bar{Y}$$`
 
-- To the extent that we can generate different predicted values of Y based on the values of the predictors, we are doing well in our prediction
+To the extent that we can generate different predicted values of Y based on the values of the predictors, we are doing well in our prediction
 
-`$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
+`$$\large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
 
 `$$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$`
 
@@ -221,21 +222,11 @@ NA
 
 
 ```r
-cor.test(galton.data$parent, galton.data$child)
+cor(galton.data$parent, galton.data$child, use = "pairwise")
 ```
 
 ```
-## 
-## 	Pearson's product-moment correlation
-## 
-## data:  galton.data$parent and galton.data$child
-## t = 15.711, df = 926, p-value &lt; 2.2e-16
-## alternative hypothesis: true correlation is not equal to 0
-## 95 percent confidence interval:
-##  0.4064067 0.5081153
-## sample estimates:
-##       cor 
-*## 0.4587624
+## [1] 0.4587624
 ```
 
 --
@@ -295,7 +286,7 @@ cor(galton.data$parent, galton.data$child)^2
 - aka standard deviation of the residual
 - aka **standard error of the estimate**
 
-$$ \hat{\sigma} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$
+`$$\hat{\sigma} = \sqrt{\frac{SS_{\text{Residual}}}{df_{\text{Residual}}}} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$`
 
 - interpreted in original units (unlike `\(R^2\)`)
 
@@ -334,29 +325,9 @@ sd(galton.data$child)
 ```
 
 ---
-## residual standard error/deviation 
 
 
-```r
-summary(fit.1)$sigma 
-```
-
-```
-## [1] 2.238547
-```
-
-```r
-psych::describe(galton.data$parent)
-```
-
-```
-##    vars   n  mean   sd median trimmed  mad min max range  skew kurtosis   se
-## X1    1 928 68.31 1.79   68.5   68.32 1.48  64  73     9 -0.04     0.05 0.06
-```
----
-
-
-![](4-regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ---
 ## `\(R^2\)` and residual standard deviation
 
@@ -397,7 +368,7 @@ However, historically we use a different probability distribution -- **the _F_ d
 
 ---
 
-![](4-regression_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](4-regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -420,12 +391,14 @@ As a result, _F_ has two degrees of freedom, `\(\nu_1\)` and `\(\nu_2\)`
 
 Recall that when using a _z_ or _t_ distribution, we were interested in whether one mean was equal to another mean -- sometimes the second mean was calculated from another sample or hypothesized (i.e., the value of the null). In this comparison, we compared the _difference of two means_ to 0 (or whatever our null hypothesis dictates), and if the difference was not 0, we concluded significance. 
 
-_F_ statistics are not testing the likelihood of differences; they test the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. Which variance?
+_F_ statistics are not testing the likelihood of differences; they test the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. 
+
+Which variance?
 
 ---
 
-`$$F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$`
-`$$F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$`
+`$$\Large F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$`
+`$$\Large F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$`
 
 `$$\Large F = \frac{MS_{Model}}{MS_{residual}}$$`
 ---
