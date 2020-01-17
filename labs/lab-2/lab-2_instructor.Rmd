@@ -393,21 +393,60 @@ sjPlot::tab_model(model, file = "./tbl/reg_tbl_sjp.doc")
     
 # Minihack 1
 
-For this minihack, you'll be working with a dataset called PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder. It can be downloaded from the following web address:
+For this minihack, you'll demonstrate the equivalence of a correlation between two variables and the standardized coefficient from a univariate regression regressing one on the other. You'll be working with a dataset called PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder. It can be downloaded from the following web address:
 
-"https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv"
+"https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv"
 
-It contains
-Demonstrate the equivalence of standardized slopes & correlations
+It contains a number of variables, but we'll focus on Extraversion and Happiness first.
+
+Calculate the bi-variate correlation between Extraversion and Happiness. Then, conduct a univariate regression, regressing Happiness on Extraversion and obtain the standardized estimate for the slope. Finally, conduct a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
+
+```{r}
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
+
+cor <- cor.test(df$Extraversion, df$Happiness)
+reg <- lm(scale(Happiness) ~ scale(Extraversion), data = df)
+
+round(cor$estimate, 3) == round(reg$coefficients[2], 3)
+round(cor$statistic, 3) == round(summary(reg)$coefficients[2, 3], 3)
+round(cor$p.value, 3) == round(summary(reg)$coefficients[2, 4], 3)
+```
 
 # Minihack 2
 
-a.) Extract the coefficients, calculate the predicted scores **using the extracted coefficients** (HINT: think regression equation).
+For this minihack, you'll calculate predicted scores 'by hand' using the regression equation, compare them to the predicted scores stored in the model, and finally use the predicted scores you calculate to estimate $R^2$. We'll work with the same dataset, but this time you'll regress social support (SocSup) on Extraversion.
+
+a.) Run the regression model. Extract the coefficients, calculate the predicted scores **using the extracted coefficients** (HINT: think about the regression equation).
+
+```{r}
+reg2 <- lm(SocSup ~ Extraversion, data = df)
+
+predicted <- reg2$coefficients[1] + df$Extraversion*reg2$coefficients[2]
+```
+
 
 b.) Demonstrate that the predicted scores are the same as the values from `fitted.values`.
 
+```{r}
+round(fitted.values(reg2), 3) == round(predicted, 3)
+```
+
 c.) Use those predicted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
+
+```{r}
+rsq <- cor(predicted, df$SocSup)^2
+
+round(rsq, 3) == round(summary(reg2)$r.squared, 3)
+```
 
 # Minihack 3
 
-Table
+Create two tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on Exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on Extraversion).
+
+```{r results = "asis"}
+stargazer(reg, type = "html", out = "./tbl/mh_reg_tbl1.html")
+```
+
+```{r}
+sjPlot::tab_model(reg2, file = "./tbl/reg_tbl_sjp.doc")
+```

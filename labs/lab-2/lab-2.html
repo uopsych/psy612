@@ -1533,11 +1533,8 @@ div.tocify {
 
 <div id="purpose" class="section level1">
 <h1>Purpose</h1>
-<p>[Briefly introduce what the lab is about.]</p>
-</div>
-<div id="univariate-regression" class="section level1">
-<h1>Univariate Regression</h1>
-<p>Let’s review what we’ve learned this week about regression.</p>
+<p>Today we’ll be going over the basics of univariate regression in R, including reporting regression results in Tables.</p>
+<p>To review.</p>
 <ul>
 <li>Regression is a general approach for data analysis.</li>
 <li>It can handle a variety of independent variables.</li>
@@ -1551,42 +1548,19 @@ div.tocify {
 <p>Today, we’ll just be focusing on univariate regression with a single continuous predictor, but over the weeks we will build up into much more complicated regression equations.</p>
 <p>To quickly navigate to the desired section, click one of the following links:</p>
 <ol style="list-style-type: decimal">
-<li><a href="#Estimating%20Regression%20Models">Estimating Regression Models</a></li>
-<li><a href="#NHST%20in%20Regression">NHST in Regression</a></li>
-<li><a href="#A%20Tidier%20way%20to%20Extract%20Information%20from%20Regression%20Models">A Tidier way to Extract Information from Regression Models</a></li>
-<li>[Reporting &amp; Visualizing Regressions]</li>
+<li><a href="#estimating_regression_models">Estimating Regression Models</a></li>
+<li><a href="#nhst_in_regression">NHST in Regression</a></li>
+<li><a href="#a_tidier_way_to_extract_information_from_regression_models">A Tidier Way to Extract Information from Regression Models</a></li>
+<li><a href="Reporting_Regression">Reporting Regressions</a></li>
 </ol>
-<pre class="r"><code>library(tidyverse) # for plotting and data wrangling</code></pre>
-<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## -- Attaching packages --------------------------------------------- tidyverse 1.3.0 --</code></pre>
-<pre><code>## &lt;U+2713&gt; ggplot2 3.2.1     &lt;U+2713&gt; purrr   0.3.3
-## &lt;U+2713&gt; tibble  2.1.3     &lt;U+2713&gt; dplyr   0.8.3
-## &lt;U+2713&gt; tidyr   1.0.0     &lt;U+2713&gt; stringr 1.4.0
-## &lt;U+2713&gt; readr   1.3.1     &lt;U+2713&gt; forcats 0.4.0</code></pre>
-<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(rio) # for importing data
-library(psych) # for covariance and correlation functions</code></pre>
-<pre><code>## Warning: package &#39;psych&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;psych&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:ggplot2&#39;:
-## 
-##     %+%, alpha</code></pre>
-<pre class="r"><code>library(apaTables) # for correlation tables</code></pre>
-<pre><code>## Warning: package &#39;apaTables&#39; was built under R version 3.6.2</code></pre>
-<pre class="r"><code>library(pwr) # for power calculation
-library(broom) # for cleaning up output</code></pre>
-<pre><code>## Warning: package &#39;broom&#39; was built under R version 3.6.2</code></pre>
-<pre class="r"><code>library(stargazer)</code></pre>
-<pre><code>## 
-## Please cite as:</code></pre>
-<pre><code>##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
-<pre><code>##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer</code></pre>
-<pre class="r"><code>library(sjPlot)</code></pre>
-<pre><code>## Warning: package &#39;sjPlot&#39; was built under R version 3.6.2</code></pre>
+<pre class="r"><code>library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+library(psych) # for covariance and correlation functions
+library(apaTables) # for correlation tables
+library(pwr) # for power calculation
+library(broom) # for cleaning up output
+library(stargazer)
+library(sjPlot)</code></pre>
 <hr />
 </div>
 <div id="estimating-regression-models" class="section level1">
@@ -1815,6 +1789,7 @@ library(broom) # for cleaning up output</code></pre>
 <pre><code>## [1] 45.46788</code></pre>
 <p>This of course is one of the building blocks for estimating the <strong>standard error of the estimate</strong>:</p>
 <p><span class="math display">\[\sqrt{\frac{\Sigma(Y_i - \hat{Y_i})^2}{N-2}}\]</span></p>
+<p>Let’s go ahead and calculate that too:</p>
 <pre class="r"><code>sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2))</code></pre>
 <pre><code>## [1] 0.8853976</code></pre>
 </div>
@@ -1864,7 +1839,7 @@ library(broom) # for cleaning up output</code></pre>
 <pre class="r"><code>sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2)) == summary(model)$sigma</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <blockquote>
-<p><strong>Question:</strong> What does a standard error of the estimate of 0.8853976 mean? Is that good?</p>
+<p><strong>Question:</strong> What does a standard error of the estimate of 0.89 mean? Is that good?</p>
 </blockquote>
 </div>
 <div id="extracting-the-coefficient-of-determination-r2" class="section level3">
@@ -1872,6 +1847,9 @@ library(broom) # for cleaning up output</code></pre>
 <p>Recall that another way we can evaluate our regression model is by extracting the coefficient of determination, <span class="math inline">\(R^2\)</span>. This represents the proportion of variance explained by the model. Like the standard error of the estimate, we need to use the summary function to get it:</p>
 <pre class="r"><code>summary(model)$r.squared</code></pre>
 <pre><code>## [1] 0.2270871</code></pre>
+<blockquote>
+<p><strong>Question:</strong> What does an <span class="math inline">\(R^2\)</span> of 0.23 mean (in plain english)?</p>
+</blockquote>
 </div>
 <div id="extracting-regression-coefficients" class="section level3">
 <h3>Extracting Regression Coefficients</h3>
@@ -2033,7 +2011,10 @@ se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}
 ## 10      2.64  3.04    3.15   0.117 -0.510  0.0173  0.891 0.00298      -0.581 
 ## # … with 50 more rows</code></pre>
 <p>Using augment, we get the DV, IV, fitted values, residuals, and other diagnostic information we’ll learn about in future weeks.</p>
-<p>So with broom, just remember: 1. We <code>tidy</code> up coefficients 2. We <code>glance</code> at (omnibus) model statistics 3. We <code>augment</code> to find everything else.</p>
+<p>So with broom, just remember:<br />
+1. We <code>tidy</code> up coefficients.<br />
+2. We <code>glance</code> at (omnibus) model statistics.<br />
+3. We <code>augment</code> to find everything else.</p>
 <p>The payoff for these functions comes when you want to do something <em>with</em> some of your regression results. As an example, you could use <code>tidy()</code> to make it easier to make a plot of your regression coefficients:</p>
 <pre class="r"><code>tidy(model) %&gt;% 
   ggplot(aes(x = term, y = estimate)) +
@@ -2045,9 +2026,7 @@ se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}
 </div>
 <div id="reporting-regressions" class="section level1">
 <h1>Reporting Regressions</h1>
-<p>The last thing we’ll cover today is how to report the results of your regression in Tables.</p>
-<div id="reporting-regression-results" class="section level2">
-<h2>Reporting Regression Results</h2>
+<p>The last thing we’ll cover today is how to report the results of your regression in Tables. We’ll cover three different methods, which each have their pro’s and con’s.</p>
 <div id="by-hand-using-broom-and-kable" class="section level3">
 <h3>‘by hand’ using broom and kable</h3>
 <p>Our first option would be to make a table ‘by hand’ using a combination of <code>tidy()</code> and the <code>kable</code> function from {knitr}.</p>
@@ -2131,11 +2110,18 @@ se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}
 </tr>
 </tbody>
 </table>
+<p>This method is nice for two reasons:<br />
+1. You have a lot of control over how things look.<br />
+2. It’s pretty general-purpose, and you can easily adapt it to new things you learn how to do in R.</p>
+<p>However, it has a downside in that it is hard to get this into picture perfect APA format (we didn’t get all the way there above) and so you may have to do some editing once you get it into word.</p>
 </div>
 <div id="stargazer" class="section level3">
 <h3>Stargazer</h3>
-<p>Now this gets us most of the way to an APA formmated table, but not quite all the way. We can get APA formatted tables with even less code by using the {stargazer} library.</p>
-<pre class="r"><code>stargazer(model, type = &quot;html&quot;, out = &quot;./tbl/reg_tbl_sg.html&quot;)</code></pre>
+<p>The {stargazer} library can be used to pretty easily get APA formatted tables from many kinds of results or model object. It’s super easy to use:</p>
+<pre class="r"><code>stargazer(model, # give it the model
+          type = &quot;html&quot;, # tell it the format type.
+                        #I&#39;m using html since this is an html doc
+          out = &quot;./tbl/reg_tbl_sg.html&quot;) # you can give it a path to save</code></pre>
 <table style="text-align:center">
 <tr>
 <td colspan="2" style="border-bottom: 1px solid black">
@@ -2264,10 +2250,11 @@ F Statistic
 </td>
 </tr>
 </table>
+<p>This is nice in that it is super easy, and puts it into APA format for you. It’s downsides are that it is less flexible and stargazer may not have a method for your results objct if you’re using more advanced or cutting edge tools.</p>
 </div>
 <div id="sjplot" class="section level3">
 <h3><code>sjPlot</code></h3>
-<p>A third option is to use <code>tab_model()</code> from the {sjPlot} library. This one does not work well within the rMarkdown document, but it is <strong>very</strong> easy to export these tables to word. we can do so by setting the file extension of our output to <code>.doc</code>:</p>
+<p>A third option is to use <code>tab_model()</code> from the {sjPlot} library. This one does not always work well within the rMarkdown document, but it is <strong>very</strong> easy to export these tables to word. we can do so by setting the file extension of our output to <code>.doc</code>:</p>
 <pre class="r"><code>sjPlot::tab_model(model, file = &quot;./tbl/reg_tbl_sjp.doc&quot;)</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <tr>
@@ -2337,22 +2324,32 @@ R<sup>2</sup> / R<sup>2</sup> adjusted
 </td>
 </tr>
 </table>
-</div>
+<p>This has similar cons to stargazer, and additionally doesn’t always play nicely with rmarkdown. However, it’s super easy to use and even easier than stargazer for exporting tables to MS word.</p>
 </div>
 </div>
 <div id="minihack-1" class="section level1">
 <h1>Minihack 1</h1>
-<p>Demonstrate the equivalence of standardized slopes &amp; correlations</p>
+<p>For this minihack, you’ll demonstrate the equivalence of a correlation between two variables and the standardized coefficient from a univariate regression regressing one on the other. You’ll be working with a dataset called PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder. It can be downloaded from the following web address:</p>
+<p>“<a href="https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv" class="uri">https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv</a>”</p>
+<p>It contains a number of variables, but we’ll focus on Extraversion and Happiness first.</p>
+<p>Calculate the bi-variate correlation between Extraversion and Happiness. Then, conduct a univariate regression, regressing Happiness on Extraversion and obtain the standardized estimate for the slope. Finally, conduct a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).</p>
+<pre class="r"><code># code here</code></pre>
 </div>
 <div id="minihack-2" class="section level1">
 <h1>Minihack 2</h1>
-<p>a.) Extract the coefficients, calculate the predicted scores <strong>using the extracted coefficients</strong> (HINT: think regression equation).</p>
+<p>For this minihack, you’ll calculate predicted scores ‘by hand’ using the regression equation, compare them to the predicted scores stored in the model, and finally use the predicted scores you calculate to estimate <span class="math inline">\(R^2\)</span>. We’ll work with the same dataset, but this time you’ll regress social support (SocSup) on Extraversion.</p>
+<p>a.) Run the regression model. Extract the coefficients, calculate the predicted scores <strong>using the extracted coefficients</strong> (HINT: think about the regression equation).</p>
+<pre class="r"><code># code here</code></pre>
 <p>b.) Demonstrate that the predicted scores are the same as the values from <code>fitted.values</code>.</p>
+<pre class="r"><code># code here</code></pre>
 <p>c.) Use those predicted scores to calculate <span class="math inline">\(R^2\)</span>. Demonstrate its equivalence to the result of <code>summary(model)$r.squared</code>.</p>
+<pre class="r"><code># code here</code></pre>
 </div>
 <div id="minihack-3" class="section level1">
 <h1>Minihack 3</h1>
-<p>Table</p>
+<p>Create two tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on Exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on Extraversion).</p>
+<pre class="r"><code># Code here</code></pre>
+<pre class="r"><code># code here</code></pre>
 </div>
 
 
