@@ -396,7 +396,9 @@ So far, we've been covering how to estimate the various regression components in
 First, we have the omnibus test, which tests whether or not the regression model significantly outperforms the NULL model. This is typically done with an *F* ratio:
 
 $$F = \frac{MS_{model}}{MS_{residual}}$$
+
 ### Getting F
+
 That is also stored in the summary of our model:
 
 ####  {.tabset .tabset-fade .tabset-pills}
@@ -433,7 +435,7 @@ pf(summary(model)$fstatistic[1],
    lower.tail = FALSE)
 ```
 
-### Getting p II
+### Getting p value II
 
 Alternatively, we can pass our model to the `anova()` function, which gives us an F table or ANOVA table for our regression model:
 

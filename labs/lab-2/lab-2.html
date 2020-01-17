@@ -2099,7 +2099,10 @@ coefficients(std_model) %&gt;%
 <div id="omnibus-test" class="section level2">
 <h2>Omnibus test</h2>
 <p>First, we have the omnibus test, which tests whether or not the regression model significantly outperforms the NULL model. This is typically done with an <em>F</em> ratio:</p>
-<p><span class="math display">\[F = \frac{MS_{model}}{MS_{residual}}\]</span> ### Getting F That is also stored in the summary of our model:</p>
+<p><span class="math display">\[F = \frac{MS_{model}}{MS_{residual}}\]</span></p>
+<div id="getting-f" class="section level3">
+<h3>Getting F</h3>
+<p>That is also stored in the summary of our model:</p>
 <div id="section-17" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-17" class="section level5">
@@ -2110,6 +2113,7 @@ coefficients(std_model) %&gt;%
 <h5>Output</h5>
 <pre><code>##   value   numdf   dendf 
 ## 17.0408  1.0000 58.0000</code></pre>
+</div>
 </div>
 </div>
 <div id="getting-p-value" class="section level3">
@@ -2131,8 +2135,8 @@ coefficients(std_model) %&gt;%
 </div>
 </div>
 </div>
-<div id="getting-p-ii" class="section level3">
-<h3>Getting p II</h3>
+<div id="getting-p-value-ii" class="section level3">
+<h3>Getting p value II</h3>
 <p>Alternatively, we can pass our model to the <code>anova()</code> function, which gives us an F table or ANOVA table for our regression model:</p>
 <div id="section-19" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
