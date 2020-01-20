@@ -1,0 +1,168 @@
+---
+title: 'Multiple Regression II'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+
+
+<!-- ## Group level multiple regression -->
+<!-- - i.e., ANOVA models   -->
+<!-- - Need to put numbers to our categories -->
+<!-- - Dummy code is default -->
+<!-- - Effect coding is an option -->
+<!-- - Other types too (though most are unhelpful) -->
+
+<!-- ```{r, echo = FALSE} -->
+<!-- library(tidyverse) -->
+<!-- library(forcats) -->
+<!-- one.way <- read.csv("anova.csv") -->
+<!-- one.way$group <- one.way$IV -->
+<!-- one.way$group <- as.factor(one.way$group) -->
+<!-- one.way <- one.way %>% -->
+<!--   mutate(group = fct_recode(group, -->
+<!--     "control"    = '0', -->
+<!--     "tx1"    = '1', -->
+<!--     "tx2"    = '2')) %>%  -->
+<!--   as_tibble() -->
+
+<!-- library (broom) -->
+<!-- ``` -->
+
+<!-- ## When working with factors -->
+<!-- - know thy class -->
+<!-- ```{r} -->
+<!-- class(one.way$group) -->
+<!-- table(one.way$group) -->
+<!-- ``` -->
+<!-- - Many base R functions automatically convert character vectors to factors -->
+<!-- - This is okay if you are just tossing into a regression model but problematic for many uses -->
+
+
+<!-- ## Group level multiple regression -->
+<!-- ```{r} -->
+<!-- model.1 <- lm(drugs ~ group, data = one.way )  -->
+<!-- summary(model.1) -->
+<!-- ``` -->
+
+<!-- ## What happened?  -->
+
+<!-- - For every nominal/categorical variable that has more than 2 levels R (default R) automatically creates L-1 dummy variables   -->
+
+<!-- - Each of these dummy variables consists of 0 & 1s just like before, except 1 group (the reference group) only is coded as a zero -->
+
+<!-- - The interpretation of each coefficent is the difference between the group coded 1 and the reference group -->
+
+<!-- ## group means -->
+<!-- ```{r, message=FALSE} -->
+<!-- library(dplyr) -->
+<!-- (one.way %>%  -->
+<!--     group_by(group) %>%  -->
+<!--     filter(!is.na(drugs)) %>%  -->
+<!--     summarise(mean(drugs))) -->
+<!-- ``` -->
+
+
+<!-- ## See what R is doing with contrasts function -->
+<!-- - a part of every factor  -->
+<!-- ```{r} -->
+<!-- contrasts(one.way$group) -->
+
+<!-- # Can see the same with only 2 levels -->
+<!-- contrasts(Multipleregression$group) -->
+<!-- ``` -->
+
+<!-- ## reordering -->
+<!-- - no inherent order, so what does R spit out at you first?  -->
+<!-- - default is alphabetic, but what if you wanted it by another variable -->
+
+<!-- ```{r} -->
+<!-- levels(one.way$group) -->
+<!-- one.way$group.2 <- relevel(one.way$group, "tx2") -->
+<!-- levels(one.way$group.2) -->
+<!-- ``` -->
+
+<!-- ##  -->
+<!-- ```{r} -->
+<!-- model.2 <- lm(drugs ~ group.2, data = one.way )  -->
+<!-- tidy(summary(model.2)) -->
+<!-- contrasts(one.way$group.2) -->
+<!-- ``` -->
+
+
+<!-- ## contrasts -->
+<!-- ```{r} -->
+<!-- ## dummy variables via: -->
+<!-- contr.treatment(4) -->
+<!-- ## effect coding via:  -->
+<!-- contr.sum(4) -->
+<!-- ``` -->
+
+<!-- ## Asign contrast to factor variable -->
+
+<!-- ```{r} -->
+<!-- contr.sum(3) -->
+<!-- contrasts(one.way$group) <- contr.sum(3) -->
+<!-- model.3 <- lm(drugs ~ group, data = one.way )  -->
+<!-- tidy(model.3) -->
+<!-- ``` -->
+<!-- ## effects (sum) coding -->
+<!-- - note: intercept is the means of means -->
+<!-- ```{r} -->
+<!-- library(psych) -->
+<!-- describe(one.way$drugs) -->
+<!-- table(one.way$group) -->
+<!-- ``` -->
+<!-- - you may want to do "weighted" effect coding -->
+
+<!-- ##  -->
+<!-- ```{r} -->
+<!-- anova(model.3) -->
+<!-- ``` -->
+<!--  - What does the ANOVA table look like for model.1 and model.2?  -->
+<!--  - note the df for SSregression/SSbetween -->
+
+
+<!-- ## what happens if you want a different reference group?  -->
+<!-- - in addition to relevel (and fct_relevel in forcats) you can change the contrast matrix -->
+<!-- ```{r} -->
+<!-- contrasts(one.way$group) <- contr.treatment(3, base = 2) -->
+<!-- model.4 <- lm(drugs ~ group, data = one.way )  -->
+<!-- tidy(model.4) -->
+<!-- ``` -->
+
+<!-- ## -->
+
+<!-- ```{r} -->
+<!-- contrasts(one.way$group) <- contr.treatment(3, base = 3) -->
+<!-- model.5 <- lm(drugs ~ group, data = one.way )  -->
+<!-- tidy(model.5) -->
+<!-- ``` -->
+
+
+<!-- ## What happens if you have both nominal and continuous variables in the same model?  -->
+
+<!-- ```{r} -->
+<!-- model.6 <- lm(drugs ~ group + alcohol, data = one.way )  -->
+<!-- tidy(model.6) -->
+<!-- ``` -->
+
+<!-- ## how should you code variables to begin with? -->
+
+<!-- - Easy enough to work with factor variables that have their level as their name -->
+<!-- - No need to manually change (or create) a number associated with a level and use as.numeric -->
+<!-- - For simple dichotomous variables, sometimes people do code 0/1 rather than tx/control for example -->
+<!-- - Information could be lost without a code book, so best to name the variable what is coded 1 (e.g., tx or female rather than group or gender) -->
+
+

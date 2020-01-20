@@ -164,7 +164,7 @@ round(coef(mod0),3)
 ```
 
 .pull-left[
-```{r, message=F, warning = F}
+```{r, message=F, warning = F, echo = 2:4}
 library(ppcor)
 spcor.test(x = stress.data$Anxiety, 
            y = stress.data$Stress, 
@@ -321,9 +321,11 @@ $$\Large {SS_{residual}} = (1- R^2){SS_{Y}}$$
 ## R-squared, $R^2$
 
 
-- Same as before  
-- Adding predictors into your model will increase R2 – regardless of whether or not the predictor is correlated with Y.    
-- Adjusted/Shrunken R2 takes into account the number of predictors in your model  
+- Same interpretation as before  
+
+- Adding predictors into your model will increase $R^2$ – regardless of whether or not the predictor is significantly correlated with Y.    
+
+- Adjusted/Shrunken $R^2$ takes into account the number of predictors in your model  
 
 
 ---
@@ -331,6 +333,16 @@ $$\Large {SS_{residual}} = (1- R^2){SS_{Y}}$$
 ## Adjusted R-squared, $\text{Adj} R^2$
 
 $$\large R_{A}^2 = 1 - (1 -R^2)\frac{n-1}{n-p-1}$$
+
+- What happens if you add many IV's to your model that are uncorrelated with your DV?
+
+--
+
+
+- What happens as you add more covariates to your model that are highly correlated with your key predictor, X?
+
+$$b_{1}^* = \frac{r_{Y1}-r_{Y2}r_{12}}{1-r_{12}^2}$$
+
 
 ---
 
@@ -367,7 +379,7 @@ $$\Large H_{1}: \beta_{X} \neq 0$$
 
 In the case of univariate regression:
 
-$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}} $$
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
 
 In the case of multiple regression:
 

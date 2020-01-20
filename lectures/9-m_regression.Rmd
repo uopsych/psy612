@@ -1,0 +1,361 @@
+---
+title: 'Multiple Regression II'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo = F, warning = F, message = F}
+library(tidyverse)
+```
+
+
+```{r, message=FALSE}
+library(here)
+stress.data = read.csv(here("data/stress.csv"))
+library(psych)
+describe(stress.data$Stress)
+```
+
+```{r, output.lines = c(9:19)}
+mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
+summary(mr.model)
+```
+
+---
+## Standard error of regression coefficient
+
+In the case of univariate regression:
+
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
+
+In the case of multiple regression:
+
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
+
+- As N increases... 
+- As variance explained increases... 
+
+---
+## Tolerance
+$$se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
+
+- what cannot be explained in $X_i$ by other predictors  
+
+- Large tolerance (little overlap) means standard error will be small.   
+
+- what does this mean for including a lot of variables in your model? 
+
+---
+
+## Which variables to include
+
+- You goal should be to match the population model (theoretically)
+
+- Including many variables will not bias parameter estimates but will potentially increase degrees of freedom and standard errors; in other words, putting too many variables in your model may make it _more difficult_ to find a statistically significant result 
+
+- But that's only the case if you add variables unrelated to Y or X; there are some cases in which adding the wrong variables can lead to spurious results. [We'll have a whole lecture on this in a few weeks.]
+
+---
+
+## Methods for entering variables
+
+**Simultaneous**: Enter all of your IV's in a single model.
+$$\large Y = b_0 + b_1X_1 + b_2X_2 + b_3X_3$$
+  - The benefits to using this method is that it reduces researcher degrees of freedom, is a more conservative test of any one coefficient, and often the most defensible action (unless you have specific theory guiding a hierarchical approach).
+
+---
+
+## Methods for entering variables
+
+**Hierarchically**: Build a sequence of models in which every successive model includes one more (or one fewer) IV than the previous.
+$$\large Y = b_0 + e$$
+$$\large Y = b_0 + b_1X_1 + e$$
+$$\large Y = b_0 + b_1X_1 + b_2X_2 + e$$
+$$\large Y = b_0 + b_1X_1 + b_2X_2 + b_3X_3 + e$$
+
+This is known as **hierarchical regression**. (Note that this is different from Hierarchical Linear Modelling or HLM [which is often called Multilevel Modeling or MLM].) Hierarchical regression is a subset of **model comparison** techniques. 
+
+---
+
+## Hierarchical regression / Model Comparison  
+
+**Model comparison:** Comparing how well two (or more) models fit the data in order to determine which model is better.
+
+If we're comparing nested models by incrementally adding or subtracting variables, this is known as hierarchical regression. 
+
+  - Multiple models are calculated  
+    
+  - Each predictor (or set of predictors) is assessed in terms of what it adds (in terms of variance explained) at the time it is entered   
+    
+  - Order is dependent on an _a priori_ hypothesis  
+
+
+---
+
+![](images/venn/Slide9.jpeg)
+
+---
+## R-square change
+- distributed as an F
+$$F(p.new, N - 1 - p.all) = \frac {R_{m.2}^2- R_{m.1}^2} {1-R_{m.2}^2} (\frac {N-1-p.all}{p.new})$$
+- can also be written in terms of SSresiduals
+
+---
+## Model comparisons
+```{r}
+
+m.1 <- lm(Stress ~ Support, data = stress.data)
+m.2 <- lm(Stress ~ Support + Anxiety, data = stress.data)
+anova(m.1, m.2)
+```
+
+---
+## model comparisons
+```{r}
+anova(m.1)
+```
+
+
+---
+## model comparisons
+```{r}
+anova(m.2)
+```
+---
+## model comparisons
+```{r, echo = FALSE}
+summary(m.2)
+```
+---
+## model comparisons
+```{r, echo = FALSE}
+summary(m.1)
+```
+---
+## model comparisons
+
+```{r}
+m.0 <- lm(Stress ~ 1, data = stress.data)
+m.1 <- lm(Stress ~ Support, data = stress.data)
+anova(m.0, m.1)
+```
+
+
+---
+## partitioning the variance
+- It doesn't make sense to ask how much variance a variable explains (unless you qualify the association)
+
+$$R_{Y.1234...p}^2 = r_{Y1}^2 + r_{Y(2.1)}^2 + r_{Y(3.21)}^2 + r_{Y(4.321)}^2 + ...$$
+
+- In other words: order matters! 
+
+---
+
+## Categorical predictors
+
+One of the benefits of using regression (instead of partial correlations) is that it can handle both continuous and categorical predictors and allows for using both in the same model.
+
+Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them (i.e., nominal and ordinal variables) and ascribe meaningful numbers that allow for us to calculate meaningful statistics. 
+
+You can choose just about any numbers to represent your categorical variable. However, there are several commonly used methods that result in very useful statistics. 
+
+---
+
+## Dummy coding
+
+In dummy coding, one group is selected to be a reference group. From your single nominal variable with *K* levels, $K-1$ dummy code variables are created; for each new dummy code variable, one of the non-reference groups is assigned 1; all other groups are assigned 0.
+
+.pull-left[
+| Occupation | D1 | D2 |
+|:----------:|:--:|:--:|
+|Engineer | 0 | 0 |
+|Teacher | 1 | 0 |
+|Doctor | 0 | 1 |
+
+The dummy codes are entered as IV's in the regression equation.
+]
+
+--
+
+.pull-right[
+|Person | Occupation | D1 | D2 |
+|:-----|:----------:|:--:|:--:|
+|Billy |Engineer | 0 | 0 |
+|Susan |Teacher | 1 | 0 |
+|Michael |Teacher | 1 | 0 |
+|Molly |Engineer | 0 | 0 |
+|Katie |Doctor | 0 | 1 |
+
+]
+
+
+---
+
+### Example
+Solomon’s paradox describes the tendency for people to reason more wisely about other people’s
+problems compared to their own. One potential explanation for this paradox is that people tend to view
+other people’s problems from a more psychologically distant perspective, whereas they view their own
+problems from a psychologically immersed perspective. To test this possibility, researchers asked romantically-involved participants to think about a situation in which their partner cheated on them (self condition) or a friend’s partner cheated on their friend (other condition). Participants were also instructed to take a first-person perspective (immersed condition) by using pronouns such as I and me, or a third-person perspective (distanced condition) by using pronouns such as he and her.
+
+```{r, results = 'hide', message = F}
+library(here)
+solomon = read.csv(here("data/solomon.csv"))
+```
+
+ 
+.small[Grossmann, I., & Kross, E. (2014). Exploring Solomon’s paradox: Self-distancing eliminates self-other
+asymmetry in wise reasoning about close relationships in younger and older adults. _Psychological Science, 25_, 1571-1580.]
+
+---
+
+
+```{r}
+psych::describe(solomon[,c("ID", "CONDITION", "WISDOM")], fast = T)
+```
+
+--
+.pull-left[
+```{r table, results = 'asis', message=FALSE, warning=FALSE, eval = F}
+library(knitr)
+library(kableExtra)
+head(solomon) %>% 
+  select(ID, CONDITION, 
+         WISDOM) %>%
+  kable() %>% kable_styling()
+```
+]
+
+.pull-right[
+```{r, ref.label="table", echo = F, results = 'asis', message=FALSE, warning=FALSE}
+
+```
+
+]
+
+---
+
+```{r}
+solomon = solomon %>%
+  mutate(dummy_2 = ifelse(CONDITION == 2, 1, 0),
+         dummy_3 = ifelse(CONDITION == 3, 1, 0),
+         dummy_4 = ifelse(CONDITION == 4, 1, 0)) 
+solomon %>% 
+  select(ID, CONDITION, WISDOM,
+         matches("dummy")) %>%
+  kable() %>% kable_styling()
+```
+
+---
+
+```{r}
+mod.1 = lm(WISDOM ~ dummy_2 + dummy_3 + dummy_4, data = solomon)
+summary(mod.1)
+```
+
+---
+
+### Interpreting coefficients
+
+When working with dummy codes, the intercept can be interpreted as the mean of the reference group.
+
+$$\begin{aligned} 
+\hat{Y} &= b_0 + b_1D_2 + b_2D_3 + b_3D_2 \\
+\hat{Y} &= b_0 + b_1(0) + b_2(0) + b_3(0) \\
+\hat{Y} &= b_0 \\
+\hat{Y} &= \bar{Y}_{\text{Reference}}
+\end{aligned}$$
+
+What do each of the slope coefficients mean?
+
+---
+
+From this equation, we can get the mean of every single group.
+
+```{r}
+newdata = data.frame(dummy_2 = c(0,1,0,0),
+                     dummy_3 = c(0,0,1,0),
+                     dummy_4 = c(0,0,0,1))
+predict(mod.1, newdata = newdata, se.fit = T)
+```
+---
+
+And the test of the coefficient represents the significance test of each group to the reference. The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
+
+```{r}
+summary(mod.1)$coef
+```
+
+What if you wanted to compare groups 2 and 3?
+
+---
+
+```{r}
+solomon = solomon %>%
+  mutate(dummy_1 = ifelse(CONDITION == 1, 1, 0),
+         dummy_3 = ifelse(CONDITION == 3, 1, 0),
+         dummy_4 = ifelse(CONDITION == 4, 1, 0)) 
+mod.2 = lm(WISDOM ~ dummy_1 + dummy_3 + dummy_4, data = solomon)
+summary(mod.2)
+```
+
+---
+
+### Time savers
+
+R will automatically convert factor-level variables into dummy codes -- just make sure your variable is a factor before adding it to the model!
+
+```{r}
+class(solomon$CONDITION)
+solomon$CONDITION = as.factor(solomon$CONDITION)
+```
+---
+
+```{r}
+mod.3 = lm(WISDOM ~ CONDITION, data = solomon)
+summary(mod.3)
+```
+
+
+---
+
+### Omnibus test
+
+```{r, highlight.output = 20:21}
+summary(mod.1)
+```
+---
+
+### Omnibus test
+```{r, highlight.output = 20:21}
+summary(mod.2)
+```
+---
+
+### Omnibus test
+```{r, highlight.output = 20:21}
+summary(mod.3)
+```
+---
+
+### Omnibus test
+```{r}
+anova(mod.3)
+```
+
+---
+
+class: inverse
+
+## Next time...
+
+Analysis of Variance (the long way)
+
+
+
