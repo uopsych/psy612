@@ -1,0 +1,68 @@
+---
+title: "Lab 3: Univariate Regression (cont.) & GLM"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+---
+
+# Purpose
+
+INTRO 
+
+To quickly navigate to the desired section, click one of the following links:
+
+1. [Uncertainty in regression](#uncertainty)
+
+You will need to load the following libraries to follow along with today's lab. If you don't have any of these packages installed, please do so now. 
+
+```{r message=FALSE}
+library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+library(psych) # for covariance and correlation functions
+```
+
+***
+
+```{r}
+
+```
+
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r}
+
+```
+
+##### Output
+
+```{r}
+
+```
+
+####
+<br>
+
+***
+
+***
+
+# Minihacks
+
+## Minihack 1
+
+***
+
+## Minihack 2
+
+***
+
+## Minihack 3
+
+***
