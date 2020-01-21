@@ -13,19 +13,73 @@ output:
 ```{r, echo = F, warning = F, message = F}
 library(tidyverse)
 ```
+## Last week -- Inferential tests
 
-## Last time...
+.pull-left[
+**Omnibus test**
 
-- Partitioning variance
+- Does the model fit the data?
 
-    - $SS_Y, SS_\hat{Y}$
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
     
-    - $R^2$
+* Effect size: Model fit can be measured in terms of $\large R^2$ or $\large s_{Y|X}$
+  ]
+  
+--
+
+.pull-right[
+**Coefficient test**
+
+- Does X explain Y?
+    - Is the slope of the regression line flat?
+
+- *t*-test (is this slope bigger than 0?)
+    - In a univariate regression model, the test of the slope is equivalent to the omnibus test
+
+* Effect size: the size of the coefficient $(b)$ 
     
+  ]
+  
+    
+---
 
-- Statistical inference and regression
+## Last time
 
-    - NHST: does this model fit the data?
+.pull-left[
+
+**Unstandardized regression equation**
+
+$$Y = b_0 + b_1X + e$$
+
+- Intercept and slope are interpreted in the units of Y.
+  - Useful if the units of Y are meaningful. (Dollars, days, donuts)
+  
+- Built from covariances and variances
+
+$$b_1 = \frac{cov_{XY}}{s^2_X}$$
+
+]
+
+.pull-right[
+
+**Standardized regression equation**
+
+$$Z_Y = b^*_1Z_X + e$$
+
+- Slope are interpreted in standardized units.
+  - Useful for comparison
+  
+- Built from correlations
+
+$$b^*_1 = r_{xy}$$
+
+]
+
+
+
+
     
 ---
 ## Terminology
@@ -40,7 +94,7 @@ library(tidyverse)
 
 --
   - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation. )
+  - The standard deviation of Y not accounted for by the model.(Compare this to the original standard deviation. 
   
 - $MSE$
 
@@ -61,11 +115,12 @@ Atir, S., Rosenzweig, E., & Dunning, D. (2015). [When knowledge knows no bounds:
 
 ---
 
-```{r,  message = F}
+```{r,  message = F, highlight.output=4:5}
 library(here)
 expertise = read.csv(here("data/expertise.csv"))
 psych::describe(expertise)
-
+```
+```{r}
 cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion")])
 ```
 

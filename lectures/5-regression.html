@@ -17,19 +17,73 @@ class: center, middle, inverse, title-slide
 ---
 
 
+## Last week -- Inferential tests
 
-## Last time...
+.pull-left[
+**Omnibus test**
 
-- Partitioning variance
+- Does the model fit the data?
 
-    - `\(SS_Y, SS_\hat{Y}\)`
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
     
-    - `\(R^2\)`
+* Effect size: Model fit can be measured in terms of `\(\large R^2\)` or `\(\large s_{Y|X}\)`
+  ]
+  
+--
+
+.pull-right[
+**Coefficient test**
+
+- Does X explain Y?
+    - Is the slope of the regression line flat?
+
+- *t*-test (is this slope bigger than 0?)
+    - In a univariate regression model, the test of the slope is equivalent to the omnibus test
+
+* Effect size: the size of the coefficient `\((b)\)` 
     
+  ]
+  
+    
+---
 
-- Statistical inference and regression
+## Last time
 
-    - NHST: does this model fit the data?
+.pull-left[
+
+**Unstandardized regression equation**
+
+`$$Y = b_0 + b_1X + e$$`
+
+- Intercept and slope are interpreted in the units of Y.
+  - Useful if the units of Y are meaningful. (Dollars, days, donuts)
+  
+- Built from covariances and variances
+
+`$$b_1 = \frac{cov_{XY}}{s^2_X}$$`
+
+]
+
+.pull-right[
+
+**Standardized regression equation**
+
+`$$Z_Y = b^*_1Z_X + e$$`
+
+- Slope are interpreted in standardized units.
+  - Useful for comparison
+  
+- Built from correlations
+
+`$$b^*_1 = r_{xy}$$`
+
+]
+
+
+
+
     
 ---
 ## Terminology
@@ -44,7 +98,7 @@ class: center, middle, inverse, title-slide
 
 --
   - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation. )
+  - The standard deviation of Y not accounted for by the model.(Compare this to the original standard deviation. 
   
 - `\(MSE\)`
 
@@ -76,8 +130,8 @@ psych::describe(expertise)
 ##                          vars   n   mean    sd median trimmed   mad   min
 ## id                          1 202 101.50 58.46 101.50  101.50 74.87  1.00
 ## order_of_tasks              2 202   1.50  0.50   1.50    1.50  0.74  1.00
-## self_perceived_knowledge    3 202   4.43  1.17   4.50    4.45  0.74  1.00
-## overclaiming_proportion     4 202   0.31  0.23   0.28    0.29  0.25  0.00
+*## self_perceived_knowledge    3 202   4.43  1.17   4.50    4.45  0.74  1.00
+*## overclaiming_proportion     4 202   0.31  0.23   0.28    0.29  0.25  0.00
 ## accuracy                    5 202   0.30  0.21   0.28    0.29  0.21 -0.19
 ## FINRA_score                 6 202   3.70  1.19   4.00    3.85  1.48  0.00
 ##                             max  range  skew kurtosis   se
@@ -156,7 +210,7 @@ set_theme(base = theme_bw())
 plot_model(fit.1, type = "pred", show.data = T, jitter = T) 
 ```
 
-![](5-regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -264,7 +318,7 @@ We can string these together in a figure and create **confidence bands**.
 
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -281,15 +335,15 @@ confint(fit.1)
 
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 
 ---
 ## Confidence Bands for regression line
-![](5-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 ---
 Compare mean estimate for self-perceived knowledge based on regression vs binning
 
-![](5-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 ---
 ## Confidence Bands
 
@@ -310,7 +364,7 @@ Compare mean estimate for self-perceived knowledge based on regression vs binnin
 `$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$`
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 
 ---
 
