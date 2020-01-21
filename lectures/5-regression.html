@@ -17,19 +17,73 @@ class: center, middle, inverse, title-slide
 ---
 
 
+## Last week -- Inferential tests
 
-## Last time...
+.pull-left[
+**Omnibus test**
 
-- Partitioning variance
+- Does the model fit the data?
 
-    - `\(SS_Y, SS_\hat{Y}\)`
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
     
-    - `\(R^2\)`
+* Effect size: Model fit can be measured in terms of `\(\large R^2\)` or `\(\large s_{Y|X}\)`
+  ]
+  
+--
+
+.pull-right[
+**Coefficient test**
+
+- Does X explain Y?
+    - Is the slope of the regression line flat?
+
+- *t*-test (is this slope bigger than 0?)
+    - In a univariate regression model, the test of the slope is equivalent to the omnibus test
+
+* Effect size: the size of the coefficient `\((b)\)` 
     
+  ]
+  
+    
+---
 
-- Statistical inference and regression
+## Last time
 
-    - NHST: does this model fit the data?
+.pull-left[
+
+**Unstandardized regression equation**
+
+`$$Y = b_0 + b_1X + e$$`
+
+- Intercept and slope are interpreted in the units of Y.
+  - Useful if the units of Y are meaningful. (Dollars, days, donuts)
+  
+- Built from covariances and variances
+
+`$$b_1 = \frac{cov_{XY}}{s^2_X}$$`
+
+]
+
+.pull-right[
+
+**Standardized regression equation**
+
+`$$Z_Y = b^*_1Z_X + e$$`
+
+- Slope are interpreted in standardized units.
+  - Useful for comparison
+  
+- Built from correlations
+
+`$$b^*_1 = r_{xy}$$`
+
+]
+
+
+
+
     
 ---
 ## Terminology
@@ -44,7 +98,7 @@ class: center, middle, inverse, title-slide
 
 --
   - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation. )
+  - The standard deviation of Y not accounted for by the model.(Compare this to the original standard deviation. 
   
 - `\(MSE\)`
 
@@ -76,8 +130,8 @@ psych::describe(expertise)
 ##                          vars   n   mean    sd median trimmed   mad   min
 ## id                          1 202 101.50 58.46 101.50  101.50 74.87  1.00
 ## order_of_tasks              2 202   1.50  0.50   1.50    1.50  0.74  1.00
-## self_perceived_knowledge    3 202   4.43  1.17   4.50    4.45  0.74  1.00
-## overclaiming_proportion     4 202   0.31  0.23   0.28    0.29  0.25  0.00
+*## self_perceived_knowledge    3 202   4.43  1.17   4.50    4.45  0.74  1.00
+*## overclaiming_proportion     4 202   0.31  0.23   0.28    0.29  0.25  0.00
 ## accuracy                    5 202   0.30  0.21   0.28    0.29  0.21 -0.19
 ## FINRA_score                 6 202   3.70  1.19   4.00    3.85  1.48  0.00
 ##                             max  range  skew kurtosis   se
@@ -156,7 +210,7 @@ set_theme(base = theme_bw())
 plot_model(fit.1, type = "pred", show.data = T, jitter = T) 
 ```
 
-![](5-regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -202,7 +256,7 @@ summary(fit.1)
 
 
 ---
-## Confidence interval for coefficents
+## Confidence interval for coefficients
 
 - same equation as we've been working with:
 
@@ -235,28 +289,28 @@ psych::describe(model_info, fast=T)
 ## overclaiming_proportion     1 202 0.31 0.23  0.00 1.00  1.00 0.02
 ## self_perceived_knowledge    2 202 4.43 1.17  1.00 7.00  6.00 0.08
 ## .fitted                     3 202 0.31 0.11 -0.02 0.55  0.57 0.01
-## .se.fit                     4 202 0.02 0.01  0.01 0.04  0.03 0.00
+*## .se.fit                     4 202 0.02 0.01  0.01 0.04  0.03 0.00
 ## .resid                      5 202 0.00 0.20 -0.51 0.54  1.05 0.01
 ## .hat                        6 202 0.01 0.01  0.00 0.05  0.04 0.00
-*## .sigma                      7 202 0.20 0.00  0.20 0.20  0.00 0.00
+## .sigma                      7 202 0.20 0.00  0.20 0.20  0.00 0.00
 ## .cooksd                     8 202 0.01 0.01  0.00 0.09  0.09 0.00
 ## .std.resid                  9 202 0.00 1.00 -2.50 2.68  5.18 0.07
 ```
 
 ```r
-head(model_info[,c("overclaiming_proportion", ".fitted", ".sigma")])
+head(model_info[,c("overclaiming_proportion", ".fitted", ".se.fit")])
 ```
 
 ```
 ## # A tibble: 6 x 3
-##   overclaiming_proportion .fitted .sigma
-##                     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1                   0.444   0.410  0.205
-## 2                   0.556   0.315  0.204
-## 3                   0.167   0.220  0.205
-## 4                   0.722   0.458  0.204
-## 5                   0.389   0.124  0.204
-## 6                   0.944   0.553  0.203
+##   overclaiming_proportion .fitted .se.fit
+##                     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1                   0.444   0.410  0.0195
+## 2                   0.556   0.315  0.0144
+## 3                   0.167   0.220  0.0183
+## 4                   0.722   0.458  0.0241
+## 5                   0.389   0.124  0.0277
+## 6                   0.944   0.553  0.0347
 ```
 
 
@@ -264,7 +318,7 @@ We can string these together in a figure and create **confidence bands**.
 
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -281,15 +335,15 @@ confint(fit.1)
 
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 
 ---
 ## Confidence Bands for regression line
-![](5-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 ---
 Compare mean estimate for self-perceived knowledge based on regression vs binning
 
-![](5-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 ---
 ## Confidence Bands
 
@@ -301,16 +355,16 @@ Compare mean estimate for self-perceived knowledge based on regression vs binnin
 
 - very similar to confidence bands around regressions line
 
-- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new Yi given x, rather than Ybar given x)
+- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new `\(Y_i\)` given x, rather than `\(\bar{Y}\)` given x)
 
-- Because there is greater variation in predicting an individual value rather than a collection of individual values (ie the mean) the prediction band is greater
+- Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is greater
 
-- Combines unknown variability in 1) the estimated mean (as reflected in se of b) 2) peoples scores around  mean (residual standard error) 
+- Combines unknown variability in 1) the estimated mean `\((\text{as reflected in }SE_b)\)` 2) peoples scores around  mean $(\text{residual standard error }, s_{Y|X}) $
 
 `$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$`
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -513,9 +567,18 @@ summary(lm(y ~ x))
 ```
 
 ---
+
+## Matrix algebra
+
+In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. 
+
+However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit. 
+
+
+---
 ## Model Comparison
 
-- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick wtih a parsimonious model.   
+- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
 
 - Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
 
@@ -635,9 +698,9 @@ anova(fit.1, fit.0)
 ---
 ## Model Comparisons 
 
-- Model comparisons are redundent with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
+- Model comparisons are redundant with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
 
-- Key is to start thikning about your implicit alternative models
+- Key is to start thinking about your implicit alternative models
 
 - The ultimate goal would be to create two models that represent two equally plausible theories. 
 

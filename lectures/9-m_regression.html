@@ -1528,6 +1528,28 @@ summary(mod.2)
 
 ---
 
+In all multiple regression models, we have to consider the correlations between the IVs, as highly correlated variables make it more difficult to detect significance of a particular X. One useful way to conceptualize the relationship between any two variables is "Does knowing someone's score on `\(X_1\)` affect my guess for their score on `\(X_2\)`?"
+
+Are dummy codes associated with a categorical predictor correlated or uncorrelated?
+
+--
+
+
+```r
+cor(solomon[,grepl("dummy", names(solomon))], use = "pairwise")
+```
+
+```
+##            dummy_2    dummy_3    dummy_4    dummy_1
+## dummy_2  1.0000000 -0.3306838 -0.2833761 -0.3239068
+## dummy_3 -0.3306838  1.0000000 -0.3387900 -0.3872466
+## dummy_4 -0.2833761 -0.3387900  1.0000000 -0.3318469
+## dummy_1 -0.3239068 -0.3872466 -0.3318469  1.0000000
+```
+
+
+---
+
 ### Time savers
 
 R will automatically convert factor-level variables into dummy codes -- just make sure your variable is a factor before adding it to the model!
@@ -1575,6 +1597,7 @@ summary(mod.3)
 ## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
 ## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
 ```
+
 
 ---
 
@@ -1688,6 +1711,14 @@ anova(mod.3)
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
+
+---
+
+class: inverse
+
+## Next time...
+
+Analysis of Variance (the long way)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

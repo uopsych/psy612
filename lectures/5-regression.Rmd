@@ -13,19 +13,73 @@ output:
 ```{r, echo = F, warning = F, message = F}
 library(tidyverse)
 ```
+## Last week -- Inferential tests
 
-## Last time...
+.pull-left[
+**Omnibus test**
 
-- Partitioning variance
+- Does the model fit the data?
 
-    - $SS_Y, SS_\hat{Y}$
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
     
-    - $R^2$
+* Effect size: Model fit can be measured in terms of $\large R^2$ or $\large s_{Y|X}$
+  ]
+  
+--
+
+.pull-right[
+**Coefficient test**
+
+- Does X explain Y?
+    - Is the slope of the regression line flat?
+
+- *t*-test (is this slope bigger than 0?)
+    - In a univariate regression model, the test of the slope is equivalent to the omnibus test
+
+* Effect size: the size of the coefficient $(b)$ 
     
+  ]
+  
+    
+---
 
-- Statistical inference and regression
+## Last time
 
-    - NHST: does this model fit the data?
+.pull-left[
+
+**Unstandardized regression equation**
+
+$$Y = b_0 + b_1X + e$$
+
+- Intercept and slope are interpreted in the units of Y.
+  - Useful if the units of Y are meaningful. (Dollars, days, donuts)
+  
+- Built from covariances and variances
+
+$$b_1 = \frac{cov_{XY}}{s^2_X}$$
+
+]
+
+.pull-right[
+
+**Standardized regression equation**
+
+$$Z_Y = b^*_1Z_X + e$$
+
+- Slope are interpreted in standardized units.
+  - Useful for comparison
+  
+- Built from correlations
+
+$$b^*_1 = r_{xy}$$
+
+]
+
+
+
+
     
 ---
 ## Terminology
@@ -40,7 +94,7 @@ library(tidyverse)
 
 --
   - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation. )
+  - The standard deviation of Y not accounted for by the model.(Compare this to the original standard deviation. 
   
 - $MSE$
 
@@ -61,11 +115,12 @@ Atir, S., Rosenzweig, E., & Dunning, D. (2015). [When knowledge knows no bounds:
 
 ---
 
-```{r,  message = F}
+```{r,  message = F, highlight.output=4:5}
 library(here)
 expertise = read.csv(here("data/expertise.csv"))
 psych::describe(expertise)
-
+```
+```{r}
 cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion")])
 ```
 
@@ -111,7 +166,7 @@ summary(fit.1)
 
 
 ---
-## Confidence interval for coefficents
+## Confidence interval for coefficients
 
 - same equation as we've been working with:
 
@@ -133,12 +188,12 @@ The formula to estimate the standard error of any particular $\hat{Y_i}$ is
 $$s_{\hat{Y}_X} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
 ---
 
-```{r, highlight.output = 8}
+```{r, highlight.output = 5}
 model_info = broom::augment(fit.1)
 psych::describe(model_info, fast=T)
 ```
 ```{r}
-head(model_info[,c("overclaiming_proportion", ".fitted", ".sigma")])
+head(model_info[,c("overclaiming_proportion", ".fitted", ".se.fit")])
 ```
 
 
@@ -246,11 +301,11 @@ $$\Large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^
 
 - very similar to confidence bands around regressions line
 
-- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new Yi given x, rather than Ybar given x)
+- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new $Y_i$ given x, rather than $\bar{Y}$ given x)
 
-- Because there is greater variation in predicting an individual value rather than a collection of individual values (ie the mean) the prediction band is greater
+- Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is greater
 
-- Combines unknown variability in 1) the estimated mean (as reflected in se of b) 2) peoples scores around  mean (residual standard error) 
+- Combines unknown variability in 1) the estimated mean $(\text{as reflected in }SE_b)$ 2) peoples scores around  mean $(\text{residual standard error }, s_{Y|X}) $
 
 $$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
 ---
@@ -453,7 +508,7 @@ However, when we expand into multiple regression (next week), the matrix algebra
 ---
 ## Model Comparison
 
-- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick wtih a parsimonious model.   
+- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
 
 - Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
 
@@ -496,9 +551,9 @@ anova(fit.1, fit.0)
 ---
 ## Model Comparisons 
 
-- Model comparisons are redundent with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
+- Model comparisons are redundant with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
 
-- Key is to start thikning about your implicit alternative models
+- Key is to start thinking about your implicit alternative models
 
 - The ultimate goal would be to create two models that represent two equally plausible theories. 
 
