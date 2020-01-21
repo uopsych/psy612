@@ -188,12 +188,12 @@ The formula to estimate the standard error of any particular $\hat{Y_i}$ is
 $$s_{\hat{Y}_X} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
 ---
 
-```{r, highlight.output = 8}
+```{r, highlight.output = 5}
 model_info = broom::augment(fit.1)
 psych::describe(model_info, fast=T)
 ```
 ```{r}
-head(model_info[,c("overclaiming_proportion", ".fitted", ".sigma")])
+head(model_info[,c("overclaiming_proportion", ".fitted", ".se.fit")])
 ```
 
 
