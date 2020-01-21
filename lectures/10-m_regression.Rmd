@@ -66,7 +66,6 @@ library(here)
 rotate = read.csv(here("data/pursuit_rotor.csv"))
 head(rotate)
 class(rotate$Group)
-rotate$Group = as.factor(rotate$Group)
 rotate$Group_lab = factor(rotate$Group, 
                           labels = c("Controllable\nPredictable", 
                                      "Uncontrollable\nPredictable",
@@ -207,154 +206,244 @@ $$\large df_b = G-1$$
 How are these degrees of freedom determined?
 
 ---
+ANOVA assumes homogeneity of group variances.  Under that assumption, the separate group variances are pooled to provide a single estimate of within-group variability.
+
+$$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2 = \sum_{k=1}^G(N_k-1)\hat{\sigma}^2_k$$
+The degrees of freedom are likewise pooled:
+
+$$\large df_w = N-G=(N_1-1)+(N_2-2)+\dots+(N_G-1)$$
+Where have we seen similar pooling?
+
+---
+
+If data are normally distributed, then the variance is $\chi^2$ distributed.  The ratio of two $\chi^2$ distributed variables is F distributed.
+
+In analysis of variance, the ratio of the mean squares (variance estimates) is symbolized by $F$ and has a sampling distribution that is $F$ distributed with degrees of freedom equal to $df_b$ and $df_w$.  That sampling distribution is used to determine if an obtained $F$ statistic is unusual enough to reject the null hypothesis.
+
+$$\large F = \frac{MS_b}{MS_w}$$
+---
+
+$$\large F = \frac{MS_b}{MS_w}$$
+
+If the null hypothesis is true, $F$ has an expected value of approximately 1.00 (the numerator and denominator are estimates of the same variability). 
+
+If the null hypothesis is false, the numerator will be larger than the denominator because systematic, between-group differences contribute to the variance of the means, but not to the variance within groups (ideally).  If $F$ is "large enough," we will reject the null hypothesis as a reasonable description of the obtained variability. 
+
+---
+
+The $F$ statistic can be viewed as follows:
+
+$$\large F = \frac{\hat{Q} + \hat{\sigma}^2}{\hat{\sigma}^2}$$
+
+The extra term in the numerator (Q) is the treatment effect that, if present, increases variability among the means but does not affect the variability of scores within a group (treatment is a constant within any group).
+
+As the treatment effect gets larger, the $F$ statistic departs from 1.00. If it departs enough, we claim F to be rare or unusual under the null and reject the null. The $F$ probability density distribution tells us how rare or unusual a particular $F$ statistic happens to be.  The shape of the $F$ distribution is defined by its parameters, $df_b$ and $df_w$.
+
+---
+
+```{r echo = F, fig.width = 10, fig.height = 6}
+data.frame(F = c(0,8)) %>%
+  ggplot(aes(x = F)) +
+  stat_function(fun = function(x) df(x, df1 = 3, df2 = 196), 
+                geom = "line") +
+  stat_function(fun = function(x) df(x, df1 = 3, df2 = 196), 
+                geom = "area", xlim = c(2.65, 8), fill = "purple") +
+  geom_vline(aes(xintercept = 2.65), color = "purple")+
+  scale_y_continuous("Density") + scale_x_continuous("F statistic") +
+  theme_bw(base_size = 20)
+```
+For 3 and 196 degrees of freedom, an $F$ statistic of 2.65 or greater will indicate between-groups variability relative to within-group variability that is unusual if the null hypothesis is true.
 
 
-<!-- ## Group level multiple regression -->
-<!-- - i.e., ANOVA models   -->
-<!-- - Need to put numbers to our categories -->
-<!-- - Dummy code is default -->
-<!-- - Effect coding is an option -->
-<!-- - Other types too (though most are unhelpful) -->
+---
 
-<!-- ```{r, echo = FALSE} -->
-<!-- library(tidyverse) -->
-<!-- library(forcats) -->
-<!-- one.way <- read.csv("anova.csv") -->
-<!-- one.way$group <- one.way$IV -->
-<!-- one.way$group <- as.factor(one.way$group) -->
-<!-- one.way <- one.way %>% -->
-<!--   mutate(group = fct_recode(group, -->
-<!--     "control"    = '0', -->
-<!--     "tx1"    = '1', -->
-<!--     "tx2"    = '2')) %>%  -->
-<!--   as_tibble() -->
+ANOVA for the sample data:
 
-<!-- library (broom) -->
+```{r}
+fit_1 = aov(Time ~ Group_lab, data = rotate)
+summary(fit_1)
+```
+
+The $F$ statistic is highly unusual in the $F$ distribution, assuming the null hypothesis is true.  We reject the null hypothesis.
+
+Note: how does the output above compare to this output? What is the difference between the two?
+
+```{r}
+fit_1.1 = aov(Time ~ Group, data = rotate)
+summary(fit_1.1)
+```
+
+
+---
+```{r}
+fit_1 = aov(Time ~ Group_lab, data = rotate)
+summary(fit_1)
+```
+We know the means are not equal, but the particular source of the inequality is not revealed by the $F$ test.
+
+One simple way to determine what is behind the significant $F$ test is to compare each condition to all other conditions.
+
+These pairwise comparisons can quickly grow in number as the number of conditions increases.  With 4 (k) conditions, we have k(k-1)/2 = 6 possible pairwise comparisons.
+
+---
+
+As the number of groups in the ANOVA grows, the number of possible pairwise comparisons increases dramatically. 
+
+
+```{r,echo = F, fig.width = 10, fight.height = 6}
+data.frame(g = 2:15) %>%
+  mutate(num = (g*(g-1))/2) %>%
+  ggplot(aes(x = g, y = num)) +
+  geom_line(size = 1.5) +
+  geom_point(size = 3)+
+  scale_x_continuous("Number of Groups in the ANOVA") +
+  scale_y_continuous("Number of Pairwise Comparisons") +
+  theme_bw()
+```
+
+---
+
+As the number of significance tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increses.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we don’t make a Type I error for just one test is:
+
+$$\large P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$
+The probability that we don't make a Type I error for two tests is (note the reason we assume independence):
+
+$$\large P(\text{No Type I}, 2 \text{ test}) = (1-\alpha)(1-\alpha)$$
+---
+For C tests, the probability that we make **no** Type I errors is
+
+$$\large P(\text{No Type I}, C \text{ tests}) = (1-\alpha)^C$$
+We can then use the following to calculate the probability that we make one or more Type I errors in a collection of C independent tests.
+
+$$\large P(\text{At least one Type I}, C \text{ tests}) = 1-(1-\alpha)^C$$
+As the number of comparisons grows, the inflation of the Type I error rate can be substantial.
+
+---
+
+The Type I error inflation that accompanies multiple comparisons motivates the large number of "correction" procedures that have been developed.
+
+```{r,echo = F, fig.width = 10, fight.height = 6}
+data.frame(g = 2:15) %>%
+  mutate(num = (g*(g-1))/2,
+         p_notype1 = (1-.05)^num,
+         p_type1 = 1-p_notype1) %>%
+  ggplot(aes(x = g, y = p_type1)) +
+  geom_line(size = 1.5) +
+  geom_point(size = 3)+
+  scale_x_continuous("Number of Groups in the ANOVA") +
+  scale_y_continuous("Probability of a Type I Error") +
+  theme_bw()
+```
+
+---
+
+Multiple comparisons, each tested with $\alpha_{per-test}$, increases the family-wise $\alpha$ level. 
+
+$$\large \alpha_{family-wise} = 1 - (1-\alpha_{per-test})^C$$
+Šidák showed that the family-wise a could be controlled to a desired level (e.g., .05) by changing the $\alpha_{per-test}$ to:
+
+$$\large \alpha_{per-wise} = 1 - (1-\alpha_{family-wise})^{\frac{1}{C}}$$
+Bonferroni (and Dunn, and others) suggested this simple approximation: 
+
+$$\large \alpha_{per-test} = \frac{\alpha_{family-wise}}{C}$$
+
+This is typically called the Bonferroni correction and is very often used even though better alternatives are available. 
+
+---
+
+```{r}
+pc_1 = pairwise.t.test(x = rotate$Time, g = rotate$Group, 
+                       p.adjust.method = "none")
+pc_1
+```
+
+```{r}
+pc_2 = pairwise.t.test(x = rotate$Time, g = rotate$Group, 
+                       p.adjust.method = "bonferroni")
+pc_2
+```
+
+---
+
+The Bonferroni procedure is conservative. Other correction procedures have been developed that control family-wise Type I error at .05 but that are more powerful than the Bonferroni procedure.  The most common one is the Holm procedure.
+
+The Holm procedure does not make a constant adjustment to each per-test $\alpha$. Instead it makes adjustments in stages depending on the relative size of each pairwise p-value.
+
+1. Rank order the p-values from largest to smallest.
+2. Start with the smallest p-value. Multiply it by its rank.
+3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the previous step, keep it. Otherwise replace with the previous step adjusted p-value.
+4.  Repeat Step 3 for the remaining p-values.
+5. Judge significance of each new p-value against $\alpha = .05$.
+
+---
+
+```{r,echo = F, results = 'asis'}
+
+data.frame(or = c(.0023, .0012, .0450, .0470, .0530, .2100),
+           rank = c(6:1)) %>%
+  mutate(rankp = or*rank,
+         holm = c(.0138, .0138, .1800, .1800, .1800, .2100)) %>%
+  kable(., 
+        col.names = c("Original p value", "Rank", 
+                      "Rank x p", "Holm")) %>% kable_styling()
+```
+
+A single adjusted per-test a would be used with the Bonferroni procedure: .05/6 = .0083. We would compare each original p-value to this new criterion and claim as significant only those that are less. Or, we could multiply the original p-values by 6 and judge them against a =.05.
+
+---
+
+Performing the test using the `lm()` function means that some of the possible pairwise comparisons are built in:
+
+```{r}
+rotate$Group = as.factor(rotate$Group)
+coef(summary(lm(Time~Group, data = rotate)))
+pairwise.t.test(x = rotate$Time, g = rotate$Group, 
+                       p.adjust.method = "none")
+```
+
+---
+
+class: inverse
+
+Assumptions and diagnostics
+
+## Next time...
+
+<!-- ## Contrasts  -->
+
+<!-- You can change which group is the reference: -->
+<!-- ```{r```{r} -->
+<!-- contrasts(rotate$Group) = contr.treatment(n = 4, base = 3) -->
+<!-- coef(summary(lm(Time~Group, data = rotate))) -->
+<!-- ```} -->
+<!-- contrasts(rotate$Group) = contr.treatment(n = 4, base = 3) -->
+<!-- coef(summary(lm(Time~Group, data = rotate))) %>% kable(., digits = c(2,2,2,3)) %>% kable_styling() -->
 <!-- ``` -->
 
-<!-- ## When working with factors -->
-<!-- - know thy class -->
+<!-- You're not restricted to simple dummy coding. Choosing another variant of contrast codes allows you to test more specific hypotheses. There are some common coding schemes.  -->
+<!-- --- -->
+<!-- For example, **deviation coding** (sometimes called **"effect coding"**): -->
+
 <!-- ```{r} -->
-<!-- class(one.way$group) -->
-<!-- table(one.way$group) -->
-<!-- ``` -->
-<!-- - Many base R functions automatically convert character vectors to factors -->
-<!-- - This is okay if you are just tossing into a regression model but problematic for many uses -->
-
-
-<!-- ## Group level multiple regression -->
-<!-- ```{r} -->
-<!-- model.1 <- lm(drugs ~ group, data = one.way )  -->
-<!-- summary(model.1) -->
-<!-- ``` -->
-
-<!-- ## What happened?  -->
-
-<!-- - For every nominal/categorical variable that has more than 2 levels R (default R) automatically creates L-1 dummy variables   -->
-
-<!-- - Each of these dummy variables consists of 0 & 1s just like before, except 1 group (the reference group) only is coded as a zero -->
-
-<!-- - The interpretation of each coefficent is the difference between the group coded 1 and the reference group -->
-
-<!-- ## group means -->
-<!-- ```{r, message=FALSE} -->
-<!-- library(dplyr) -->
-<!-- (one.way %>%  -->
-<!--     group_by(group) %>%  -->
-<!--     filter(!is.na(drugs)) %>%  -->
-<!--     summarise(mean(drugs))) -->
-<!-- ``` -->
-
-
-<!-- ## See what R is doing with contrasts function -->
-<!-- - a part of every factor  -->
-<!-- ```{r} -->
-<!-- contrasts(one.way$group) -->
-
-<!-- # Can see the same with only 2 levels -->
-<!-- contrasts(Multipleregression$group) -->
-<!-- ``` -->
-
-<!-- ## reordering -->
-<!-- - no inherent order, so what does R spit out at you first?  -->
-<!-- - default is alphabetic, but what if you wanted it by another variable -->
-
-<!-- ```{r} -->
-<!-- levels(one.way$group) -->
-<!-- one.way$group.2 <- relevel(one.way$group, "tx2") -->
-<!-- levels(one.way$group.2) -->
-<!-- ``` -->
-
-<!-- ##  -->
-<!-- ```{r} -->
-<!-- model.2 <- lm(drugs ~ group.2, data = one.way )  -->
-<!-- tidy(summary(model.2)) -->
-<!-- contrasts(one.way$group.2) -->
-<!-- ``` -->
-
-
-<!-- ## contrasts -->
-<!-- ```{r} -->
-<!-- ## dummy variables via: -->
-<!-- contr.treatment(4) -->
-<!-- ## effect coding via:  -->
 <!-- contr.sum(4) -->
 <!-- ``` -->
 
-<!-- ## Asign contrast to factor variable -->
-
-<!-- ```{r} -->
-<!-- contr.sum(3) -->
-<!-- contrasts(one.way$group) <- contr.sum(3) -->
-<!-- model.3 <- lm(drugs ~ group, data = one.way )  -->
-<!-- tidy(model.3) -->
-<!-- ``` -->
-<!-- ## effects (sum) coding -->
-<!-- - note: intercept is the means of means -->
-<!-- ```{r} -->
-<!-- library(psych) -->
-<!-- describe(one.way$drugs) -->
-<!-- table(one.way$group) -->
-<!-- ``` -->
-<!-- - you may want to do "weighted" effect coding -->
-
-<!-- ##  -->
-<!-- ```{r} -->
-<!-- anova(model.3) -->
-<!-- ``` -->
-<!--  - What does the ANOVA table look like for model.1 and model.2?  -->
-<!--  - note the df for SSregression/SSbetween -->
-
-
-<!-- ## what happens if you want a different reference group?  -->
-<!-- - in addition to relevel (and fct_relevel in forcats) you can change the contrast matrix -->
-<!-- ```{r} -->
-<!-- contrasts(one.way$group) <- contr.treatment(3, base = 2) -->
-<!-- model.4 <- lm(drugs ~ group, data = one.way )  -->
-<!-- tidy(model.4) -->
+<!-- ```{r, results='asis'} -->
+<!-- contrasts(rotate$Group) = contr.sum(n = 4) -->
+<!-- coef(summary(lm(Time~Group, data = rotate))) %>% kable(., digits = c(2,2,2,3)) %>% kable_styling() -->
 <!-- ``` -->
 
-<!-- ## -->
+<!-- --- -->
 
-<!-- ```{r} -->
-<!-- contrasts(one.way$group) <- contr.treatment(3, base = 3) -->
-<!-- model.5 <- lm(drugs ~ group, data = one.way )  -->
-<!-- tidy(model.5) -->
-<!-- ``` -->
+<!-- ### Contrasts -->
 
+<!-- You can create a contrast matrix that tests any number of hypotheses, like whether groups 1 and 3 are different from group 4. The rules for setting up contrast codes are: -->
 
-<!-- ## What happens if you have both nominal and continuous variables in the same model?  -->
+<!-- 1. The sum of the weights across all groups for each code variable must equal 0. (Sum down the column = 0). -->
 
-<!-- ```{r} -->
-<!-- model.6 <- lm(drugs ~ group + alcohol, data = one.way )  -->
-<!-- tidy(model.6) -->
-<!-- ``` -->
+<!-- 2. The sum of the product of each pair of code variables, $C_1C_2,$ must equal 0. (This is challenging when your groups are unequal sizes). -->
 
-<!-- ## how should you code variables to begin with? -->
+<!-- 3. The difference between the value of the set of positive weights and the set of negative weights should equal 1 for each code variable (column). -->
 
-<!-- - Easy enough to work with factor variables that have their level as their name -->
-<!-- - No need to manually change (or create) a number associated with a level and use as.numeric -->
-<!-- - For simple dichotomous variables, sometimes people do code 0/1 rather than tx/control for example -->
-<!-- - Information could be lost without a code book, so best to name the variable what is coded 1 (e.g., tx or female rather than group or gender) -->
 
 
