@@ -1,6 +1,6 @@
 notes for lab materials
 
-2-lab.html
+Lab 2: Univariate Regression *CORY*
 
 saving lm() output as a list 
   * how to explore this using View()
@@ -21,7 +21,9 @@ APA worthy tables
     * using argument `file = file.doc` argument to save to external file
     * this one doesn't work with Rmarkdown (that saves using pandoc, which is what's used to create HTML and Word files)
     
-3-lab.html
+------------------------------------------------------------------------------------------------------
+    
+Lab 3: Regression (cont) & GLM *BRENDAN*
 
 APA graphics
   *sjPlot::plot_model()
@@ -34,26 +36,52 @@ APA graphics
 * confint()
 * predict() -- within and out-of sample
 
+------------------------------------------------------------------------------------------------------
 
-one-way ANOVA
+Lab 4: Two continuous predictors *CORY*
+-partial correlations
+-semi-partial correlations (don't talk about how they're not symmetric -- this will be a HW question)
+-functions to teach = ppcor::pcor.test() and ppcor::spcor.test()
+-extracting output from these functions
+-multiple regression with two continuous predictors (how to interpret coefficients)
+-show how to make tables
 
+------------------------------------------------------------------------------------------------------
+
+Lab 5: Categorical predictors/one-way ANOVA *BRENDAN*
+-stats::aov() 
+-making your categorical predictor a factor (make sure it's not numeric)
+-review how factors work in R (don't talk about ordered vs. non-ordered)
+-look at degrees of freedom for your categorical predictor--does it make sense? 
+- dummy coding and effects coding
 * setting dummy codes with constrasts(outcome) = contr.treatment(1) #replace 1 with whatever level you want to be the reference
-    * also setting effects coding with contr.sum(3) #3 being the reference group
-    
-Lab 7: Interactions
+* also setting effects coding with contr.sum(3) #3 being the reference group
+
+------------------------------------------------------------------------------------------------------
+
+Lab 6: Assumptions and Diagnostics *CORY*
+
+------------------------------------------------------------------------------------------------------
+
+Lab 7: Interactions *BRENDAN*
 
 -interaction with continuous predictors 
 -simple slopes ("by hand" with +/- 1 SD)
 -reghelper::simple_slopes()
 -plotting interactions with sjPlot 
 
-Lab 8: Factorial ANOVA
+------------------------------------------------------------------------------------------------------
+
+Lab 8: Factorial ANOVA *BRENDAN*
 -polynomials?
 
+------------------------------------------------------------------------------------------------------
 
-Lab 9: Papaja
+Lab 9: Papaja *CORY*
 
-Lab 10: Bootstrapping
+------------------------------------------------------------------------------------------------------
+
+Lab 10: Bootstrapping *CORY*
 
 -use when you can't assume estimate is normally distribution; e.g. correlations 
 -use when comparing very small or unequal samples 
