@@ -307,6 +307,19 @@ summary(mod.2)
 
 ---
 
+In all multiple regression models, we have to consider the correlations between the IVs, as highly correlated variables make it more difficult to detect significance of a particular X. One useful way to conceptualize the relationship between any two variables is "Does knowing someone's score on $X_1$ affect my guess for their score on $X_2$?"
+
+Are dummy codes associated with a categorical predictor correlated or uncorrelated?
+
+--
+
+```{r}
+cor(solomon[,grepl("dummy", names(solomon))], use = "pairwise")
+```
+
+
+---
+
 ### Time savers
 
 R will automatically convert factor-level variables into dummy codes -- just make sure your variable is a factor before adding it to the model!

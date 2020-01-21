@@ -111,7 +111,7 @@ summary(fit.1)
 
 
 ---
-## Confidence interval for coefficents
+## Confidence interval for coefficients
 
 - same equation as we've been working with:
 
@@ -246,11 +246,11 @@ $$\Large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^
 
 - very similar to confidence bands around regressions line
 
-- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new Yi given x, rather than Ybar given x)
+- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new $Y_i$ given x, rather than $\bar{Y}$ given x)
 
-- Because there is greater variation in predicting an individual value rather than a collection of individual values (ie the mean) the prediction band is greater
+- Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is greater
 
-- Combines unknown variability in 1) the estimated mean (as reflected in se of b) 2) peoples scores around  mean (residual standard error) 
+- Combines unknown variability in 1) the estimated mean $(\text{as reflected in }SE_b)$ 2) peoples scores around  mean $(\text{residual standard error }, s_{Y|X}) $
 
 $$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
 ---
@@ -453,7 +453,7 @@ However, when we expand into multiple regression (next week), the matrix algebra
 ---
 ## Model Comparison
 
-- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick wtih a parsimonious model.   
+- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
 
 - Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
 
@@ -496,9 +496,9 @@ anova(fit.1, fit.0)
 ---
 ## Model Comparisons 
 
-- Model comparisons are redundent with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
+- Model comparisons are redundant with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
 
-- Key is to start thikning about your implicit alternative models
+- Key is to start thinking about your implicit alternative models
 
 - The ultimate goal would be to create two models that represent two equally plausible theories. 
 
