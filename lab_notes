@@ -39,3 +39,10 @@ one-way ANOVA
 
 * setting dummy codes with constrasts(outcome) = contr.treatment(1) #replace 1 with whatever level you want to be the reference
     * also setting effects coding with contr.sum(3) #3 being the reference group
+    
+Lab 7 
+
+-interaction with 2 continuous predictors 
+-simple slopes ("by hand" with +/- 1 SD)
+-reghelper::simple_slopes()
+-plotting interactions with sjPlot 
