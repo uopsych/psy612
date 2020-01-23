@@ -213,7 +213,7 @@ print(consc_data_new)
 ```
 <br>
 
-* Next we'll predict `Y` values for these out-of-sample `X` values. 
+* Now we can predict `Y` values for these out-of-sample `X` values based on the coefficients from our model. We just have to tell the `predict.lm()` function what our `newdata` is. 
 
 ```{r}
 predict.lm(model, newdata = consc_data_new)
