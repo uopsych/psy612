@@ -20,7 +20,7 @@ options(scipen = 999)
 
 # Purpose
 
-INTRO 
+Today we will briefly review of univariate regression and then will discuss how to summarize and visualize uncertainty about regression models using a variety of plotting methods. We will then touch on how to estimate regression coefficients using matrix algebra. Lastly, we will introduce the topic of the General Linear Model and demonstrate how GLM can be used to understand all of the statistical tests we have learned so far (*t*-tests, ANOVA, correlations, regressions) within one unifying framework. 
 
 To quickly navigate to the desired section, click one of the following links:
 
