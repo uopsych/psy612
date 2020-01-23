@@ -1,5 +1,5 @@
 ---
-title: "Lab 3: Univariate Regression (cont.) & GLM"
+title: "Lab 3: Univariate Regression (II) & GLM"
 output: 
   html_document: 
     fig_caption: yes
