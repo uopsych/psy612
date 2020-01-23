@@ -201,12 +201,12 @@ ggplot(new_df, aes(x = consc, y = sr_health)) +
 
 >**Answer:** Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is wider
 
-* But remember, we can plug *any* `X` value (i.e. conscientiousness score) into our equation and predict the corresponding `Y` value( i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
+* But remember, we can plug *any* `X` value (i.e. conscientiousness score) into our equation and predict the corresponding `Y` value (i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
+
+* To illustrate this, we'll first generate a data frame that has new X values (conscientiousness scores). To keep it simple, we'll create 20 new conscientiousness scores by drawing from a random normal distribution with the same mean and standard deviation as the conscientiousness variable from our original sample
 
 ```{r}
-# First, we'll generate a data frame that has new X values (conscientiousness scores)
-# We'll create 20 new conscientiousness scores by drawing from a random normal distribution with the same mean and standard deviation as the conscientiousness variable from our original sample
-
+# create new data
 consc_data_new <- data.frame(consc = rnorm(n = 20, mean = mean(health$consc), sd = sd(health$consc)))
 
 print(consc_data_new)
@@ -226,7 +226,7 @@ predict.lm(model, newdata = consc_data_new)
 ```{r}
 plot_model(model = model,    # name of model object
            type = "pred",    # show predicted values (i.e. regression line)
-           show.data = TRUE, # include data points
+           show.data = TRUE, # include data points on plot
            jitter = TRUE)    # add small amount of random variation to  to prevent overlap
 ```
 
@@ -238,7 +238,7 @@ ggscatter(data = health,              # name of data.frame
           y = "sr_health",            # DV (must be quoted)
           add = "reg.line",           # add regression line
           xlab = "Conscientiousness", # x-axis label
-          ylab = "Self-rated health", # x-axis label
+          ylab = "Self-rated health", # y-axis label
           conf.int = TRUE,            # show 95% confidence band around regression line
           cor.coef = TRUE)            # display correlation coefficient and p-value
 ```
