@@ -131,33 +131,33 @@ health %>%
 
 * The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that demonstrates what this 95% CI band really means. If we were to repeat this same experiment over and over and estimated our regression line each time, 95% of the time our regression line would fall within this confidence band.
 
-```{r echo=FALSE}
-library(ungeviz)
-library(gganimate)
-library(transformr)
-library(gifski)
+<!-- ```{r echo=FALSE} -->
+<!-- library(ungeviz) -->
+<!-- library(gganimate) -->
+<!-- library(transformr) -->
+<!-- library(gifski) -->
 
-set.seed(012220)
+<!-- set.seed(012220) -->
 
-boots <- bootstrapper(50)
+<!-- boots <- bootstrapper(50) -->
 
-p <- health %>%
-  ggplot(aes(x = consc, y = sr_health)) +
-  geom_smooth(method = "lm", color = NA) +
-  geom_point(alpha = 0.3) +
-  geom_point(data = boots, aes(group = .row)) +
-  geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) +
-  theme_minimal() +
-  labs(x = "Conscientiousness", y = "Self-rated health") +
-  transition_states(.draw, 1, 1) +
-  enter_fade() +
-  exit_fade() +
-  ease_aes()
+<!-- p <- health %>% -->
+<!--   ggplot(aes(x = consc, y = sr_health)) + -->
+<!--   geom_smooth(method = "lm", color = NA) + -->
+<!--   geom_point(alpha = 0.3) + -->
+<!--   geom_point(data = boots, aes(group = .row)) + -->
+<!--   geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) + -->
+<!--   theme_minimal() + -->
+<!--   labs(x = "Conscientiousness", y = "Self-rated health") + -->
+<!--   transition_states(.draw, 1, 1) + -->
+<!--   enter_fade() + -->
+<!--   exit_fade() + -->
+<!--   ease_aes() -->
 
-animate(p, fps = 3)
+<!-- animate(p, fps = 3) -->
 
-```
-<br>
+<!-- ``` -->
+<!-- <br> -->
 
 ## Prediction bands
 
@@ -197,15 +197,17 @@ ggplot(new_df, aes(x = consc, y = sr_health)) +
   theme_minimal()
 ```
 
+>**Question:** Why is the prediction band wider than the confidence band around our regression line?
+
+>**Answer:** Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is wider
+
 * But remember, we can plug *any* `X` value (i.e. conscientiousness score) into our equation and predict the corresponding `Y` value( i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
 
 ```{r}
 # First, we'll generate a data frame that has new X values (conscientiousness scores)
 # We'll create 20 new conscientiousness scores by drawing from a random normal distribution with the same mean and standard deviation as the conscientiousness variable from our original sample
 
-consc_data_new <- data.frame(consc = rnorm(n = 20,
-                                           mean = mean(health$consc), 
-                                           sd = sd(health$consc)))
+consc_data_new <- data.frame(consc = rnorm(n = 20, mean = mean(health$consc), sd = sd(health$consc)))
 
 print(consc_data_new)
 ```
@@ -222,7 +224,23 @@ predict.lm(model, newdata = consc_data_new)
 * `sjPlot::plot_model()`
 
 ```{r}
+plot_model(model = model,    # name of model object
+           type = "pred",    # show predicted values (i.e. regression line)
+           show.data = TRUE, # include data points
+           jitter = TRUE)    # add small amount of random variation to  to prevent overlap
+```
 
+* `ggpubr::ggscatter()`
+
+```{r}
+ggscatter(data = health,              # name of data.frame
+          x = "consc",                # IV (must be quoted)
+          y = "sr_health",            # DV (must be quoted)
+          add = "reg.line",           # add regression line
+          xlab = "Conscientiousness", # x-axis label
+          ylab = "Self-rated health", # x-axis label
+          conf.int = TRUE,            # show 95% confidence band around regression line
+          cor.coef = TRUE)            # display correlation coefficient and p-value
 ```
 
 
