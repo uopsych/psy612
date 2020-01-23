@@ -22,8 +22,11 @@ Bryan (2019) ["Happy Git with R."](https://happygitwithr.com) -- Interested in u
 
 Patil (2020) ["ggstatsplot"](https://indrajeetpatil.github.io/ggstatsplot/index.html) -- A very useful R package for creating visuals to display some basic univariate and bivariate descriptives. 
 
-## On basic statistics
+## On statistical models
 
 [YouTube series on linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 
 [PSY 611](https://uopsych.github.io/psy611/) -- Don't forget everything we covered last term!
+
+Dunn & Smyth (2019) [Generalized Linear Models With Examples in R](https://link.springer.com/book/10.1007/978-1-4419-0118-7) -- if you're looking for a supplemental (free, online) textbook to cover general and generalized linear models, I highly recommend this one. It includes useful tidbits, like [coding factors](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_1#Sec4), an expansion on the [matrix algebra notation](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec13) for multiple regression, and an extended section on the [R code](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec39) useful for linear models. Plus, it expands to cases we don't cover in class. 
+

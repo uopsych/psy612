@@ -61,7 +61,7 @@ t.1 &lt;- t.test(y ~ x, data = d)
 ```
 
 - Y is continuous 
-- X is a categoriocal/nominal (dichotomous) factor
+- X is a categorical/nominal (dichotomous) factor
 ]
 
 .pull-left[
@@ -79,7 +79,7 @@ r.1 &lt;- lm(y ~ x, data = d)
 
 ## General linear model
 
-This model (equation) can be very simple as in a treatment/control experiment. It can be very complex in terms of trying to understand something like academic achievment  
+This model (equation) can be very simple as in a treatment/control experiment. It can be very complex in terms of trying to understand something like academic achievement  
 
 The majority of our models fall under the umbrella of a general(ized) linear model
 
@@ -355,7 +355,7 @@ The *p*-values for the two tests are the same, because they are the same test.
 The probability distribution may differ, however. 
   - *t*-test uses a *t*-distribution
   - regression uses an *F*-distribution for the omnibus test
-  - regression uses a *t*-distributoin for the test of the coefficients
+  - regression uses a *t*-distribution for the test of the coefficients
   
 In the case of a single binary predictor, the *t*-statistic for the *t*-test will be identical to the *t*-statistic of the regression coefficient test.
 
@@ -566,11 +566,28 @@ summary(a.2)
 ---
 ## summary
 
-The general linear model is a way of mathematically building a theorecal model and testing it with data. GLMs assume the relationship between your IVs and DV is linear
+The general linear model is a way of mathematically building a theoretical model and testing it with data. GLMs assume the relationship between your IVs and DV is linear
 
 - *t*-tests, ANOVAs, even `\(\chi^2\)` tests are special cases of the general linear model. The benefit to looking at these tests through the perspective of a linear model is that it provides us with all the information of those tests and more! Plus it provides a more systematic way at 1) building and testing your theoretical model and 2) comparing between alternative theoretical models
 
-You can get 1) estimates and 2) fit statistics from the model. Both are important.
+You can get 1) estimates and 2) fit statistics from the model. Both are important. 
+
+---
+
+.pull-left[
+&lt;blockquote class="twitter-tweet"&gt;&lt;p lang="en" dir="ltr"&gt;I made this meme for our stats class last week and I thought you might like to see it. &lt;a href="https://t.co/ecnfsXHvey"&gt;pic.twitter.com/ecnfsXHvey&lt;/a&gt;&lt;/p&gt;&amp;mdash; Stuart Ritchie (@StuartJRitchie) &lt;a href="https://twitter.com/StuartJRitchie/status/1188423700795801601?ref_src=twsrc%5Etfw"&gt;October 27, 2019&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+]
+.pull-right[
+![](images/ritchie.png)
+]
+
+---
+
+class: inverse
+
+## Next time
+
+Part- and partial correlations
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
