@@ -139,7 +139,7 @@ health %>%
 
 <!-- set.seed(012220) -->
 
-<!-- boots <- bootstrapper(50) -->
+<!-- boots <- bootstrapper(100) -->
 
 <!-- p <- health %>% -->
 <!--   ggplot(aes(x = consc, y = sr_health)) + -->
@@ -165,11 +165,11 @@ health %>%
 
 * In addition, we can also predict an individual's score ($Y_i$) given any value of x. From our regression model, we have the following equation that represents how our model characterizes the relationship between conscientiousness and self-rated health: 
 
-$$\hat{Y}_{i} = 1.6569733 + 0.4904059X_{i}$$
+$$\hat{health}_{i} = 1.6569733 + 0.4904059 * consc_{i}$$
 
 * For example, if we know someone's conscientiousness score is `3.5`, we can easily predict their score for self-rated health according to our model: 
 
-$$\hat{Y}_{i} = 1.6569733 + 0.4904059*3.5 = 3.374$$
+$$\hat{health} = 1.6569733 + 0.4904059*3.5 = 3.374$$
 
 * The `predict.lm()` function gives us an easy way to get the predicted `Y` values from all the `X` values in our dataset.  
 
@@ -248,6 +248,41 @@ ggscatter(data = health,              # name of data.frame
 
 # Regression with matrix algebra
 
+* Create the **`X`** matrix 
+
+```{r}
+x_mat <- health %>% 
+  mutate(ones = rep(1, nrow(.))) %>% 
+  select(ones, consc) %>% 
+  as.matrix()
+
+print(x_mat)
+```
+
+* Create the **`Y`** matrix 
+
+```{r}
+y_mat <- health %>% 
+  select(sr_health) %>% 
+  as.matrix()
+
+print(y_mat)
+```
+
+* Apply the matrix algebra formula to solve for the **`b`** matrix
+
+$$\mathbf{b} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
+
+```{r}
+solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
+```
+
+* The `b`'s we just solved for using matrix algebra match the coefficients we get from `lm()`! 
+
+```{r}
+model$coefficients
+```
+
 ***
 
 # The General Linear Model
@@ -265,6 +300,7 @@ ggscatter(data = health,              # name of data.frame
 1. Calculating confidence intervals "by hand". 
 
 ```{r}
+model <- lm(sr_health ~ consc, data = health)
 model_summary <- summary(model)
 
 # extract coefficients
@@ -296,7 +332,168 @@ confint(model)
 
 ***
 
-## Minihack 2
+## Minihack 2: Matrix algebra
+
+Refer back to the [lab on matrix algebra](https://uopsych.github.io/psy611/labs/lab-3.html){target="_blank"} from 611 if needed. 
+
+So, the steps we will take are:
+1. Create the Matrix $\mathbf{X}$ & Vector $\mathbf{Y}$
+2. Produce $\mathbf{X'}$ (also called $\mathbf{X^T}$ or the transpose of $\mathbf{X}$)
+3. Produce $\mathbf{X'X}^{-1}$ (inverse of $\mathbf{X'X}$)
+4. Produce $\mathbf{X'Y}$
+5. Produce $\mathbf{B = (X'X)}^{-1}\mathbf{X'Y}$
+6. Confirm your results using the `lm()` function in R.
+
+## 1. Creating the Matrix $\mathbf{X}$
+
+The first thing we need to do is create the matrix $\mathbf{X}$, which is also called the *design matrix*. We are going to enter the matrix 'by hand' in R, but know that you could also enter the data/matrix into a .csv file and read that file into R.
+
+To enter a matrix in R, we use the `matrix()` function. If you look at the help documentation (by running `?matrix`) you can see that the first argument is the `data` (which can be entered as a list or vector of values). Then we specify the dimensions of the matrix using the `nrow =` and `ncol =` arguments. Finally, we tell it if the values are in being entered row-wise or column-wise by specifying `byrow =` (which can be `TRUE` or `FALSE`).
+
+So, now let's create our 4x3 design matrix. We will enter it column-wise.
+
+```{r creating_design_matrix_1}
+# minor note, though we usually refer to matrices
+# with capital letters, we'll use a lower case
+# x. R is case sensitive, and I recommend always using
+# lower case letters (a style called "snake_case")
+x <- matrix(c(1, 1, 1, 1, # what goes here?
+              1, 2, 7, 8, # X1 column
+              1, 2, 2, 1), # X2 column 
+            nrow = 4, ncol = 3, 
+            byrow = FALSE)
+```
+
+Next, take a look at the matrix to make sure it looks right.
+```{r creating_design_matrix_2}
+x
+```
+
+Yep, looks like we entered it correctly. 
+
+Now we'll create the vector $\mathbf{Y}$. This is just like creating any vector in R, so this should look very familiar. The main thing is to make sure the order is correct (i.e., matches the design matrix).
+
+```{r creating_Y_vector}
+y <- c(4, 5, 12, 14)
+```
+
+as always, we can take a look:
+```{r}
+y
+```
+
+Okay, that looks right too. Time to move on to step 2.
+
+## 2. Producing $\mathbf{X'}$
+
+Next, we need to produce $\mathbf{X'}$ or the transpose of **X**. To do that, we can use the `t()` function in R. All it requires is a matrix or dataframe, and then it returns the transpose of that matrix or dataframe. We'll name this x_t
+
+```{r obtaining_x_t}
+x_t <-  t(x)
+```
+
+And take a look at it alongside x to make sure everything looks OK.
+
+```{r obtaining_x_t_2}
+x
+x_t
+```
+
+Yep, looks like we sucessfully obtained $\mathbf{X'}$
+
+## 3. Producing $\mathbf{X'X}^{-1}$ 
+
+Next we need to obtain  $\mathbf{X'X}^{-1}$ or the inverse of $\mathbf{X'X}$. We'll do this in two steps. First, we'll create $\mathbf{X'X}$ by multiplying the original design matrix $\mathbf{X}$ (or `x` in R) by its transpose $\mathbf{X'}$ (or x_t in R). In R, we use `%*%` for matrix multiplication. Note that using `*` it would instead do element-wise multiplication. We'll create $\mathbf{X'X}$ and call it `xt_x`
+
+```{r produce_xtx}
+xt_x <- x_t %*% x
+xt_x
+```
+
+Then, we invert this new matrix using the `solve()` function. We'll call the resulting matrix `xtx_inv`.
+
+```{r invert_xtx}
+xtx_inv <- solve(xt_x)
+xtx_inv
+```
+
+## 4. Producing $\mathbf{X'Y}$
+
+Next, we need to obtain $\mathbf{X'Y}$, which we can get by again using the matrix multiplication operator, `%*%`.
+```{r prduce_xty}
+xt_y <- x_t %*% y
+xt_y
+```
+
+## 5. Produce $\mathbf{B}$
+
+Next, we have everything we need to obtain the coefficient matrix $\mathbf{B}$. Remember:
+
+$$\mathbf{B} = (\mathbf{X'X})^{-1}(\mathbf{X'Y})$$
+So we just need to use matrix multiplication to get the product of $(\mathbf{X'X})^{-1}$ & $(\mathbf{X'Y})$ which we just created in steps 3 and 4 above. 
+
+```{r produce_B}
+b <- xtx_inv %*% xt_y
+```
+
+And, let's see what the values for the coefficients are:
+```{r produce_B_2}
+b
+```
+
+Okay, now we've completed conducting a multiple regression using matrix algebra. Now we'll complete the last step and make sure our calculations for b match the results from R's `lm()` function.
+
+## 6. Confirming your results with `lm()`
+
+First, we need to combine the matrices x and y into a single dataframe. To keep things straight, we'll first give the columns of x column names. We'll do this using the `colnames()` function. We'll call the columns `intercept`, `x1`, and `x2`. We can assign new column names to an obect like so:
+```{r checking_our_work_1}
+colnames(x) <- c("intercept", "x1", "x2")
+# check that it worked
+x
+```
+We will do the same thing for y. However, because of how R represents and names things, we need to explicitly tell R y is a matrix in order to give it column names (otherwise it will think we're trying to name each element in the vector).
+```{r checking_our_work_2}
+y <- as.matrix(y)
+colnames(y) <- "y"
+y
+```
+
+There, that looks right. Now put them together, and put them into a dataframe:
+
+```{r}
+df <- as.data.frame(cbind(y, x))
+# note, if you wanted to do this
+# in the tidyverse style, with pipes, it
+# would look like this:
+#library(tidyverse)
+#df <- cbind(y, x) %>% 
+#  as.data.frame()
+```
+
+Next, we conduct the regression using the `lm()` function. Now we needed the intercept column when we calculated the regression with matrix algebra, but we don't need it for the `lm()` function because `lm()` puts that in automatically (this should hopefully seem familar, since we didn't explicitly enter the intercept in `lm()` in 611).
+
+```{r}
+model <- lm(y ~ x1 + x2, # remember, outcome ~ predictors
+            data = df) # enter the dataframe
+```
+
+Now we can see the cofficients
+```{r}
+summary(model)
+```
+And let's see those coefficient estimates next to the estimates we obtained with matrix algebra to check our work. We'll put them together into a little table using `cbind()`, label the columns to make it clear which column is the from the matrix calculations and which is from the `lm()` call.
+
+Our B vector is easy. The cofficients for the lm model can be accessed with `model$coefficients`. In `lm` results objects, the model coefficients are stored in a vector called `coefficients`, so `model$coefficients` tells R to give us just that vector. We'll put that as the second object in `cbind()` 
+```{r}
+comparison_table <- cbind(b, # coefficient matrix
+                          model$coefficients) # coefficients from lm
+
+colnames(comparison_table) <- c("matrix", "lm")
+comparison_table
+```
+
+Yep, everything lines up perfectly. Looks like we our matrix calculations were correct.
+
 
 ***
 
