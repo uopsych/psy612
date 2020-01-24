@@ -3327,12 +3327,11 @@ consc_data_new</code></pre>
 <p><span class="math display">\[\mathbf{y} = b_0 + b_1\mathbf{x} + e\]</span></p>
 <ul>
 <li><p>Recall that <code>y</code> is a vector of values, which can be represented as an <span class="math inline">\(n\times1\)</span> matrix, <span class="math inline">\(\mathbf{Y}\)</span>. Similarly, <code>x</code> can be represented as an <span class="math inline">\(n\times1\)</span> matrix, <span class="math inline">\(\mathbf{X}\)</span>.</p></li>
-<li><p>If we augment the matrix <span class="math inline">\(\mathbf{X}\)</span> to be an <span class="math inline">\(n\times2\)</span> matrix, in which the first column is filled with <code>1</code>’s, we can simplify our regression equation:</p></li>
+<li><p>If we augment the matrix <span class="math inline">\(\mathbf{X}\)</span> to be an <span class="math inline">\(n\times2\)</span> matrix, in which the first column is filled with <code>1</code>’s, we can simplify our regression equation (one property of the residuals is that the the average residual is 0, so we can remove <code>e</code> from the equation as well):</p></li>
 </ul>
 <p><span class="math display">\[\mathbf{Y} = \mathbf{XB}\]</span></p>
 <ul>
-<li><p>Note: <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(2 \times 1\)</span> matrix containing our estimates of the intercept and slope.</p></li>
-<li><p>One property of the residuals is that the the average residual is 0, so we can remove <code>e</code> from the equation as well.</p></li>
+<li>Note: <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(2 \times 1\)</span> matrix containing our estimates of the intercept and slope.</li>
 </ul>
 </div>
 <div id="example" class="section level2">
@@ -3548,11 +3547,12 @@ print(y_mat)</code></pre>
 <div id="glm" class="section level1">
 <h1>The General Linear Model</h1>
 <ul>
-<li>The <strong>general linear model (GLM)</strong> is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as:</li>
+<li><p>We just saw that regression works “under the hood” by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara mentioned in class, this matrix algebra equation works for <em>any</em> type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models…</p></li>
+<li><p>The <strong>general linear model (GLM)</strong> is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as:</p></li>
 </ul>
 <p><span class="math display">\[Data = Model + Error \]</span></p>
 <ul>
-<li><p>This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: <em>t</em>-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math under the hood.</p></li>
+<li><p>This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: <em>t</em>-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math at the end of the day.</p></li>
 <li><p>To illustrate this, we’ll turn back to an <a href="https://uopsych.github.io/psy611/labs/lab-8.html#the_data" target="_&quot;blank&quot;">example from 611</a>. The data are from Fox and Guyer’s (1978) anonymity and cooperation study. The data are included in the <code>{carData}</code> package, and you can see information about the data set using <code>?Guyer</code>. Twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (<code>cooperation</code>) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (<code>condition</code>).</p></li>
 <li><p>You can load in the data with the following code:</p></li>
 </ul>
@@ -3653,6 +3653,12 @@ t_test</code></pre>
 <div id="section-40" class="section level4">
 <h4></h4>
 <p><br></p>
+<blockquote>
+<p><strong>Question:</strong> What is the 95% CI around?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> The difference in mean cooperation scores for the public vs. anonymous conditions.</p>
+</blockquote>
 </div>
 </div>
 <div id="correlation" class="section level2">
@@ -3682,6 +3688,12 @@ cor_test</code></pre>
 <div id="section-42" class="section level4">
 <h4></h4>
 <p><br></p>
+<blockquote>
+<p><strong>Question:</strong> What is the 95% CI around this time?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> The correlation coefficient between cooperation and condition.</p>
+</blockquote>
 </div>
 </div>
 <div id="anova" class="section level2">
@@ -3705,6 +3717,12 @@ summary(anova_test)</code></pre>
 <div id="section-44" class="section level4">
 <h4></h4>
 <p><br></p>
+<blockquote>
+<p><strong>Question:</strong> What is the relationship between the <em>F</em> statistic from this ANOVA and the <em>t</em> statistic from our previous two tests?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> t is the square root of F</p>
+</blockquote>
 </div>
 </div>
 <div id="regression" class="section level2">
@@ -3741,6 +3759,12 @@ summary(regression)</code></pre>
 <div id="section-46" class="section level4">
 <h4></h4>
 <p><br></p>
+<blockquote>
+<p><strong>Question:</strong> What does the intercept represent? The slope?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> Intercept = the mean cooperation score for the condition that was coded as 0 (i.e. public); slope = difference in means between the two conditions</p>
+</blockquote>
 <hr />
 </div>
 </div>

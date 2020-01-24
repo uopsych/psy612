@@ -525,11 +525,13 @@ model$coefficients
 
 # The General Linear Model{#glm}
 
+* We just saw that regression works "under the hood" by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara mentioned in class, this matrix algebra equation works for *any* type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models...
+
 * The **general linear model (GLM)** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as: 
 
 $$Data = Model + Error $$ 
 
-* This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: *t*-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math under the hood.
+* This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: *t*-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math at the end of the day.
 
 * To illustrate this, we'll turn back to an [example from 611](https://uopsych.github.io/psy611/labs/lab-8.html#the_data){target=_"blank"}. The data are from Fox and Guyer’s (1978) anonymity and cooperation study. The data are included in the `{carData}` package, and you can see information about the data set using `?Guyer`. Twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
 
@@ -616,6 +618,11 @@ t_test
 ####
 <br>
 
+>**Question:** What is the 95% CI around? 
+
+>**Answer:** The difference in mean cooperation scores for the public vs. anonymous conditions. 
+
+
 ## Correlation 
 
 ####  {.tabset .tabset-fade .tabset-pills}
@@ -634,6 +641,11 @@ cor_test
 
 ####
 <br>
+
+>**Question:** What is the 95% CI around this time? 
+
+>**Answer:** The correlation coefficient between cooperation and condition. 
+
 
 ## ANOVA
 
@@ -654,6 +666,11 @@ summary(anova_test)
 ####
 <br>
 
+>**Question:** What is the relationship between the *F* statistic from this ANOVA and the *t* statistic from our previous two tests?
+
+>**Answer:** t is the square root of F
+
+
 ## Regression
 
 ####  {.tabset .tabset-fade .tabset-pills}
@@ -672,6 +689,10 @@ summary(regression)
 
 ####
 <br>
+
+>**Question:** What does the intercept represent? The slope? 
+
+>**Answer:** Intercept = the mean cooperation score for the condition that was coded as 0 (i.e. public); slope = difference in means between the two conditions 
 
 ***
 
