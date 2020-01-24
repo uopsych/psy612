@@ -37,6 +37,7 @@ library(psych) # for stats functions
 library(broom) # for cleaning up output
 library(sjPlot) # for plotting
 library(ggpubr) # for plotting
+library(carData) # for Guyer dataset
 ```
 
 ***
@@ -171,10 +172,10 @@ $$\hat{health}_{i} = 1.6569733 + 0.4904059 * consc_{i}$$
 
 $$\hat{health} = 1.6569733 + 0.4904059*3.5 = 3.374$$
 
-* The `predict.lm()` function gives us an easy way to get the predicted `Y` values from all the `X` values in our dataset.  
+* The `predict()` function gives us an easy way to get the predicted `Y` values from all the `X` values in our dataset.  
 
 ```{r}
-predict.lm(model)
+predict(model)
 ```
 
 * This should look familiar, as we already have gotten this information from `broom::augment()`. 
@@ -186,10 +187,20 @@ augment(model)$.fitted
 * We can use this information to create prediction bands
 
 ```{r}
-temp_var <- predict(model, interval="prediction")
-new_df <- cbind(health, temp_var)
+predicted <- predict(model, interval = "prediction")
+predicted
+```
 
-ggplot(new_df, aes(x = consc, y = sr_health)) +
+
+```{r}
+new_df <- cbind(health, predicted)
+new_df
+```
+
+
+```{r}
+new_df %>% 
+  ggplot(aes(x = consc, y = sr_health)) +
   geom_point() +
   geom_smooth(method=lm,se=TRUE) +
   geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.1) + # prediction band
@@ -203,20 +214,21 @@ ggplot(new_df, aes(x = consc, y = sr_health)) +
 
 * But remember, we can plug *any* `X` value (i.e. conscientiousness score) into our equation and predict the corresponding `Y` value (i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
 
-* To illustrate this, we'll first generate a data frame that has new X values (conscientiousness scores). To keep it simple, we'll create 20 new conscientiousness scores by drawing from a random normal distribution with the same mean and standard deviation as the conscientiousness variable from our original sample
+* To illustrate this, we'll first take a data frame that has new X values (conscientiousness scores). Let's pretend that we collected this data from a completely new sample of people.
 
 ```{r}
-# create new data
-consc_data_new <- data.frame(consc = rnorm(n = 20, mean = mean(health$consc), sd = sd(health$consc)))
+# read in new data
+consc_data_new <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-3/data/consc_new.csv")
 
-print(consc_data_new)
+# let's view it
+consc_data_new
 ```
 <br>
 
-* Now we can predict `Y` values for these out-of-sample `X` values based on the coefficients from our model. We just have to tell the `predict.lm()` function what our `newdata` is. 
+* Now we can predict `Y` values for these out-of-sample `X` values based on the coefficients from our model. We just have to tell the `predict()` function what our `newdata` is. 
 
 ```{r}
-predict.lm(model, newdata = consc_data_new)
+predict(model, newdata = consc_data_new)
 ```
 
 ## Other visualization tools
@@ -287,15 +299,72 @@ model$coefficients
 
 # The General Linear Model
 
-***
+```{r}
+guyer <- carData::Guyer
+```
+
+* Look at the first few rows
+
+```{r}
+head(guyer)
+```
+
+* Look at the structure of the data 
+
+```{r}
+str(guyer)
+```
+
+* Dummy code the `condition` variable
+
+```{r}
+guyer <-  guyer %>% 
+  mutate(condition = case_when(condition == "public" ~ 0,
+                               condition == "anonymous" ~ 1))
+
+```
 
 
+## *t*-test
+
+```{r}
+t_test <- t.test(formula = cooperation ~ condition, data = guyer, var.equal = TRUE)
+t_test
+```
+
+## Correlation 
+
+```{r}
+cor_test <- cor.test(formula = ~ cooperation + condition, data = guyer) # note the one-sided formula
+cor_test
+```
+
+## ANOVA
+
+```{r}
+anova_test <- aov(formula = cooperation ~ condition, data = guyer)
+summary(anova_test)
+```
+
+## Regression
+
+```{r}
+regression <- lm(formula = cooperation ~ condition, data = guyer)
+summary(regression)
+```
 
 ***
 
 # Minihacks
 
 ## Minihack 1: Calculating confidence intervals{#minihack1}
+
+* For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients (slope and intercept). Your job is start with the 
+
+```{r eval=FALSE}
+model <- lm(sr_health ~ consc, data = health)
+```
+
 
 1. Calculating confidence intervals "by hand". 
 
@@ -336,13 +405,43 @@ confint(model)
 
 Refer back to the [lab on matrix algebra](https://uopsych.github.io/psy611/labs/lab-3.html){target="_blank"} from 611 if needed. 
 
-So, the steps we will take are:
+
 1. Create the Matrix $\mathbf{X}$ & Vector $\mathbf{Y}$
+
+```{r}
+# your code here
+```
+
 2. Produce $\mathbf{X'}$ (also called $\mathbf{X^T}$ or the transpose of $\mathbf{X}$)
+
+```{r}
+# your code here
+```
+
 3. Produce $\mathbf{X'X}^{-1}$ (inverse of $\mathbf{X'X}$)
+
+```{r}
+# your code here
+```
+
 4. Produce $\mathbf{X'Y}$
+
+```{r}
+# your code here
+```
+
 5. Produce $\mathbf{B = (X'X)}^{-1}\mathbf{X'Y}$
+
+```{r}
+# your code here
+```
+
 6. Confirm your results using the `lm()` function in R.
+
+```{r}
+# your code here
+```
+
 
 ## 1. Creating the Matrix $\mathbf{X}$
 
