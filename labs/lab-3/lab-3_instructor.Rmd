@@ -97,7 +97,6 @@ tidy(model) %>% #
 
 > **Question:** What do the intercept and slope mean? What do the *t*-values tell us? 
 
-> **Answer:** Intercept = the expected value for self-rated health when conscientiousness is 0. Slope = the magnitude of the relationship between conscientiousness and self-rated health: for every 1-unit increase in conscientiousness, we expect a 0.49-unit increase in self-rated health. *t*-values are from a one-sample t-test assessing whether the slope and intercept are significantly different from 0; the *t* values represent the ratio of signal to noise (i.e. each b divided by its standard error).
 
 ## Confidence intervals
 
@@ -127,7 +126,6 @@ confint(model)
 
 >**Question:** What does these 95% CI for the slope of conscientiousness mean in plain English? 
 
->**Answer:** If we were to repeat this experiment over and over again, sampling from the same population, 95% of the time the slope we calculate would be between 0.25 and 0.73 (i.e. in 19 out of every 20 experiments we'd get a slope in this interval). MORE GENERALLY it means that if we carried out random sampling from the population a large number of times, and calculated the 95% CI each time around our coefficients (intercept and slope), then 95% of those intervals can be expected to contain the population parameters. In other words, we have good reason to believe the true population parameters ($\beta_0$ and $\beta_1$) fall in this interval because 95% of the time such intervals contain the true population parameters.
 
 ## Confidence bands
 
@@ -321,7 +319,6 @@ new_df %>%
 
 >**Question:** Why is the prediction band wider than the confidence band around our regression line?
 
->**Answer:** Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is wider
 
 ### Out-of-sample prediction
 
@@ -620,8 +617,6 @@ t_test
 
 >**Question:** What is the 95% CI around? 
 
->**Answer:** The difference in mean cooperation scores for the public vs. anonymous conditions. 
-
 
 ## Correlation 
 
@@ -643,8 +638,6 @@ cor_test
 <br>
 
 >**Question:** What is the 95% CI around this time? 
-
->**Answer:** The correlation coefficient between cooperation and condition. 
 
 
 ## ANOVA
@@ -668,8 +661,6 @@ summary(anova_test)
 
 >**Question:** What is the relationship between the *F* statistic from this ANOVA and the *t* statistic from our previous two tests?
 
->**Answer:** t is the square root of F
-
 
 ## Regression
 
@@ -692,8 +683,6 @@ summary(regression)
 
 >**Question:** What does the intercept represent? The slope? 
 
->**Answer:** Intercept = the mean cooperation score for the condition that was coded as 0 (i.e. public); slope = difference in means between the two conditions 
-
 ***
 
 # Minihacks
@@ -706,61 +695,38 @@ summary(regression)
 
 1. Create the Matrix $\mathbf{X}$ & Vector $\mathbf{Y}$
 
-```{r lab-3-52, echo=FALSE}
-guyer <- carData::Guyer
-
-guyer <-  guyer %>% 
-  mutate(condition = case_when(condition == "public" ~ 0,
-                               condition == "anonymous" ~ 1))
-
-```
-
-
 ```{r lab-3-53}
-x <- guyer %>% 
-  mutate(ones = rep(1, nrow(.))) %>% 
-  select(ones, condition) %>% 
-  as.matrix() %>% 
-  unname()
-
-y <- guyer %>% 
-  select(cooperation) %>%
-  as.matrix() %>% 
-  unname()
+# your code here
 ```
 
 2. Produce $\mathbf{X'}$ (also called $\mathbf{X^T}$ or the transpose of $\mathbf{X}$)
 
 ```{r lab-3-54}
-x_t <- t(x)
+# your code here
 ```
 
 3. Produce $\mathbf{X'X}^{-1}$ (inverse of $\mathbf{X'X}$)
 
 ```{r lab-3-55}
-xtx_inv <- solve(x_t %*% x)
-xtx_inv
+# your code here
 ```
 
 4. Produce $\mathbf{X'Y}$
 
 ```{r lab-3-56}
-xt_y <- x_t %*% y
-xt_y
+# your code here
 ```
 
 5. Produce $\mathbf{B = (X'X)}^{-1}\mathbf{X'Y}$
 
 ```{r lab-3-57}
-b <- xtx_inv %*% xt_y
-b
+# your code here
 ```
 
 6. Confirm your results using the `lm()` function in R.
 
 ```{r lab-3-58}
-regression <- lm(formula = cooperation ~ condition, data = guyer)
-regression$coefficients
+# your code here
 ```
 
 ***
@@ -776,67 +742,32 @@ model <- lm(sr_health ~ consc, data = health)
 1. Calculate confidence intervals "by hand". 
 
 ```{r lab-3-60}
-model <- lm(sr_health ~ consc, data = health)
-model_summary <- summary(model)
-
-# extract coefficients
-int <- model_summary$coefficients[[1,1]]
-slope <- model_summary$coefficients[[2,1]]
-
-# extract standard errors of coefficients
-int_se <- model_summary$coefficients[[1,2]]
-slope_se <- model_summary$coefficients[[2,2]]
-
-# df for t-distribution (will be denominator df from F statistic)
-df <- model_summary$fstatistic[["dendf"]]
-
-# intercept 95% CI 
-int_ci_l <- int - qt(.975, df = df)*int_se
-int_ci_u <- int + qt(.975, df = df)*int_se
-
-# slope 95% CI 
-slope_ci_l <- slope - qt(.975, df = df)*slope_se
-slope_ci_u <- slope + qt(.975, df = df)*slope_se
+# your code here
 ```
 
 2. Verify that your answer corresponds to the result from `confint()`. 
 
 ```{r lab-3-61}
-ci <- confint(model)
-ci
+# your code here
 ```
 
 3. Create a scatter plot representing the relationship between conscientiousness and self-rated health with a regression line and 95% confidence band. 
 
 ```{r lab-3-62}
-p1 <- health %>%
-  ggplot(aes(x = consc, y = sr_health)) + 
-  geom_point(size = 0.5, color = "darkgrey", alpha = 0.7) + 
-  geom_point(alpha = 0.3) + 
-  geom_smooth(method = "lm") +
-  labs(x = "Conscientiousness", y = "Self-rated health") + 
-  theme_minimal()
-
-p1
+# your code here
 ```
 
 3a. Add a line whose intercept is the lower bound of the 95% CI for the model intercept and whose slope is the upper bound of the 95% CI for the model slope. Hint: see `?geom_abline()`
 
 ```{r lab-3-63}
-p2 <- p1 + 
-  geom_abline(aes(intercept = ci[1,1], slope = ci[2,2]))
-
-p2
+# your code here
 ```
 
 
 3b. Now add another line whose intercept is the upper bound of the 95% CI for the model intercept and whose slope is the lower bound of the 95% CI for the model slope. 
 
 ```{r lab-3-64}
-p3 <- p2 + 
-  geom_abline(aes(intercept = ci[1,2], slope = ci[2,1]))
-
-p3
+# your code here
 ```
 
 3d. What does this show you about the relationship between the 95% CI's around the model coefficients and the 95% CI band around the regression line? 
