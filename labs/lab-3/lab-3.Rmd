@@ -20,7 +20,7 @@ options(scipen = 999)
 
 # Purpose
 
-Today we will briefly review of univariate regression and then will discuss how to summarize and visualize uncertainty about regression models using a variety of plotting methods. We will then touch on how to estimate regression coefficients using matrix algebra. Lastly, we will introduce the topic of the General Linear Model and demonstrate how GLM can be used to understand all of the statistical tests we have learned so far (*t*-tests, ANOVA, correlations, regressions) within one unifying framework. 
+Today we will briefly review univariate regression and then will discuss how to summarize and visualize uncertainty in regression models using a variety of plotting methods. We will then touch on how to estimate regression coefficients using matrix algebra. Lastly, we will introduce the General Linear Model and demonstrate how GLM can be used to understand all of the statistical tests we have learned so far (*t*-tests, ANOVA, correlations, regressions) within one unifying framework. 
 
 To quickly navigate to the desired section, click one of the following links:
 
@@ -33,7 +33,6 @@ You will need to load the following libraries to follow along with today's lab. 
 ```{r lab-3-1, message=FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
-library(psych) # for stats functions
 library(broom) # for cleaning up output
 library(sjPlot) # for plotting
 library(ggpubr) # for plotting
@@ -44,7 +43,7 @@ library(carData) # for Guyer dataset
 
 # Visualizing uncertainty{#uncertainty}
 
-* We're going to use the same dataset from previous labs about the relationship between conscientiousness and self-rated health. 
+* We're going to use the same dataset [from previous labs](https://uopsych.github.io/psy612/labs/lab-1/lab-1.html#hypothesis_testing_with_correlations){target="_blank"} about the relationship between conscientiousness and self-rated health. 
 
 ## Data and review
 
@@ -64,9 +63,21 @@ $$health_i = b_0 + b_1consc_i + e_i$$
 
 * Here's how we specified the model in R
 
-```{r lab-3-3}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE, lab-3-3}
 model <- lm(sr_health ~ consc, data = health)
+summary(model)
 ```
+
+##### Output
+
+```{r echo=FALSE, ref.label='lab-3-3'}
+```
+
+####
 <br>
 
 * Here are our coefficients...
@@ -416,13 +427,11 @@ $$\mathbf{y} = b_0 + b_1\mathbf{x} + e$$
 
 * Recall that `y` is a vector of values, which can be represented as an $n\times1$ matrix, $\mathbf{Y}$. Similarly, `x` can be represented as an $n\times1$ matrix, $\mathbf{X}$.
 
-* If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the first column is filled with `1`'s, we can simplify our regression equation:
+* If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the first column is filled with `1`'s, we can simplify our regression equation (one property of the residuals is that the the average residual is 0, so we can remove `e` from the equation as well): 
 
-$$\mathbf{y} = \mathbf{b}\mathbf{X}$$
+$$\mathbf{Y} = \mathbf{XB}$$
 
-* Note: $\mathbf{b}$ is a $1 \times 2$ matrix containing our estimates of the intercept and slope. 
-
-* One property of the residuals is that the the average residual is 0, so we can remove `e` from the equation as well.
+* Note: $\mathbf{B}$ is a $2 \times 1$ matrix containing our estimates of the intercept and slope. 
 
 ## Example
 
@@ -477,8 +486,7 @@ print(y_mat)
 
 * Apply the matrix algebra formula to solve for the **`b`** matrix
 
-$$\mathbf{b} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
-
+$$\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
 ####  {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
@@ -523,9 +531,7 @@ $$Data = Model + Error $$
 
 * This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: *t*-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math under the hood.
 
-* To illustrate this, we'll turn back to an [example from 611](https://uopsych.github.io/psy611/labs/lab-8.html#the_data){target=_"blank"}. 
-
-* The data are from Fox and Guyer’s (1978) anonymity and cooperation study. The data are included in the `{carData}` package, and you can see information about the data set using `?Guyer`. Twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
+* To illustrate this, we'll turn back to an [example from 611](https://uopsych.github.io/psy611/labs/lab-8.html#the_data){target=_"blank"}. The data are from Fox and Guyer’s (1978) anonymity and cooperation study. The data are included in the `{carData}` package, and you can see information about the data set using `?Guyer`. Twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
 
 * You can load in the data with the following code:
 
@@ -738,7 +744,7 @@ regression$coefficients
 
 ***
 
-## Minihack 2: Calculating confidence intervals{#minihack2}
+## Minihack 2: Confidence intervals{#minihack2}
 
 * For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients. Your job is start with the model output, stored as a list object (see below), and extract the relevant pieces of information to calculate the 95% CI around the intercept and slope. 
 
@@ -775,9 +781,41 @@ slope_ci_u <- slope + qt(.975, df = df)*slope_se
 2. Verify that your answer corresponds to the result from `confint()`. 
 
 ```{r lab-3-61}
-confint(model)
+ci <- confint(model)
+ci
 ```
 
-***
+3. Create a scatter plot representing the relationship between conscientiousness and self-rated health with a regression line and 95% confidence band. 
+
+```{r lab-3-62}
+p1 <- health %>%
+  ggplot(aes(x = consc, y = sr_health)) + 
+  geom_point(size = 0.5, color = "darkgrey", alpha = 0.7) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(method = "lm") +
+  labs(x = "Conscientiousness", y = "Self-rated health") + 
+  theme_minimal()
+
+p1
+```
+
+3a. Add a line whose intercept is the lower bound of the 95% CI for the model intercept and whose slope is the upper bound of the 95% CI for the model slope. Hint: see `?geom_abline()`
+
+```{r lab-3-63}
+p2 <- p1 + 
+  geom_abline(aes(intercept = ci[1,1], slope = ci[2,2]))
+
+p2
+```
 
 
+3b. Now add another line whose intercept is the upper bound of the 95% CI for the model intercept and whose slope is the lower bound of the 95% CI for the model slope. 
+
+```{r lab-3-64}
+p3 <- p2 + 
+  geom_abline(aes(intercept = ci[1,2], slope = ci[2,1]))
+
+p3
+```
+
+3d. What does this show you about the relationship between the 95% CI's around the model coefficients and the 95% CI band around the regression line? 
