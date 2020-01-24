@@ -132,33 +132,32 @@ health %>%
 
 * The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that demonstrates what this 95% CI band really means. If we were to repeat this same experiment over and over and estimated our regression line each time, 95% of the time our regression line would fall within this confidence band.
 
-<!-- ```{r echo=FALSE} -->
-<!-- library(ungeviz) -->
-<!-- library(gganimate) -->
-<!-- library(transformr) -->
-<!-- library(gifski) -->
+```{r echo=FALSE}
+library(ungeviz)
+library(gganimate)
+library(transformr)
+library(gifski)
 
-<!-- set.seed(012220) -->
+set.seed(012220)
 
-<!-- boots <- bootstrapper(100) -->
+boots <- bootstrapper(100)
 
-<!-- p <- health %>% -->
-<!--   ggplot(aes(x = consc, y = sr_health)) + -->
-<!--   geom_smooth(method = "lm", color = NA) + -->
-<!--   geom_point(alpha = 0.3) + -->
-<!--   geom_point(data = boots, aes(group = .row)) + -->
-<!--   geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) + -->
-<!--   theme_minimal() + -->
-<!--   labs(x = "Conscientiousness", y = "Self-rated health") + -->
-<!--   transition_states(.draw, 1, 1) + -->
-<!--   enter_fade() + -->
-<!--   exit_fade() + -->
-<!--   ease_aes() -->
+p <- health %>%
+  ggplot(aes(x = consc, y = sr_health)) +
+  geom_smooth(method = "lm", color = NA) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) +
+  theme_minimal() +
+  labs(x = "Conscientiousness", y = "Self-rated health") +
+  transition_states(.draw, 1, 1) +
+  enter_fade() +
+  exit_fade() +
+  ease_aes()
 
-<!-- animate(p, fps = 3) -->
+animate(p, fps = 3)
 
-<!-- ``` -->
-<!-- <br> -->
+```
+<br>
 
 ## Prediction bands
 
