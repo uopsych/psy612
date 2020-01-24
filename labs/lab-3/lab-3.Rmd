@@ -96,7 +96,7 @@ tidy(model) %>% #
 
 $$CI_b = b \pm CV(SE_b)$$
 
-* In [Minihack 1](#minihack1) you will get some practice using this formula to calculate confidence intervals around regression coefficients. For now, we will use a much easier method: `stats::confint()`. This function takes in a fitted model object as the first argument. By default it will give you 95% CI's. 
+* In [Minihack 2](#minihack2) you will get some practice using this formula to calculate confidence intervals around regression coefficients. For now, we will use a much easier method: `stats::confint()`. This function takes in a fitted model object as the first argument. By default it will give you 95% CI's. 
 
 ```{r }
 confint(model)
@@ -130,32 +130,32 @@ health %>%
 
 * The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
 
-```{r echo=FALSE}
-library(ungeviz)
-library(gganimate)
-library(transformr)
-library(gifski)
+<!-- ```{r echo=FALSE} -->
+<!-- library(ungeviz) -->
+<!-- library(gganimate) -->
+<!-- library(transformr) -->
+<!-- library(gifski) -->
 
-set.seed(012220)
+<!-- set.seed(012220) -->
 
-boots <- bootstrapper(100)
+<!-- boots <- bootstrapper(100) -->
 
-p <- health %>%
-  ggplot(aes(x = consc, y = sr_health)) +
-  geom_smooth(method = "lm", color = NA) +
-  geom_point(alpha = 0.3) +
-  geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) +
-  theme_minimal() +
-  labs(x = "Conscientiousness", y = "Self-rated health") +
-  transition_states(.draw, 1, 1) +
-  enter_fade() +
-  exit_fade() +
-  ease_aes()
+<!-- p <- health %>% -->
+<!--   ggplot(aes(x = consc, y = sr_health)) + -->
+<!--   geom_smooth(method = "lm", color = NA) + -->
+<!--   geom_point(alpha = 0.3) + -->
+<!--   geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) + -->
+<!--   theme_minimal() + -->
+<!--   labs(x = "Conscientiousness", y = "Self-rated health") + -->
+<!--   transition_states(.draw, 1, 1) + -->
+<!--   enter_fade() + -->
+<!--   exit_fade() + -->
+<!--   ease_aes() -->
 
-animate(p, fps = 3)
+<!-- animate(p, fps = 3) -->
 
-```
-<br>
+<!-- ``` -->
+<!-- <br> -->
 
 ## Prediction
 
@@ -266,7 +266,27 @@ ggscatter(data = health,              # name of data.frame
 
 ***
 
-# Regression with matrix algebra
+# Regression with matrix algebra{#matrix}
+
+## Review
+
+* Consider our regression equation:
+
+$$\mathbf{y} = b_0 + b_1\mathbf{x} + e$$
+
+* Recall that `y` is a vector of values, which can be represented as an $n\times1$ matrix, $\mathbf{Y}$. Similarly, `x` can be represented as an $n\times1$ matrix, $\mathbf{X}$.
+
+* If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the first column is filled with `1`'s, we can simplify our regression equation:
+
+$$\mathbf{y} = \mathbf{b}\mathbf{X}$$
+
+* Note: $\mathbf{b}$ is a $1 \times 2$ matrix containing our estimates of the intercept and slope. 
+
+* One property of the residuals is that the the average residual is 0, so we can remove `e` from the equation as well.
+
+## Example
+
+* Let's illustrate how this works by running our regression analysis (self-rated health ~ conscientiousness) using matrix algebra. 
 
 * Create the **`X`** matrix 
 
@@ -274,18 +294,19 @@ ggscatter(data = health,              # name of data.frame
 x_mat <- health %>% # start with the original data frame
   mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
   select(ones, consc) %>% # select only the column of 1's and X variable
-  as.matrix() # coerce to a matrix
+  as.matrix() %>%  # coerce to a matrix
+  unname() # get rid of dimnames 
 
 print(x_mat)
 ```
-
 
 * Create the **`Y`** matrix 
 
 ```{r}
 y_mat <- health %>% # start with the original data frame
   select(sr_health) %>% # select just the Y variable
-  as.matrix() # coerce to a matrix
+  as.matrix() %>% # coerce to a matrix
+  unname() # get rid of dimnames 
 
 print(y_mat)
 ```
@@ -308,19 +329,31 @@ model$coefficients
 
 ***
 
-# The General Linear Model
+# The General Linear Model{#glm}
+
+* The **general linear model (GLM)** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as: 
+
+$$Data = Model + Error $$ 
+
+* This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: *t*-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math under the hood.
+
+* To illustrate this, we'll turn back to an [example from 611](https://uopsych.github.io/psy611/labs/lab-8.html#the_data){target=_"blank"}. 
+
+* The data are from Fox and Guyer’s (1978) anonymity and cooperation study. The data are included in the `{carData}` package, and you can see information about the data set using `?Guyer`. Twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
+
+* You can load in the data with the following code:
 
 ```{r}
 guyer <- carData::Guyer
 ```
 
-* Look at the first few rows
+* Let's look at the first few rows...
 
 ```{r}
 head(guyer)
 ```
 
-* Look at the structure of the data 
+* ...and the structure of the data 
 
 ```{r}
 str(guyer)
@@ -335,7 +368,6 @@ guyer <-  guyer %>%
                                condition == "anonymous" ~ 1))
 
 ```
-
 
 ## *t*-test
 
@@ -369,51 +401,7 @@ summary(regression)
 
 # Minihacks
 
-## Minihack 1: Calculating confidence intervals{#minihack1}
-
-* For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients (slope and intercept). Your job is start with the 
-
-```{r eval=FALSE}
-model <- lm(sr_health ~ consc, data = health)
-```
-
-
-1. Calculating confidence intervals "by hand". 
-
-```{r}
-model <- lm(sr_health ~ consc, data = health)
-model_summary <- summary(model)
-
-# extract coefficients
-int <- model_summary$coefficients[[1,1]]
-slope <- model_summary$coefficients[[2,1]]
-
-# extract standard errors of coefficients
-int_se <- model_summary$coefficients[[1,2]]
-slope_se <- model_summary$coefficients[[2,2]]
-
-# df for t-distribution (will be denominator df from F statistic)
-df <- model_summary$fstatistic[["dendf"]]
-
-# intercept 95% CI 
-int_ci_l <- int - qt(.975, df = df)*int_se
-int_ci_u <- int + qt(.975, df = df)*int_se
-
-# slope 95% CI 
-slope_ci_l <- slope - qt(.975, df = df)*slope_se
-slope_ci_u <- slope + qt(.975, df = df)*slope_se
-```
-
-2. Verify that your answer corresponds to the result from `confint()`. 
-
-```{r}
-confint(model)
-```
-
-
-***
-
-## Minihack 2: Matrix algebra
+## Minihack 1: Matrix algebra
 
 * Continuing with the `guyer` dataset example, use matrix algebra to manually calculate the intercept and slope for the regression equation (`cooperation` ~ `condition`). 
 
@@ -425,11 +413,13 @@ confint(model)
 x <- guyer %>% 
   mutate(ones = rep(1, nrow(.))) %>% 
   select(ones, condition) %>% 
-  as.matrix() 
+  as.matrix() %>% 
+  unname()
 
 y <- guyer %>% 
   select(cooperation) %>%
-  as.matrix()
+  as.matrix() %>% 
+  unname()
 ```
 
 2. Produce $\mathbf{X'}$ (also called $\mathbf{X^T}$ or the transpose of $\mathbf{X}$)
@@ -468,6 +458,46 @@ regression$coefficients
 
 ***
 
-## Minihack 3
+## Minihack 2: Calculating confidence intervals{#minihack2}
+
+* For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients. Your job is start with the model output, stored as a list object (see below), and extract the relevant pieces of information to calculate the 95% CI around the intercept and slope. 
+
+```{r eval=FALSE}
+model <- lm(sr_health ~ consc, data = health)
+```
+
+1. Calculate confidence intervals "by hand". 
+
+```{r}
+model <- lm(sr_health ~ consc, data = health)
+model_summary <- summary(model)
+
+# extract coefficients
+int <- model_summary$coefficients[[1,1]]
+slope <- model_summary$coefficients[[2,1]]
+
+# extract standard errors of coefficients
+int_se <- model_summary$coefficients[[1,2]]
+slope_se <- model_summary$coefficients[[2,2]]
+
+# df for t-distribution (will be denominator df from F statistic)
+df <- model_summary$fstatistic[["dendf"]]
+
+# intercept 95% CI 
+int_ci_l <- int - qt(.975, df = df)*int_se
+int_ci_u <- int + qt(.975, df = df)*int_se
+
+# slope 95% CI 
+slope_ci_l <- slope - qt(.975, df = df)*slope_se
+slope_ci_u <- slope + qt(.975, df = df)*slope_se
+```
+
+2. Verify that your answer corresponds to the result from `confint()`. 
+
+```{r}
+confint(model)
+```
 
 ***
+
+
