@@ -104,7 +104,7 @@ confint(model)
 
 >**Question:** What does these 95% CI for the slope of conscientiousness mean in plain English? 
 
->**Answer:** If we were to repeat this experiment over and over again, sampling from the same population, 95% of the time the slope we calculate would be between 0.25 and 0.73 (i.e. in 19 out of every 20 experiments we'd get a slope in this interval).
+>**Answer:** If we were to repeat this experiment over and over again, sampling from the same population, 95% of the time the slope we calculate would be between 0.25 and 0.73 (i.e. in 19 out of every 20 experiments we'd get a slope in this interval). MORE GENERALLY it means that if we carried out random sampling from the population a large number of times, and calculated the 95% CI each time around our coefficients (intercept and slope), then 95% of those intervals can be expected to contain the population parameters. In other words, we have good reason to believe the true population parameters ($\beta_0$ and $\beta_1$) fall in this interval because 95% of the time such intervals contain the true population parameters.
 
 ## Confidence bands
 
@@ -119,7 +119,6 @@ model %>% # start with our model object
 
 * If we were to string all of this information together, it would generate a confidence **band** around our regression line. As we've seen already with previous examples, it's really easy to get this confidence band when creating a scatter plot by adding `geom_smooth(method = "lm")`. 
 
-
 ```{r}
 health %>%
   ggplot(aes(x = consc, y = sr_health)) + 
@@ -129,8 +128,7 @@ health %>%
   theme_minimal()
 ```
 
-
-* The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that demonstrates what this 95% CI band really means. If we were to repeat this same experiment over and over and estimated our regression line each time, 95% of the time our regression line would fall within this confidence band.
+* The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
 
 ```{r echo=FALSE}
 library(ungeviz)
@@ -159,17 +157,19 @@ animate(p, fps = 3)
 ```
 <br>
 
-## Prediction bands
+## Prediction
 
-* A regression line, by definition, corresponds to the line that gives the *mean* value of Y corresponding to each possible value of X, i.e. E(Y|X). 
+* A regression line, by definition, corresponds to the line that gives the *mean* value of `Y` corresponding to each possible value of `X`, i.e. `E(Y|X)`. 
 
-* In addition, we can also predict an individual's score ($Y_i$) given any value of x. From our regression model, we have the following equation that represents how our model characterizes the relationship between conscientiousness and self-rated health: 
+* In addition, we can also predict an individual's score ($Y_i$) for any value of `X`. From our regression model, we have the following equation that mathematically represents the relationship between conscientiousness and self-rated health: 
 
 $$\hat{health}_{i} = 1.6569733 + 0.4904059 * consc_{i}$$
+<br> 
 
 * For example, if we know someone's conscientiousness score is `3.5`, we can easily predict their score for self-rated health according to our model: 
 
 $$\hat{health} = 1.6569733 + 0.4904059*3.5 = 3.374$$
+
 
 * The `predict()` function gives us an easy way to get the predicted `Y` values from all the `X` values in our dataset.  
 
@@ -177,25 +177,33 @@ $$\hat{health} = 1.6569733 + 0.4904059*3.5 = 3.374$$
 predict(model)
 ```
 
+
 * This should look familiar, as we already have gotten this information from `broom::augment()`. 
 
 ```{r}
 augment(model)$.fitted
 ```
 
-* We can use this information to create prediction bands
 
-```{r}
+### Prediction bands
+
+* We can use this information to create "prediction bands". First we will generate our predicted values (i.e. fitted values) along with a "prediction interval" (lower and upper bound) for each of these values. 
+
+```{r warning=FALSE}
 predicted <- predict(model, interval = "prediction")
 predicted
 ```
 
+
+* Next we'll bind these predicted values (and their prediction intervals) to our original dataset. 
 
 ```{r}
 new_df <- cbind(health, predicted)
 new_df
 ```
 
+
+* And finally, we'll plot a prediction band on top of the data by adding a `geom_ribbon()`. This prediction band gives us, for every value od `X`, the interval that represents the range of values that is likely to contain the value of a single new individual observation. Unlike confidence intervals, prediction intervals predict the spread for individual observations rather than the mean.
 
 ```{r}
 new_df %>% 
@@ -211,9 +219,11 @@ new_df %>%
 
 >**Answer:** Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is wider
 
-* But remember, we can plug *any* `X` value (i.e. conscientiousness score) into our equation and predict the corresponding `Y` value (i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
+### Out-of-sample prediction
 
-* To illustrate this, we'll first take a data frame that has new X values (conscientiousness scores). Let's pretend that we collected this data from a completely new sample of people.
+* Remember, we can plug *any* `X` value (i.e. conscientiousness score) into our regression equation and predict the corresponding `Y` value (i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
+
+* To illustrate this, we'll use a data frame that has new `X` values (conscientiousness scores). Let's pretend that we collected this data from a completely new sample of people.
 
 ```{r}
 # read in new data
@@ -222,9 +232,9 @@ consc_data_new <- import("https://raw.githubusercontent.com/uopsych/psy612/maste
 # let's view it
 consc_data_new
 ```
-<br>
 
-* Now we can predict `Y` values for these out-of-sample `X` values based on the coefficients from our model. We just have to tell the `predict()` function what our `newdata` is. 
+
+* Now we can predict `Y` values for these out-of-sample `X` values based on the coefficients from our regression model. We just have to tell the `predict()` function what our `newdata` is. 
 
 ```{r}
 predict(model, newdata = consc_data_new)
@@ -254,7 +264,6 @@ ggscatter(data = health,              # name of data.frame
           cor.coef = TRUE)            # display correlation coefficient and p-value
 ```
 
-
 ***
 
 # Regression with matrix algebra
@@ -262,23 +271,25 @@ ggscatter(data = health,              # name of data.frame
 * Create the **`X`** matrix 
 
 ```{r}
-x_mat <- health %>% 
-  mutate(ones = rep(1, nrow(.))) %>% 
-  select(ones, consc) %>% 
-  as.matrix()
+x_mat <- health %>% # start with the original data frame
+  mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
+  select(ones, consc) %>% # select only the column of 1's and X variable
+  as.matrix() # coerce to a matrix
 
 print(x_mat)
 ```
 
+
 * Create the **`Y`** matrix 
 
 ```{r}
-y_mat <- health %>% 
-  select(sr_health) %>% 
-  as.matrix()
+y_mat <- health %>% # start with the original data frame
+  select(sr_health) %>% # select just the Y variable
+  as.matrix() # coerce to a matrix
 
 print(y_mat)
 ```
+
 
 * Apply the matrix algebra formula to solve for the **`b`** matrix
 
@@ -287,6 +298,7 @@ $$\mathbf{b} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
 ```{r}
 solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
 ```
+
 
 * The `b`'s we just solved for using matrix algebra match the coefficients we get from `lm()`! 
 
@@ -314,7 +326,8 @@ head(guyer)
 str(guyer)
 ```
 
-* Dummy code the `condition` variable
+
+* Covert the `condition` variable to `0's` and `1's`. We will talk more about dummy coding in a future lab. 
 
 ```{r}
 guyer <-  guyer %>% 
@@ -402,196 +415,56 @@ confint(model)
 
 ## Minihack 2: Matrix algebra
 
-Refer back to the [lab on matrix algebra](https://uopsych.github.io/psy611/labs/lab-3.html){target="_blank"} from 611 if needed. 
+* Continuing with the `guyer` dataset example, use matrix algebra to manually calculate the intercept and slope for the regression equation (`cooperation` ~ `condition`). 
 
+* Hint: To find the inverse of a matrix, use the `solve()` function. Refer back to the [lab on matrix algebra](https://uopsych.github.io/psy611/labs/lab-3.html){target="_blank"} from 611 for a refresher on other matrix operations if needed. 
 
 1. Create the Matrix $\mathbf{X}$ & Vector $\mathbf{Y}$
 
 ```{r}
-# your code here
+x <- guyer %>% 
+  mutate(ones = rep(1, nrow(.))) %>% 
+  select(ones, condition) %>% 
+  as.matrix() 
+
+y <- guyer %>% 
+  select(cooperation) %>%
+  as.matrix()
 ```
 
 2. Produce $\mathbf{X'}$ (also called $\mathbf{X^T}$ or the transpose of $\mathbf{X}$)
 
 ```{r}
-# your code here
+x_t <- t(x)
 ```
 
 3. Produce $\mathbf{X'X}^{-1}$ (inverse of $\mathbf{X'X}$)
 
 ```{r}
-# your code here
+xtx_inv <- solve(x_t %*% x)
+xtx_inv
 ```
 
 4. Produce $\mathbf{X'Y}$
 
 ```{r}
-# your code here
+xt_y <- x_t %*% y
+xt_y
 ```
 
 5. Produce $\mathbf{B = (X'X)}^{-1}\mathbf{X'Y}$
 
 ```{r}
-# your code here
+b <- xtx_inv %*% xt_y
+b
 ```
 
 6. Confirm your results using the `lm()` function in R.
 
 ```{r}
-# your code here
+regression <- lm(formula = cooperation ~ condition, data = guyer)
+regression$coefficients
 ```
-
-
-## 1. Creating the Matrix $\mathbf{X}$
-
-The first thing we need to do is create the matrix $\mathbf{X}$, which is also called the *design matrix*. We are going to enter the matrix 'by hand' in R, but know that you could also enter the data/matrix into a .csv file and read that file into R.
-
-To enter a matrix in R, we use the `matrix()` function. If you look at the help documentation (by running `?matrix`) you can see that the first argument is the `data` (which can be entered as a list or vector of values). Then we specify the dimensions of the matrix using the `nrow =` and `ncol =` arguments. Finally, we tell it if the values are in being entered row-wise or column-wise by specifying `byrow =` (which can be `TRUE` or `FALSE`).
-
-So, now let's create our 4x3 design matrix. We will enter it column-wise.
-
-```{r creating_design_matrix_1}
-# minor note, though we usually refer to matrices
-# with capital letters, we'll use a lower case
-# x. R is case sensitive, and I recommend always using
-# lower case letters (a style called "snake_case")
-x <- matrix(c(1, 1, 1, 1, # what goes here?
-              1, 2, 7, 8, # X1 column
-              1, 2, 2, 1), # X2 column 
-            nrow = 4, ncol = 3, 
-            byrow = FALSE)
-```
-
-Next, take a look at the matrix to make sure it looks right.
-```{r creating_design_matrix_2}
-x
-```
-
-Yep, looks like we entered it correctly. 
-
-Now we'll create the vector $\mathbf{Y}$. This is just like creating any vector in R, so this should look very familiar. The main thing is to make sure the order is correct (i.e., matches the design matrix).
-
-```{r creating_Y_vector}
-y <- c(4, 5, 12, 14)
-```
-
-as always, we can take a look:
-```{r}
-y
-```
-
-Okay, that looks right too. Time to move on to step 2.
-
-## 2. Producing $\mathbf{X'}$
-
-Next, we need to produce $\mathbf{X'}$ or the transpose of **X**. To do that, we can use the `t()` function in R. All it requires is a matrix or dataframe, and then it returns the transpose of that matrix or dataframe. We'll name this x_t
-
-```{r obtaining_x_t}
-x_t <-  t(x)
-```
-
-And take a look at it alongside x to make sure everything looks OK.
-
-```{r obtaining_x_t_2}
-x
-x_t
-```
-
-Yep, looks like we sucessfully obtained $\mathbf{X'}$
-
-## 3. Producing $\mathbf{X'X}^{-1}$ 
-
-Next we need to obtain  $\mathbf{X'X}^{-1}$ or the inverse of $\mathbf{X'X}$. We'll do this in two steps. First, we'll create $\mathbf{X'X}$ by multiplying the original design matrix $\mathbf{X}$ (or `x` in R) by its transpose $\mathbf{X'}$ (or x_t in R). In R, we use `%*%` for matrix multiplication. Note that using `*` it would instead do element-wise multiplication. We'll create $\mathbf{X'X}$ and call it `xt_x`
-
-```{r produce_xtx}
-xt_x <- x_t %*% x
-xt_x
-```
-
-Then, we invert this new matrix using the `solve()` function. We'll call the resulting matrix `xtx_inv`.
-
-```{r invert_xtx}
-xtx_inv <- solve(xt_x)
-xtx_inv
-```
-
-## 4. Producing $\mathbf{X'Y}$
-
-Next, we need to obtain $\mathbf{X'Y}$, which we can get by again using the matrix multiplication operator, `%*%`.
-```{r prduce_xty}
-xt_y <- x_t %*% y
-xt_y
-```
-
-## 5. Produce $\mathbf{B}$
-
-Next, we have everything we need to obtain the coefficient matrix $\mathbf{B}$. Remember:
-
-$$\mathbf{B} = (\mathbf{X'X})^{-1}(\mathbf{X'Y})$$
-So we just need to use matrix multiplication to get the product of $(\mathbf{X'X})^{-1}$ & $(\mathbf{X'Y})$ which we just created in steps 3 and 4 above. 
-
-```{r produce_B}
-b <- xtx_inv %*% xt_y
-```
-
-And, let's see what the values for the coefficients are:
-```{r produce_B_2}
-b
-```
-
-Okay, now we've completed conducting a multiple regression using matrix algebra. Now we'll complete the last step and make sure our calculations for b match the results from R's `lm()` function.
-
-## 6. Confirming your results with `lm()`
-
-First, we need to combine the matrices x and y into a single dataframe. To keep things straight, we'll first give the columns of x column names. We'll do this using the `colnames()` function. We'll call the columns `intercept`, `x1`, and `x2`. We can assign new column names to an obect like so:
-```{r checking_our_work_1}
-colnames(x) <- c("intercept", "x1", "x2")
-# check that it worked
-x
-```
-We will do the same thing for y. However, because of how R represents and names things, we need to explicitly tell R y is a matrix in order to give it column names (otherwise it will think we're trying to name each element in the vector).
-```{r checking_our_work_2}
-y <- as.matrix(y)
-colnames(y) <- "y"
-y
-```
-
-There, that looks right. Now put them together, and put them into a dataframe:
-
-```{r}
-df <- as.data.frame(cbind(y, x))
-# note, if you wanted to do this
-# in the tidyverse style, with pipes, it
-# would look like this:
-#library(tidyverse)
-#df <- cbind(y, x) %>% 
-#  as.data.frame()
-```
-
-Next, we conduct the regression using the `lm()` function. Now we needed the intercept column when we calculated the regression with matrix algebra, but we don't need it for the `lm()` function because `lm()` puts that in automatically (this should hopefully seem familar, since we didn't explicitly enter the intercept in `lm()` in 611).
-
-```{r}
-model <- lm(y ~ x1 + x2, # remember, outcome ~ predictors
-            data = df) # enter the dataframe
-```
-
-Now we can see the cofficients
-```{r}
-summary(model)
-```
-And let's see those coefficient estimates next to the estimates we obtained with matrix algebra to check our work. We'll put them together into a little table using `cbind()`, label the columns to make it clear which column is the from the matrix calculations and which is from the `lm()` call.
-
-Our B vector is easy. The cofficients for the lm model can be accessed with `model$coefficients`. In `lm` results objects, the model coefficients are stored in a vector called `coefficients`, so `model$coefficients` tells R to give us just that vector. We'll put that as the second object in `cbind()` 
-```{r}
-comparison_table <- cbind(b, # coefficient matrix
-                          model$coefficients) # coefficients from lm
-
-colnames(comparison_table) <- c("matrix", "lm")
-comparison_table
-```
-
-Yep, everything lines up perfectly. Looks like we our matrix calculations were correct.
-
 
 ***
 
