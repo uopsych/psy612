@@ -3495,9 +3495,12 @@ print(y_mat)</code></pre>
 <h4></h4>
 <p><br></p>
 <ul>
-<li>Apply the matrix algebra formula to solve for the <strong><code>b</code></strong> matrix</li>
+<li>Apply the matrix algebra formula to solve for the <strong><code>B</code></strong> matrix</li>
 </ul>
-<p><span class="math display">\[\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}\]</span> #### {.tabset .tabset-fade .tabset-pills}</p>
+<p><span class="math display">\[\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}\]</span></p>
+</div>
+<div id="section-30" class="section level4 tabset tabset-fade tabset-pills">
+<h4></h4>
 <div id="code-15" class="section level5">
 <h5>Code</h5>
 <pre class="r"><code>solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)</code></pre>
@@ -3509,14 +3512,14 @@ print(y_mat)</code></pre>
 ## [2,] 0.4904059</code></pre>
 </div>
 </div>
-<div id="section-30" class="section level4">
+<div id="section-31" class="section level4">
 <h4></h4>
 <p><br></p>
 <ul>
 <li>The <code>b</code>’s we just solved for using matrix algebra match the coefficients we get from <code>lm()</code>!</li>
 </ul>
 </div>
-<div id="section-31" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-32" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-16" class="section level5">
 <h5>Code</h5>
@@ -3528,7 +3531,7 @@ print(y_mat)</code></pre>
 ##   1.6569733   0.4904059</code></pre>
 </div>
 </div>
-<div id="section-32" class="section level4">
+<div id="section-33" class="section level4">
 <h4></h4>
 <p><br></p>
 <hr />
@@ -3551,7 +3554,7 @@ print(y_mat)</code></pre>
 <ul>
 <li>Let’s look at the first few rows…</li>
 </ul>
-<div id="section-33" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-34" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-17" class="section level5">
 <h5>Code</h5>
@@ -3566,14 +3569,14 @@ print(y_mat)</code></pre>
 </div>
 </div>
 </div>
-<div id="section-34" class="section level4">
+<div id="section-35" class="section level4">
 <h4></h4>
 <p><br></p>
 <ul>
 <li>…and the structure of the data</li>
 </ul>
 </div>
-<div id="section-35" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-36" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-18" class="section level5">
 <h5>Code</h5>
@@ -3587,14 +3590,14 @@ print(y_mat)</code></pre>
 ##  $ sex        : Factor w/ 2 levels &quot;female&quot;,&quot;male&quot;: 2 2 2 2 2 1 1 1 1 1 ...</code></pre>
 </div>
 </div>
-<div id="section-36" class="section level4">
+<div id="section-37" class="section level4">
 <h4></h4>
 <p><br></p>
 <ul>
 <li>Covert the <code>condition</code> variable to <code>0's</code> and <code>1's</code>. We will talk more about dummy coding in a future lab.</li>
 </ul>
 </div>
-<div id="section-37" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-38" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-19" class="section level5">
 <h5>Code</h5>
@@ -3613,13 +3616,13 @@ guyer</code></pre>
 </div>
 </div>
 </div>
-<div id="section-38" class="section level4">
+<div id="section-39" class="section level4">
 <h4></h4>
 <p><br></p>
 </div>
 <div id="t-test" class="section level2">
 <h2><em>t</em>-test</h2>
-<div id="section-39" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-40" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-20" class="section level5">
 <h5>Code</h5>
@@ -3641,7 +3644,7 @@ t_test</code></pre>
 ##            55.7            40.9</code></pre>
 </div>
 </div>
-<div id="section-40" class="section level4">
+<div id="section-41" class="section level4">
 <h4></h4>
 <p><br></p>
 <blockquote>
@@ -3651,7 +3654,7 @@ t_test</code></pre>
 </div>
 <div id="correlation" class="section level2">
 <h2>Correlation</h2>
-<div id="section-41" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-42" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-21" class="section level5">
 <h5>Code</h5>
@@ -3673,7 +3676,7 @@ cor_test</code></pre>
 ## -0.5314123</code></pre>
 </div>
 </div>
-<div id="section-42" class="section level4">
+<div id="section-43" class="section level4">
 <h4></h4>
 <p><br></p>
 <blockquote>
@@ -3683,7 +3686,7 @@ cor_test</code></pre>
 </div>
 <div id="anova" class="section level2">
 <h2>ANOVA</h2>
-<div id="section-43" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-44" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-22" class="section level5">
 <h5>Code</h5>
@@ -3699,7 +3702,7 @@ summary(anova_test)</code></pre>
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<div id="section-44" class="section level4">
+<div id="section-45" class="section level4">
 <h4></h4>
 <p><br></p>
 <blockquote>
@@ -3709,7 +3712,7 @@ summary(anova_test)</code></pre>
 </div>
 <div id="regression" class="section level2">
 <h2>Regression</h2>
-<div id="section-45" class="section level4 tabset tabset-fade tabset-pills">
+<div id="section-46" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
 <div id="code-23" class="section level5">
 <h5>Code</h5>
@@ -3738,7 +3741,7 @@ summary(regression)</code></pre>
 ## F-statistic: 7.084 on 1 and 18 DF,  p-value: 0.0159</code></pre>
 </div>
 </div>
-<div id="section-46" class="section level4">
+<div id="section-47" class="section level4">
 <h4></h4>
 <p><br></p>
 <blockquote>

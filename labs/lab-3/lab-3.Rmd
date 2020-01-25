@@ -481,9 +481,10 @@ print(y_mat)
 ####
 <br>
 
-* Apply the matrix algebra formula to solve for the **`b`** matrix
+* Apply the matrix algebra formula to solve for the **`B`** matrix
 
 $$\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
+
 ####  {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
