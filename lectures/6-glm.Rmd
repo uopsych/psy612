@@ -383,7 +383,7 @@ $$Y_{i} = b_{0} + b_{1}X_{i} +e_{i}$$
 
 $$Y_{i}  - \hat{Y}_{i} = e$$
 
-- can you plug in numbers and calculate subject 3's predicted and residual scores without explicitly asking for lm object residuals and fitted values?
+- can you plug in numbers and calculate city 3's predicted and residual scores without explicitly asking for lm object residuals and fitted values?
 
 ```{r}
 traffic[3, ]
