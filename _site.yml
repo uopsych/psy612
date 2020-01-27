@@ -18,7 +18,9 @@ navbar:
       - text: "5-Univariate regression (III)"
         href: "lectures/5-regression.html"
       - text: "6-General linear model"
-        href: "lectures/6-glm.html"        
+        href: "lectures/6-glm.html"  
+      - text: "7-Partial correlations"
+        href: "lectures/7-partial.html"          
     - text: Labs
       menu:
       - text: "Correlations"

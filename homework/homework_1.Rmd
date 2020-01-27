@@ -120,7 +120,7 @@ and Schaller (2016) sought to examine the role of outbreaks of infectious diseas
 
 Below is an image of the output from a regression analysis, using their data: `republican` is a measure of support for the republican party; `ebola` is an index of the number of searches for Ebola on Google. Each observation was a day leading up to the national election. (Note, if this image does not load, you may need to download it from GitHub and save it in the same location as your homework file.)
 
-There are some missing values in the output, labeled with red letters. Complete the output by computing the missing values (A-L).
+There are some missing values in the output, labeled with red letters. Complete the output by computing the missing values (A-M).
 
 ![](beall_output.png)
 
@@ -174,4 +174,4 @@ One strategy would be to use an outer loop to index the 10,000 scenarios and an 
 
 * Finally, repeat the scenario above (no p-hacking), but using an X and a Y that are associated with each other. (Hint: A regression equation may be especially for simulating values of X and Y.) Construct a histogram that shows the distribution of final p-values for the 10,000 studies. 
 
-*Describe the shape of the distributions of p-values when the null hypothesis is true and false and the researcher is not p-hacking. How does the p-hacking distribution look different from these two? Can you make any conclusion about the likelihood of specific p-values when the researcher is p-hacking?
+* Describe the shape of the distributions of p-values when the null hypothesis is true and false and the researcher is not p-hacking. How does the p-hacking distribution look different from these two? Can you make any conclusion about the likelihood of specific p-values when the researcher is p-hacking?
