@@ -61,6 +61,16 @@ Lab 5: Categorical predictors/one-way ANOVA *BRENDAN*
 
 Lab 6: Assumptions and Diagnostics *CORY*
 
+Don't worry about going through all the code covered in lecture. 
+Primary goals should be 
+- sjPlot::plot_model(., type = "diag") #plots 4 diagnostic plots
+- plotting residuals against 
+    * fitted values
+    * predictors
+    * ID (or other variables not in the model, like date or gender)
+
+You might also point them back to the olsrr package, which has good documentation and useful plots for detecting outliers: https://cran.r-project.org/web/packages/olsrr/vignettes/influence_measures.html -- 
+
 ------------------------------------------------------------------------------------------------------
 
 Lab 7: Interactions *BRENDAN*

@@ -728,6 +728,7 @@ ggplot(data = aug_2, aes(x = ID, y = dfbetastress)) + geom_point() +
 geom_text(aes(label = rownames(aug_2), vjust = -1))
 ```
 
+
 ---
 
 ## Outliers
@@ -743,11 +744,14 @@ Consider each of these metrics in the context of research degrees of freedom. Do
 
 What can you do to ensure your analysis is robust?
 
-<!-- --- -->
-<!-- ## recommendations -->
-<!-- - Analyze data with/without outliers and see how results change    -->
-<!-- - If you throw out cases you must believe it is not representative of population of interest or have appropriate explanation  -->
-<!-- - Don't throw out data just to be "safe". Data are hard to collect and outliers are expected!  -->
+---
+## Recommendations
+
+- Analyze data with/without outliers and see how results change
+
+- If you throw out cases you must believe it is not representative of population of interest or have appropriate explanation
+
+- Don't throw out data just to be "safe". Data are hard to collect and outliers are expected!
 
 
 <!-- --- -->
