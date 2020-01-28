@@ -45,6 +45,7 @@ Lab 4: Two continuous predictors *CORY*
 -extracting output from these functions
 -multiple regression with two continuous predictors (how to interpret coefficients)
 -show how to make tables
+  sjPlot -- can put two regression models in a single table
 
 ------------------------------------------------------------------------------------------------------
 
