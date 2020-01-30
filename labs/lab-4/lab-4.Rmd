@@ -72,7 +72,7 @@ We'll use functions from the {ppcor} library.
 
 To get the semi-partial correlation, we use the `spcor.test()` function. It requires 3 arguments: `x =`, `y =`, and `z =`, which correspond to X1, Y, and X2 above respectively. Put differently, x and y are what you want the correlation between, and z is the variable you want to control for. Let's look at the semi-partial correlation between extraversion and happiness, controlling for social support.
 
-```{r}
+```{r }
 ex_happy_socsup_spcor <- spcor.test(
   x = df$extraversion, # X1 (var of interest 1)
   y = df$happiness, # Y (var of interest 2)
@@ -104,7 +104,16 @@ ex_happy_socsup_spcor$p.value
 
 We can get the full semi-partial correlation matrix by passing a dataframe to the `spcor()` function, which just has two arguments: `x =` which is where we tell it the df, and `method =` where we could change the method from pearson to another (we'll leave it as its default here).
 
-```{r}
+##### {.tabset .tabset-fade .tabset-pills}
+
+###### Code
+```{r lab-4-spcormat, eval = FALSE}
+spcor_mat <- spcor(df)
+spcor_mat
+```
+
+###### Output
+```{r lab-4-spcormat2, echo = FALSE, ref.label= 'lab-4-spcormat'}
 spcor_mat <- spcor(df)
 spcor_mat
 ```
@@ -119,15 +128,35 @@ It also contains 3 additional values:
 2. gp = number of control variables (number of variables being 'partialed out')   
 3. method = type of correlation   
 
+#### Semi-partial correlation matrix (estimates)
+
 Like any list, we can extract elements using `$`. So we could get the semi-partial correlation matrix using `$estimate`:
 
-```{r}
+##### {.tabset .tabset-fade .tabset-pills}
+
+###### Code
+```{r spcormat_est, eval = FALSE}
 spcor_mat$estimate
 ```
 
+###### Output
+```{r spcormat_est2, echo = FALSE, ref.label='spcormat_est'}
+spcor_mat$estimate
+```
+
+#### Semi-partial correlation matrix (p values)
+
 Or get p values with `$p.values`
 
-```{r}
+##### {.tabset .tabset-fade .tabset-pills}
+
+###### Code
+```{r spcormat_p, eval = FALSE}
+spcor_mat$p.value
+```
+
+###### Output
+```{r spcormat_p2, echo = FALSE, ref.label='spcormat_p'}
 spcor_mat$p.value
 ```
 
@@ -155,7 +184,16 @@ ex_happy_socsup_pcor
 
 Just like with semi-partial correlations, we can get the full partial correlation matrix using the `pcor()` function.
 
-```{r}
+##### {.tabset .tabset-fade .tabset-pills}
+
+###### Code
+```{r pcormat, eval = FALSE}
+pcor_mat <- pcor(df)
+pcor_mat
+```
+
+###### Output
+```{r pcormat2, echo = FALSE, ref.label='pcormat'}
 pcor_mat <- pcor(df)
 pcor_mat
 ```
@@ -270,7 +308,16 @@ tidy(std_mr_model)
 
 Often we want to extract even more information from our model. We can use the same functions we covered in lab 2 to get predicted scores, residuals, a coefficients table, etc. Let's start with predicted y values or fitted values ($\hat{y}$), which we can get using the `fitted.values()` function:
 
-```{r}
+##### {.tabset .tabset-fade .tabset-pills}
+###### Code
+
+```{r fitvals, eval = FALSE}
+fitted.values(mr_model)
+```
+
+###### Output
+
+```{r fitvals2, echo = FALSE, ref.label='fitvals'}
 fitted.values(mr_model)
 ```
 
@@ -279,9 +326,18 @@ fitted.values(mr_model)
 
 We can get the residual values using `residuals()` function:
 
-```{r}
+##### {.tabset .tabset-fade .tabset-pills}
+###### Code
+```{r resids, eval = FALSE}
 residuals(mr_model)
 ```
+
+###### Output
+```{r resids2, echo = FALSE, ref.label='resids'}
+residuals(mr_model)
+```
+
+#### Model $R^2$
 
 And we can get our $R^2$ for the model by extracting it from the `summary()` of the model - remember, that isn't stored in the model itself, only in the `summary()` of it.
 
@@ -364,9 +420,11 @@ tab_model(mr_model,
           file = "tbl/reg_tbl_extra_socsup_happy.doc")
 ```
 
-# Minihack 1. Get the partial & semi-partial correlation matrices with just social support, positive expressivity, and optimism (no other variables). (Hint: you may need to do some data wrangling.)
+# Minihack 1 
 
-# Minihack 2. 
+Get the partial & semi-partial correlation matrices with just social support, positive expressivity, and optimism (no other variables). (Hint: you may need to do some data wrangling.)
+
+# Minihack 2 
 
 Run a regression predicting happiness from social support, positive expressivity, and extraversion. Then make a new model that has these predictors plus exercise and optimism (5 total predictors). 
 

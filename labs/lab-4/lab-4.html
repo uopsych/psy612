@@ -2875,8 +2875,15 @@ ex_happy_socsup_spcor</code></pre>
 <div id="semi-partial-correlation-matrix" class="section level4">
 <h4>Semi-partial correlation matrix</h4>
 <p>We can get the full semi-partial correlation matrix by passing a dataframe to the <code>spcor()</code> function, which just has two arguments: <code>x =</code> which is where we tell it the df, and <code>method =</code> where we could change the method from pearson to another (we’ll leave it as its default here).</p>
+<div id="section" class="section level5 tabset tabset-fade tabset-pills">
+<h5></h5>
+<div id="code" class="section level6">
+<h6>Code</h6>
 <pre class="r"><code>spcor_mat &lt;- spcor(df)
 spcor_mat</code></pre>
+</div>
+<div id="output" class="section level6">
+<h6>Output</h6>
 <pre><code>## $estimate
 ##              extraversion pos_express    soc_sup     optimism     exercise
 ## extraversion    1.0000000  0.28856188 0.10718319  0.091815651  0.007219683
@@ -2939,8 +2946,20 @@ spcor_mat</code></pre>
 <p>It also contains 3 additional values:<br />
 1. n = sample size 2. gp = number of control variables (number of variables being ‘partialed out’)<br />
 3. method = type of correlation</p>
+</div>
+</div>
+</div>
+<div id="semi-partial-correlation-matrix-estimates" class="section level4">
+<h4>Semi-partial correlation matrix (estimates)</h4>
 <p>Like any list, we can extract elements using <code>$</code>. So we could get the semi-partial correlation matrix using <code>$estimate</code>:</p>
+<div id="section-1" class="section level5 tabset tabset-fade tabset-pills">
+<h5></h5>
+<div id="code-1" class="section level6">
+<h6>Code</h6>
 <pre class="r"><code>spcor_mat$estimate</code></pre>
+</div>
+<div id="output-1" class="section level6">
+<h6>Output</h6>
 <pre><code>##              extraversion pos_express    soc_sup     optimism     exercise
 ## extraversion    1.0000000  0.28856188 0.10718319  0.091815651  0.007219683
 ## pos_express     0.3094357  1.00000000 0.15021866 -0.041798865 -0.019397059
@@ -2955,8 +2974,20 @@ spcor_mat</code></pre>
 ## optimism     0.2264492
 ## exercise     0.4137815
 ## happiness    1.0000000</code></pre>
+</div>
+</div>
+</div>
+<div id="semi-partial-correlation-matrix-p-values" class="section level4">
+<h4>Semi-partial correlation matrix (p values)</h4>
 <p>Or get p values with <code>$p.values</code></p>
+<div id="section-2" class="section level5 tabset tabset-fade tabset-pills">
+<h5></h5>
+<div id="code-2" class="section level6">
+<h6>Code</h6>
 <pre class="r"><code>spcor_mat$p.value</code></pre>
+</div>
+<div id="output-2" class="section level6">
+<h6>Output</h6>
 <pre><code>##              extraversion  pos_express    soc_sup   optimism     exercise
 ## extraversion  0.000000000 0.0004739486 0.20261053 0.27543807 9.318017e-01
 ## pos_express   0.000169532 0.0000000000 0.07333123 0.62012618 8.181377e-01
@@ -2971,6 +3002,8 @@ spcor_mat</code></pre>
 ## optimism     6.536222e-03
 ## exercise     2.794460e-07
 ## happiness    0.000000e+00</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div id="partial-correlation" class="section level3">
@@ -3003,8 +3036,15 @@ ex_happy_socsup_pcor</code></pre>
 <div id="partial-correlation-matrix" class="section level4">
 <h4>Partial correlation matrix</h4>
 <p>Just like with semi-partial correlations, we can get the full partial correlation matrix using the <code>pcor()</code> function.</p>
+<div id="section-3" class="section level5 tabset tabset-fade tabset-pills">
+<h5></h5>
+<div id="code-3" class="section level6">
+<h6>Code</h6>
 <pre class="r"><code>pcor_mat &lt;- pcor(df)
 pcor_mat</code></pre>
+</div>
+<div id="output-3" class="section level6">
+<h6>Output</h6>
 <pre><code>## $estimate
 ##              extraversion pos_express    soc_sup    optimism    exercise
 ## extraversion   1.00000000  0.36259938 0.14303288  0.12286034  0.00973409
@@ -3054,6 +3094,8 @@ pcor_mat</code></pre>
 ## 
 ## $method
 ## [1] &quot;pearson&quot;</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -3212,7 +3254,14 @@ pcor_mat</code></pre>
 <div id="extracting-model-information" class="section level3">
 <h3>Extracting Model Information</h3>
 <p>Often we want to extract even more information from our model. We can use the same functions we covered in lab 2 to get predicted scores, residuals, a coefficients table, etc. Let’s start with predicted y values or fitted values (<span class="math inline">\(\hat{y}\)</span>), which we can get using the <code>fitted.values()</code> function:</p>
+<div id="section-4" class="section level5 tabset tabset-fade tabset-pills">
+<h5></h5>
+<div id="code-4" class="section level6">
+<h6>Code</h6>
 <pre class="r"><code>fitted.values(mr_model)</code></pre>
+</div>
+<div id="output-4" class="section level6">
+<h6>Output</h6>
 <pre><code>##        1        2        3        4        5        6        7        8 
 ## 70.41169 75.52954 70.45301 82.51877 85.56077 61.34661 57.77147 67.94415 
 ##        9       10       11       12       13       14       15       16 
@@ -3251,13 +3300,22 @@ pcor_mat</code></pre>
 ## 69.28237 77.43569 72.50061 59.47524 69.89162 76.48915 66.46447 65.12624 
 ##      145      146      147 
 ## 71.39955 68.16170 72.49408</code></pre>
+</div>
+</div>
 <div id="q18" class="section level4">
 <h4>Q18:</h4>
 <blockquote>
 <p><strong>Question:</strong> Why are there 147 values?</p>
 </blockquote>
 <p>We can get the residual values using <code>residuals()</code> function:</p>
+<div id="section-5" class="section level5 tabset tabset-fade tabset-pills">
+<h5></h5>
+<div id="code-5" class="section level6">
+<h6>Code</h6>
 <pre class="r"><code>residuals(mr_model)</code></pre>
+</div>
+<div id="output-5" class="section level6">
+<h6>Output</h6>
 <pre><code>##            1            2            3            4            5            6 
 ##  -2.41168804   2.47045683  -0.45300719   5.48123413   4.43923358   1.65338924 
 ##            7            8            9           10           11           12 
@@ -3308,6 +3366,11 @@ pcor_mat</code></pre>
 ##   0.49938723  18.52475681   5.10838219 -16.48915407 -18.46446589   4.87376131 
 ##          145          146          147 
 ##  -3.39954794  -0.16170417 -22.49407770</code></pre>
+</div>
+</div>
+</div>
+<div id="model-r2" class="section level4">
+<h4>Model <span class="math inline">\(R^2\)</span></h4>
 <p>And we can get our <span class="math inline">\(R^2\)</span> for the model by extracting it from the <code>summary()</code> of the model - remember, that isn’t stored in the model itself, only in the <code>summary()</code> of it.</p>
 <pre class="r"><code>summary(mr_model)$r.squared</code></pre>
 <pre><code>## [1] 0.3616237</code></pre>
@@ -3471,11 +3534,12 @@ R<sup>2</sup> / R<sup>2</sup> adjusted
 </tr>
 </table>
 </div>
-<div id="minihack-1.-get-the-partial-semi-partial-correlation-matrices-with-just-social-support-positive-expressivity-and-optimism-no-other-variables.-hint-you-may-need-to-do-some-data-wrangling." class="section level1">
-<h1>Minihack 1. Get the partial &amp; semi-partial correlation matrices with just social support, positive expressivity, and optimism (no other variables). (Hint: you may need to do some data wrangling.)</h1>
+<div id="minihack-1" class="section level1">
+<h1>Minihack 1</h1>
+<p>Get the partial &amp; semi-partial correlation matrices with just social support, positive expressivity, and optimism (no other variables). (Hint: you may need to do some data wrangling.)</p>
 </div>
-<div id="minihack-2." class="section level1">
-<h1>Minihack 2.</h1>
+<div id="minihack-2" class="section level1">
+<h1>Minihack 2</h1>
 <p>Run a regression predicting happiness from social support, positive expressivity, and extraversion. Then make a new model that has these predictors plus exercise and optimism (5 total predictors).</p>
 <p>What happens to the slopes for social support, positive expressivity, and extraversion after you add optimism and exercise to the model?</p>
 <p>Next, <strong>formally</strong> compare the overall performance of the models (i.e., get a significance test comparing the models) and examine their adjusted <span class="math inline">\(R^2\)</span> values. Which model is better and how much is it an improvement?</p>
