@@ -41,6 +41,7 @@ APA graphics
 Lab 4: Two continuous predictors *CORY*
 -partial correlations
 -semi-partial correlations (don't talk about how they're not symmetric -- this will be a HW question)
+-partial & semi-partial MATRIX
 -functions to teach = ppcor::pcor.test() and ppcor::spcor.test()
 -extracting output from these functions
 -multiple regression with two continuous predictors (how to interpret coefficients)
