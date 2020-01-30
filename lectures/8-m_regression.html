@@ -130,12 +130,13 @@ $$\large \text{minimize} \sum (Y-\hat{Y})^2 $$
 
 (Standardized) Regression coefficients, partial correlations, and semi-partial correlations are all ways to represent the relationship between two variables while taking into account a third (or more!) variables. 
 
-  - Each is a standardized effect, meaning the effect size is calculated in standardized units, bounded by -1 and 1. This means they can be compared across studies, metrics, etc.
+  - Each is a standardized effect, meaning the effect size is calculated in standardized units, bounded by -1 and 1*. This means they can be compared across studies, metrics, etc.
 
 Note, however, that the calculations differ between the three effect sizes. These effect sizes are not synonymous and often yield different answers. 
 
   - if predictors are not correlated, sr `\((r_{Y(1.2)})\)` and pr `\((r_{Y1.2})\)` equal 
-  
+
+.small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large and usually they're a sign that you have some problems in the model. ]
 ---
 
 ** Standardized multiple regression coefficient** `\(b^*\)`
