@@ -26,10 +26,10 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | 4    | 1/28 | Partial correlations              |                    |  Quiz 3    |             |
 | -    | 1/30 | Multiple regression               |                    |            |             |
 | -    | 1/31 | _Lab: Two continuous predictors_  |                    |            |             |
-| 5    | 2/04 | Multiple regression               | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 4    |             |
+| 5    | 2/04 | Multiple regression               |  |  Quiz 4    |             |
 | -    | 2/06 | Multiple regression               |  LSR Chapter 14    |            |             |
 | -    | 2/07 | _Lab: Categorical predictors_     |                    |            |  HW 1 Due   |
-| 6    | 2/11 | Assumptions and diagnostics       |                    |  Quiz 5    |             |
+| 6    | 2/11 | Assumptions and diagnostics       | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 5    |             |
 | -    | 2/13 | Assumptions and diagnostics       |                    |            |             |
 | -    | 2/14 | _Lab: Diagnostics_                |                    |            |             |             
 | 7    | 2/18 | Causal models                     | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |

@@ -11,6 +11,12 @@ output:
       countIncrementalSlides: false
 ---
 
+## Homework
+
+Homework assignment #1 has been posted!
+Due Friday, February 7 at 9 am. 
+
+---
 ## Today
 
 - path diagrams
@@ -137,7 +143,7 @@ Semi-partial correlation
 
 ???
 
-the semi-partial correlation betewen parent SES and GPA controlling for peer relationships is a (not c), divided by all of GPA
+the semi-partial correlation between parent SES and GPA controlling for peer relationships is a (not c), divided by all of GPA
 
 ---
 ### Semi-partial correlations
@@ -171,12 +177,12 @@ Partial correlation
 ---
 ### Partial correlations
 
-$$\large pr_1=r_{Y1.2} = \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}} = \frac{r_{Y(1.2)}}{\sqrt{1-r^2_Y2}}$$
+$$\large pr_1=r_{Y1.2} = \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}} = \frac{r_{Y(1.2)}}{\sqrt{1-r^2_{Y2}}}$$
 ---
 
 ### What happens if X1 and X2 are uncorrelated?
 
-How does the semi-parital correlation compare to the zero-order correlation?
+How does the semi-partial correlation compare to the zero-order correlation?
 
 --
 
@@ -197,7 +203,7 @@ The semi-partial correlation is most often used when we want to show that some v
 
 - e.g., predicting Alzheimer's
 
-The partial correlationis most often used when some third variable, Z, is a plausible explanation of the correlation between X and Y
+The partial correlations most often used when some third variable, Z, is a plausible explanation of the correlation between X and Y
 
 - e.g., predicting grades
 

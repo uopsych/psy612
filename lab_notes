@@ -46,6 +46,7 @@ Lab 4: Two continuous predictors *CORY*
 -extracting output from these functions
 -multiple regression with two continuous predictors (how to interpret coefficients)
 -show how to make tables
+  sjPlot -- can put two regression models in a single table
 
 ------------------------------------------------------------------------------------------------------
 
@@ -61,6 +62,16 @@ Lab 5: Categorical predictors/one-way ANOVA *BRENDAN*
 ------------------------------------------------------------------------------------------------------
 
 Lab 6: Assumptions and Diagnostics *CORY*
+
+Don't worry about going through all the code covered in lecture. 
+Primary goals should be 
+- sjPlot::plot_model(., type = "diag") #plots 4 diagnostic plots
+- plotting residuals against 
+    * fitted values
+    * predictors
+    * ID (or other variables not in the model, like date or gender)
+
+You might also point them back to the olsrr package, which has good documentation and useful plots for detecting outliers: https://cran.r-project.org/web/packages/olsrr/vignettes/influence_measures.html -- 
 
 ------------------------------------------------------------------------------------------------------
 
