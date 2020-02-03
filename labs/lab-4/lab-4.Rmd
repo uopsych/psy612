@@ -202,7 +202,7 @@ pcor_mat
 
 ## Estimating multiple regression in R
 
-One nice thing about regression analysis in R is that it is pretty easy to build up from the simple to the more complex cases. We still use the `lm()` function and the functions we've used over the past few weeks (e.g., `coefdicients()`) to estimate our regression model and extract the information we want. To add multiple predictors, you enter them in the `formula =` argument, separated by a `+`.
+One nice thing about regression analysis in R is that it is pretty easy to build up from the simple to the more complex cases. We still use the `lm()` function and the functions we've used over the past few weeks (e.g., `coefficients()`) to estimate our regression model and extract the information we want. To add multiple predictors, you enter them in the `formula =` argument, separated by a `+`.
 
 Let's run a regression regressing happiness on extraversion and social support:
 

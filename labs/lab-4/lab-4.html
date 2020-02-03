@@ -3104,7 +3104,7 @@ pcor_mat</code></pre>
 <h1>Regression with Multiple Continuous Variables</h1>
 <div id="estimating-multiple-regression-in-r" class="section level2">
 <h2>Estimating multiple regression in R</h2>
-<p>One nice thing about regression analysis in R is that it is pretty easy to build up from the simple to the more complex cases. We still use the <code>lm()</code> function and the functions we’ve used over the past few weeks (e.g., <code>coefdicients()</code>) to estimate our regression model and extract the information we want. To add multiple predictors, you enter them in the <code>formula =</code> argument, separated by a <code>+</code>.</p>
+<p>One nice thing about regression analysis in R is that it is pretty easy to build up from the simple to the more complex cases. We still use the <code>lm()</code> function and the functions we’ve used over the past few weeks (e.g., <code>coefficients()</code>) to estimate our regression model and extract the information we want. To add multiple predictors, you enter them in the <code>formula =</code> argument, separated by a <code>+</code>.</p>
 <p>Let’s run a regression regressing happiness on extraversion and social support:</p>
 <pre class="r"><code>mr_model &lt;- lm(happiness ~ extraversion + soc_sup,
                data = df)</code></pre>
