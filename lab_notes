@@ -52,12 +52,20 @@ Lab 4: Two continuous predictors *CORY*
 
 Lab 5: Categorical predictors/one-way ANOVA *BRENDAN*
 -stats::aov() 
--making your categorical predictor a factor (make sure it's not numeric)
+-making your categorical predictor a factor (make sure it's not numeric--thinks it's continuous and will do it wrong--show them the wrong way)
+  --if it's continuous, the degrees of freedom will be 1 (which is wrong!); if it's a factor (as it should be), it will be the number of groups minus 1
+  --this doesn't matter in the two groups case, bc in this case df will also equal 1
 -review how factors work in R (don't talk about ordered vs. non-ordered)
 -look at degrees of freedom for your categorical predictor--does it make sense? 
 - dummy coding and effects coding
 * setting dummy codes with constrasts(outcome) = contr.treatment(1) #replace 1 with whatever level you want to be the reference
 * also setting effects coding with contr.sum(3) #3 being the reference group
+  --intercept = grand mean and slope = difference between groups 
+  
+* aov() will get you sums of squares, and then you can do pairwise.t.test and use Bonferonni and Holm corretion
+* if you do ANOVA using lm(), you get traditional ANOVA table in additiona to built-in pairwise comparions 
+
+* plotting and making tables (sjPlot and stargazer)--you've already learned these functions, now we're just putting in a different type of model
 
 ------------------------------------------------------------------------------------------------------
 
