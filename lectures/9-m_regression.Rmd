@@ -15,6 +15,21 @@ output:
 library(tidyverse)
 ```
 
+## Last time
+
+* Introduction to multiple regression
+* Interpreting coefficient estimates
+* Estimating model fit
+* Significance tests (omnibus and coefficients)
+
+---
+## Today
+
+* Tolerance
+* Hierarchical regression/model comparison
+* Categorical predictors
+
+---
 
 ```{r, message=FALSE}
 library(here)
@@ -27,6 +42,16 @@ describe(stress.data$Stress)
 mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
 summary(mr.model)
 ```
+
+???
+
+Review here:
+* Omnibus test
+* Coefficient of determination
+* Adjust R squared
+* Resid standard error
+* Coefficient estimates
+
 
 ---
 ## Standard error of regression coefficient
@@ -60,7 +85,7 @@ $$se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\fr
 
 - Including many variables will not bias parameter estimates but will potentially increase degrees of freedom and standard errors; in other words, putting too many variables in your model may make it _more difficult_ to find a statistically significant result 
 
-- But that's only the case if you add variables unrelated to Y or X; there are some cases in which adding the wrong variables can lead to spurious results. [We'll have a whole lecture on this in a few weeks.]
+- But that's only the case if you add variables unrelated to Y or X; there are some cases in which adding the wrong variables can lead to spurious results. [Stay tuned for the lecture on causal models.]
 
 ---
 
@@ -286,7 +311,9 @@ predict(mod.1, newdata = newdata, se.fit = T)
 ```
 ---
 
-And the test of the coefficient represents the significance test of each group to the reference. The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
+And the test of the coefficient represents the significance test of each group to the reference. This is an independent-samples *t*-test.
+
+The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
 
 ```{r}
 summary(mod.1)$coef
