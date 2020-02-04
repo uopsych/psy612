@@ -1,0 +1,423 @@
+---
+title: 'Causal models'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Correlation does not imply
+
+--
+
+causation
+
+--
+
+always?
+
+---
+
+## Sewll Wright
+
+- Guinea pig
+
+---
+
+## Judea Pearl
+
+--- 
+
+## Julia Rohrer, (2018)
+
+**Thinking clearly about correlation and causation: Graphical causal models for observational data**
+
+Psychologists are interested in inherently causual relationships. 
+  * e.g., how does social class cause behavior?
+  
+According to Rohrer, how have psychologists attempted to study causal relationships while avoiding issues of ethicality and feasibility?
+
+--
+
+It is impossible to infer causation from correlation without background knowledge about the domain. 
+* Experimental studies require assumptions as well.
+
+???
+ "surrogate interventions" -- e.g., perceived social class with subjective ladder
+ * these lack external validity
+ Avoiding causal language
+ * Doesn't stop lay persons or other researchers from inferring; also, maybe that's based in probematic assumptions
+ Controlling for 3rd variables
+ * How do we know what to control for?
+ 
+---
+
+## Directed Acyclic Graphics (DAGs)
+
+* Visual representations of causal assumptions
+* Share many features with structural equation models
+
+There are many small differences between SEMs and DAGs, but this is the biggest: 
+* SEMs are quantitative models -- they are used to estimate various parametes (think, several multiple regressions strung together)
+* DAG models qualitative: you will not use a DAG model to estimate numeric values.
+  * The benefit of DAG models is that they (1) help you clarify the causal model at the heart of your research question and (2) identify which variables you should and should **not** include in a regression model, based on your causal assumptions.
+  
+---
+
+## Directed Acyclic Graphics (DAGs)
+
+### Basic structures
+
+* Boxes or circles represent constructs in a causal model -- these are called **nodes**.
+* Arrows represent relationships. A &rarr; B
+
+* Relationships can follow any functional form -- linear, polynomial, sinusoidal, etc. 
+
+* DAGs only allow single-headed arrows; constructs cannot cause each other, nor can you cycle from a construct back to itself.
+
+  * A &rlarr; B is not allowed; A &larr; U &rarr; B is
+  * Constructs cannot cause themselves, so no feedback loops.  
+  
+---
+
+```{r, message=F}
+library(ggdag)
+
+dag.obj = dagify(B ~ A)
+ggdag(dag.obj)
+```
+
+
+---
+
+## DAGs
+
+**Paths** lead from one node to the next; they can include multiple nodes, and there may be multiple paths connecting two nodes. There are three kinds of paths:
+
+* Chains
+* Forks
+* Inverted forks
+
+---
+
+## Paths: Chains
+
+
+
+Chains have the structure 
+
+A &rarr; B &rarr; C.
+
+Chains can transmit associations from the node at the beginning to the node at the end, meaning that you will find a correlation between A and C. These associations represent *real* causal relationships.
+
+```{r chain-plot, eval = F}
+dag.obj = dagify(edu ~ iq,
+                 income ~ edu,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "income" = "Income"))
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+---
+
+```{r, ref.label="chain-plot", echo = F}
+
+```
+
+
+
+---
+
+## Paths: Forks
+
+Forks have the structure 
+
+A &larr; B &rarr; C.
+
+Forks can transmit associations but they are not causal. They are the structure most relevant for the phenomenon of confounding
+
+```{r fork-plot, eval = F}
+dag.obj = dagify(edu ~ iq,
+                 income ~ iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "income" = "Income"))
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+---
+
+```{r, ref.label="fork-plot", echo = F}
+
+```
+
+
+
+---
+
+## Paths: Inverted Forks
+
+Inverted have the structure 
+
+A &rarr; B &larr; C.
+
+Inverted forks cannot transmit associations. In other words, if this is the true causal structure, there won't be a correlation between A and C. 
+
+```{r ifork-plot, eval = F}
+dag.obj = dagify(income ~ edu,
+                 income ~ iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "income" = "Income"))
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+---
+
+
+```{r, ref.label="ifork-plot", echo = F}
+
+```
+
+
+
+---
+
+## Complex paths
+
+In reality, the causal pathways between the constructs in your model will be very complex. 
+
+```{r complex, eval = F}
+dag.obj = dagify(gpa ~ iq,
+                 edu ~ gpa + iq, 
+                 income ~ edu + iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "gpa" = "Grades",
+                            "income" = "Income"))
+```
+```{r, eval = F}
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+---
+
+```{r, ref.label="complex", echo = F}
+
+```
+
+```{r, echo = F}
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+
+
+---
+
+## Confounding
+
+DAG models are most useful for psychological scientists thinking about which variables to include in a regression model. Recall that one of the uses of regression is to statisically control for variables when estimating the relationship between an X and Y in our research question. Which variables should we be statistically controlling for?
+
+--
+
+We can see with DAG models that we should be controlling for constructs create forks, or a construct that causes both our X and Y variable. These constructs are known as **confounds**, or constructs that represent common causes of our variables of interest. 
+
+Importantly, we don't need to control for variables that causes just X and not Y (think of the issue of suppression).
+
+---
+
+
+```{r open, eval = F}
+dag.obj = dagify(gpa ~ iq,
+                 edu ~ gpa + iq, 
+                 income ~ edu + iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "gpa" = "Grades",
+                            "income" = "Income"), 
+                 exposure = "edu", outcome = "income")
+ggdag_paths(dag.obj, text = FALSE, use_labels = "label")+theme_bw()
+```
+
+---
+
+```{r ref.label = "open", echo = F, fig.width=10}
+
+```
+
+What should I control for?
+
+---
+
+```{r, fig.width=10}
+ggdag_adjustment_set(dag.obj, text = FALSE, use_labels = "label") + theme_bw()
+```
+
+---
+
+Confounds open "back-doors" between variables that act like causal pathways, but are not. But closing off the back doors, we isolate the true causal pathways, if there are any, and our regression models will estimate those. 
+
+Based on the causal structure I hypothesized last slide, if I want to estimate how much education causes income, I should control for intelligence, but I don't need to control for grades. 
+
+$$\large \hat{\text{Income}} = b_0 + b_1(\text{Education}) + b_2(\text{Intelligence}) + e$$
+
+---
+
+## More control is not always better
+
+We can see with forks that controlling for confounds improves our ability to correctly estimate causal relationships. So controlling for things is good...
+
+Except the other thing that DAGs should teach us is that controlling for the wrong things can dramatically hurt our ability to estimate true causal relationships and can create spurious correlations, or open up new associations that don't represent true causal pathways. 
+
+Let's return to the other two types of paths, chains and inverted forks. 
+
+---
+
+## Control in chains
+
+Chains represent mediation; the effect of construct A on C is *through* construct B.
+
+Intelligence &rarr; Educational attainment &rarr; Income
+
+What happens if we control for a mediating variable, like education?
+
+```{r}
+dag.obj = dagify(m ~ x,
+                 y ~ m,
+                 labels = c("x" = "Intelligence",
+                            "m" = "Education",
+                            "y" = "Income"), 
+                 exposure = "x", outcome = "y")
+```
+
+---
+
+.pull-left[
+```{r}
+ggdag_dseparated(dag.obj, 
+                 text = FALSE, 
+                 use_labels = "label") + 
+  theme_bw()
+```
+]
+.pull-right[
+```{r}
+ggdag_dseparated(dag.obj, 
+                 controlling_for = "m", 
+                 text = FALSE, 
+                 use_labels = "label") + theme_bw()
+```
+]
+
+---
+
+Controlling for mediators removes the association of interest from the model -- you may be removing the variance you most want to study!
+
+Inverted forks also teach us what not to control for: colliders. A **collider** for a pair of construct is any third construct that is caused by both constructs in the pair. Controlling for (or conditioning on) these variables introduces bias into your estimates. 
+
+Intelligence &rarr; Income attainment &larr; Educational
+
+What happens if we control for the collider?
+
+```{r}
+dag.obj = dagify(c ~ x,
+                 c ~ y,
+                 labels = c("x" = "Intelligence",
+                            "c" = "Income",
+                            "y" = "Education"), 
+                 exposure = "x", outcome = "y")
+```
+
+
+---
+
+.pull-left[
+```{r}
+ggdag_dseparated(dag.obj, 
+                 text = FALSE, 
+                 use_labels = "label") + 
+  theme_bw()
+```
+]
+.pull-right[
+```{r}
+ggdag_dseparated(dag.obj, 
+                 controlling_for = "c", 
+                 text = FALSE, 
+                 use_labels = "label") + theme_bw()
+```
+]
+
+---
+
+
+## Collider bias
+
+### Unexpected colliders
+
+Missing data or restricted range problems arise in collider bias.
+
+```{r}
+dag.obj = dagify(c ~ x,
+                 c ~ y,
+                 labels = c("x" = "Respitory Disease",
+                            "c" = "Hospitalization",
+                            "y" = "Locomotor Disease"), 
+                 exposure = "x", outcome = "y")
+```
+
+
+---
+
+.pull-left[
+
+Sampling from a specific environment (or a specific subpopulation) can result in collider bias. 
+
+Be wary of: 
+
+* Missing data
+* Subgroup analysis
+* Any post treatment variables
+
+
+This will extend to not just controlling for constructs, but estimating interactions with them. If your moderating variable is a collider, you've introduced collider bias. 
+
+]
+.pull-right[
+```{r}
+ggdag_dseparated(dag.obj, 
+                 controlling_for = "c", 
+                 text = FALSE, 
+                 use_labels = "label") + theme_bw()
+```
+]
+
+.small[Sackett et al. (1979)]
+
+---
+## Example here!
+
+---
+There is a **strong** assumption of DAG models, and that it's that no relevant variables have been ommited from the graph and that causal pathways have been correctly specified. This is a tall order, and potentially impossible to meet. Moreover, two different researchers may reasonably disagree with what the true model looks like. 
+
+It's your responsibility to decide for yourself what you think the model is, provide as much evidence as you can, and listen when an open mind to those who disagree. 
+
+
+<!-- --- -->
+
+<!-- Correlation can imply causation, provided the appropriate temporal precedence is considered and the correct number and specification of third-variable causes has been included in the model. -->

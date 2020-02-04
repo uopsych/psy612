@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Causal models</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Causal models
+
+---
+
+
+## Correlation does not imply
+
+--
+
+causation
+
+--
+
+always?
+
+---
+
+## Sewll Wright
+
+- Guinea pig
+
+---
+
+## Judea Pearl
+
+--- 
+
+## Julia Rohrer, (2018)
+
+**Thinking clearly about correlation and causation: Graphical causal models for observational data**
+
+Psychologists are interested in inherently causual relationships. 
+  * e.g., how does social class cause behavior?
+  
+According to Rohrer, how have psychologists attempted to study causal relationships while avoiding issues of ethicality and feasibility?
+
+--
+
+It is impossible to infer causation from correlation without background knowledge about the domain. 
+* Experimental studies require assumptions as well.
+
+???
+ "surrogate interventions" -- e.g., perceived social class with subjective ladder
+ * these lack external validity
+ Avoiding causal language
+ * Doesn't stop lay persons or other researchers from inferring; also, maybe that's based in probematic assumptions
+ Controlling for 3rd variables
+ * How do we know what to control for?
+ 
+---
+
+## Directed Acyclic Graphics (DAGs)
+
+* Visual representations of causal assumptions
+* Share many features with structural equation models
+
+There are many small differences between SEMs and DAGs, but this is the biggest: 
+* SEMs are quantitative models -- they are used to estimate various parametes (think, several multiple regressions strung together)
+* DAG models qualitative: you will not use a DAG model to estimate numeric values.
+  * The benefit of DAG models is that they (1) help you clarify the causal model at the heart of your research question and (2) identify which variables you should and should **not** include in a regression model, based on your causal assumptions.
+  
+---
+
+## Directed Acyclic Graphics (DAGs)
+
+### Basic structures
+
+* Boxes or circles represent constructs in a causal model -- these are called **nodes**.
+* Arrows represent relationships. A &amp;rarr; B
+
+* Relationships can follow any functional form -- linear, polynomial, sinusoidal, etc. 
+
+* DAGs only allow single-headed arrows; constructs cannot cause each other, nor can you cycle from a construct back to itself.
+
+  * A &amp;rlarr; B is not allowed; A &amp;larr; U &amp;rarr; B is
+  * Constructs cannot cause themselves, so no feedback loops.  
+  
+---
+
+
+```r
+library(ggdag)
+
+dag.obj = dagify(B ~ A)
+ggdag(dag.obj)
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+
+---
+
+## DAGs
+
+**Paths** lead from one node to the next; they can include multiple nodes, and there may be multiple paths connecting two nodes. There are three kinds of paths:
+
+* Chains
+* Forks
+* Inverted forks
+
+---
+
+## Paths: Chains
+
+
+
+Chains have the structure 
+
+A &amp;rarr; B &amp;rarr; C.
+
+Chains can transmit associations from the node at the beginning to the node at the end, meaning that you will find a correlation between A and C. These associations represent *real* causal relationships.
+
+
+```r
+dag.obj = dagify(edu ~ iq,
+                 income ~ edu,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "income" = "Income"))
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+---
+
+![](13-dag_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+## Paths: Forks
+
+Forks have the structure 
+
+A &amp;larr; B &amp;rarr; C.
+
+Forks can transmit associations but they are not causal. They are the structure most relevant for the phenomenon of confounding
+
+
+```r
+dag.obj = dagify(edu ~ iq,
+                 income ~ iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "income" = "Income"))
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+---
+
+![](13-dag_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+## Paths: Inverted Forks
+
+Inverted have the structure 
+
+A &amp;rarr; B &amp;larr; C.
+
+Inverted forks cannot transmit associations. In other words, if this is the true causal structure, there won't be a correlation between A and C. 
+
+
+```r
+dag.obj = dagify(income ~ edu,
+                 income ~ iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "income" = "Income"))
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+
+---
+
+
+![](13-dag_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+## Complex paths
+
+In reality, the causal pathways between the constructs in your model will be very complex. 
+
+
+```r
+dag.obj = dagify(gpa ~ iq,
+                 edu ~ gpa + iq, 
+                 income ~ edu + iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "gpa" = "Grades",
+                            "income" = "Income"))
+```
+
+```r
+ggdag(dag.obj, text = FALSE, use_labels = "label", 
+      label_size = 25) + 
+  theme_bw()
+```
+---
+
+
+
+![](13-dag_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+## Confounding
+
+DAG models are most useful for psychological scientists thinking about which variables to include in a regression model. Recall that one of the uses of regression is to statisically control for variables when estimating the relationship between an X and Y in our research question. Which variables should we be statistically controlling for?
+
+--
+
+We can see with DAG models that we should be controlling for constructs create forks, or a construct that causes both our X and Y variable. These constructs are known as **confounds**, or constructs that represent common causes of our variables of interest. 
+
+Importantly, we don't need to control for variables that causes just X and not Y (think of the issue of suppression).
+
+---
+
+
+
+```r
+dag.obj = dagify(gpa ~ iq,
+                 edu ~ gpa + iq, 
+                 income ~ edu + iq,
+                 labels = c("edu" = "Education",
+                            "iq" = "Intelligence",
+                            "gpa" = "Grades",
+                            "income" = "Income"), 
+                 exposure = "edu", outcome = "income")
+ggdag_paths(dag.obj, text = FALSE, use_labels = "label")+theme_bw()
+```
+
+---
+
+![](13-dag_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+What should I control for?
+
+---
+
+
+```r
+ggdag_adjustment_set(dag.obj, text = FALSE, use_labels = "label") + theme_bw()
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+Confounds open "back-doors" between variables that act like causal pathways, but are not. But closing off the back doors, we isolate the true causal pathways, if there are any, and our regression models will estimate those. 
+
+Based on the causal structure I hypothesized last slide, if I want to estimate how much education causes income, I should control for intelligence, but I don't need to control for grades. 
+
+`$$\large \hat{\text{Income}} = b_0 + b_1(\text{Education}) + b_2(\text{Intelligence}) + e$$`
+
+---
+
+## More control is not always better
+
+We can see with forks that controlling for confounds improves our ability to correctly estimate causal relationships. So controlling for things is good...
+
+Except the other thing that DAGs should teach us is that controlling for the wrong things can dramatically hurt our ability to estimate true causal relationships and can create spurious correlations, or open up new associations that don't represent true causal pathways. 
+
+Let's return to the other two types of paths, chains and inverted forks. 
+
+---
+
+## Control in chains
+
+Chains represent mediation; the effect of construct A on C is *through* construct B.
+
+Intelligence &amp;rarr; Educational attainment &amp;rarr; Income
+
+What happens if we control for a mediating variable, like education?
+
+
+```r
+dag.obj = dagify(m ~ x,
+                 y ~ m,
+                 labels = c("x" = "Intelligence",
+                            "m" = "Education",
+                            "y" = "Income"), 
+                 exposure = "x", outcome = "y")
+```
+
+---
+
+.pull-left[
+
+```r
+ggdag_dseparated(dag.obj, 
+                 text = FALSE, 
+                 use_labels = "label") + 
+  theme_bw()
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+]
+.pull-right[
+
+```r
+ggdag_dseparated(dag.obj, 
+                 controlling_for = "m", 
+                 text = FALSE, 
+                 use_labels = "label") + theme_bw()
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+]
+
+---
+
+Controlling for mediators removes the association of interest from the model -- you may be removing the variance you most want to study!
+
+Inverted forks also teach us what not to control for: colliders. A **collider** for a pair of construct is any third construct that is caused by both constructs in the pair. Controlling for (or conditioning on) these variables introduces bias into your estimates. 
+
+Intelligence &amp;rarr; Income attainment &amp;larr; Educational
+
+What happens if we control for the collider?
+
+
+```r
+dag.obj = dagify(c ~ x,
+                 c ~ y,
+                 labels = c("x" = "Intelligence",
+                            "c" = "Income",
+                            "y" = "Education"), 
+                 exposure = "x", outcome = "y")
+```
+
+
+---
+
+.pull-left[
+
+```r
+ggdag_dseparated(dag.obj, 
+                 text = FALSE, 
+                 use_labels = "label") + 
+  theme_bw()
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+]
+.pull-right[
+
+```r
+ggdag_dseparated(dag.obj, 
+                 controlling_for = "c", 
+                 text = FALSE, 
+                 use_labels = "label") + theme_bw()
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+]
+
+---
+
+
+## Collider bias
+
+### Unexpected colliders
+
+Missing data or restricted range problems arise in collider bias.
+
+
+```r
+dag.obj = dagify(c ~ x,
+                 c ~ y,
+                 labels = c("x" = "Respitory Disease",
+                            "c" = "Hospitalization",
+                            "y" = "Locomotor Disease"), 
+                 exposure = "x", outcome = "y")
+```
+
+
+---
+
+.pull-left[
+
+Sampling from a specific environment (or a specific subpopulation) can result in collider bias. 
+
+]
+.pull-right[
+
+```r
+ggdag_dseparated(dag.obj, 
+                 controlling_for = "c", 
+                 text = FALSE, 
+                 use_labels = "label") + theme_bw()
+```
+
+![](13-dag_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+]
+
+.small[Sackett et al. (1979)]
+---
+There is a **strong** assumption of DAG models, and that it's that no relevant variables have been ommited from the graph and that causal pathways have been correctly specified. This is a tall order, and potentially impossible to meet. Moreover, two different researchers may reasonably disagree with what the true model looks like. 
+
+It's your responsibility to decide for yourself what you think the model is, provide as much evidence as you can, and listen when an open mind to those who disagree. 
+
+
+&lt;!-- --- --&gt;
+
+&lt;!-- Correlation can imply causation, provided the appropriate temporal precedence is considered and the correct number and specification of third-variable causes has been included in the model. --&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

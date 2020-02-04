@@ -22,7 +22,9 @@ navbar:
       - text: "7-Partial correlations"
         href: "lectures/7-partial.html"   
       - text: "8-Multiple Regression"
-        href: "lectures/8-m_regression.html"           
+        href: "lectures/8-m_regression.html" 
+      - text: "9-Multiple Regression (II)"
+        href: "lectures/9-m_regression.html"         
     - text: Labs
       menu:
       - text: "Correlations"

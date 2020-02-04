@@ -1,0 +1,427 @@
+---
+title: 'Assumptions and Diagnostics II'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo = F, results = 'hide', message=FALSE}
+library(tidyverse)
+```
+
+```{r, echo = F, messages = FALSE, warning= FALSE}
+library(here)
+a_data <- read.csv(here("data/anxiety.csv"))
+library(broom)
+```
+
+
+## Screening your data
+
+### Steps for screening
+
+1) Calculate univariate and bivariate descriptive stats
+
+  + Check the min and max to make sure data were entered correctly
+
+  + Check the class of the variable
+      + is your grouping variable a factor or numeric?
+
+  + Check for skew or compare the mean and median
+
+  + Compare correlation matrices with pairwise and listwise deletion for bias in missingness.
+  
+  + Calculate reliability for your scales. 
+  
+---
+
+## Screening your data
+
+### Steps for screening
+
+2) Plot univariate and bivariate distributions
+  
+  + Look for skew and outliers
+  
+  + Check correlation heat maps for expected and unexpected patterns in items
+  
+---
+
+## Screening your data
+
+### Steps for screening
+
+3) Test the assumptions of your regression model(s)
+
+  + Calculate the variance inflation factor of each term (if you have two or more) to help check for correctly specified models.
+  
+  + Graph residuals by predictors to check for endogeniety.
+  
+  + Graph residuals by fitted values to check for homoscedasticity.
+  
+  + Graph residuals by ID number (or date, or another variable not in your model) to check for independence.
+  
+  + Graph the distribution of residuals or the Q-Q plot to check for normality. 
+  
+---
+
+## Screening your data
+
+### Steps for screening 
+
+4) Look for univariate or multivariate outliers. 
+
+
+---
+
+## Outliers
+
+- Broadly defined as atypical or highly influential data point(s)
+
+- Due to contamination (e.g. recording error) or accurate observation of a rare case
+
+- Univariate vs. Multivariate
+
+How do we typically describe or identify outliers? 
+
+???
+
+Focus on influential part -- what do we mean by influential?
+How do we see the influence of outliers in the case of estimating the mean?
+
+---
+
+## Outliers
+
+
+
+Outliers can be described in terms of three different metrics. Each metric conveys a sense of the magnitude of outliery-ness the case exhibits. However, some metrics also describe the degree to which your inferences will change: 
+
+1. Leverage
+    + How unusual is this case from the rest of the cases in terms of predictors?
+2. Distance
+    + How distant is the observed case from the predicted value?
+3. Influence
+    + How much the does regression coefficient change if case were removed?
+
+---
+## Outliers
+
+### Leverage
+
+**Leverage** tells us how far observed values for a case are from mean values on the set of IVs (centroid). 
+
+- Not dependent on Y values
+
+- High leverage cases have greater potential to influence regression results
+
+---
+
+### Example
+
+Recall our example from the previous lecture:
+
+```{r}
+model.1 <- lm(Anxiety ~ Support, a_data)
+aug_1<- augment(model.1)
+model.2 <- lm(Anxiety ~ Support + Stress, a_data)
+aug_2<- augment(model.2)
+```
+
+
+---
+
+## Outliers
+
+### Leverage
+
+```{r, fig.width=10, fig.height = 5}
+library(car)
+leveragePlots(model.1)
+```
+
+---
+
+## Outliers
+
+### Leverage
+
+One common metric for describing leverage is **Mahalanobis Distance**, which is the multidimensional extension of Euclidean distance where vectors are non-orthogonal. Given a set of variables, $\mathbf{X}$ with means $\mathbf{\mu}$ and covariance $\Sigma$:
+
+$$\large D^2 = (x - \mu)' \Sigma^{-1} (x - \mu)$$ 
+---
+
+## Outliers
+
+### Leverage
+
+```{r}
+(m = colMeans(a_data[c("Stress", "Support")], na.rm = T))
+(cov = cov(a_data[c("Stress", "Support")]))
+(MD = mahalanobis(x = a_data[,c("Stress", "Support")], center = m, cov = cov))
+```
+
+---
+
+```{r, fig.width=10, fig.height=7, echo = F}
+data.frame(x = 1:length(MD), MD = MD) %>%
+  ggplot(aes(x = x, y = MD)) +
+  geom_point() +
+  geom_segment(aes(xend = x, yend = 0)) +
+  theme_bw(base_size = 20)
+```
+
+
+---
+## Outliers
+### Distance
+
+- **Distance** is the distance from prediction, or how far a case's observed value is from its predicted value 
+
+  * i.e., residual
+  
+  * In units of Y.
+  
+What's might be problematic at looking at residuals in order to identify outliers?
+
+???
+
+Problem: outliers influence the regression line, won't be easy to spot them
+  
+---
+## Outliers
+### Distance
+
+- Raw residuals come from a model that is influenced by the outliers, making it harder to detect the outliers in the first placee. To avoid this issue, it is advisable to examine the **deleted residuals.**
+
+  - This value represents the distance between the observed value from a predicted value _that is calculated from a regression model based on all data except the case at hand_
+  
+  - The leave-one-out procedure is often referred to as "jackknifing"
+  
+---
+
+### Distance
+
+Other residuals are available:
+
+* **Standardized residuals**: takes raw residuals and puts them in a standardized unit -- this can be easier for determining cut-offs. 
+
+$$\large z_e = \frac{e_i}{\sqrt{MSE}}$$
+---
+
+### Distance
+
+Other residuals are available:
+
+* **Studentized residuals**: The MSE is only an estimate of error and, especially with small samples, may be off from the population value of error by a lot. Just like we use a *t*-distribution to adjust our estimate of the standard error (of the mean) when we have a small sample, we can adjust out precision of the standard error (of the regression equation).
+
+$$\large r_i = \frac{e_i}{\sqrt{MSE}(1-h_i)}$$
+
+where $h_i$ is the ith element on the diagonal of the hat matrix, $\mathbf{H} = \mathbf{X}(\mathbf{X'X})^{-1}\mathbf{X}'$. As N gets larger, the difference between studentized and standardized residuals will get smaller. 
+---
+
+### Distance
+
+
+**Warning:** Some textbooks (and R packages) will use terms like "standardized" and "studentized" to refer to deleted residuals that have been put in standardization units; other books and packages will not. Sometimes they switch the terms and definitions around. The text should tell you what it does. 
+
+```{r, eval = F}
+?MASS::studres
+```
+
+![](images/studres.png)
+---
+
+```{r}
+library(olsrr)
+ols_plot_resid_stand(model.1)
+```
+
+---
+
+```{r}
+ols_plot_resid_stud_fit(model.1)
+```
+
+---
+## Outliers
+### Influence
+
+
+**Influence** refers to how much a regression equation would change if the extreme case (outlier) is removed.
+
+- Influence = Leverage X Distance
+
+Like distance, there are several metrics by which you might assess any case's leverage. The most common are:
+
+- Cook's Distance (change in model fit)
+- DFFITS (change in model fit, standardized)
+- DFBETAS (change in coefficient estimate)
+
+---
+
+## Outliers
+### Influence
+
+**Cook’s Distance** is calculated by removing the ith data point from the model and recalculating the regression. It summarizes how much all the values in the regression model change when the ith observation is removed.
+
+$$CD_i = \frac{\sum_{j=1}^n(\hat{Y}_j-\hat{Y}_{j(1)})^2}{p(MSE)}$$
+
+---
+### Cook's Distance
+```{r, echo = FALSE}
+aug_1$ID = 1:nrow(aug_1)
+ggplot(aug_1, aes(x = ID, y = .cooksd)) +
+geom_point() +
+geom_text(aes(label = rownames(aug_1)), vjust = -1) +
+  theme_bw(base_size = 20)
+```
+
+---
+
+## Outliers
+### Influence
+
+**DFFITS** indexes how much the predicted value for a case changes if you remove the case from the equation. 
+
+**DFBETAs** index how much the estimate for a coefficient changes if you remove a case from the equation.
+
+```{r}
+head(dffits(model.2))
+head(dfbeta(model.2))
+```
+
+
+---
+
+
+```{r, echo = FALSE}
+aug_2$ID = 1:nrow(aug_2)
+aug_2$dfbetastress <- dfbeta(model.2)[,"Stress"]
+
+ggplot(data = aug_2, aes(x = ID, y = dfbetastress)) + geom_point() +
+geom_text(aes(label = rownames(aug_2), vjust = -1))
+```
+
+
+---
+
+## Outliers
+
+1. Leverage
+    + How unusual is this case from the rest of the cases in terms of predictors?
+2. Distance
+    + How distant is the observed case from the predicted value?
+3. Influence
+    + How much the does regression coefficient change if case were removed?
+    
+Consider each of these metrics in the context of research degrees of freedom. Do some of these metrics change the independence of successive inferential tests? How might this be problematic for Type I error? 
+
+What can you do to ensure your analysis is robust?
+
+---
+## Recommendations
+
+- Analyze data with/without outliers and see how results change
+
+- If you throw out cases you must believe it is not representative of population of interest or have appropriate explanation
+
+- Don't throw out data just to be "safe". Data are hard to collect and outliers are expected!
+
+
+---
+
+## Multicollinearity
+
+**Multicollinearity** occurs when predictor variables are highly related to each other. 
+- This can be a simple relationship, such as when X1 is strongly correlated with X2. This is easy to recognize, interpret, and correct for.
+- Sometimes multicollinearity is difficult to detect, such as when X1 is not strongly correlated with X2, X3, or X4, but the combination of the latter three is a strong predictor of X1. 
+
+
+---
+
+### Multicollinearity
+
+Multicollinearity increases the standard errors of your slope coefficients.
+
+$$\large se_{b} = \frac{s_{Y}}{s_{X}}\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}\sqrt{\frac{1}{1-R_{12}^2}}$$
+- Perfect collinearity never happens. Like everything in statistics (except rejecting the null), it's never a binary situation; there are degrees of multicollinearity. More multicollinearity = more problematic model.
+
+---
+
+## Multicollinearity
+### Diagnosis
+
+Multicollinearity can be diagnosed with tolerance. 
+
+Tolerance: $1-R_{12}^2$
+
+- Also look for models in which the coefficient of determination is large and the model is significant but the slope coefficients are small and nonsignificant. 
+
+- Look for unstable slope coefficients (i.e., large standard errors)
+
+- Look for sign changes
+
+---
+
+## Multicollinearity
+### Ways to address
+
+* Increase sample size
+
+  - Remember, with small samples, our estimates can be wildly off. Even if the true relationship between X1 and X2 is small, the sample correlation might be high because of random error.
+  
+* Remove a variable from your model.
+
+* Composite or factor scores
+
+  - If variables are highly correlated because they index the same underlying construct, why not just use them to create a more precise measure of that construct?
+  
+* Centering
+  
+  - This is especially important if your model includes interaction terms. 
+
+---
+
+## Suppression
+
+Multicollinearity is related to suppression. Normally our standardized partial regression coefficients fall between 0 and $r_{Y1}$. However, it is possible for $b_{Y1}$ to be larger than $r_{Y1}$. We refer to this phenomemnon as **suppression.**
+* A nonsignificant $r_{Y1}$ can become a significant $b_{Y1}$ when additional variables are added to the model.
+
+* A *positive* $r_{Y1}$ can become a *negative* and significant $b_{Y1}$.
+
+---
+
+## Suppression
+
+Recall that the partial regression coefficient is calculated:
+
+$$\large b^*_{Y1.2}=\frac{r_{Y1}-r_{Y2}r_{12}}{1-r^2_{12}}$$
+
+
+--
+
+Is suppression meaningful? 
+???
+
+Imagine a scenario when X2 and Y are uncorrelated and X2 is correlated with X1.
+
+(Draw venn diagram of this)
+
+Second part of numerator becomes 0
+Bottom part gets smaller
+Bigger value
+
+---
+
+class: inverse
+
+## Next time...
+
+Causal models
