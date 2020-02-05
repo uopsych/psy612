@@ -2830,11 +2830,16 @@ library(rio) # for importing data</code></pre>
 <li>After 10 weeks, participants’ depression scores were measured. Our dataset will have just 2 variables: <code>group</code> (CBT, Psychotherapy or Control) and <code>depress</code> (depression scores; lower scores = more depressed).</li>
 </ul>
 <p><strong>NOTE:</strong> <code>1</code> = CBT; <code>2</code> = Psychotherapy; <code>3</code> = Control</p>
+<ul>
+<li>Import the data</li>
+</ul>
 <pre class="r"><code>depression &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression.csv&quot;)</code></pre>
 <div id="structure-of-the-data" class="section level3">
 <h3>Structure of the data</h3>
-<p>The first thing we should check is how the data are structured. We should have a factor called Group and an numeric variable for depression scores (<em>Note: numeric is the general term in R for any kind of number. Within numeric, there are integers (abbreviated as <code>int</code>) which don’t have decimal points and double (abbreviated as dbl; stands for double-precision) which do have decimal points</em>). We’ll use the hopefully familiar function<code>str()</code> which stands for <em>structure</em>.</p>
-<pre class="r"><code>str(depression) # or use glimpse(), which is a tidyverse function</code></pre>
+<ul>
+<li>The first thing we should check is how the data are structured. We should have a factor called <code>group</code> and an numeric variable for depression scores. We’ll use the hopefully familiar function<code>str()</code> which stands for <em>structure</em>.</li>
+</ul>
+<pre class="r"><code>str(depression) # or use tibble::glimpse(), which is a tidyverse function</code></pre>
 <pre><code>## 'data.frame':    15 obs. of  2 variables:
 ##  $ group  : int  1 1 1 1 1 2 2 2 2 2 ...
 ##  $ depress: int  4 7 6 7 5 7 10 9 10 12 ...</code></pre>
@@ -2842,12 +2847,18 @@ library(rio) # for importing data</code></pre>
 </div>
 <div id="recode-group-as-a-factor" class="section level2">
 <h2>Recode group as a factor</h2>
-<p>Okay, it looks like <code>Group</code> is being read as an integer. We should go ahead and change this now to help make sure we don’t make a mistake and use group as an integer. This is a bit unnecessary - we would find out when we tried to create dummy codes (since the technique we’ll use only works with factors), but it is a good habit to get into. We’ll use the tidyverse’s <code>mutate()</code> (from the <code>dplyr</code> library) which should be familiar and base R’s <code>factor()</code> which can be used to turn variables into factors. At a minimum, you can just put <code>factor()</code> around a variable (e.g., <code>factor(Group)</code>), but we will also provide labels for the factor. You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order CBT, Psychotherapy, and Control (see above).</p>
+<ul>
+<li>Okay, it looks like <code>group</code> is being read as an integer. We should go ahead and change this now to help make sure we don’t make a mistake and use <code>group</code> as an integer later on. This is a bit unnecessary - we would find out when we tried to create dummy codes (since the technique we’ll use only works with factors), but it is a good habit to get into.</li>
+</ul>
+<p>We’ll use <code>mutate()</code> and base R’s <code>factor()</code>, which can be used to turn variables into factors. At a minimum, you can just put <code>factor()</code> around a variable (e.g., <code>factor(group)</code>), but we will also provide labels for the factor. To be really clear that we want to work with “factor” version of this variables, we’ll actually create a new variable and call it <code>group_fct</code>.</p>
+<ul>
+<li>NOTE: You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order <code>CBT</code>, <code>Psychotherapy</code>, and <code>Control</code> (see above).</li>
+</ul>
 <pre class="r"><code>depression &lt;- depression %&gt;% 
   mutate(group_fct = factor(group,
-                        labels = c(&quot;CBT&quot;, &quot;Psychotherapy&quot;, &quot;Control&quot;))) # we'll provide the labels here</code></pre>
+                            labels = c(&quot;CBT&quot;, &quot;Psychotherapy&quot;, &quot;Control&quot;))) # order matters here! </code></pre>
 <ul>
-<li>Look at the structure of the data again</li>
+<li>Look at the structure of the data again. Now it’s clear that <code>group_fct</code> is a factor variable with the correct levels.</li>
 </ul>
 <pre class="r"><code>str(depression)</code></pre>
 <pre><code>## 'data.frame':    15 obs. of  3 variables:
