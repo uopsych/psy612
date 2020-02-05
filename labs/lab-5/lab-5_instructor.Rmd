@@ -7,7 +7,16 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: TRUE
+    df_print: paged
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, rows.print = 10)
+
+# suppress scientific notation
+options(scipen = 999)
+```
+
 
 # Purpose
 
@@ -18,11 +27,20 @@ To quickly navigate to the desired section, click one of the following links:
 1. [Regression with categorical predictors](#regression)
 1. [Traditional ANOVA](#anova)
 
+```{r message=FALSE}
+library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+```
+
 ***
 
 # Regression with categorical predictors{#regression}
 
 ## Research scenario
+
+```{r}
+depression <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression.csv")
+```
 
 ## Dummy coding
 
