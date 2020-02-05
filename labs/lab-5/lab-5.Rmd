@@ -1,0 +1,51 @@
+---
+title: "Lab 5: Categorical Predictors/One-way ANOVA"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+---
+
+# Purpose
+
+XXX
+
+To quickly navigate to the desired section, click one of the following links:
+
+1. [Regression with categorical predictors](#regression)
+1. [Traditional ANOVA](#anova)
+
+***
+
+# Regression with categorical predictors{#regression}
+
+## Research scenario
+
+## Dummy coding
+
+## Factor vs. numeric
+
+## Effects coding
+
+***
+
+# Traditional ANOVA{#anova}
+
+
+***
+
+# Minihacks
+
+
+## Minihack 1
+
+***
+
+## Minihack 2
+
+***
+
+## Minihack 3
