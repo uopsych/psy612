@@ -212,7 +212,7 @@ ANOVA assumes homogeneity of group variances.  Under that assumption, the separa
 $$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2 = \sum_{k=1}^G(N_k-1)\hat{\sigma}^2_k$$
 The degrees of freedom are likewise pooled:
 
-$$\large df_w = N-G=(N_1-1)+(N_2-2)+\dots+(N_G-1)$$
+$$\large df_w = N-G=(N_1-1)+(N_2-1)+\dots+(N_G-1)$$
 Where have we seen similar pooling?
 
 ---
@@ -399,7 +399,7 @@ Performing the test using the `lm()` function means that some of the possible pa
 rotate$Group = as.factor(rotate$Group)
 coef(summary(lm(Time~Group, data = rotate)))
 pairwise.t.test(x = rotate$Time, g = rotate$Group, 
-                       p.adjust.method = "none")
+                       p.adjust.method = "holm")
 ```
 
 
