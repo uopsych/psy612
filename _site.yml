@@ -24,7 +24,9 @@ navbar:
       - text: "8-Multiple Regression"
         href: "lectures/8-m_regression.html" 
       - text: "9-Multiple Regression (II)"
-        href: "lectures/9-m_regression.html"         
+        href: "lectures/9-m_regression.html" 
+      - text: "10-Multiple Regression (III)"
+        href: "lectures/10-m_regression.html" 
     - text: Labs
       menu:
       - text: "Correlations"

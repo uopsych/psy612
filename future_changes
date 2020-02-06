@@ -15,3 +15,13 @@
 3-lab.html
 
   * it was particularly helpful to draw out the matrices on the board during the matrix algebra section (i.e. draw the Y vector and the X matrix with column of 1’s) and to keep track of matrix dimensions, etc. while explaining the B vector.
+  
+7-partial.html
+  * when to use each: only care about X and Y and controlling for variable; comparions between diff x's and incremental validity; network analysis
+  
+9-m_regression.html
+
+  * better clarification for adding multiple predictors
+  * add slides to walk through predicting Y from dummy codes
+  * how was wisdom measured in the psych science article?
+  * if time, show how factor variable is doing the same as dummy codes (how?)
