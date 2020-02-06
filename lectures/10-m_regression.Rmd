@@ -304,7 +304,7 @@ data.frame(g = 2:15) %>%
 
 ---
 
-As the number of significance tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increses.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we don’t make a Type I error for just one test is:
+As the number of significance tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increases.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we don’t make a Type I error for just one test is:
 
 $$\large P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$
 The probability that we don't make a Type I error for two tests is (note the reason we assume independence):
