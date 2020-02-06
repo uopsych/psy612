@@ -103,23 +103,19 @@ rotate$Group_lab = factor(rotate$Group,
 
 
 ```r
-ggpubr::ggboxplot(data = rotate, x = "Group_lab", y = "Time", xlab = F)
+library(ggpubr)
+ggboxplot(data = rotate, x = "Group_lab", y = "Time", xlab = F)
 ```
 
 ![](10-m_regression_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
-
+--
 The pattern of means indicates that performance degrades with either uncontrollable noise or unpredictable noise. Noise that is both uncontrollable and unpredictable appears to be particularly disruptive.
 
 ---
 
 
 ```r
-ggpubr::ggbarplot(data = rotate, x = "Group_lab", y = "Time", xlab = F, add = c("mean_ci"), fill = "purple")
-```
-
-```
-## Warning: Computation failed in `stat_summary()`:
-## object 'mean_ci' of mode 'function' was not found
+ggbarplot(data = rotate, x = "Group_lab", y = "Time", xlab = F, add = c("mean_sd"), fill = "purple")
 ```
 
 ![](10-m_regression_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
@@ -211,7 +207,7 @@ The total variability of all of the data, regardless of group membership, can be
 
 `$$\large Var(Y) = \frac{1}{N}\sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$`
 
-for G groups and $ N_k $ participants within groups. 
+for G groups and `\(N_k\)` participants within groups. 
 
 In analysis of variance, we will be interested in the numerator of this variance equation, known as the total sum of squares:
 
@@ -241,7 +237,7 @@ The other, the between-groups sum of squares, represents deviations of the group
 How do these compare the sums of squares we are familiar with in regression?
 
 ---
-Sums of squares are central to ANOVA.  They are the building blocks that represent different sources of variability in a research design. They are additive, meaning that the SStot can be partitioned, or divided, into independent parts.
+Sums of squares are central to ANOVA.  They are the building blocks that represent different sources of variability in a research design. They are additive, meaning that the `\(SS_{tot}\)` can be partitioned, or divided, into independent parts.
 
 The total sum of squares is the sum of the between-groups sum of squares and the within-groups sum of squares. 
 
@@ -571,6 +567,10 @@ pairwise.t.test(x = rotate$Time, g = rotate$Group,
 ## P value adjustment method: none
 ```
 
+
+
+
+
 ---
 
 class: inverse
@@ -614,6 +614,31 @@ Assumptions and diagnostics
 &lt;!-- 2. The sum of the product of each pair of code variables, `\(C_1C_2,\)` must equal 0. (This is challenging when your groups are unequal sizes). --&gt;
 
 &lt;!-- 3. The difference between the value of the set of positive weights and the set of negative weights should equal 1 for each code variable (column). --&gt;
+
+
+&lt;!-- One benefit* to using the ANOVA framework instead of the regression framework is that you can estimate the total variability captured by one categorical variable controlling for another categorical or continuous variable with ease.  --&gt;
+
+&lt;!-- `\(\eta^2\)` (eta-squared) is a standardized measure of effect size used in analyses of variance. This effect size is the **proportion of variance in Y that is accounted for by one independent variable.** --&gt;
+
+&lt;!-- `$$\eta^2 = \frac{SS_{variable}}{SS_{total}}$$` --&gt;
+
+&lt;!-- For example, what if we believed gender was associated with performance on the noise burst task.  --&gt;
+
+&lt;!-- .small[* No difference when using R though.] --&gt;
+&lt;!-- --- --&gt;
+
+&lt;!-- ```{r, echo = F} --&gt;
+&lt;!-- set.seed(200620) --&gt;
+&lt;!-- hightime = sample(x = c("Male", "Female"), size = nrow(rotate), replace = T, prob = c(.75,.25)) --&gt;
+&lt;!-- lowtime = sample(x = c("Male", "Female"), size = nrow(rotate), replace = T, prob = c(.25,.75)) --&gt;
+&lt;!-- rotate$gender = hightime --&gt;
+&lt;!-- rotate$gender[rotate$Time &lt; 425] = lowtime[rotate$Time &lt; 425] --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- mod2 = aov(Time ~ Group + gender, data = rotate) --&gt;
+&lt;!-- anova(mod2) --&gt;
+&lt;!-- ``` --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
