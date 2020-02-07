@@ -18,7 +18,7 @@ options(scipen = 999)
 
 # Purpose
 
-Today's lab will focus on one-way ANOVA. However, rather than go over the traditional way of doing an ANOVA, we will instead focus on running ANOVA as a linear regression with a categorical predictor. In particular, we will discuss how to code categorical variables in R and how this affects interpretation of model coefficients. 
+Today's lab will focus on one-way ANOVA. However, rather than spend a lot of time on the traditional way of doing an ANOVA, we will instead focus on running ANOVA as a linear regression with a categorical predictor. In particular, we will discuss how to code categorical variables in R and how this affects interpretation of model coefficients. 
 
 To quickly navigate to the desired section, click one of the following links:
 
