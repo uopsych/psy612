@@ -3343,7 +3343,8 @@ summary(model_dummy2)</code></pre>
 <li>We can manually change the order of the levels by using <code>factor()</code> and manually specifying the <code>levels</code> argument to contain the order we want. Again, since R treats the first level of the factor as the reference group, and we want <code>Control</code> to be the reference group in order to obtain our contrasts of interests when we run the linear model, we will create a new version of <code>group_fct</code> called <code>group_fct_relevel</code> and make <code>Control</code> the first level of the factor in this new variable.</li>
 </ul>
 <pre class="r"><code>depression &lt;- depression %&gt;% 
-  mutate(group_fct_relevel = factor(group_fct, levels = c(&quot;Control&quot;,         # now level 1
+  mutate(group_fct_relevel = factor(group_fct, levels = c(
+                                                  &quot;Control&quot;,         # now level 1
                                                   &quot;CBT&quot;,             # now level 2
                                                   &quot;Psychotherapy&quot;))) # now level 3</code></pre>
 <p><br></p>

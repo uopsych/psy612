@@ -435,7 +435,8 @@ levels(depression$group_fct)
 
 ```{r lab-5-36}
 depression <- depression %>% 
-  mutate(group_fct_relevel = factor(group_fct, levels = c("Control",         # now level 1
+  mutate(group_fct_relevel = factor(group_fct, levels = c(
+                                                  "Control",         # now level 1
                                                   "CBT",             # now level 2
                                                   "Psychotherapy"))) # now level 3
 ```
