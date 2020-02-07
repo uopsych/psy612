@@ -3091,8 +3091,8 @@ summary(model_default)</code></pre>
 <li><p>There are (as always) a ton of ways to do this in R. Let’s go over a few methods:</p></li>
 </ul>
 </div>
-<div id="create-new-dummy-variables-with-mutate" class="section level3">
-<h3>Create new dummy variables with <code>mutate()</code></h3>
+<div id="method-1-create-dummy-variables-with-mutate" class="section level3">
+<h3>Method 1: Create dummy variables with <code>mutate()</code></h3>
 <ul>
 <li>You’ve seen this before from <a href="https://uopsych.github.io/psy612/lectures/9-m_regression.html#26" target="blank">this slide</a> in class.</li>
 </ul>
@@ -3174,8 +3174,8 @@ summary(model_dummy1)</code></pre>
 </blockquote>
 </div>
 </div>
-<div id="contrast-matrix" class="section level3">
-<h3>Contrast Matrix</h3>
+<div id="method-2-contrast-matrix" class="section level3">
+<h3>Method 2: Contrast Matrix</h3>
 <ul>
 <li><p>Now we’re going use another method to create our dummy codes by creating a contrast matrix, which is basically just a set of dummy codes (or effects codes, as we’ll discuss in a moment). When we pass a factor to <code>lm()</code> it uses a contrast matrix under the hood (which is what happened with the first model we ran. Although R creates the contrast matrix automatically with certain default assumptions, you can set it yourself if you have a specific set of codes in mind (which we do).</p></li>
 <li><p>Use <code>contrasts()</code> to view the default contrast matrix associated with our grouping variable. This function expects the factor variable that we are trying to view the contrasts for (in this case, <code>group_fct</code>) as the first argument.</p></li>
@@ -3320,8 +3320,8 @@ summary(model_dummy2)</code></pre>
 </blockquote>
 </div>
 </div>
-<div id="re-order-levels-of-your-factor" class="section level3">
-<h3>Re-order levels of your factor</h3>
+<div id="method-3-re-order-levels-of-your-factor" class="section level3">
+<h3>Method 3: Re-order levels of your factor</h3>
 <ul>
 <li>Let’s take another look at the levels of <code>group_fct</code></li>
 </ul>

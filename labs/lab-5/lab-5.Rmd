@@ -246,7 +246,7 @@ levels(depression$group_fct)
 
 * There are (as always) a ton of ways to do this in R. Let's go over a few methods: 
 
-### Create new dummy variables with `mutate()`
+### Method 1: Create dummy variables with `mutate()`
 
 * You've seen this before from [this slide](https://uopsych.github.io/psy612/lectures/9-m_regression.html#26){target="blank"} in class. 
 
@@ -304,7 +304,7 @@ summary(model_dummy1)
 
 >**Question:** How does the F value and R^2 we got from this model compare to our last model with different (underlying) dummy codes? 
 
-### Contrast Matrix
+### Method 2: Contrast Matrix
 
 * Now we're going use another method to create our dummy codes by creating a contrast matrix, which is basically just a set of dummy codes (or effects codes, as we'll discuss in a moment). When we pass a factor to `lm()` it uses a contrast matrix under the hood (which is what happened with the first model we ran. Although R creates the contrast matrix automatically with certain default assumptions, you can set it yourself if you have a specific set of codes in mind (which we do).
 
@@ -409,7 +409,7 @@ summary(model_dummy2)
 
 >**Question:** How does this compare to the output from the model that contained individual dummy variables (i.e. `CBT.v.Control` and `Psychotherapy.v.Control`) as the IV's? 
 
-### Re-order levels of your factor
+### Method 3: Re-order levels of your factor
 
 * Let's take another look at the levels of `group_fct`
 
