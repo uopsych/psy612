@@ -37,6 +37,8 @@ navbar:
         href: "labs/lab-3/lab-3.html"   
       - text: "Multiple Regression I: Regression with Multiple Continuous Predictors"
         href: "labs/lab-4/lab-4.html"
+      - text: "Categorical Predictors/One-way ANOVA"
+        href: "labs/lab-5/lab-5.html"        
     - text: Homework
       href: homework.html
     - text: Final Project
