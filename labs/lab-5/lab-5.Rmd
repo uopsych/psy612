@@ -11,6 +11,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(rows.print = 15)
+
 # suppress scientific notation
 options(scipen = 999)
 ```
