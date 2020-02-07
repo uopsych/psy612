@@ -184,7 +184,7 @@ describeBy(depression$depress, depression$group_fct, mat = TRUE)
 
 ## Dummy coding
 
-* Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them, e.g. `group` , which takes the values `1`/`CBT`, `2`/`Psychotherapy` or `3`/`Control`, and ascribe meaningful numbers that allow for us to calculate meaningful statistics.
+* Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them, e.g. `group_fct` , which takes the values `CBT`, `Psychotherapy` or `Control`, and ascribe meaningful numbers that allow for us to calculate meaningful statistics.
 
 * This actually happens under the hood in R when our independent variable is a factor. Let's see what happens when we put `group_fct` as the IV in our model:
 

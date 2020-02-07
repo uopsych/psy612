@@ -3006,7 +3006,7 @@ library(psych) # for descriptives</code></pre>
 <div id="dummy-coding" class="section level2">
 <h2>Dummy coding</h2>
 <ul>
-<li><p>Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don’t have any inherent numerical value to them, e.g. <code>group</code> , which takes the values <code>1</code>/<code>CBT</code>, <code>2</code>/<code>Psychotherapy</code> or <code>3</code>/<code>Control</code>, and ascribe meaningful numbers that allow for us to calculate meaningful statistics.</p></li>
+<li><p>Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don’t have any inherent numerical value to them, e.g. <code>group_fct</code> , which takes the values <code>CBT</code>, <code>Psychotherapy</code> or <code>Control</code>, and ascribe meaningful numbers that allow for us to calculate meaningful statistics.</p></li>
 <li><p>This actually happens under the hood in R when our independent variable is a factor. Let’s see what happens when we put <code>group_fct</code> as the IV in our model:</p></li>
 </ul>
 <div id="section-10" class="section level4 tabset tabset-fade tabset-pills">
