@@ -298,9 +298,9 @@ summary(model_dummy1)
 
 >**Question:** What does the intercept mean? 
 
->**Question:** What does the `CBT.v.Control` slope mean?  This should be pretty obvious...
+>**Question:** What does the `CBT.v.Control` slope mean?
 
->**Question:** What does the `Psychotherapy.v.Control` slope mean? Again, obvious.
+>**Question:** What does the `Psychotherapy.v.Control` slope mean?
 
 >**Question:** How does the F value and R^2 we got from this model compare to our last model with different (underlying) dummy codes? 
 
