@@ -286,7 +286,7 @@ summary(model_dummy3)
 
 ## Effects coding
 
-* Instead of dummy coding, we can instead use **effects coding** to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In effects coding, we give a certain group a `1`, the comparison group a `-1`, and then set the unrelated group(s) to zero. In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes. 
+* Instead of dummy coding, we can instead use **effects coding** (also called "deviation coding") to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes. 
 
 * **NOTE: This will change how we interpret our coefficients!**. When using effects coding, the intercept represents the grand mean. The coefficients of each of the effect-coded variables is equal to the difference between the mean of the group coded 1 and the grand mean. 
 
@@ -294,14 +294,16 @@ summary(model_dummy3)
  
 * Let's imagine our research questions are as follows: 
 
--Is CBT effective relative to the overall sample? 
--Is Psychotherapy effective relative to the overall sample?
-
-> **Question:** What would our effects codes be?
-
->**Answer:** `r data.frame(EC1 = c(1, 0, -1), EC2 = c(0, 1, -1))`
+-Is CBT effective compared to the overall sample? 
+-Is Psychotherapy effective compared to the overall sample?
 
 * We'll create our contrast matrix of effects codes in a very similar way to how we made our dummy codes. The only difference is that this time we will use `contr.sum()`, again telling it the number of levels of our grouping factor (`n = 3`)
+
+```{r}
+contr.sum(n = 3)
+```
+
+* And as before with dummy codes, we overwrite the default contrast matrix with our effect codes.
 
 ```{r}
 contrasts(depression$group_fct) <- contr.sum(n = 3)
@@ -314,12 +316,65 @@ model_ec <- lm(depress ~ group_fct, data = depression)
 summary(model_ec)
 ```
 
+>**Question:** How does the overall model fit compare to that from the model(s) that used dummy coding? 
+
+>**Answer:** It is exactly the same!
+
+* There are many other contrast coding schemes besides dummy and effects coding. You can read more about that [here](https://stats.idre.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/){target="_blank"}. 
+
 ## Factor vs. numeric/character
+
+* This whole time we've been working with our grouping variable as a factor `group_fct`. For a moment, let's consider what would have happened if we forgot to make it a factor. Remember that in our `depression` data frame, `group` is an integer.
+
+```{r}
+model_numeric <- lm(depress ~ group, data = depression) 
+summary(model_numeric)
+```
+
+* Compare this with the output from our model using `group_fct`:
+
+```{r echo=FALSE}
+summary(lm(depress ~ group_fct_relevel, data = depression))
+```
+
+>**Question:** What do you notice about the degrees of freedom in each of these models? 
+
+>**Answer:** When group is numeric, df_denominator = 1 (which is wrong); when group is a factor, df_denominator = number of groups - 1
 
 ***
 
 # Traditional ANOVA{#anova}
 
+* We have just reviewed in detail how to do an ANOVA within a linear regression framework. We will briefly review how to generate a traditional ANOVA table, though this will give us the same information we already got from our regression model, so we are not going to go over the old-school ANOVA method in great detail. 
+
+* To get an ANOVA table, you can use`stats::aov()` and provide it with the same information you would pass to `lm()`, namely a formula (e.g. `IV ~ DV`) and the `data`. Again, make sure that the categorical IV is a factor. 
+
+```{r}
+model_anova <- aov(depress ~ group_fct, data = depression)
+summary(model_anova)
+```
+
+* To calculate pairwise comparisons between group levels, use `pairwise.t.test()`. This function takes arguments `x` (the outcome variable), `g` (the grouping variable) an `p.adjust.method` (e.g. "bonferroni" or "holm").
+
+```{r}
+pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = "none")
+```
+
+* Bonferroni correction
+
+```{r}
+pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = "bonferroni")
+```
+
+* Holm correction
+
+```{r}
+pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = "holm")
+```
+
+>**Question:** What difference do you notice about the Bonferroni vs. Holm correction? 
+
+>**Answer:** Bonferroni is more conservative
 
 ***
 

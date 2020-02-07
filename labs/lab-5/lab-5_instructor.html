@@ -3213,25 +3213,22 @@ summary(model_dummy3)</code></pre>
 <div id="effects-coding" class="section level2">
 <h2>Effects coding</h2>
 <ul>
-<li><p>Instead of dummy coding, we can instead use <strong>effects coding</strong> to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In effects coding, we give a certain group a <code>1</code>, the comparison group a <code>-1</code>, and then set the unrelated group(s) to zero. In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes.</p></li>
+<li><p>Instead of dummy coding, we can instead use <strong>effects coding</strong> (also called “deviation coding”) to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes.</p></li>
 <li><p><strong>NOTE: This will change how we interpret our coefficients!</strong>. When using effects coding, the intercept represents the grand mean. The coefficients of each of the effect-coded variables is equal to the difference between the mean of the group coded 1 and the grand mean.</p></li>
 <li><p>With effects coding, the reference group will end up being coded with all <code>-1</code>’s.</p></li>
 <li><p>Let’s imagine our research questions are as follows:</p></li>
 </ul>
-<p>-Is CBT effective relative to the overall sample? -Is Psychotherapy effective relative to the overall sample?</p>
-<blockquote>
-<p><strong>Question:</strong> What would our effects codes be?</p>
-</blockquote>
-<blockquote>
-<strong>Answer:</strong>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["EC1"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["EC2"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"0"},{"1":"0","2":"1"},{"1":"-1","2":"-1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-</script>
-</div>
-</blockquote>
+<p>-Is CBT effective compared to the overall sample? -Is Psychotherapy effective compared to the overall sample?</p>
 <ul>
 <li>We’ll create our contrast matrix of effects codes in a very similar way to how we made our dummy codes. The only difference is that this time we will use <code>contr.sum()</code>, again telling it the number of levels of our grouping factor (<code>n = 3</code>)</li>
+</ul>
+<pre class="r"><code>contr.sum(n = 3)</code></pre>
+<pre><code>##   [,1] [,2]
+## 1    1    0
+## 2    0    1
+## 3   -1   -1</code></pre>
+<ul>
+<li>And as before with dummy codes, we overwrite the default contrast matrix with our effect codes.</li>
 </ul>
 <pre class="r"><code>contrasts(depression$group_fct) &lt;- contr.sum(n = 3)</code></pre>
 <ul>
@@ -3258,14 +3255,133 @@ summary(model_ec)</code></pre>
 ## Residual standard error: 1.653 on 12 degrees of freedom
 ## Multiple R-squared:  0.7595, Adjusted R-squared:  0.7195 
 ## F-statistic: 18.95 on 2 and 12 DF,  p-value: 0.0001934</code></pre>
+<blockquote>
+<p><strong>Question:</strong> How does the overall model fit compare to that from the model(s) that used dummy coding?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> It is exactly the same!</p>
+</blockquote>
+<ul>
+<li>There are many other contrast coding schemes besides dummy and effects coding. You can read more about that <a href="https://stats.idre.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/" target="_blank">here</a>.</li>
+</ul>
 </div>
 <div id="factor-vs.numericcharacter" class="section level2">
 <h2>Factor vs. numeric/character</h2>
+<ul>
+<li>This whole time we’ve been working with our grouping variable as a factor <code>group_fct</code>. For a moment, let’s consider what would have happened if we forgot to make it a factor. Remember that in our <code>depression</code> data frame, <code>group</code> is an integer.</li>
+</ul>
+<pre class="r"><code>model_numeric &lt;- lm(depress ~ group, data = depression) 
+summary(model_numeric)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = depress ~ group, data = depression)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##   -3.9   -2.2   -0.5    1.8    5.8 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   8.8000     2.0712   4.249 0.000949 ***
+## group        -1.3000     0.9588  -1.356 0.198214    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.032 on 13 degrees of freedom
+## Multiple R-squared:  0.1239, Adjusted R-squared:  0.05651 
+## F-statistic: 1.838 on 1 and 13 DF,  p-value: 0.1982</code></pre>
+<ul>
+<li>Compare this with the output from our model using <code>group_fct</code>:</li>
+</ul>
+<pre><code>## 
+## Call:
+## lm(formula = depress ~ group_fct_relevel, data = depression)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##   -2.6   -1.0    0.2    1.2    2.4 
+## 
+## Coefficients:
+##                                Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)                      3.2000     0.7394   4.328  0.000982 ***
+## group_fct_relevelCBT             2.6000     1.0456   2.487  0.028613 *  
+## group_fct_relevelPsychotherapy   6.4000     1.0456   6.121 0.0000517 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.653 on 12 degrees of freedom
+## Multiple R-squared:  0.7595, Adjusted R-squared:  0.7195 
+## F-statistic: 18.95 on 2 and 12 DF,  p-value: 0.0001934</code></pre>
+<blockquote>
+<p><strong>Question:</strong> What do you notice about the degrees of freedom in each of these models?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> When group is numeric, df_denominator = 1 (which is wrong); when group is a factor, df_denominator = number of groups - 1</p>
+</blockquote>
 <hr />
 </div>
 </div>
 <div id="anova" class="section level1">
 <h1>Traditional ANOVA</h1>
+<ul>
+<li><p>We have just reviewed in detail how to do an ANOVA within a linear regression framework. We will briefly review how to generate a traditional ANOVA table, though this will give us the same information we already got from our regression model, so we are not going to go over the old-school ANOVA method in great detail.</p></li>
+<li><p>To get an ANOVA table, you can use<code>stats::aov()</code> and provide it with the same information you would pass to <code>lm()</code>, namely a formula (e.g. <code>IV ~ DV</code>) and the <code>data</code>. Again, make sure that the categorical IV is a factor.</p></li>
+</ul>
+<pre class="r"><code>model_anova &lt;- aov(depress ~ group_fct, data = depression)
+summary(model_anova)</code></pre>
+<pre><code>##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## group_fct    2  103.6   51.80   18.95 0.000193 ***
+## Residuals   12   32.8    2.73                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<ul>
+<li>To calculate pairwise comparisons between group levels, use <code>pairwise.t.test()</code>. This function takes arguments <code>x</code> (the outcome variable), <code>g</code> (the grouping variable) an <code>p.adjust.method</code> (e.g. “bonferroni” or “holm”).</li>
+</ul>
+<pre class="r"><code>pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  depression$depress and depression$group_fct 
+## 
+##               CBT    Psychotherapy
+## Psychotherapy 0.0034 -            
+## Control       0.0286 0.000052     
+## 
+## P value adjustment method: none</code></pre>
+<ul>
+<li>Bonferroni correction</li>
+</ul>
+<pre class="r"><code>pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  depression$depress and depression$group_fct 
+## 
+##               CBT     Psychotherapy
+## Psychotherapy 0.01027 -            
+## Control       0.08584 0.00016      
+## 
+## P value adjustment method: bonferroni</code></pre>
+<ul>
+<li>Holm correction</li>
+</ul>
+<pre class="r"><code>pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = &quot;holm&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  depression$depress and depression$group_fct 
+## 
+##               CBT     Psychotherapy
+## Psychotherapy 0.00685 -            
+## Control       0.02861 0.00016      
+## 
+## P value adjustment method: holm</code></pre>
+<blockquote>
+<p><strong>Question:</strong> What difference do you notice about the Bonferroni vs. Holm correction?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> Bonferroni is more conservative</p>
+</blockquote>
 <hr />
 </div>
 <div id="minihacks" class="section level1">
