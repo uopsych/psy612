@@ -60,7 +60,7 @@ Lab 5: Categorical predictors/one-way ANOVA *BRENDAN*
 - dummy coding and effects coding
 * setting dummy codes with constrasts(outcome) = contr.treatment(1) #replace 1 with whatever level you want to be the reference
 * also setting effects coding with contr.sum(3) #3 being the reference group
-  --intercept = grand mean and slope = difference between groups 
+  --intercept = grand mean and slope = difference between each group and grand mean 
   
 * aov() will get you sums of squares, and then you can do pairwise.t.test and use Bonferonni and Holm corretion
 * if you do ANOVA using lm(), you get traditional ANOVA table in additiona to built-in pairwise comparions 
