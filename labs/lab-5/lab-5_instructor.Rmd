@@ -28,7 +28,7 @@ To quickly navigate to the desired section, click one of the following links:
 
 Be sure to have the following packages loaded:
 
-```{r message=FALSE}
+```{r lab-5-1, message=FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
@@ -48,7 +48,7 @@ library(psych) # for descriptives
 
 * After 10 weeks, participants' depression scores were measured. Our dataset will have just 2 variables: `group` (CBT, Psychotherapy or Control) and `depress` (depression scores). 
 
-* **NOTE:** In this example, lower scores = more depressed. (This is a little counterintuitive.)
+* **NOTE:** In this example, lower scores = more depressed. (This is a little counter-intuitive.)
 
 * **NOTE:**
 `1` = CBT; 
@@ -57,7 +57,7 @@ library(psych) # for descriptives
 
 * Import the data
 
-```{r}
+```{r lab-5-2}
 depression <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression_therapy.csv")
 ```
 
@@ -65,9 +65,21 @@ depression <- import("https://raw.githubusercontent.com/uopsych/psy612/master/la
 
 * The first thing we should check is how the data are structured. We should have a factor called `group` and a numeric variable for depression scores. We'll use the hopefully familiar function`str()` which stands for *structure*.
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-3, eval=FALSE}
 str(depression) # or use tibble::glimpse(), which is a tidyverse function
 ```
+
+##### Output
+
+```{r lab-5-4, echo=FALSE, ref.label='lab-5-3'}
+```
+
+####
+<br>
 
 ## Recode `group` as a factor
 
@@ -77,17 +89,30 @@ str(depression) # or use tibble::glimpse(), which is a tidyverse function
 
 * NOTE: You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order `CBT`, `Psychotherapy`, and `Control` (see above). 
 
-```{r}
+```{r lab-5-5}
 depression <- depression %>% 
   mutate(group_fct = factor(group,
                             labels = c("CBT", "Psychotherapy", "Control"))) # order matters here! 
 ```
 
+
 * Look at the structure of the data again. Now it's clear that `group_fct` is a factor variable with the correct levels. 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-6, eval=FALSE}
 str(depression)
 ```
+
+##### Output
+
+```{r lab-5-7, echo=FALSE, ref.label='lab-5-6'}
+```
+
+####
+<br>
 
 ## Descriptives
 
@@ -99,7 +124,11 @@ str(depression)
 
 * For a refresher on these functions, see [here](https://uopsych.github.io/psy611/labs/lab-5.html#grouping_data){target="_blank"}
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-8, eval=FALSE}
 depression %>% 
   group_by(group_fct) %>%  # telling it to treat group as the group variable
   summarize(mean = mean(depress, na.rm = TRUE),
@@ -108,19 +137,49 @@ depression %>%
   knitr::kable(digits = 2) # make it look pretty
 ```
 
+##### Output
+
+```{r lab-5-9, echo=FALSE, ref.label='lab-5-8'}
+```
+
+####
+<br>
+
 * What's a faster way to do this? 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-10, eval=FALSE}
 describeBy(depression$depress, depression$group_fct)
 ```
 
+##### Output
+
+```{r lab-5-11, echo=FALSE, ref.label='lab-5-10'}
+```
+
+####
+<br>
+
 * NOTE: If you want the output of `psych::describeBy()` as a matrix instead of a list, add `mat = TRUE`. 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-12, eval=FALSE}
 describeBy(depression$depress, depression$group_fct, mat = TRUE)
 ```
 
+##### Output
 
+```{r lab-5-13, echo=FALSE, ref.label='lab-5-12'}
+```
+
+####
+<br>
 
 ## Dummy coding
 
@@ -128,16 +187,40 @@ describeBy(depression$depress, depression$group_fct, mat = TRUE)
 
 * This actually happens under the hood in R when our independent variable is a factor. Let's see what happens when we put `group_fct` as the IV in our model:
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-14, eval=FALSE}
 model_default <- lm(depress ~ group_fct, data = depression) 
 summary(model_default)
 ```
 
+##### Output
+
+```{r lab-5-15, echo=FALSE, ref.label='lab-5-14'}
+```
+
+####
+<br>
+
 * Notice that our coefficients are labeled `(Intercept`), `group_fctPsychotherapy` and `group_fctControl`. Why is this the case? Let's remind ourselves of the levels of `group_fct`:
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-16, eval=FALSE}
 levels(depression$group_fct)
 ```
+
+##### Output
+
+```{r lab-5-17, echo=FALSE, ref.label='lab-5-16'}
+```
+
+####
+<br>
 
 * R is creating dummy variables for us under the hood. By default, R treats whatever the first level of the factor variable is as the reference group. In this case, CBT was the first level of `group_fct` (because it was initially coded as `1` in our raw data), so the model treated CBT as our reference group.
 
@@ -176,7 +259,7 @@ levels(depression$group_fct)
 
 * You've seen this before from [this slide](https://uopsych.github.io/psy612/lectures/9-m_regression.html#26){target="blank"} in class. 
 
-```{r}
+```{r lab-5-18}
 # create new dummy variables containing 1's and 0's
 depression <- depression %>%
   mutate(CBT.v.Control = ifelse(group_fct == "CBT", 1, 0), 
@@ -185,16 +268,40 @@ depression <- depression %>%
 
 * View the data frame with these new dummy variables.
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-19, eval=FALSE}
 depression
 ```
 
+##### Output
+
+```{r lab-5-20, echo=FALSE, ref.label='lab-5-19'}
+```
+
+####
+<br>
+
 * Run the linear model using these new dummy variables as the IV's.
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-21, eval=FALSE}
 model_dummy1 <- lm(depress ~ CBT.v.Control + Psychotherapy.v.Control, data = depression) 
 summary(model_dummy1)
 ```
+
+##### Output
+
+```{r lab-5-22, echo=FALSE, ref.label='lab-5-21'}
+```
+
+####
+<br>
 
 >**Question:** What does the intercept mean? 
 
@@ -206,7 +313,7 @@ summary(model_dummy1)
 
 >**Question:** What does the `Psychotherapy.v.Control` slope mean? Again, obvious.
 
->**Answer:** The difference in means between the Pyschotherapy group and Control group. 
+>**Answer:** The difference in means between the Psychotherapy group and Control group. 
 
 >**Question:** How does the F value and R^2 we got from this model compare to our last model with different (underlying) dummy codes? 
 
@@ -218,40 +325,100 @@ summary(model_dummy1)
 
 * Use `contrasts()` to view the default contrast matrix associated with our grouping variable. This function expects the factor variable that we are trying to view the contrasts for (in this case, `group_fct`) as the first argument. 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-23, eval=FALSE}
 contrasts(depression$group_fct)  
 ```
 
-* Again, by default our contrasts are not how we want them because we want `Control` to be the reference group. To manually specify our dummy codes, we'll use the function `contr.treatment()`, which will return a contrast matrix with specific characteristics, depending on what we tell it. The first argument, `n` is the number of levels of the factor variable (in this case, `n = 3`). The second arugment, `base` refers to the level of the factor taht should be considered the reference group -- in this case, since `Control` is the third level of `group_fct`, we will put `base = 3`.
+##### Output
 
-```{r}
+```{r lab-5-24, echo=FALSE, ref.label='lab-5-23'}
+```
+
+####
+<br>
+
+* Again, by default our contrasts are not how we want them because we want `Control` to be the reference group. To manually specify our dummy codes, we'll use the function `contr.treatment()`, which will return a contrast matrix with specific characteristics, depending on what we tell it. The first argument, `n` is the number of levels of the factor variable (in this case, `n = 3`). The second argument, `base` refers to the level of the factor that should be considered the reference group -- in this case, since `Control` is the third level of `group_fct`, we will put `base = 3`.
+
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-25, eval=FALSE}
 contr.treatment(n = 3, base = 3)    
 ```
 
+##### Output
+
+```{r lab-5-26, echo=FALSE, ref.label='lab-5-25'}
+```
+
+####
+<br>
+
 * Now we will overwrite the default contrast matrix for `group_fct` with the one we just manually specified.
 
-```{r}
+```{r lab-5-27}
 contrasts(depression$group_fct) <- contr.treatment(n = 3, base = 3)    
 ```
 
 * Now look at the structure of the data again. What do you notice about `group_fct`?
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-28, eval=FALSE}
 str(depression)
 ```
 
+##### Output
+
+```{r lab-5-29, echo=FALSE, ref.label='lab-5-28'}
+```
+
+####
+<br>
+
 * Let's take a closer look at `group_fct` using `attributes()`...
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-30, eval=FALSE}
 attributes(depression$group_fct)
 ```
 
+##### Output
+
+```{r lab-5-31, echo=FALSE, ref.label='lab-5-30'}
+```
+
+####
+<br>
+
 * Run the linear model with `group_fct` (now containing our desired dummy codes) as the IV 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-32, eval=FALSE}
 model_dummy2 <- lm(depress ~ group_fct, data = depression) 
 summary(model_dummy2)
 ```
+
+##### Output
+
+```{r lab-5-33, echo=FALSE, ref.label='lab-5-32'}
+```
+
+####
+<br>
 
 >**Question:** How does this compare to the output from the model that contained individual dummy variables (i.e. `CBT.v.Control` and `Psychotherapy.v.Control`) as the IV's? 
 
@@ -261,13 +428,25 @@ summary(model_dummy2)
 
 * Let's take another look at the levels of `group_fct`
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-34, eval=FALSE}
 levels(depression$group_fct)
 ```
 
+##### Output
+
+```{r lab-5-35, echo=FALSE, ref.label='lab-5-34'}
+```
+
+####
+<br>
+
 * We can manually change the order of the levels by using `factor()` and manually specifying the `levels` argument to contain the order we want. Again, since R treats the first level of the factor as the reference group, and we want `Control` to be the reference group in order to obtain our contrasts of interests when we run the linear model, we will create a new version of `group_fct` called `group_fct_relevel` and make `Control` the first level of the factor in this new variable.
 
-```{r}
+```{r lab-5-36}
 depression <- depression %>% 
   mutate(group_fct_relevel = factor(group_fct, levels = c("Control",         # now level 1
                                                   "CBT",             # now level 2
@@ -276,16 +455,40 @@ depression <- depression %>%
 
 * To double check that this worked, let's look at the levels of `group_fct_relevel`
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-37, eval=FALSE}
 levels(depression$group_fct_relevel)
 ```
 
+##### Output
+
+```{r lab-5-38, echo=FALSE, ref.label='lab-5-37'}
+```
+
+####
+<br>
+
 * Now when we run the linear model, the contrast matrix that will be automatically generated will correspond to the correct contrasts we want. To verify this, let's re-run the linear model (yet again!) with the re-leveled `group_fct_relevel` variable as the IV. 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-39, eval=FALSE}
 model_dummy3 <- lm(depress ~ group_fct_relevel, data = depression) 
 summary(model_dummy3)
 ```
+
+##### Output
+
+```{r lab-5-40, echo=FALSE, ref.label='lab-5-39'}
+```
+
+####
+<br>
 
 * Voilà, it's the exact same as our last two models! 
 
@@ -297,29 +500,54 @@ summary(model_dummy3)
 
 * With effects coding, the reference group will end up being coded with all `-1`'s.
  
-* Let's imagine our research questions are as follows: 
-
--Is CBT effective compared to the overall sample? 
--Is Psychotherapy effective compared to the overall sample?
+* Let's imagine our research questions are as follows: Is CBT effective compared to the overall sample? Is Psychotherapy effective compared to the overall sample?
 
 * We'll create our contrast matrix of effects codes in a very similar way to how we made our dummy codes. The only difference is that this time we will use `contr.sum()`, again telling it the number of levels of our grouping factor (`n = 3`)
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-41, eval=FALSE}
 contr.sum(n = 3)
 ```
 
+##### Output
+
+```{r lab-5-42, echo=FALSE, ref.label='lab-5-41'}
+```
+
+####
+<br>
+
 * And as before with dummy codes, we overwrite the default contrast matrix with our effect codes.
 
-```{r}
+```{r lab-5-43}
 contrasts(depression$group_fct) <- contr.sum(n = 3)
 ```
 
 * Run the linear model with effects coding
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-44, eval=FALSE}
 model_ec <- lm(depress ~ group_fct, data = depression) 
 summary(model_ec)
 ```
+
+##### Output
+
+```{r lab-5-45, echo=FALSE, ref.label='lab-5-44'}
+```
+
+####
+<br>
+
+>**Question:** What does the intercept mean? The slopes? 
+
+>**Answer:** The intercept is the grand mean, and the slopes are the differences between the grand mean and CBT and Psychotherapy, respectively. 
 
 >**Question:** How does the overall model fit compare to that from the model(s) that used dummy coding? 
 
@@ -331,14 +559,26 @@ summary(model_ec)
 
 * This whole time we've been working with our grouping variable as a factor `group_fct`. For a moment, let's consider what would have happened if we forgot to make it a factor. Remember that in our `depression` data frame, `group` is an integer.
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-46, eval=FALSE}
 model_numeric <- lm(depress ~ group, data = depression) 
 summary(model_numeric)
 ```
 
+##### Output
+
+```{r lab-5-47, echo=FALSE, ref.label='lab-5-46'}
+```
+
+####
+<br>
+
 * Compare this with the output from our model using `group_fct`:
 
-```{r echo=FALSE}
+```{r lab-5-48, echo=FALSE}
 summary(lm(depress ~ group_fct_relevel, data = depression))
 ```
 
@@ -354,28 +594,76 @@ summary(lm(depress ~ group_fct_relevel, data = depression))
 
 * To get an ANOVA table, you can use`stats::aov()` and provide it with the same information you would pass to `lm()`, namely a formula (e.g. `IV ~ DV`) and the `data`. Again, make sure that the categorical IV is a factor. 
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-49, eval=FALSE}
 model_anova <- aov(depress ~ group_fct, data = depression)
 summary(model_anova)
 ```
 
+##### Output
+
+```{r lab-5-50, echo=FALSE, ref.label='lab-5-49'}
+```
+
+####
+<br>
+
 * To calculate pairwise comparisons between group levels, use `pairwise.t.test()`. This function takes arguments `x` (the outcome variable), `g` (the grouping variable) an `p.adjust.method` (e.g. "bonferroni" or "holm").
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-51, eval=FALSE}
 pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = "none")
 ```
 
+##### Output
+
+```{r lab-5-52, echo=FALSE, ref.label='lab-5-51'}
+```
+
+####
+<br>
+
 * Bonferroni correction
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-53, eval=FALSE}
 pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = "bonferroni")
 ```
 
+##### Output
+
+```{r lab-5-54, echo=FALSE, ref.label='lab-5-53'}
+```
+
+####
+<br>
+
 * Holm correction
 
-```{r}
+####  {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-5-55, eval=FALSE}
 pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.method = "holm")
 ```
+
+##### Output
+
+```{r lab-5-56, echo=FALSE, ref.label='lab-5-55'}
+```
+
+####
+<br>
 
 >**Question:** What difference do you notice about the Bonferroni vs. Holm correction? 
 
@@ -387,11 +675,11 @@ pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.metho
 
 Research Problem: 
 
-You are interested in the effectiveness of a new drug in treating the symptoms of depression. You randomly assign patients with Depression into one of 3 treatment groups with different levels of the drug (low, medium, and high), and also one control group tht only received a placebo. You then measure their symptoms after 4 weeks of drug treatment. You are interested in whether the drug is effective, and what level of the drug is most effective.
+You are interested in the effectiveness of a new drug in treating the symptoms of depression. You randomly assign patients with depression into one of 3 treatment groups with different levels of the drug (low, medium, and high), and also one control group that only received a placebo. You then measure their symptoms after 4 weeks of drug treatment. You are interested in whether the drug is effective, and what level of the drug is most effective.
 
 * Load in the raw data with the following code
 
-```{r}
+```{r lab-5-57}
 depression_drug <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression_drug.csv")
 ```
 
@@ -408,7 +696,7 @@ depression_drug <- import("https://raw.githubusercontent.com/uopsych/psy612/mast
 
 * What pattern do you notice in the data? 
 
-```{r eval=FALSE}
+```{r lab-5-58, eval=FALSE}
 # Re-order factor levels
 depression_drug <- depression_drug %>% 
   mutate(drug = factor(drug, levels = c("none", "low", "medium", "high")))
@@ -435,14 +723,14 @@ depression_drug %>%
 
 * Run an omnibus ANOVA test to determine whether there is a relationship between `drug` and `depression`. What does this tell you? 
 
-```{r}
+```{r lab-5-59}
 anova_drug <- aov(depression ~ drug, data = depression_drug)
 summary(anova_drug)
 ```
 
 * Using your preferred method of dummy coding, test whether there is a significant difference between depression scores for each drug group (`low`, `medium`, `high`) and the `none` group. Interpret all model coefficients.
 
-```{r}
+```{r lab-5-60}
 depression_drug <- depression_drug %>% 
   mutate(drug = factor(drug, levels = c("none", "low", "medium", "high")))
 
@@ -458,7 +746,7 @@ summary(model_drug)
 
 * Conduct pairwise comparisons for `depression` scores across all levels of `drug`. Use a correction method to account for multiple comparisons. 
 
-```{r}
+```{r lab-5-61}
 pairwise.t.test(x = depression_drug$depression, g = depression_drug$drug, p.adjust.method = "none")
 
 pairwise.t.test(x = depression_drug$depression, g = depression_drug$drug, p.adjust.method = "bonferroni")
