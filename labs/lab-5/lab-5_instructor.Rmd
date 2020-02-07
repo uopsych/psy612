@@ -43,7 +43,9 @@ library(psych) # for descriptives
 2.	Psychotherapy group 
 3.	Control group (received no therapy) 
 
-* After 10 weeks, participants' depression scores were measured. Our dataset will have just 2 variables: `group` (CBT, Psychotherapy or Control) and `depress` (depression scores; lower scores = more depressed).
+* After 10 weeks, participants' depression scores were measured. Our dataset will have just 2 variables: `group` (CBT, Psychotherapy or Control) and `depress` (depression scores). 
+
+* **NOTE:** In this example, lower scores = more depressed. (This is a little counterintuitive.)
 
 * **NOTE:**
 `1` = CBT; 
@@ -53,7 +55,7 @@ library(psych) # for descriptives
 * Import the data
 
 ```{r}
-depression <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression.csv")
+depression <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression_therapy.csv")
 ```
 
 ### Structure of the data
@@ -380,13 +382,80 @@ pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.metho
 
 # Minihacks
 
+Research Problem: 
+
+You are interested in the effectiveness of a new drug in treating the symptoms of depression. You randomly assign patients with Depression into one of 3 treatment groups with different levels of the drug (low, medium, and high), and also one control group tht only received a placebo. You then measure their symptoms after 4 weeks of drug treatment. You are interested in whether the drug is effective, and what level of the drug is most effective.
+
+```{r}
+depression_drug <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression_drug.csv")
+```
 
 ## Minihack 1
+
+* Recreate the following table.
+
+![](images/depression_table.png)
+<br> 
+
+* Recreate the following boxplot.
+
+![](images/depression_boxplot.png)
+
+* What pattern do you notice in the data? 
+
+```{r eval=FALSE}
+# Re-order factor levels
+depression_drug <- depression_drug %>% 
+  mutate(drug = factor(drug, levels = c("none", "low", "medium", "high")))
+
+# table
+depression_drug %>% 
+  group_by(drug) %>%
+  summarize(mean = mean(depression, na.rm = TRUE),
+            sd = sd(depression, na.rm = TRUE),
+            n = n()) %>% 
+  knitr::kable(digits = 2) 
+
+# Boxplot
+depression_drug %>% 
+  ggplot(aes(drug, depression)) + 
+  geom_boxplot() + 
+  theme_minimal() + 
+  labs(x = "Drug", y = "Depression")
+```
 
 ***
 
 ## Minihack 2
 
+* Run an omnibus ANOVA test to determine whether there is a relationship between `drug` and `depression`. What does this tell you? 
+
+```{r}
+anova_drug <- aov(depression ~ drug, data = depression_drug)
+summary(anova_drug)
+```
+
+* Using your preferred method of dummy coding, test whether there is a significant difference between depression scores for each drug group (`low`, `medium`, `high`) and the `none` group. Interpret all model coefficients.
+
+```{r}
+depression_drug <- depression_drug %>% 
+  mutate(drug = factor(drug, levels = c("none", "low", "medium", "high")))
+
+contrasts(depression_drug$drug) <- contr.treatment(n = 4, base = 1)  
+
+model_drug <- lm(depression ~ drug, data  = depression_drug)
+summary(model_drug)
+```
+
 ***
 
 ## Minihack 3
+
+* Conduct pairwise comparisons for `depression` scores across all levels of `drug`. Use a correction method to account for multiple comparisons. 
+
+```{r}
+pairwise.t.test(x = depression_drug$depression, g = depression_drug$drug, p.adjust.method = "none")
+
+pairwise.t.test(x = depression_drug$depression, g = depression_drug$drug, p.adjust.method = "bonferroni")
+```
+
