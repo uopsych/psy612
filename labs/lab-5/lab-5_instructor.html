@@ -2804,12 +2804,14 @@ div.tocify {
 
 <div id="purpose" class="section level1">
 <h1>Purpose</h1>
-<p>XXX</p>
+<p>Today’s lab will focus on one-way ANOVA. However, rather than go over the traditional way of doing an ANOVA, we will instead focus on running ANOVA as a linear regression with a categorical predictor. In particular, we will discuss how to code categorical variables in R and how this affects interpretation of model coefficients.</p>
 <p>To quickly navigate to the desired section, click one of the following links:</p>
 <ol style="list-style-type: decimal">
 <li><a href="#regression">Regression with categorical predictors</a></li>
 <li><a href="#anova">Traditional ANOVA</a></li>
+<li><a href="#minihacks">Minihacks</a></li>
 </ol>
+<p>Be sure to have the following packages loaded:</p>
 <pre class="r"><code>library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives</code></pre>
@@ -3389,6 +3391,9 @@ summary(model_anova)</code></pre>
 <h1>Minihacks</h1>
 <p>Research Problem:</p>
 <p>You are interested in the effectiveness of a new drug in treating the symptoms of depression. You randomly assign patients with Depression into one of 3 treatment groups with different levels of the drug (low, medium, and high), and also one control group tht only received a placebo. You then measure their symptoms after 4 weeks of drug treatment. You are interested in whether the drug is effective, and what level of the drug is most effective.</p>
+<ul>
+<li>Load in the raw data with the following code</li>
+</ul>
 <pre class="r"><code>depression_drug &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression_drug.csv&quot;)</code></pre>
 <div id="minihack-1" class="section level2">
 <h2>Minihack 1</h2>

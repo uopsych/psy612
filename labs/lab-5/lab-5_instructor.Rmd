@@ -18,12 +18,15 @@ options(scipen = 999)
 
 # Purpose
 
-XXX
+Today's lab will focus on one-way ANOVA. However, rather than go over the traditional way of doing an ANOVA, we will instead focus on running ANOVA as a linear regression with a categorical predictor. In particular, we will discuss how to code categorical variables in R and how this affects interpretation of model coefficients. 
 
 To quickly navigate to the desired section, click one of the following links:
 
 1. [Regression with categorical predictors](#regression)
 1. [Traditional ANOVA](#anova)
+1. [Minihacks](#minihacks)
+
+Be sure to have the following packages loaded:
 
 ```{r message=FALSE}
 library(tidyverse) # for plotting and data wrangling
@@ -380,11 +383,13 @@ pairwise.t.test(x = depression$depress, g = depression$group_fct, p.adjust.metho
 
 ***
 
-# Minihacks
+# Minihacks{#minihacks}
 
 Research Problem: 
 
 You are interested in the effectiveness of a new drug in treating the symptoms of depression. You randomly assign patients with Depression into one of 3 treatment groups with different levels of the drug (low, medium, and high), and also one control group tht only received a placebo. You then measure their symptoms after 4 weeks of drug treatment. You are interested in whether the drug is effective, and what level of the drug is most effective.
+
+* Load in the raw data with the following code
 
 ```{r}
 depression_drug <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression_drug.csv")
