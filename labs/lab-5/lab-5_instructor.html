@@ -2811,7 +2811,8 @@ div.tocify {
 <li><a href="#anova">Traditional ANOVA</a></li>
 </ol>
 <pre class="r"><code>library(tidyverse) # for plotting and data wrangling
-library(rio) # for importing data</code></pre>
+library(rio) # for importing data
+library(psych) # for descriptives</code></pre>
 <hr />
 </div>
 <div id="regression" class="section level1">
@@ -2827,17 +2828,15 @@ library(rio) # for importing data</code></pre>
 <li>Control group (received no therapy)</li>
 </ol>
 <ul>
-<li>After 10 weeks, participants’ depression scores were measured. Our dataset will have just 2 variables: <code>group</code> (CBT, Psychotherapy or Control) and <code>depress</code> (depression scores; lower scores = more depressed).</li>
-</ul>
-<p><strong>NOTE:</strong> <code>1</code> = CBT; <code>2</code> = Psychotherapy; <code>3</code> = Control</p>
-<ul>
-<li>Import the data</li>
+<li><p>After 10 weeks, participants’ depression scores were measured. Our dataset will have just 2 variables: <code>group</code> (CBT, Psychotherapy or Control) and <code>depress</code> (depression scores; lower scores = more depressed).</p></li>
+<li><p><strong>NOTE:</strong> <code>1</code> = CBT; <code>2</code> = Psychotherapy; <code>3</code> = Control</p></li>
+<li><p>Import the data</p></li>
 </ul>
 <pre class="r"><code>depression &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-5/data/depression.csv&quot;)</code></pre>
 <div id="structure-of-the-data" class="section level3">
 <h3>Structure of the data</h3>
 <ul>
-<li>The first thing we should check is how the data are structured. We should have a factor called <code>group</code> and an numeric variable for depression scores. We’ll use the hopefully familiar function<code>str()</code> which stands for <em>structure</em>.</li>
+<li>The first thing we should check is how the data are structured. We should have a factor called <code>group</code> and a numeric variable for depression scores. We’ll use the hopefully familiar function<code>str()</code> which stands for <em>structure</em>.</li>
 </ul>
 <pre class="r"><code>str(depression) # or use tibble::glimpse(), which is a tidyverse function</code></pre>
 <pre><code>## 'data.frame':    15 obs. of  2 variables:
@@ -2846,13 +2845,11 @@ library(rio) # for importing data</code></pre>
 </div>
 </div>
 <div id="recode-group-as-a-factor" class="section level2">
-<h2>Recode group as a factor</h2>
+<h2>Recode <code>group</code> as a factor</h2>
 <ul>
-<li>Okay, it looks like <code>group</code> is being read as an integer. We should go ahead and change this now to help make sure we don’t make a mistake and use <code>group</code> as an integer later on. This is a bit unnecessary - we would find out when we tried to create dummy codes (since the technique we’ll use only works with factors), but it is a good habit to get into.</li>
-</ul>
-<p>We’ll use <code>mutate()</code> and base R’s <code>factor()</code>, which can be used to turn variables into factors. At a minimum, you can just put <code>factor()</code> around a variable (e.g., <code>factor(group)</code>), but we will also provide labels for the factor. To be really clear that we want to work with “factor” version of this variables, we’ll actually create a new variable and call it <code>group_fct</code>.</p>
-<ul>
-<li>NOTE: You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order <code>CBT</code>, <code>Psychotherapy</code>, and <code>Control</code> (see above).</li>
+<li><p>Okay, it looks like <code>group</code> is being read as an integer. We should go ahead and change this now to help make sure we don’t make a mistake and use <code>group</code> as an integer later on. This is a bit unnecessary - we would find out when we tried to create dummy codes (since the technique we’ll use only works with factors), but it is a good habit to get into.</p></li>
+<li><p>We’ll use <code>mutate()</code> and base R’s <code>factor()</code>, which can be used to turn variables into factors. At a minimum, you can just put <code>factor()</code> around a variable (e.g., <code>factor(group)</code>), but we will also provide labels for the factor. To be really clear that we want to work with the “factor” version of this variables, we’ll actually create a new variable and call it <code>group_fct</code>.</p></li>
+<li><p>NOTE: You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order <code>CBT</code>, <code>Psychotherapy</code>, and <code>Control</code> (see above).</p></li>
 </ul>
 <pre class="r"><code>depression &lt;- depression %&gt;% 
   mutate(group_fct = factor(group,
@@ -2868,23 +2865,52 @@ library(rio) # for importing data</code></pre>
 </div>
 <div id="descriptives" class="section level2">
 <h2>Descriptives</h2>
-<p>Next, we’ll get descriptives for each group using two tidyverse functions.</p>
-<p>The first is <code>group_by()</code> which sets some metadata saying what variable can be used to group observations (we’ll use the variable <code>Group</code> for this). This is as simple as <code>group_by(dataset, grouping_variables)</code> where <code>dataset</code> is replaced by the name of your dataset (or piped in, which we’ll do) and <code>grouping_variables</code> are the unquoted column names of the variables you want to use as groups (again, we’ll just be using the single <code>Group</code> variable). One thing to mention is that <code>group_by()</code> itself looks like it doesn’t change much which is OK; it basically sets the groups as meta data which other functions (like summarize) can use.</p>
-<p>The second is <code>summarize()</code> which can be used to get summary information about a dataset. When you combine them, it can give you summary information about each group. <code>summarize()</code> works sort of like <code>mutate()</code>; you put a name on the left-hand side of an <code>=</code> and the definition on the right. The main difference is that summarize collapses across rows; either collapsing across the rows within a group or across all rows if there is no grouping variable set (with <code>group_by()</code>). We’ll use it to get the mean (using base R’s <code>mean()</code>), standard deviation (using base R’s <code>sd()</code>), and sample size per group (using tidyverse’s <code>n()</code>).</p>
+<ul>
+<li><p>Next, we’ll get descriptives for each group using two tidyverse functions.</p></li>
+<li><p>The first is <code>group_by()</code> which sets some metadata saying what variable can be used to group observations (we’ll use the <code>group</code> variable for this). One thing to mention is that <code>group_by()</code> itself looks like it doesn’t change much which is OK; it basically sets the groups as meta data which other functions (like <code>summarize()</code>) can use.</p></li>
+<li><p>The second is <code>summarize()</code> which can be used to get summary information about a dataset. When you combine them, it can give you summary information about each group. <code>summarize()</code> works sort of like <code>mutate()</code>; you put a name on the left-hand side of an <code>=</code> and the definition on the right. The main difference is that summarize collapses across rows; either collapsing across the rows within a group or across all rows if there is no grouping variable set (with <code>group_by()</code>). We’ll use it to get the mean (using base R’s <code>mean()</code>), standard deviation (using base R’s <code>sd()</code>), and sample size per group (using tidyverse’s <code>n()</code>).</p></li>
+<li><p>For a refresher on these functions, see <a href="https://uopsych.github.io/psy611/labs/lab-5.html#grouping_data" target="_blank">here</a></p></li>
+</ul>
 <pre class="r"><code>depression %&gt;% 
   group_by(group_fct) %&gt;%  # telling it to treat group as the group variable
   summarize(mean = mean(depress, na.rm = TRUE),
             sd = sd(depress, na.rm = TRUE),
-            n = n())  # don't need to put anything in here; it's looking for n per group</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["group_fct"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["mean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"CBT","2":"5.8","3":"1.303840","4":"5"},{"1":"Psychotherapy","2":"9.6","3":"1.816590","4":"5"},{"1":"Control","2":"3.2","3":"1.788854","4":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+            n = n()) %&gt;% # don't need to put anything in here; it's looking for n per group
+  knitr::kable(digits = 2) # make it look pretty</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">group_fct</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CBT</td>
+<td align="right">5.8</td>
+<td align="right">1.30</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Psychotherapy</td>
+<td align="right">9.6</td>
+<td align="right">1.82</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">Control</td>
+<td align="right">3.2</td>
+<td align="right">1.79</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>What’s a faster way to do this?</li>
 </ul>
-<pre class="r"><code>psych::describeBy(depression$depress, depression$group_fct)</code></pre>
+<pre class="r"><code>describeBy(depression$depress, depression$group_fct)</code></pre>
 <pre><code>## 
 ##  Descriptive statistics by group 
 ## group: CBT
@@ -2898,42 +2924,24 @@ library(rio) # for importing data</code></pre>
 ## group: Control
 ##    vars n mean   sd median trimmed  mad min max range  skew kurtosis  se
 ## X1    1 5  3.2 1.79      3     3.2 2.97   1   5     4 -0.03    -2.09 0.8</code></pre>
+<ul>
+<li>NOTE: If you want the output of <code>psych::describeBy()</code> as a matrix instead of a list, add <code>mat = TRUE</code>.</li>
+</ul>
+<pre class="r"><code>describeBy(depression$depress, depression$group_fct, mat = TRUE)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["item"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["group1"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["vars"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["mean"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["median"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["trimmed"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["mad"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["min"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["max"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["range"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["skew"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["kurtosis"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[15],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"CBT","3":"1","4":"5","5":"5.8","6":"1.303840","7":"6","8":"5.8","9":"1.4826","10":"4","11":"7","12":"3","13":"-0.25986578","14":"-1.958062","15":"0.5830952","_rn_":"X11"},{"1":"2","2":"Psychotherapy","3":"1","4":"5","5":"9.6","6":"1.816590","7":"10","8":"9.6","9":"1.4826","10":"7","11":"12","12":"5","13":"-0.12811215","14":"-1.548099","15":"0.8124038","_rn_":"X12"},{"1":"3","2":"Control","3":"1","4":"5","5":"3.2","6":"1.788854","7":"3","8":"3.2","9":"2.9652","10":"1","11":"5","12":"4","13":"-0.02515576","14":"-2.091875","15":"0.8000000","_rn_":"X13"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 <div id="dummy-coding" class="section level2">
 <h2>Dummy coding</h2>
-<p>Let’s imagine that we have the following research questions:</p>
-<ol style="list-style-type: decimal">
-<li>Is CBT effective (relative to no therapy)?</li>
-<li>Is psychotherapy effective (relative to no therapy)?</li>
-</ol>
-<p>Now let’s make the dummy codes. Recall that we need <em>k-1</em> dummy codes (where <em>k</em> is the number of groups). We have 3 groups, so we need 2 dummy codes.</p>
-<p>Our decision of how to set the dummy codes (which group to set as the <em>reference group</em>) should be guided by our research questions. Above, we said we’re interested if CBT is better than no therapy and if psychotherapy is better than no therapy. This implies that we should make our reference group the control group, and make a dummy code for the difference between CBT and control and a second dummy code for the difference between psychotherapy and the control group.</p>
-<p>There are (as always) a ton of ways to do this in R. We’re going to do it by creating a contrast matrix, which is basically just a set of dummy codes (or contrast codes, or effects codes). When we pass a factor to <code>lm()</code> it will use a contrast matrix; R has a way of making them by default, but you can set it yourself if you have a specific set of codes in mind (which we do).</p>
-<pre class="r"><code>dummy1 &lt;- c(1, 0, 0) # dummy code for CBT vs. control
-dummy2 &lt;- c(0, 1, 0) # dummy code for psychotherapy vs. control
-
-dummy_codes &lt;- cbind(dummy1, dummy2)</code></pre>
 <ul>
-<li>Use <code>contrasts()</code> to set the contrasts to our dummy codes</li>
+<li><p>Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don’t have any inherent numerical value to them, e.g. <code>group</code> , which takes the values <code>1</code>/<code>CBT</code>, <code>2</code>/<code>Psychotherapy</code> or <code>3</code>/<code>Control</code>, and ascribe meaningful numbers that allow for us to calculate meaningful statistics.</p></li>
+<li><p>This actually happens under the hood in R when our independent variable is a factor. Let’s see what happens when we put <code>group_fct</code> as the IV in our model:</p></li>
 </ul>
-<pre class="r"><code>contrasts(depression$group_fct) &lt;- dummy_codes </code></pre>
-<ul>
-<li>Now look at the structure of the data again</li>
-</ul>
-<pre class="r"><code>str(depression)</code></pre>
-<pre><code>## 'data.frame':    15 obs. of  3 variables:
-##  $ group    : int  1 1 1 1 1 2 2 2 2 2 ...
-##  $ depress  : int  4 7 6 7 5 7 10 9 10 12 ...
-##  $ group_fct: Factor w/ 3 levels &quot;CBT&quot;,&quot;Psychotherapy&quot;,..: 1 1 1 1 1 2 2 2 2 2 ...
-##   ..- attr(*, &quot;contrasts&quot;)= num [1:3, 1:2] 1 0 0 0 1 0
-##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
-##   .. .. ..$ : chr  &quot;CBT&quot; &quot;Psychotherapy&quot; &quot;Control&quot;
-##   .. .. ..$ : chr  &quot;dummy1&quot; &quot;dummy2&quot;</code></pre>
-<ul>
-<li>Run the linear model with dummy coding</li>
-</ul>
-<pre class="r"><code>model &lt;- lm(depress ~ group_fct, data = depression) 
-summary(model)</code></pre>
+<pre class="r"><code>model_default &lt;- lm(depress ~ group_fct, data = depression) 
+summary(model_default)</code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = depress ~ group_fct, data = depression)
@@ -2943,10 +2951,103 @@ summary(model)</code></pre>
 ##   -2.6   -1.0    0.2    1.2    2.4 
 ## 
 ## Coefficients:
-##                 Estimate Std. Error t value  Pr(&gt;|t|)    
-## (Intercept)       3.2000     0.7394   4.328  0.000982 ***
-## group_fctdummy1   2.6000     1.0456   2.487  0.028613 *  
-## group_fctdummy2   6.4000     1.0456   6.121 0.0000517 ***
+##                        Estimate Std. Error t value   Pr(&gt;|t|)    
+## (Intercept)              5.8000     0.7394   7.845 0.00000459 ***
+## group_fctPsychotherapy   3.8000     1.0456   3.634    0.00342 ** 
+## group_fctControl        -2.6000     1.0456  -2.487    0.02861 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.653 on 12 degrees of freedom
+## Multiple R-squared:  0.7595, Adjusted R-squared:  0.7195 
+## F-statistic: 18.95 on 2 and 12 DF,  p-value: 0.0001934</code></pre>
+<ul>
+<li>Notice that our coefficients are labeled <code>(Intercept</code>), <code>group_fctPsychotherapy</code> and <code>group_fctControl</code>. Why is this the case? Let’s remind ourselves of the levels of <code>group_fct</code>:</li>
+</ul>
+<pre class="r"><code>levels(depression$group_fct)</code></pre>
+<pre><code>## [1] &quot;CBT&quot;           &quot;Psychotherapy&quot; &quot;Control&quot;</code></pre>
+<ul>
+<li>R is creating dummy variables for us under the hood. By default, R treats whatever the first level of the factor variable is as the reference group. In this case, CBT was the first level of <code>group_fct</code> (because it was initially coded as <code>1</code> in our raw data), so the model treated CBT as our reference group.</li>
+</ul>
+<blockquote>
+<p><strong>Question:</strong> In the above model output, what does <code>(Intercept)</code> mean?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the mean of the CBT group</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does the <code>group_fctPsychotherapy</code> slope mean? What does the t value mean?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> The difference between the mean of Psychotherapy and CBT</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does the <code>group_fctControl</code> slope mean? What does the t value mean?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> The difference between the mean of Control and CBT</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does the F value mean? And what does the R^2 mean?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> It means that the model has a good overall fit to the data. At least one of the group means is different from at least one other group mean. Group explains roughly 76% of the variance in depression scores.</p>
+</blockquote>
+<ul>
+<li>However, let’s imagine that we have the following (more intuitive) research questions:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Is CBT effective (relative to no therapy)?</li>
+<li>Is psychotherapy effective (relative to no therapy)?</li>
+</ol>
+<blockquote>
+<p><strong>Question:</strong> What do want our reference group to be to answer these research questions?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the Control group</p>
+</blockquote>
+<ul>
+<li><p>Now let’s make the appropriate dummy codes. Recall that we need <em>k</em>-1 dummy codes (where <em>k</em> is the number of groups). We have 3 groups, so we need 2 dummy codes.</p></li>
+<li><p>Remember, our decision of how to set the dummy codes (which group to set as the <strong>reference group</strong>) should be guided by our research questions. Above, we said we’re interested in whether CBT is better than Control and whether psychotherapy is better than Control. This implies that we should make our reference group the Control group, and make a dummy code to represent the difference between CBT and control and a second dummy code for the difference between psychotherapy and the control group.</p></li>
+<li><p>There are (as always) a ton of ways to do this in R. Let’s go over a few methods:</p></li>
+</ul>
+<div id="create-new-dummy-variables-with-mutate" class="section level3">
+<h3>Create new dummy variables with <code>mutate()</code></h3>
+<ul>
+<li>You’ve seen this before from <a href="https://uopsych.github.io/psy612/lectures/9-m_regression.html#26" target="blank">this slide</a> in class.</li>
+</ul>
+<pre class="r"><code># create new dummy variables containing 1's and 0's
+depression &lt;- depression %&gt;%
+  mutate(CBT.v.Control = ifelse(group_fct == &quot;CBT&quot;, 1, 0), 
+         Psychotherapy.v.Control = ifelse(group_fct == &quot;Psychotherapy&quot;, 1, 0)) </code></pre>
+<ul>
+<li>View the data frame with these new dummy variables.</li>
+</ul>
+<pre class="r"><code>depression</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["group"],"name":[1],"type":["int"],"align":["right"]},{"label":["depress"],"name":[2],"type":["int"],"align":["right"]},{"label":["group_fct"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["CBT.v.Control"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psychotherapy.v.Control"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"4","3":"CBT","4":"1","5":"0"},{"1":"1","2":"7","3":"CBT","4":"1","5":"0"},{"1":"1","2":"6","3":"CBT","4":"1","5":"0"},{"1":"1","2":"7","3":"CBT","4":"1","5":"0"},{"1":"1","2":"5","3":"CBT","4":"1","5":"0"},{"1":"2","2":"7","3":"Psychotherapy","4":"0","5":"1"},{"1":"2","2":"10","3":"Psychotherapy","4":"0","5":"1"},{"1":"2","2":"9","3":"Psychotherapy","4":"0","5":"1"},{"1":"2","2":"10","3":"Psychotherapy","4":"0","5":"1"},{"1":"2","2":"12","3":"Psychotherapy","4":"0","5":"1"},{"1":"3","2":"1","3":"Control","4":"0","5":"0"},{"1":"3","2":"2","3":"Control","4":"0","5":"0"},{"1":"3","2":"5","3":"Control","4":"0","5":"0"},{"1":"3","2":"3","3":"Control","4":"0","5":"0"},{"1":"3","2":"5","3":"Control","4":"0","5":"0"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<ul>
+<li>Run the linear model using these new dummy variables as the IV’s.</li>
+</ul>
+<pre class="r"><code>model_dummy1 &lt;- lm(depress ~ CBT.v.Control + Psychotherapy.v.Control, data = depression) 
+summary(model_dummy1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = depress ~ CBT.v.Control + Psychotherapy.v.Control, 
+##     data = depression)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##   -2.6   -1.0    0.2    1.2    2.4 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)               3.2000     0.7394   4.328  0.000982 ***
+## CBT.v.Control             2.6000     1.0456   2.487  0.028613 *  
+## Psychotherapy.v.Control   6.4000     1.0456   6.121 0.0000517 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -2957,63 +3058,206 @@ summary(model)</code></pre>
 <p><strong>Question:</strong> What does the intercept mean?</p>
 </blockquote>
 <blockquote>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> The mean of the Control group.</p>
 </blockquote>
 <blockquote>
-<p><strong>Question:</strong> What does the Groupcbt slope mean? What does the t value mean?</p>
+<p><strong>Question:</strong> What does the <code>CBT.v.Control</code> slope mean? This should be pretty obvious…</p>
 </blockquote>
 <blockquote>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> The difference in means between the CBT group and Control group.</p>
 </blockquote>
 <blockquote>
-<p><strong>Question:</strong> What does the Grouppsychotherapy slope mean? What does the t value mean?</p>
+<p><strong>Question:</strong> What does the <code>Psychotherapy.v.Control</code> slope mean? Again, obvious.</p>
 </blockquote>
 <blockquote>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> The difference in means between the Pyschotherapy group and Control group.</p>
 </blockquote>
 <blockquote>
-<p><strong>Question:</strong> What does the F value mean? And what does the R2 mean?</p>
+<p><strong>Question:</strong> How does the F value and R^2 we got from this model compare to our last model with different (underlying) dummy codes?</p>
 </blockquote>
 <blockquote>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> They are the exact same!</p>
 </blockquote>
 </div>
-<div id="effects-coding" class="section level2">
-<h2>Effects coding</h2>
-<p>Instead of dummy coding, we can instead use effects coding. In effects coding, we give one group a 1, the comparison group a -1, and then set the unrelated group to zero. In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes. Let’s imagine we have the same research questions as above: is CBT effective? and is psychotherapy effective?</p>
-<p>Q: What would our effects codes be? A:</p>
-<pre class="r"><code>cbt_ec &lt;- c(1, 0, -1) # effect code for CBT vs. the grand mean
-psychotherapy_ec &lt;- c(0, 1, -1) # effect code for psychotherapy vs. the grand mean
-
-effects_codes &lt;- cbind(cbt_ec, psychotherapy_ec)</code></pre>
+<div id="contrast-matrix" class="section level3">
+<h3>Contrast Matrix</h3>
 <ul>
-<li>Create contrasts</li>
+<li><p>Now we’re going use another method to create our dummy codes by creating a contrast matrix, which is basically just a set of dummy codes (or effects codes, as we’ll discuss in a moment). When we pass a factor to <code>lm()</code> it uses a contrast matrix under the hood (which is what happened with the first model we ran. Although R creates the contrast matrix automatically with certain default assumptions, you can set it yourself if you have a specific set of codes in mind (which we do).</p></li>
+<li><p>Use <code>contrasts()</code> to view the default contrast matrix associated with our grouping variable. This function expects the factor variable that we are trying to view the contrasts for (in this case, <code>group_fct</code>) as the first argument.</p></li>
 </ul>
-<pre class="r"><code>contrasts(depression$group_fct) &lt;- effects_codes # use contrasts() to set
-                                              # the contrasts to our effects codes</code></pre>
+<pre class="r"><code>contrasts(depression$group_fct)  </code></pre>
+<pre><code>##               Psychotherapy Control
+## CBT                       0       0
+## Psychotherapy             1       0
+## Control                   0       1</code></pre>
 <ul>
-<li>Run the linear model with effects coding</li>
+<li>Again, by default our contrasts are not how we want them because we want <code>Control</code> to be the reference group. To manually specify our dummy codes, we’ll use the function <code>contr.treatment()</code>, which will return a contrast matrix with specific characteristics, depending on what we tell it. The first argument, <code>n</code> is the number of levels of the factor variable (in this case, <code>n = 3</code>). The second arugment, <code>base</code> refers to the level of the factor taht should be considered the reference group – in this case, since <code>Control</code> is the third level of <code>group_fct</code>, we will put <code>base = 3</code>.</li>
 </ul>
-<pre class="r"><code>model_ec &lt;- lm(depress ~ group, data = depression) 
-summary(model_ec)</code></pre>
+<pre class="r"><code>contr.treatment(n = 3, base = 3)    </code></pre>
+<pre><code>##   1 2
+## 1 1 0
+## 2 0 1
+## 3 0 0</code></pre>
+<ul>
+<li>Now we will overwrite the default contrast matrix for <code>group_fct</code> with the one we just manually specified.</li>
+</ul>
+<pre class="r"><code>contrasts(depression$group_fct) &lt;- contr.treatment(n = 3, base = 3)    </code></pre>
+<ul>
+<li>Now look at the structure of the data again. What do you notice about <code>group_fct</code>?</li>
+</ul>
+<pre class="r"><code>str(depression)</code></pre>
+<pre><code>## 'data.frame':    15 obs. of  5 variables:
+##  $ group                  : int  1 1 1 1 1 2 2 2 2 2 ...
+##  $ depress                : int  4 7 6 7 5 7 10 9 10 12 ...
+##  $ group_fct              : Factor w/ 3 levels &quot;CBT&quot;,&quot;Psychotherapy&quot;,..: 1 1 1 1 1 2 2 2 2 2 ...
+##   ..- attr(*, &quot;contrasts&quot;)= num [1:3, 1:2] 1 0 0 0 1 0
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr  &quot;CBT&quot; &quot;Psychotherapy&quot; &quot;Control&quot;
+##   .. .. ..$ : chr  &quot;1&quot; &quot;2&quot;
+##  $ CBT.v.Control          : num  1 1 1 1 1 0 0 0 0 0 ...
+##  $ Psychotherapy.v.Control: num  0 0 0 0 0 1 1 1 1 1 ...</code></pre>
+<ul>
+<li>Let’s take a closer look at <code>group_fct</code> using <code>attributes()</code>…</li>
+</ul>
+<pre class="r"><code>attributes(depression$group_fct)</code></pre>
+<pre><code>## $levels
+## [1] &quot;CBT&quot;           &quot;Psychotherapy&quot; &quot;Control&quot;      
+## 
+## $class
+## [1] &quot;factor&quot;
+## 
+## $contrasts
+##               1 2
+## CBT           1 0
+## Psychotherapy 0 1
+## Control       0 0</code></pre>
+<ul>
+<li>Run the linear model with <code>group_fct</code> (now containing our desired dummy codes) as the IV</li>
+</ul>
+<pre class="r"><code>model_dummy2 &lt;- lm(depress ~ group_fct, data = depression) 
+summary(model_dummy2)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = depress ~ group, data = depression)
+## lm(formula = depress ~ group_fct, data = depression)
 ## 
 ## Residuals:
 ##    Min     1Q Median     3Q    Max 
-##   -3.9   -2.2   -0.5    1.8    5.8 
+##   -2.6   -1.0    0.2    1.2    2.4 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)   8.8000     2.0712   4.249 0.000949 ***
-## group        -1.3000     0.9588  -1.356 0.198214    
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)   3.2000     0.7394   4.328  0.000982 ***
+## group_fct1    2.6000     1.0456   2.487  0.028613 *  
+## group_fct2    6.4000     1.0456   6.121 0.0000517 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 3.032 on 13 degrees of freedom
-## Multiple R-squared:  0.1239, Adjusted R-squared:  0.05651 
-## F-statistic: 1.838 on 1 and 13 DF,  p-value: 0.1982</code></pre>
+## Residual standard error: 1.653 on 12 degrees of freedom
+## Multiple R-squared:  0.7595, Adjusted R-squared:  0.7195 
+## F-statistic: 18.95 on 2 and 12 DF,  p-value: 0.0001934</code></pre>
+<blockquote>
+<p><strong>Question:</strong> How does this compare to the output from the model that contained individual dummy variables (i.e. <code>CBT.v.Control</code> and <code>Psychotherapy.v.Control</code>) as the IV’s?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> It is exactly the same!</p>
+</blockquote>
+</div>
+<div id="re-order-levels-of-your-factor" class="section level3">
+<h3>Re-order levels of your factor</h3>
+<ul>
+<li>Let’s take another look at the levels of <code>group_fct</code></li>
+</ul>
+<pre class="r"><code>levels(depression$group_fct)</code></pre>
+<pre><code>## [1] &quot;CBT&quot;           &quot;Psychotherapy&quot; &quot;Control&quot;</code></pre>
+<ul>
+<li>We can manually change the order of the levels by using <code>factor()</code> and manually specifying the <code>levels</code> argument to contain the order we want. Again, since R treats the first level of the factor as the reference group, and we want <code>Control</code> to be the reference group in order to obtain our contrasts of interests when we run the linear model, we will create a new version of <code>group_fct</code> called <code>group_fct_relevel</code> and make <code>Control</code> the first level of the factor in this new variable.</li>
+</ul>
+<pre class="r"><code>depression &lt;- depression %&gt;% 
+  mutate(group_fct_relevel = factor(group_fct, levels = c(&quot;Control&quot;,         # now level 1
+                                                  &quot;CBT&quot;,             # now level 2
+                                                  &quot;Psychotherapy&quot;))) # now level 3</code></pre>
+<ul>
+<li>To double check that this worked, let’s look at the levels of <code>group_fct_relevel</code></li>
+</ul>
+<pre class="r"><code>levels(depression$group_fct_relevel)</code></pre>
+<pre><code>## [1] &quot;Control&quot;       &quot;CBT&quot;           &quot;Psychotherapy&quot;</code></pre>
+<ul>
+<li>Now when we run the linear model, the contrast matrix that will be automatically generated will correspond to the correct contrasts we want. To verify this, let’s re-run the linear model (yet again!) with the re-leveled <code>group_fct_relevel</code> variable as the IV.</li>
+</ul>
+<pre class="r"><code>model_dummy3 &lt;- lm(depress ~ group_fct_relevel, data = depression) 
+summary(model_dummy3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = depress ~ group_fct_relevel, data = depression)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##   -2.6   -1.0    0.2    1.2    2.4 
+## 
+## Coefficients:
+##                                Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)                      3.2000     0.7394   4.328  0.000982 ***
+## group_fct_relevelCBT             2.6000     1.0456   2.487  0.028613 *  
+## group_fct_relevelPsychotherapy   6.4000     1.0456   6.121 0.0000517 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.653 on 12 degrees of freedom
+## Multiple R-squared:  0.7595, Adjusted R-squared:  0.7195 
+## F-statistic: 18.95 on 2 and 12 DF,  p-value: 0.0001934</code></pre>
+<ul>
+<li>Voilà, it’s the exact same as our last two models!</li>
+</ul>
+</div>
+</div>
+<div id="effects-coding" class="section level2">
+<h2>Effects coding</h2>
+<ul>
+<li><p>Instead of dummy coding, we can instead use <strong>effects coding</strong> to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In effects coding, we give a certain group a <code>1</code>, the comparison group a <code>-1</code>, and then set the unrelated group(s) to zero. In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes.</p></li>
+<li><p><strong>NOTE: This will change how we interpret our coefficients!</strong>. When using effects coding, the intercept represents the grand mean. The coefficients of each of the effect-coded variables is equal to the difference between the mean of the group coded 1 and the grand mean.</p></li>
+<li><p>With effects coding, the reference group will end up being coded with all <code>-1</code>’s.</p></li>
+<li><p>Let’s imagine our research questions are as follows:</p></li>
+</ul>
+<p>-Is CBT effective relative to the overall sample? -Is Psychotherapy effective relative to the overall sample?</p>
+<blockquote>
+<p><strong>Question:</strong> What would our effects codes be?</p>
+</blockquote>
+<blockquote>
+<strong>Answer:</strong>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["EC1"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["EC2"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"0"},{"1":"0","2":"1"},{"1":"-1","2":"-1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+</script>
+</div>
+</blockquote>
+<ul>
+<li>We’ll create our contrast matrix of effects codes in a very similar way to how we made our dummy codes. The only difference is that this time we will use <code>contr.sum()</code>, again telling it the number of levels of our grouping factor (<code>n = 3</code>)</li>
+</ul>
+<pre class="r"><code>contrasts(depression$group_fct) &lt;- contr.sum(n = 3)</code></pre>
+<ul>
+<li>Run the linear model with effects coding</li>
+</ul>
+<pre class="r"><code>model_ec &lt;- lm(depress ~ group_fct, data = depression) 
+summary(model_ec)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = depress ~ group_fct, data = depression)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##   -2.6   -1.0    0.2    1.2    2.4 
+## 
+## Coefficients:
+##             Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)   6.2000     0.4269  14.524 0.00000000562 ***
+## group_fct1   -0.4000     0.6037  -0.663       0.52012    
+## group_fct2    3.4000     0.6037   5.632       0.00011 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.653 on 12 degrees of freedom
+## Multiple R-squared:  0.7595, Adjusted R-squared:  0.7195 
+## F-statistic: 18.95 on 2 and 12 DF,  p-value: 0.0001934</code></pre>
 </div>
 <div id="factor-vs.numericcharacter" class="section level2">
 <h2>Factor vs. numeric/character</h2>

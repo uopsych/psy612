@@ -11,8 +11,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, rows.print = 10)
-
 # suppress scientific notation
 options(scipen = 999)
 ```
@@ -30,6 +28,7 @@ To quickly navigate to the desired section, click one of the following links:
 ```{r message=FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
+library(psych) # for descriptives
 ```
 
 ***
@@ -46,7 +45,7 @@ library(rio) # for importing data
 
 * After 10 weeks, participants' depression scores were measured. Our dataset will have just 2 variables: `group` (CBT, Psychotherapy or Control) and `depress` (depression scores; lower scores = more depressed).
 
-**NOTE:**
+* **NOTE:**
 `1` = CBT; 
 `2` = Psychotherapy;
 `3` = Control
@@ -59,17 +58,17 @@ depression <- import("https://raw.githubusercontent.com/uopsych/psy612/master/la
 
 ### Structure of the data
 
-* The first thing we should check is how the data are structured. We should have a factor called `group` and an numeric variable for depression scores. We'll use the hopefully familiar function`str()` which stands for *structure*.
+* The first thing we should check is how the data are structured. We should have a factor called `group` and a numeric variable for depression scores. We'll use the hopefully familiar function`str()` which stands for *structure*.
 
 ```{r}
 str(depression) # or use tibble::glimpse(), which is a tidyverse function
 ```
 
-## Recode group as a factor
+## Recode `group` as a factor
 
 * Okay, it looks like `group` is being read as an integer. We should go ahead and change this now to help make sure we don't make a mistake and use `group` as an integer later on. This is a bit unnecessary - we would find out when we tried to create dummy codes (since the technique we'll use only works with factors), but it is a good habit to get into. 
 
-We'll use `mutate()` and base R's `factor()`, which can be used to turn variables into factors. At a minimum, you can just put `factor()` around a variable (e.g., `factor(group)`), but we will also provide labels for the factor. To be really clear that we want to work with "factor" version of this variables, we'll actually create a new variable and call it `group_fct`.
+* We'll use `mutate()` and base R's `factor()`, which can be used to turn variables into factors. At a minimum, you can just put `factor()` around a variable (e.g., `factor(group)`), but we will also provide labels for the factor. To be really clear that we want to work with the "factor" version of this variables, we'll actually create a new variable and call it `group_fct`.
 
 * NOTE: You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order `CBT`, `Psychotherapy`, and `Control` (see above). 
 
@@ -87,107 +86,231 @@ str(depression)
 
 ## Descriptives
 
-Next, we'll get descriptives for each group using two tidyverse functions. 
+* Next, we'll get descriptives for each group using two tidyverse functions. 
 
-The first is `group_by()` which sets some metadata saying what variable can be used to group observations (we'll use the variable `Group` for this). This is as simple as `group_by(dataset, grouping_variables)` where `dataset` is replaced by the name of your dataset (or piped in, which we'll do) and `grouping_variables` are the unquoted column names of the variables you want to use as groups (again, we'll just be using the single `Group` variable). One thing to mention is that `group_by()` itself looks like it doesn't change much which is OK; it basically sets the groups as meta data which other functions (like summarize) can use.
+* The first is `group_by()` which sets some metadata saying what variable can be used to group observations (we'll use the `group` variable for this). One thing to mention is that `group_by()` itself looks like it doesn't change much which is OK; it basically sets the groups as meta data which other functions (like `summarize()`) can use. 
 
-The second is `summarize()` which can be used to get summary information about a dataset. When you combine them, it can give you summary information about each group. `summarize()` works sort of like `mutate()`; you put a name on the left-hand side of an `=` and the definition on the right. The main difference is that summarize collapses across rows; either collapsing across the rows within a group or across all rows if there is no grouping variable set (with `group_by()`). We'll use it to get the mean (using base R's `mean()`), standard deviation (using base R's `sd()`), and sample size per group (using tidyverse's `n()`).
+* The second is `summarize()` which can be used to get summary information about a dataset. When you combine them, it can give you summary information about each group. `summarize()` works sort of like `mutate()`; you put a name on the left-hand side of an `=` and the definition on the right. The main difference is that summarize collapses across rows; either collapsing across the rows within a group or across all rows if there is no grouping variable set (with `group_by()`). We'll use it to get the mean (using base R's `mean()`), standard deviation (using base R's `sd()`), and sample size per group (using tidyverse's `n()`).
+
+* For a refresher on these functions, see [here](https://uopsych.github.io/psy611/labs/lab-5.html#grouping_data){target="_blank"}
 
 ```{r}
 depression %>% 
   group_by(group_fct) %>%  # telling it to treat group as the group variable
   summarize(mean = mean(depress, na.rm = TRUE),
             sd = sd(depress, na.rm = TRUE),
-            n = n())  # don't need to put anything in here; it's looking for n per group
+            n = n()) %>% # don't need to put anything in here; it's looking for n per group
+  knitr::kable(digits = 2) # make it look pretty
 ```
 
 * What's a faster way to do this? 
 
 ```{r}
-psych::describeBy(depression$depress, depression$group_fct)
+describeBy(depression$depress, depression$group_fct)
 ```
+
+* NOTE: If you want the output of `psych::describeBy()` as a matrix instead of a list, add `mat = TRUE`. 
+
+```{r}
+describeBy(depression$depress, depression$group_fct, mat = TRUE)
+```
+
+
 
 ## Dummy coding
 
-Let's imagine that we have the following research questions:
+* Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them, e.g. `group` , which takes the values `1`/`CBT`, `2`/`Psychotherapy` or `3`/`Control`, and ascribe meaningful numbers that allow for us to calculate meaningful statistics.
+
+* This actually happens under the hood in R when our independent variable is a factor. Let's see what happens when we put `group_fct` as the IV in our model:
+
+```{r}
+model_default <- lm(depress ~ group_fct, data = depression) 
+summary(model_default)
+```
+
+* Notice that our coefficients are labeled `(Intercept`), `group_fctPsychotherapy` and `group_fctControl`. Why is this the case? Let's remind ourselves of the levels of `group_fct`:
+
+```{r}
+levels(depression$group_fct)
+```
+
+* R is creating dummy variables for us under the hood. By default, R treats whatever the first level of the factor variable is as the reference group. In this case, CBT was the first level of `group_fct` (because it was initially coded as `1` in our raw data), so the model treated CBT as our reference group.
+
+>**Question:** In the above model output, what does `(Intercept)` mean? 
+
+>**Answer:** the mean of the CBT group
+
+>**Question:** What does the `group_fctPsychotherapy` slope mean? What does the t value mean? 
+
+>**Answer:** The difference between the mean of Psychotherapy and CBT
+
+>**Question:** What does the `group_fctControl` slope mean? What does the t value mean? 
+
+>**Answer:** The difference between the mean of Control and CBT
+
+>**Question:** What does the F value mean? And what does the R^2 mean? 
+
+>**Answer:** It means that the model has a good overall fit to the data. At least one of the group means is different from at least one other group mean. Group explains roughly 76% of the variance in depression scores. 
+
+* However, let's imagine that we have the following (more intuitive) research questions:
 
 1. Is CBT effective (relative to no therapy)? 
 2. Is psychotherapy effective (relative to no therapy)?  
 
-Now let's make the dummy codes. Recall that we need *k-1* dummy codes (where *k* is the number of groups). We have 3 groups, so we need 2 dummy codes. 
+>**Question:** What do want our reference group to be to answer these research questions?
 
-Our decision of how to set the dummy codes (which group to set as the *reference group*) should be guided by our research questions. Above, we said we're interested if CBT is better than no therapy and if psychotherapy is better than no therapy. This implies that we should make our reference group the control group, and make a dummy code for the difference between CBT and control and a second dummy code for the difference between psychotherapy and the control group.
+>**Answer:** the Control group
 
-There are (as always) a ton of ways to do this in R. We're going to do it by creating a contrast matrix, which is basically just a set of dummy codes (or contrast codes, or effects codes). When we pass a factor to `lm()` it will use a contrast matrix; R has a way of making them by default, but you can set it yourself if you have a specific set of codes in mind (which we do).
+* Now let's make the appropriate dummy codes. Recall that we need *k*-1 dummy codes (where *k* is the number of groups). We have 3 groups, so we need 2 dummy codes. 
+
+* Remember, our decision of how to set the dummy codes (which group to set as the **reference group**) should be guided by our research questions. Above, we said we're interested in whether CBT is better than Control and whether psychotherapy is better than Control. This implies that we should make our reference group the Control group, and make a dummy code to represent the difference between CBT and control and a second dummy code for the difference between psychotherapy and the control group.
+
+* There are (as always) a ton of ways to do this in R. Let's go over a few methods: 
+
+### Create new dummy variables with `mutate()`
+
+* You've seen this before from [this slide](https://uopsych.github.io/psy612/lectures/9-m_regression.html#26){target="blank"} in class. 
 
 ```{r}
-dummy1 <- c(1, 0, 0) # dummy code for CBT vs. control
-dummy2 <- c(0, 1, 0) # dummy code for psychotherapy vs. control
-
-dummy_codes <- cbind(dummy1, dummy2)
+# create new dummy variables containing 1's and 0's
+depression <- depression %>%
+  mutate(CBT.v.Control = ifelse(group_fct == "CBT", 1, 0), 
+         Psychotherapy.v.Control = ifelse(group_fct == "Psychotherapy", 1, 0)) 
 ```
 
-* Use `contrasts()` to set the contrasts to our dummy codes
+* View the data frame with these new dummy variables.
 
 ```{r}
-contrasts(depression$group_fct) <- dummy_codes 
+depression
 ```
 
-* Now look at the structure of the data again
+* Run the linear model using these new dummy variables as the IV's.
+
+```{r}
+model_dummy1 <- lm(depress ~ CBT.v.Control + Psychotherapy.v.Control, data = depression) 
+summary(model_dummy1)
+```
+
+>**Question:** What does the intercept mean? 
+
+>**Answer:** The mean of the Control group.
+
+>**Question:** What does the `CBT.v.Control` slope mean?  This should be pretty obvious...
+
+>**Answer:** The difference in means between the CBT group and Control group. 
+
+>**Question:** What does the `Psychotherapy.v.Control` slope mean? Again, obvious.
+
+>**Answer:** The difference in means between the Pyschotherapy group and Control group. 
+
+>**Question:** How does the F value and R^2 we got from this model compare to our last model with different (underlying) dummy codes? 
+
+>**Answer:** They are the exact same! 
+
+### Contrast Matrix
+
+* Now we're going use another method to create our dummy codes by creating a contrast matrix, which is basically just a set of dummy codes (or effects codes, as we'll discuss in a moment). When we pass a factor to `lm()` it uses a contrast matrix under the hood (which is what happened with the first model we ran. Although R creates the contrast matrix automatically with certain default assumptions, you can set it yourself if you have a specific set of codes in mind (which we do).
+
+* Use `contrasts()` to view the default contrast matrix associated with our grouping variable. This function expects the factor variable that we are trying to view the contrasts for (in this case, `group_fct`) as the first argument. 
+
+```{r}
+contrasts(depression$group_fct)  
+```
+
+* Again, by default our contrasts are not how we want them because we want `Control` to be the reference group. To manually specify our dummy codes, we'll use the function `contr.treatment()`, which will return a contrast matrix with specific characteristics, depending on what we tell it. The first argument, `n` is the number of levels of the factor variable (in this case, `n = 3`). The second arugment, `base` refers to the level of the factor taht should be considered the reference group -- in this case, since `Control` is the third level of `group_fct`, we will put `base = 3`.
+
+```{r}
+contr.treatment(n = 3, base = 3)    
+```
+
+* Now we will overwrite the default contrast matrix for `group_fct` with the one we just manually specified.
+
+```{r}
+contrasts(depression$group_fct) <- contr.treatment(n = 3, base = 3)    
+```
+
+* Now look at the structure of the data again. What do you notice about `group_fct`?
 
 ```{r}
 str(depression)
 ```
 
-* Run the linear model with dummy coding
+* Let's take a closer look at `group_fct` using `attributes()`...
 
 ```{r}
-model <- lm(depress ~ group_fct, data = depression) 
-summary(model)
+attributes(depression$group_fct)
 ```
 
->**Question:** What does the intercept mean? 
+* Run the linear model with `group_fct` (now containing our desired dummy codes) as the IV 
 
->**Answer:** 
+```{r}
+model_dummy2 <- lm(depress ~ group_fct, data = depression) 
+summary(model_dummy2)
+```
 
->**Question:** What does the Groupcbt slope mean? What does the t value mean? 
+>**Question:** How does this compare to the output from the model that contained individual dummy variables (i.e. `CBT.v.Control` and `Psychotherapy.v.Control`) as the IV's? 
 
->**Answer:** 
+>**Answer:** It is exactly the same!
 
->**Question:** What does the Grouppsychotherapy slope mean? What does the t value mean? 
+### Re-order levels of your factor
 
->**Answer:** 
+* Let's take another look at the levels of `group_fct`
 
->**Question:** What does the F value mean? And what does the R2 mean? 
+```{r}
+levels(depression$group_fct)
+```
 
->**Answer:** 
+* We can manually change the order of the levels by using `factor()` and manually specifying the `levels` argument to contain the order we want. Again, since R treats the first level of the factor as the reference group, and we want `Control` to be the reference group in order to obtain our contrasts of interests when we run the linear model, we will create a new version of `group_fct` called `group_fct_relevel` and make `Control` the first level of the factor in this new variable.
+
+```{r}
+depression <- depression %>% 
+  mutate(group_fct_relevel = factor(group_fct, levels = c("Control",         # now level 1
+                                                  "CBT",             # now level 2
+                                                  "Psychotherapy"))) # now level 3
+```
+
+* To double check that this worked, let's look at the levels of `group_fct_relevel`
+
+```{r}
+levels(depression$group_fct_relevel)
+```
+
+* Now when we run the linear model, the contrast matrix that will be automatically generated will correspond to the correct contrasts we want. To verify this, let's re-run the linear model (yet again!) with the re-leveled `group_fct_relevel` variable as the IV. 
+
+```{r}
+model_dummy3 <- lm(depress ~ group_fct_relevel, data = depression) 
+summary(model_dummy3)
+```
+
+* Voilà, it's the exact same as our last two models! 
 
 ## Effects coding
 
-Instead of dummy coding, we can instead use effects coding. In effects coding, we give one group a 1, the comparison group a -1, and then set the unrelated group to zero. In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes. Let's imagine we have the same research questions as above: is CBT effective? and is psychotherapy effective?
+* Instead of dummy coding, we can instead use **effects coding** to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In effects coding, we give a certain group a `1`, the comparison group a `-1`, and then set the unrelated group(s) to zero. In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes. 
 
-Q: What would our effects codes be?
-A:
+* **NOTE: This will change how we interpret our coefficients!**. When using effects coding, the intercept represents the grand mean. The coefficients of each of the effect-coded variables is equal to the difference between the mean of the group coded 1 and the grand mean. 
 
+* With effects coding, the reference group will end up being coded with all `-1`'s.
+ 
+* Let's imagine our research questions are as follows: 
+
+-Is CBT effective relative to the overall sample? 
+-Is Psychotherapy effective relative to the overall sample?
+
+> **Question:** What would our effects codes be?
+
+>**Answer:** `r data.frame(EC1 = c(1, 0, -1), EC2 = c(0, 1, -1))`
+
+* We'll create our contrast matrix of effects codes in a very similar way to how we made our dummy codes. The only difference is that this time we will use `contr.sum()`, again telling it the number of levels of our grouping factor (`n = 3`)
 
 ```{r}
-cbt_ec <- c(1, 0, -1) # effect code for CBT vs. the grand mean
-psychotherapy_ec <- c(0, 1, -1) # effect code for psychotherapy vs. the grand mean
-
-effects_codes <- cbind(cbt_ec, psychotherapy_ec)
-```
-
-* Create contrasts 
-
-```{r}
-contrasts(depression$group_fct) <- effects_codes # use contrasts() to set
-                                              # the contrasts to our effects codes
+contrasts(depression$group_fct) <- contr.sum(n = 3)
 ```
 
 * Run the linear model with effects coding
 
 ```{r}
-model_ec <- lm(depress ~ group, data = depression) 
+model_ec <- lm(depress ~ group_fct, data = depression) 
 summary(model_ec)
 ```
 
