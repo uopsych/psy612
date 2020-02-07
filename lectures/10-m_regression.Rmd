@@ -76,15 +76,16 @@ rotate$Group_lab = factor(rotate$Group,
 ---
 
 ```{r, warning=F, message=FALSE, fig.height=5, fig.width = 10}
-ggpubr::ggboxplot(data = rotate, x = "Group_lab", y = "Time", xlab = F)
+library(ggpubr)
+ggboxplot(data = rotate, x = "Group_lab", y = "Time", xlab = F)
 ```
-
+--
 The pattern of means indicates that performance degrades with either uncontrollable noise or unpredictable noise. Noise that is both uncontrollable and unpredictable appears to be particularly disruptive.
 
 ---
 
 ```{r, fig.height=5, fig.width = 10}
-ggpubr::ggbarplot(data = rotate, x = "Group_lab", y = "Time", xlab = F, add = c("mean_ci"), fill = "purple")
+ggbarplot(data = rotate, x = "Group_lab", y = "Time", xlab = F, add = c("mean_ci"), fill = "purple")
 ```
 
 Addition of the confidence intervals indicates that the two extreme conditions are likely different from all of the other conditions.
@@ -132,7 +133,7 @@ The total variability of all of the data, regardless of group membership, can be
 
 $$\large Var(Y) = \frac{1}{N}\sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$
 
-for G groups and $ N_k $ participants within groups. 
+for G groups and $N_k$ participants within groups. 
 
 In analysis of variance, we will be interested in the numerator of this variance equation, known as the total sum of squares:
 
@@ -162,7 +163,7 @@ $$\large SS_b = \sum_{k=1}^GN_k(\bar{Y}_{k}-\bar{Y})^2$$
 How do these compare the sums of squares we are familiar with in regression?
 
 ---
-Sums of squares are central to ANOVA.  They are the building blocks that represent different sources of variability in a research design. They are additive, meaning that the SStot can be partitioned, or divided, into independent parts.
+Sums of squares are central to ANOVA.  They are the building blocks that represent different sources of variability in a research design. They are additive, meaning that the $SS_{tot}$ can be partitioned, or divided, into independent parts.
 
 The total sum of squares is the sum of the between-groups sum of squares and the within-groups sum of squares. 
 
@@ -211,7 +212,7 @@ ANOVA assumes homogeneity of group variances.  Under that assumption, the separa
 $$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2 = \sum_{k=1}^G(N_k-1)\hat{\sigma}^2_k$$
 The degrees of freedom are likewise pooled:
 
-$$\large df_w = N-G=(N_1-1)+(N_2-2)+\dots+(N_G-1)$$
+$$\large df_w = N-G=(N_1-1)+(N_2-1)+\dots+(N_G-1)$$
 Where have we seen similar pooling?
 
 ---
@@ -303,7 +304,7 @@ data.frame(g = 2:15) %>%
 
 ---
 
-As the number of significance tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increses.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we don’t make a Type I error for just one test is:
+As the number of significance tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increases.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we don’t make a Type I error for just one test is:
 
 $$\large P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$
 The probability that we don't make a Type I error for two tests is (note the reason we assume independence):
@@ -398,8 +399,12 @@ Performing the test using the `lm()` function means that some of the possible pa
 rotate$Group = as.factor(rotate$Group)
 coef(summary(lm(Time~Group, data = rotate)))
 pairwise.t.test(x = rotate$Time, g = rotate$Group, 
-                       p.adjust.method = "none")
+                       p.adjust.method = "holm")
 ```
+
+
+
+
 
 ---
 
@@ -446,4 +451,27 @@ Assumptions and diagnostics
 <!-- 3. The difference between the value of the set of positive weights and the set of negative weights should equal 1 for each code variable (column). -->
 
 
+<!-- One benefit* to using the ANOVA framework instead of the regression framework is that you can estimate the total variability captured by one categorical variable controlling for another categorical or continuous variable with ease.  -->
+
+<!-- $\eta^2$ (eta-squared) is a standardized measure of effect size used in analyses of variance. This effect size is the **proportion of variance in Y that is accounted for by one independent variable.** -->
+
+<!-- $$\eta^2 = \frac{SS_{variable}}{SS_{total}}$$ -->
+
+<!-- For example, what if we believed gender was associated with performance on the noise burst task.  -->
+
+<!-- .small[* No difference when using R though.] -->
+<!-- --- -->
+
+<!-- ```{r, echo = F} -->
+<!-- set.seed(200620) -->
+<!-- hightime = sample(x = c("Male", "Female"), size = nrow(rotate), replace = T, prob = c(.75,.25)) -->
+<!-- lowtime = sample(x = c("Male", "Female"), size = nrow(rotate), replace = T, prob = c(.25,.75)) -->
+<!-- rotate$gender = hightime -->
+<!-- rotate$gender[rotate$Time < 425] = lowtime[rotate$Time < 425] -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- mod2 = aov(Time ~ Group + gender, data = rotate) -->
+<!-- anova(mod2) -->
+<!-- ``` -->
 

@@ -24,10 +24,10 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | -    | 1/23 | General linear model              |                    |            |             |
 | -    | 1/24 | _Lab: General linear model _      |                    |            |             |
 | 4    | 1/28 | Partial correlations              |                    |  Quiz 3    |             |
-| -    | 1/30 | Multiple regression               |                    |            |             |
+| -    | 1/30 | Multiple regression (interpretation, model fit)              |                    |            |             |
 | -    | 1/31 | _Lab: Two continuous predictors_  |                    |            |             |
-| 5    | 2/04 | Multiple regression               |  |  Quiz 4    |             |
-| -    | 2/06 | Multiple regression               |  LSR Chapter 14    |            |             |
+| 5    | 2/04 | Multiple regression (tolerance, model comparison, categorical IVs) |  |  Quiz 4    |             |
+| -    | 2/06 | Multiple regression (one-way ANOVA)              |  LSR Chapter 14    |            |             |
 | -    | 2/07 | _Lab: Categorical predictors_     |                    |            |  HW 1 Due   |
 | 6    | 2/11 | Assumptions and diagnostics       | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 5    |             |
 | -    | 2/13 | Assumptions and diagnostics       |                    |            |             |
