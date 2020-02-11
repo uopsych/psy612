@@ -17,10 +17,12 @@ For your final project, you will analyze your own data and write a short report 
 Your analysis must include 
   
   1. appropriate descriptive statistics.
-  2. one inferential test using continuous predictors.
+  2. one inferential test using continuous predictors. 
   3. one inferential test using at least one categorical predictor.
   
-Be sure to include the statistical tests, interpretation of statistical tests, and any information on diagnoistics or assumptions. 
+Be sure to include the statistical tests, interpretation of statistical tests, and any information on diagnostics or assumptions. 
+
+<!-- In the future, make this more specific. 2 should be an inferential test containing at least two continuous predictors. OR you could say that at least one of the inferential tests must contain to independent variables -->
 
 ## Report format
 
