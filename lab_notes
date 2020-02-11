@@ -88,12 +88,17 @@ Lab 7: Interactions *BRENDAN*
 -interaction with continuous predictors 
 -simple slopes ("by hand" with +/- 1 SD)
 -reghelper::simple_slopes()
--plotting interactions with sjPlot 
+-plotting interactions with sjPlot (plot_model, type = "int"")--look at lecture slides for other options for plotting (switching between X and Y, plotting moderator at specific values)
+-for inspiration, see: 
+-http://www.strengejacke.de/sjPlot/
+-http://www.strengejacke.de/sjPlot/articles/plot_interactions.html
+
+-centering and standardizing
 
 ------------------------------------------------------------------------------------------------------
 
 Lab 8: Factorial ANOVA *BRENDAN*
--polynomials?
+-look at factorial ANOVA slides
 
 ------------------------------------------------------------------------------------------------------
 
