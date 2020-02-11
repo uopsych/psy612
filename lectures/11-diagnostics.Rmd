@@ -41,8 +41,9 @@ Best Linear Unbiased Estimate of beta $(\beta)$
 
 ???
 
+
 Unbiased: what does it mean for an estimate to be biased? How did we describe the bias of variance?
-Efficient: smallest standard error
+Efficient: smallest standard error (best)
 Consistent: as N increases, standard error decreases
 
 
@@ -91,8 +92,10 @@ Consistent: as N increases, standard error decreases
 
 ---
 
-```{r, messages = FALSE, warning= FALSE}
+```{r, messages = FALSE, warning= FALSE, results='hide'}
 library(here)
+```
+```{r, messages = F, warning = F}
 a_data <- read.csv(here("data/anxiety.csv"))
 library(broom)
 model.1 <- lm(Anxiety ~ Support, a_data)
@@ -115,16 +118,16 @@ Residuals are your best diagnostic tool for assessing your regression model. Not
 ```{r, echo = FALSE, warning=FALSE}
 library(ggplot2)
 ggplot(aug_1, aes(x = Support, y = Anxiety)) +
-  geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +  # Plot regression slope
+  #geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +  # Plot regression slope
   geom_segment(aes(xend = Support, yend = .fitted), alpha = .2) +  # alpha to fade lines
   geom_point() +
   geom_point(aes(y = .fitted), shape = 1) +
+  scale_y_continuous(limits = c(-10, 15)) +
   labs(caption = "One predictor: Anxiety ~ Support") + 
   theme_bw(base_size = 20)
 ```
 
 ---
-## with stress in the model
 
 ```{r, echo = FALSE}
 model.2 <- lm(Anxiety ~ Support + Stress, a_data)
@@ -134,10 +137,12 @@ ggplot(aug_2, aes(x = Support, y = Anxiety)) +
   geom_segment(aes(xend = Support, yend = .fitted), alpha = .2) +  # alpha to fade lines
   geom_point() +
   geom_point(aes(y = .fitted), shape = 1) +
+  scale_y_continuous(limits = c(-10, 15)) +
   labs(caption = "Two predictor: Anxiety ~ Support + Stress") + 
   theme_bw(base_size = 20)
 ```
 
+We can add stress to the model to see how this changes
 ---
 
 ## 1) Measurement Error
@@ -163,7 +168,7 @@ There is ALWAYS measurement error. What do we do about this?
 
 Assumption 2: Correctly specified form
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
 ggplot(data = aug_2, aes(x=.fitted, y=.resid)) + 
   geom_hline(yintercept = 0) +
   geom_point() + geom_smooth(method = "loess", se = FALSE) + 
@@ -189,7 +194,7 @@ Assumption 3: Correctly specified model
 ## 3) Model
 ### Correctly specified model
 
-Cohen and Cohen (1983) discuss several problems associated with the inclusion of covariats/multiple independent predictors in a model. Those problems were:
+Cohen and Cohen (1983) discuss several problems associated with the inclusion of covariates/multiple independent predictors in a model. Those problems were:
 
 1. Computational accuracy (not a problem now, because computers)
 2. Sampling stability (tolerance)
@@ -241,7 +246,7 @@ What about (3) Interpretation?
 
 --
 
-Main takaways:
+Main takeaways:
 
 * Partialling changes the meaning and interpretation of a variable.
 
@@ -257,7 +262,7 @@ Main takaways:
 
 * PARTIALLING CHANGES VARIABLES
 
-* Partialling only comes from the reliable part of the measurement -- if a scale has reliabilty .7 and correlates with another variable at .3, the partialling out the covariate removes .3 of the valid .7 variance or 9% out of 49%
+* Partialling only comes from the reliable part of the measurement -- if a scale has reliability .7 and correlates with another variable at .3, the partialling out the covariate removes .3 of the valid .7 variance or 9% out of 49%
 
     * Heterogeneous measures run the risk of greater dissimilarity following partialling.
     
@@ -265,11 +270,11 @@ Empirical work:
 ~ 700 male inmates completed
 PCL-R assess psychopathy (interview coding)
 APSD (self-report)
-PRAQ practive and reactive aggression
+PRAQ proactive and reactive aggression
 EPQ
 PPI also psychopathy
 
-- partialling out subscales -- some correlations are even negative
+- partialling out sub-scales -- some correlations are even negative
 
 Good statistics cannot overcome poor measurement and bad theory
 
@@ -292,8 +297,6 @@ Back to correctly specified models.
 
 - Can also occur if you "condition on a collider". Many ways this can happen but one common one is selecting a sample (clinical students, college students) that is associated with your variables of interest (e.g., emotion regulation, memory ability)
     
-    * More on this next week!
-    
 ???
 
 Underestimates $R^2$
@@ -304,12 +307,10 @@ Underestimates $R^2$
 
 ### Endogeniety 
 
-```{r, message = F}
+```{r, message = F, fig.width = 10, fig.height = 5}
 ggplot(aug_1, aes(x = Support, y = .resid)) +
-  geom_point() +
-  geom_smooth() +
-  labs(caption = "One predictor: Anxiety ~ Support") + 
-  theme_bw(base_size = 20)
+  geom_point() + geom_smooth() +
+  labs(caption = "One predictor: Anxiety ~ Support") + theme_bw(base_size = 20)
 ```
 
 
@@ -448,7 +449,7 @@ How can we address violations of assumptions of regression?
 
 Regression models are considered **robust** meaning that even when you violate assumptions, you can still use the same models with some safety.
 
-* E.g., *t*-tests are robust to the assumption of normality, because we can fall back on the central limit theorm. 
+* E.g., *t*-tests are robust to the assumption of normality, because we can fall back on the central limit theorem. 
 
 Regression is robust to violations of *some* assumptions, primarily
 
@@ -457,307 +458,13 @@ Regression is robust to violations of *some* assumptions, primarily
 
 ---
 
-## Screening your data
 
-### Steps for screening
+class: inverse
 
-1) Calculate univariate and bivariate descriptive stats
+## Next time...
 
-  + Check the min and max to make sure data were entered correctly
+More diagnostics
 
-  + Check the class of the variable
-      + is your grouping variable a factor or numeric?
-
-  + Check for skew or compare the mean and median
-
-  + Compare correlation matrices with pairwise and listwise deletion for bias in missingness.
-  
-  + Calculate reliability for your scales. 
-  
----
-
-## Screening your data
-
-### Steps for screening
-
-2) Plot univariate and bivariate distributions
-  
-  + Look for skew and outliers
-  
-  + Check correlation heat maps for expected and unexpected patterns in items
-  
----
-
-## Screening your data
-
-### Steps for screening
-
-3) Test the assumptions of your regression model(s)
-
-  + Calculate the variance inflation factor of each term (if you have two or more) to help check for correctly specified models.
-  
-  + Graph residuals by predictors to check for endogeniety.
-  
-  + Graph residuals by fitted values to check for homoscedasticity.
-  
-  + Graph residuals by ID number (or date, or another variable not in your model) to check for independence.
-  
-  + Graph the distribution of residuals or the Q-Q plot to check for normality. 
-  
----
-
-## Screening your data
-
-### Steps for screening 
-
-4) Look for univariate or multivariate outliers. 
-
-
----
-
-## Outliers
-
-- Broadly defined as atypical or highly influential data point(s)
-
-- Due to contamination (e.g. recording error) or accurate observation of a rare case
-
-- Univariate vs. Multivariate
-
-How do we typically describe or identify outliers? 
-
-???
-
-Focus on influential part -- what do we mean by influential?
-How do we see the influence of outliers in the case of estimating the mean?
-
----
-
-## Outliers
-
-
-
-Outliers can be described in terms of three different metrics. Each metric conveys a sense of the magnitude of outliery-ness the case exhibits. However, some metrics also describe the degree to which your inferences will change: 
-
-1. Leverage
-    + How unusual is this case from the rest of the cases in terms of predictors?
-2. Distance
-    + How distant is the observed case from the predicted value?
-3. Influence
-    + How much the does regression coefficient change if case were removed?
-
----
-## Outliers
-
-### Leverage
-
-**Leverage** tells us how far observed values for a case are from mean values on the set of IVs (centroid). 
-
-- Not dependent on Y values
-
-- High leverage cases have greater potential to influence regression results
-
----
-
-## Outliers
-
-### Leverage
-
-```{r, fig.width=10, fig.height = 5}
-library(car)
-leveragePlots(model.1)
-```
-
----
-
-## Outliers
-
-### Leverage
-
-One common metric for describing leverage is **Mahalanobis Distance**, which is the multidimensional extension of Euclidean distance where vectors are non-orthogonal. Given a set of variables, $\mathbf{X}$ with means $\mathbf{\mu}$ and covariance $\Sigma$:
-
-$$\large D^2 = (x - \mu)' \Sigma^{-1} (x - \mu)$$ 
----
-
-## Outliers
-
-### Leverage
-
-```{r}
-(m = colMeans(a_data[c("Stress", "Support")], na.rm = T))
-(cov = cov(a_data[c("Stress", "Support")]))
-(MD = mahalanobis(x = a_data[,c("Stress", "Support")], center = m, cov = cov))
-```
-
----
-
-```{r, fig.width=10, fig.height=7, echo = F}
-data.frame(x = 1:length(MD), MD = MD) %>%
-  ggplot(aes(x = x, y = MD)) +
-  geom_point() +
-  geom_segment(aes(xend = x, yend = 0)) +
-  theme_bw(base_size = 20)
-```
-
-
----
-## Outliers
-### Distance
-
-- **Distance** is the distance from prediction, or how far a case's observed value is from its predicted value 
-
-  * i.e., residual
-  
-  * In units of Y.
-  
-What's might be problematic at looking at residuals in order to identify outliers?
-
-???
-
-Problem: outliers influence the regression line, won't be easy to spot them
-  
----
-## Outliers
-### Distance
-
-- Raw residuals come from a model that is influenced by the outliers, making it harder to detect the outliers in the first placee. To avoid this issue, it is advisable to examine the **deleted residuals.**
-
-  - This value represents the distance between the observed value from a predicted value _that is calculated from a regression model based on all data except the case at hand_
-  
-  - The leave-one-out procedure is often referred to as "jackknifing"
-  
----
-
-### Distance
-
-Other residuals are available:
-
-* **Standardized residuals**: takes raw residuals and puts them in a standardized unit -- this can be easier for determining cut-offs. 
-
-$$\large z_e = \frac{e_i}{\sqrt{MSE}}$$
----
-
-### Distance
-
-Other residuals are available:
-
-* **Studentized residuals**: The MSE is only an estimate of error and, especially with small samples, may be off from the population value of error by a lot. Just like we use a *t*-distribution to adjust our estimate of the standard error (of the mean) when we have a small sample, we can adjust out precision of the standard error (of the regression equation).
-
-$$\large r_i = \frac{e_i}{\sqrt{MSE}(1-h_i)}$$
-
-where $h_i$ is the ith element on the diagonal of the hat matrix, $\mathbf{H} = \mathbf{X}(\mathbf{X'X})^{-1}\mathbf{X}'$. As N gets larger, the difference between studentized and standardized residuals will get smaller. 
----
-
-### Distance
-
-
-**Warning:** Some textbooks (and R packages) will use terms like "standardized" and "studentized" to refer to deleted residuals that have been put in standardization units; other books and packages will not. Sometimes they switch the terms and definitions around. The text should tell you what it does. 
-
-```{r, eval = F}
-?MASS::studres
-```
-
-![](images/studres.png)
----
-
-```{r}
-library(olsrr)
-ols_plot_resid_stand(model.1)
-```
-
----
-
-```{r}
-ols_plot_resid_stud_fit(model.1)
-```
-
----
-## Outliers
-### Influence
-
-
-**Influence** refers to how much a regression equation would change if the extreme case (outlier) is removed.
-
-- Influence = Leverage X Distance
-
-Like distance, there are several metrics by which you might assess any case's leverage. The most common are:
-
-- Cook's Distance (change in model fit)
-- DFFITS (change in model fit, standardized)
-- DFBETAS (change in coefficient estimate)
-
----
-
-## Outliers
-### Influence
-
-**Cook’s Distance** is calculated by removing the ith data point from the model and recalculating the regression. It summarizes how much all the values in the regression model change when the ith observation is removed.
-
-$$CD_i = \frac{\sum_{j=1}^n(\hat{Y}_j-\hat{Y}_{j(1)})^2}{p(MSE)}$$
-
----
-### Cook's Distance
-```{r, echo = FALSE}
-ggplot(aug_1, aes(x = ID, y = .cooksd)) +
-geom_point() +
-geom_text(aes(label = rownames(aug_1)), vjust = -1) +
-  theme_bw(base_size = 20)
-```
-
----
-
-## Outliers
-### Influence
-
-**DFFITS** indexes how much the predicted value for a case changes if you remove the case from the equation. 
-
-**DFBETAs** index how much the estimate for a coefficient changes if you remove a case from the equation.
-
-```{r}
-head(dffits(model.2))
-head(dfbeta(model.2))
-```
-
-
----
-
-
-```{r, echo = FALSE}
-aug_2$dfbetastress <- dfbeta(model.2)[,"Stress"]
-
-ggplot(data = aug_2, aes(x = ID, y = dfbetastress)) + geom_point() +
-geom_text(aes(label = rownames(aug_2), vjust = -1))
-```
-
-
----
-
-## Outliers
-
-1. Leverage
-    + How unusual is this case from the rest of the cases in terms of predictors?
-2. Distance
-    + How distant is the observed case from the predicted value?
-3. Influence
-    + How much the does regression coefficient change if case were removed?
-    
-Consider each of these metrics in the context of research degrees of freedom. Do some of these metrics change the independence of successive inferential tests? How might this be problematic for Type I error? 
-
-What can you do to ensure your analysis is robust?
-
----
-## Recommendations
-
-- Analyze data with/without outliers and see how results change
-
-- If you throw out cases you must believe it is not representative of population of interest or have appropriate explanation
-
-- Don't throw out data just to be "safe". Data are hard to collect and outliers are expected!
-
-
-<!-- --- -->
-<!-- ## Suppresssion -->
-
-<!-- --- -->
-<!-- ## Multicolinearity -->
-
+- Outliers
+- Multicollinearity
 
