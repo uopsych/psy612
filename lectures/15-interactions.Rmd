@@ -1,0 +1,595 @@
+---
+title: 'Interactions (II)'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Last time...
+
+Introduction to interactions with two continuous predictors
+
+---
+
+## Today
+
+Mixing categorical and continuous predictors
+
+Two categorical predictors
+
+Start discussing Factorial ANOVA 
+
+---
+
+Consider the case where D is a variable representing two groups. In a univariate regression, how do we interpret the coefficient for D?
+
+$$\hat{Y} = b_{0} + b_{1}D$$
+
+--
+
+$b_0$ is the mean of the reference group, and D represents the difference in means between the two groups.
+
+---
+
+Extending this to the multivariate case, where X is continuous and D is a dummy code representing two groups.
+
+$$\hat{Y} = b_{0} + b_{1}D + b_2X$$
+
+How do we interpret $b_1?$
+
+--
+
+$b_1$ is the difference in means between the two groups *if the two groups have the same average level of X* or holding X constant. 
+
+This, by the way, is ANCOVA.
+
+---
+
+```{r, echo = F, message=F, warning = F}
+library(tidyverse)
+set.seed(022520)
+D = rep(c(0,1), each = 10)
+X = rnorm(20) + D
+Y = 2*D + X + rnorm(20)
+
+df = data.frame(X,Y,D)
+
+means = df %>%
+  group_by(D) %>%
+  summarize(M = mean(Y))
+
+mod1 = lm(Y ~ D, data = df)
+predict.1 = data.frame(X = rep(mean(X),2), D = c(0,1))
+predict.1$Y = predict(mod1, newdata = predict.1) 
+predict.1 = cbind(predict.1[1,], predict.1[2,])
+names(predict.1) = c("x1", "d1", "y1", "x2", "d2", "y2")
+
+ggplot(df, aes(X,Y, color = as.factor(D))) +
+  geom_point(size = 3) +
+  geom_hline(aes(yintercept = M, color = as.factor(D)), 
+             data = means, size = 1.5) + 
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.1, 
+               inherit.aes = F, size = 1.5)+
+  labs(color = "D") +
+  cowplot::theme_cowplot()
+```
+
+---
+```{r, echo = F}
+mod = lm(Y ~ X + D, data = df)
+df$pmod = predict(mod)
+
+predict.2 = data.frame(X = rep(mean(X)+.1,2), D = c(0,1))
+predict.2$Y = predict(mod, newdata = predict.2) 
+predict.2 = cbind(predict.2[1,], predict.2[2,])
+names(predict.2) = c("x1", "d1", "y1", "x2", "d2", "y2")
+
+ggplot(df, aes(X,Y, color = as.factor(D))) +
+  geom_point(size = 3) +
+  geom_smooth(aes(y = pmod), method = "lm", se = F)+
+  labs(color = "D") +
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.2, 
+               inherit.aes = F, size = 1.5)+
+  cowplot::theme_cowplot()
+```
+
+---
+```{r, echo = F}
+mod = lm(Y ~ X + D, data = df)
+df$pmod = predict(mod)
+
+predict.2 = data.frame(X = rep(mean(X)+.1,2), D = c(0,1))
+predict.2$Y = predict(mod, newdata = predict.2) 
+predict.2 = cbind(predict.2[1,], predict.2[2,])
+names(predict.2) = c("x1", "d1", "y1", "x2", "d2", "y2")
+
+ggplot(df, aes(X,Y, color = as.factor(D))) +
+  geom_point(size = 3) +
+  geom_smooth(aes(y = pmod), method = "lm", se = F)+
+  labs(color = "D") +
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.1, 
+               inherit.aes = F, size = 1.5)+
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.2, 
+               inherit.aes = F, size = 1.5)+
+  cowplot::theme_cowplot()
+```
+
+---
+
+Now extend this example to include joint effects, not just additive effects:
+
+$$\hat{Y} = b_{0} + b_{1}D + b_2X + b_3DX$$
+
+How do we interpret $b_1?$
+
+--
+
+$b_1$ is the difference in means between the two groups *when X is 0*.
+
+What is the intrepretation of $b_2$?
+
+--
+
+$b_2$ is the slope of X among the reference group.
+
+What is the interpretation of $b_3?$
+
+--
+
+$b_3$ is the difference in slopes between the reference group and the other group.
+
+---
+
+```{r, echo = F}
+ggplot(df, aes(X,Y, color = as.factor(D))) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = F)+
+  labs(color = "D") +
+  cowplot::theme_cowplot()
+
+```
+
+Where should we draw the segment to compare means?
+
+???
+
+Where you draw the segment changes the difference in means. That's why $b_1$ can only be interpreted as the difference in means when X = 0.
+
+---
+A recent study by [Craig, Nelson, & Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces.
+
+.pull-left[
+![](images/beard photos.png)
+]
+
+.pull-right[
+Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. I want to know whether men who are good at identifying expressions of clean-shaven men are also good at identifying bearded men; I also want to know if that relationship differs among men (participants) who are bearded.
+]
+---
+```{r, message = F, warning = F}
+library(here)
+beards = read.csv(here("data/beards.csv"), stringsAsFactors = F)
+```
+
+```{r, echo = F}
+beards = beards %>% 
+  filter(beard %in% c("No","Yes")) %>%
+  mutate(beard = factor(beard, levels = c("No", "Yes")))
+```
+
+```{r, message = F, warning = F}
+library(psych)
+table(beards$beard)
+describe(beards[,c("BA_mean", "CA_mean")], fast = T)
+```
+
+---
+
+```{r}
+beard.mod = lm(BA_mean ~ CA_mean*beard, data = beards)
+summary(beard.mod)
+```
+---
+
+```{r, message = F, warning = F, fig.width=10, fig.height=6}
+library(sjPlot)
+plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in miliseconds)", "Response to bearded faces (in miliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
+```
+
+---
+
+## Two categorical predictors
+
+If both X and M are categorical variables, the interpretation of coefficients is no longer the value of means and slopes, but means and differences in means. 
+
+Recall our Solomon's paradox example from a few weeks ago:
+
+```{r}
+solomon = read.csv(here("data/solomon.csv"))
+```
+```{r, echo = F}
+solomon$PERSPECTIVE = ifelse(solomon$CONDITION %in% c(1,2), "self", "other")
+solomon$DISTANCE = ifelse(solomon$CONDITION %in% c(1,3), "immersed", "distanced")
+```
+```{r}
+head(solomon[,c("PERSPECTIVE", "DISTANCE", "WISDOM")])
+```
+---
+
+```{r, highlight.output = 11}
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+---
+
+```{r, highlight.output = 12}
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+---
+
+```{r, highlight.output = 13}
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+---
+
+```{r, highlight.output = 14}
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+---
+
+```{r, highlight.output = 21}
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+---
+```{r}
+plot_model(solomon.mod, type = "int")
+```
+
+---
+
+class:inverse
+
+The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
+
+A factorial design is used when there is an interest in how two or more variables (or factors) affect the outcome. 
+
+* Rather than conduct separate one-way ANOVAs for each factor, they are all included in one analysis. 
+
+* The unique and important advantage to a factorial ANOVA over separate one-way ANOVAs is the ability to examine interactions.
+
+---
+
+```{r, echo = F}
+set.seed(23)
+SD=120
+
+DV_Slow_N <- rnorm(20,mean=600,sd=SD) # draw 20 from normal distribution
+DV_Slow_C <- rnorm(20,mean=590,sd=SD) # draw 20 from normal distribution
+DV_Slow_U <- rnorm(20,mean=585,sd=SD) # draw 20 from normal distribution
+
+DV_Med_N <- rnorm(20,mean=550,sd=SD) # draw 20 from normal
+DV_Med_C <- rnorm(20,mean=450,sd=SD) # draw 20 from normal
+DV_Med_U <- rnorm(20,mean=300,sd=SD) # draw 20 from normal
+
+DV_Fast_N <- rnorm(20,mean=310,sd=SD) # draw 20 from normal
+DV_Fast_C <- rnorm(20,mean=305,sd=SD) # draw 20 from normal
+DV_Fast_U <- rnorm(20,mean=290,sd=SD) # draw 20 from normal
+
+# put DVs together in a data frame; specify Speed and Noise Values
+Data = data.frame(Time = c(DV_Slow_N,
+                           DV_Slow_C,
+                           DV_Slow_U,
+                           DV_Med_N,
+                           DV_Med_C,
+                           DV_Med_U,
+                           DV_Fast_N,
+                           DV_Fast_C,
+                           DV_Fast_U),
+                  Speed = rep(c("Slow", "Medium", "Fast"), each = 60),
+                  Noise = rep(rep(c("None", "Controllable", "Uncontrollable"), 
+                                  each = 20), 3)) #repeat each label 20 times, then repeat that whole sequence 3 times
+Data$Speed = factor(Data$Speed, levels = c("Slow", "Medium", "Fast")) # set order of levels as I want them presented
+Data$Noise = factor(Data$Noise, levels = c("None", "Controllable", "Uncontrollable")) # set order of levels as I want them presented
+```
+
+.pull-left[
+The example data are from a simulated study in which 180 participants performed an eye-hand coordination task in which they were required to keep a mouse pointer on a red dot that moved in a circular motion.  
+]
+.pull-right[
+![](images/dot.jpg)
+]
+
+The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second.  The second factor was noise condition.  Some participants performed the task without any noise; others were subjected to periodic and unpredictable 3-second bursts of 85 dB white noise played over earphones.  Of those subjected to noise, half could do nothing to stop the noise (uncontrollable noise); half believed they could stop the noise by pressing a button (controllable noise).
+
+---
+
+In a **completely crossed** factorial design, each level of one factor occurs in combination with each level of the other factor.
+
+If equal numbers of participants occur in each combination, the design is **balanced**.  This has some distinct advantages (described later). 
+
+| | Slow | Medium | Fast |
+|:-|:-:|:-:|:-:|
+| No Noise | X | X | X |
+| Controllable Noise | X | X | X |
+| Uncontrollable Noise | X | X | X |
+
+---
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+mean.summary = Data %>%
+  group_by(Noise, Speed) %>%
+  summarize(Time = mean(Time)) %>%
+  spread("Speed", "Time")
+mean.summary$Noise = as.character(mean.summary$Noise)
+mean.summary$Marginal = rowMeans(mean.summary[2:4])
+mean.summary[4,1] = "Marginal"
+mean.summary[4,2:5] = colMeans(mean.summary[2:5], na.rm=T)
+library(knitr)
+library(kableExtra)
+kable(mean.summary, digits = 2) %>% kable_styling() %>% group_rows(start_row = 1, end_row = 3)
+```
+
+
+There are three important ways we can view the results of this experiment.  Two of them correspond to questions that would arise in a simple one-way ANOVA:
+
+Regardless of noise condition, does speed of the moving dot affect performance?
+
+Regardless of dot speed, does noise condition affect performance?
+
+---
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+kable(mean.summary, digits = 2) %>% 
+  kable_styling() %>% 
+  group_rows(start_row = 1, end_row = 3) %>%
+  row_spec(4, bold = T, color = "white", background = "#562457")
+```
+
+We can answer those questions by examining the marginal means, which isolate one factor while collapsing across the other factor.
+
+Regardless of noise condition, does speed of the moving dot affect performance?  Faster moving dots are harder to track and lead to faster average failure times.
+
+Adding information about variability allows us a sense of whether these are significant and meaningful differences...
+
+---
+
+```{r, message = F, warning = F, fig.width = 10, fig.height = 4.5}
+library(ggpubr)
+ggbarplot(data = Data, x = "Speed", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nspeed condition") + cowplot::theme_cowplot(font_size = 20)
+```
+
+Looks like the mean differences are substantial.  The ANOVA will be able to tell us if the means are significantly different  and the magnitude of those differences in terms of variance accounted for.
+
+---
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+kable(mean.summary, digits = 2) %>% 
+  kable_styling() %>% 
+  group_rows(start_row = 1, end_row = 3) %>% 
+  column_spec(5, bold = T, color = "white", background = "#562457")
+```
+
+Regardless of dot speed, does noise condition affect performance?  Performance declines in the presence of noise, especially if the noise is uncontrollable.
+
+Here, too adding information about variability allows us a sense of whether these are significant and meaningful differences...
+
+---
+
+```{r, message = F, warning = F, fig.width = 10, fig.height = 4.5}
+ggbarplot(data = Data, x = "Noise", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition") + cowplot::theme_cowplot(font_size = 20)
+```
+
+The mean differences are not as apparent for this factor. The ANOVA will be particularly important for informing us about statistical significance and effect size.
+
+---
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+kable(mean.summary, digits = 2) %>% 
+  kable_styling() %>% 
+  group_rows(start_row = 1, end_row = 3) 
+```
+The **marginal mean differences** correspond to main effects. They tell us what impact a particular factor has, ignoring the impact of the other factor. 
+
+The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine **conditional mean differences**. 
+
+---
+
+.pull-left[
+**Marginal Mean Differences**
+
+Results of one-way ANOVA
+
+```{r, eval = F}
+lm(y ~ GROUP)
+```
+
+$$\hat{Y} = b_0 + b_1D$$
+
+]
+
+.pull-left[
+**Conditional Mean Differences**
+
+Results of Factorial ANOVA
+
+```{r, eval = F}
+lm(y ~ GROUP*other_VARIABLE)
+```
+
+$$\hat{Y} = b_0 + b_1D + b_2O + b_3DO$$
+
+]
+
+---
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+kable(mean.summary, digits = 2) %>% 
+  kable_styling() %>% 
+  group_rows(start_row = 1, end_row = 3) %>%
+  column_spec(2, background = "#EECACA") %>%
+  column_spec(3, background = "#B2D4EB") %>%
+  column_spec(4, background = "#FFFFC5") %>%
+  column_spec(5, background = "grey", color = "white") %>%
+  row_spec(4, background = "white")
+```
+
+Are the marginal mean differences for noise condition a good representation of what is happening within each of the dot speed conditions?
+
+If not, then we would need to say that the noise condition effect depends upon (is conditional on) dot speed.  We would have an interaction between noise condition and dot speed condition.
+
+---
+
+```{r, message = F, warning = F, fig.width = 10, fig.height = 4.5}
+ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
+```
+
+The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
+
+---
+
+The presence of an interaction qualifies any main effect conclusions, leading to "yes, but" or "it depends" kinds of inferences.
+
+.pull-left[
+
+```{r, message = F, warning = F, fig.width = 5, fig.height = 3,echo =F}
+ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 10)
+```
+
+]
+
+.pull-right[
+
+Does noise condition affect failure time? 
+]
+--
+.pull-right[
+"Yes, but the magnitude of the effect is strongest for the medium speed condition, weaker for the fast speed condition, and mostly absent for the slow speed condition."
+]
+
+---
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+kable(mean.summary, digits = 2) %>% 
+  kable_styling() %>% 
+  group_rows(start_row = 1, end_row = 3) %>%
+  column_spec(2, background = "#EECACA") %>%
+  column_spec(3, background = "#B2D4EB") %>%
+  column_spec(4, background = "#FFFFC5") %>%
+  row_spec(4, background = "grey", color = "white") %>%
+  column_spec(5, background = "white")
+```
+
+Interactions are symmetrical.
+
+Are the marginal mean differences for speed condition a good representation of what is happening within each of the noise conditions?
+
+If not, then we would need to say that the speed condition effect depends upon (is conditional on) noise condition.  
+
+
+---
+
+.left-column[
+.small[
+The speed condition means are clearly different in each noise condition, but the pattern of those differences is not the same. 
+
+The marginal speed condition means do not represent well the means in each noise condition.
+
+An interaction.]
+
+]
+
+```{r, message = F, warning = F, fig.width = 7, fig.height = 8.5, echo = F}
+ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 15)
+```
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
+| Controllable Noise |   $\mu_{21}$ | $\mu_{22}$ | $\mu_{23}$ | $\mu_{1.}$ |
+| Uncontrollable Noise | $\mu_{31}$ | $\mu_{32}$ | $\mu_{33}$ | $\mu_{1.}$ |
+| Marginal | $\mu_{.1}$ | $\mu_{.2}$ | $\mu_{.3}$ | $\mu_{..}$ |
+
+The two main effects and the interaction represent three independent questions we can ask about the data. We have three null hypotheses to test.
+
+One null hypothesis refers to the marginal row means.
+
+$$
+\begin{aligned}
+\large H_0&: \mu_{1.} = \mu_{2.} = \dots = \mu_{R.}\\
+H_1&: \text{Not true that }\mu_{1.} = \mu_{2.} = \dots = \mu_{R.}
+\end{aligned}
+$$
+
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
+| Controllable Noise |   $\mu_{21}$ | $\mu_{22}$ | $\mu_{23}$ | $\mu_{1.}$ |
+| Uncontrollable Noise | $\mu_{31}$ | $\mu_{32}$ | $\mu_{33}$ | $\mu_{1.}$ |
+| Marginal | $\mu_{.1}$ | $\mu_{.2}$ | $\mu_{.3}$ | $\mu_{..}$ |
+
+We can state this differently (it will make stating the interaction null hypothesis easier when we get to it).
+
+$$
+\begin{aligned}
+\large \alpha_r&= \mu_{r.} - \mu_{..} \\
+\large H_0&: \alpha_1 = \alpha_2 = \dots = \alpha_R = 0\\
+H_1&: \text{At least one }\alpha_r \neq 0
+\end{aligned}
+$$
+
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
+| Controllable Noise |   $\mu_{21}$ | $\mu_{22}$ | $\mu_{23}$ | $\mu_{1.}$ |
+| Uncontrollable Noise | $\mu_{31}$ | $\mu_{32}$ | $\mu_{33}$ | $\mu_{1.}$ |
+| Marginal | $\mu_{.1}$ | $\mu_{.2}$ | $\mu_{.3}$ | $\mu_{..}$ |
+
+The main effect for dot speed (column marginal means) can be stated similarly:
+
+
+$$
+\begin{aligned}
+\large \beta_c&= \mu_{.c} - \mu_{..} \\
+\large H_0&: \beta_1 = \beta_2 = \dots = \beta_C = 0\\
+H_1&: \text{At least one }\beta_c \neq 0
+\end{aligned}
+$$
+
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
+| Controllable Noise |   $\mu_{21}$ | $\mu_{22}$ | $\mu_{23}$ | $\mu_{1.}$ |
+| Uncontrollable Noise | $\mu_{31}$ | $\mu_{32}$ | $\mu_{33}$ | $\mu_{1.}$ |
+| Marginal | $\mu_{.1}$ | $\mu_{.2}$ | $\mu_{.3}$ | $\mu_{..}$ |
+
+The interaction null hypothesis can then be stated as follows:
+
+$$
+\begin{aligned}
+\large (\alpha\beta)_{rc}&= \mu_{rc} - \alpha_r - \beta_c  - \mu_{..} \\
+\large H_0&: (\alpha\beta)_{11} = (\alpha\beta)_{12} = \dots = (\alpha\beta)_{RC} = 0\\
+H_1&: \text{At least one }(\alpha\beta)_{rc} \neq 0
+\end{aligned}
+$$

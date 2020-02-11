@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Interactions (II)</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Interactions (II)
+
+---
+
+
+## Last time...
+
+Introduction to interactions with two continuous predictors
+
+---
+
+## Today
+
+Mixing categorical and continuous predictors
+
+Two categorical predictors
+
+Start discussing Factorial ANOVA 
+
+---
+
+Consider the case where D is a variable representing two groups. In a univariate regression, how do we interpret the coefficient for D?
+
+`$$\hat{Y} = b_{0} + b_{1}D$$`
+
+--
+
+`\(b_0\)` is the mean of the reference group, and D represents the difference in means between the two groups.
+
+---
+
+Extending this to the multivariate case, where X is continuous and D is a dummy code representing two groups.
+
+`$$\hat{Y} = b_{0} + b_{1}D + b_2X$$`
+
+How do we interpret `\(b_1?\)`
+
+--
+
+`\(b_1\)` is the difference in means between the two groups *if the two groups have the same average level of X* or holding X constant. 
+
+This, by the way, is ANCOVA.
+
+---
+
+![](15-interactions_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+---
+![](15-interactions_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+---
+![](15-interactions_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+---
+
+Now extend this example to include joint effects, not just additive effects:
+
+`$$\hat{Y} = b_{0} + b_{1}D + b_2X + b_3DX$$`
+
+How do we interpret `\(b_1?\)`
+
+--
+
+`\(b_1\)` is the difference in means between the two groups *when X is 0*.
+
+What is the intrepretation of `\(b_2\)`?
+
+--
+
+`\(b_2\)` is the slope of X among the reference group.
+
+What is the interpretation of `\(b_3?\)`
+
+--
+
+`\(b_3\)` is the difference in slopes between the reference group and the other group.
+
+---
+
+![](15-interactions_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+Where should we draw the segment to compare means?
+
+???
+
+Where you draw the segment changes the difference in means. That's why `\(b_1\)` can only be interpreted as the difference in means when X = 0.
+
+---
+A recent study by [Craig, Nelson, &amp; Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces.
+
+.pull-left[
+![](images/beard photos.png)
+]
+
+.pull-right[
+Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. I want to know whether men who are good at identifying expressions of clean-shaven men are also good at identifying bearded men; I also want to know if that relationship differs among men (participants) who are bearded.
+]
+---
+
+```r
+library(here)
+beards = read.csv(here("data/beards.csv"), stringsAsFactors = F)
+```
+
+
+
+
+```r
+library(psych)
+table(beards$beard)
+```
+
+```
+## 
+##  No Yes 
+##  97  42
+```
+
+```r
+describe(beards[,c("BA_mean", "CA_mean")], fast = T)
+```
+
+```
+##         vars   n   mean     sd    min     max   range    se
+## BA_mean    1 139 592.91 142.36 239.65 1128.24  888.59 12.08
+## CA_mean    2 139 606.56 143.89 264.12 1278.69 1014.57 12.20
+```
+
+---
+
+
+```r
+beard.mod = lm(BA_mean ~ CA_mean*beard, data = beards)
+summary(beard.mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = BA_mean ~ CA_mean * beard, data = beards)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -196.024  -23.649    0.276   25.731  175.955 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       -8.01682   23.16591  -0.346  0.72984    
+## CA_mean            0.99245    0.03733  26.583  &lt; 2e-16 ***
+## beardYes         128.11638   40.08496   3.196  0.00173 ** 
+## CA_mean:beardYes  -0.21542    0.06398  -3.367  0.00099 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 51.24 on 135 degrees of freedom
+## Multiple R-squared:  0.8733,	Adjusted R-squared:  0.8705 
+## F-statistic: 310.1 on 3 and 135 DF,  p-value: &lt; 2.2e-16
+```
+---
+
+
+```r
+library(sjPlot)
+plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in miliseconds)", "Response to bearded faces (in miliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
+```
+
+![](15-interactions_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+## Two categorical predictors
+
+If both X and M are categorical variables, the interpretation of coefficients is no longer the value of means and slopes, but means and differences in means. 
+
+Recall our Solomon's paradox example from a few weeks ago:
+
+
+```r
+solomon = read.csv(here("data/solomon.csv"))
+```
+
+
+```r
+head(solomon[,c("PERSPECTIVE", "DISTANCE", "WISDOM")])
+```
+
+```
+##   PERSPECTIVE  DISTANCE      WISDOM
+## 1       other  immersed -0.27589395
+## 2       other distanced  0.42949213
+## 3       other distanced -0.02785874
+## 4       other distanced  0.53271500
+## 5        self distanced  0.62299793
+## 6        self distanced -1.99578129
+```
+---
+
+
+```r
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = WISDOM ~ PERSPECTIVE * DISTANCE, data = solomon)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)  
+*## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
+## PERSPECTIVEself                   -0.2124     0.2630  -0.808   0.4210  
+## DISTANCEimmersed                  -0.1396     0.2490  -0.561   0.5760  
+## PERSPECTIVEself:DISTANCEimmersed  -0.5417     0.3526  -1.536   0.1273  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9389 on 111 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
+## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+```
+
+---
+
+
+```r
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = WISDOM ~ PERSPECTIVE * DISTANCE, data = solomon)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
+*## PERSPECTIVEself                   -0.2124     0.2630  -0.808   0.4210  
+## DISTANCEimmersed                  -0.1396     0.2490  -0.561   0.5760  
+## PERSPECTIVEself:DISTANCEimmersed  -0.5417     0.3526  -1.536   0.1273  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9389 on 111 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
+## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+```
+
+---
+
+
+```r
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = WISDOM ~ PERSPECTIVE * DISTANCE, data = solomon)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
+## PERSPECTIVEself                   -0.2124     0.2630  -0.808   0.4210  
+*## DISTANCEimmersed                  -0.1396     0.2490  -0.561   0.5760  
+## PERSPECTIVEself:DISTANCEimmersed  -0.5417     0.3526  -1.536   0.1273  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9389 on 111 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
+## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+```
+
+---
+
+
+```r
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = WISDOM ~ PERSPECTIVE * DISTANCE, data = solomon)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
+## PERSPECTIVEself                   -0.2124     0.2630  -0.808   0.4210  
+## DISTANCEimmersed                  -0.1396     0.2490  -0.561   0.5760  
+*## PERSPECTIVEself:DISTANCEimmersed  -0.5417     0.3526  -1.536   0.1273  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9389 on 111 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
+## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+```
+
+---
+
+
+```r
+solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
+summary(solomon.mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = WISDOM ~ PERSPECTIVE * DISTANCE, data = solomon)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
+## PERSPECTIVEself                   -0.2124     0.2630  -0.808   0.4210  
+## DISTANCEimmersed                  -0.1396     0.2490  -0.561   0.5760  
+## PERSPECTIVEself:DISTANCEimmersed  -0.5417     0.3526  -1.536   0.1273  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9389 on 111 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
+*## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+```
+
+---
+
+```r
+plot_model(solomon.mod, type = "int")
+```
+
+![](15-interactions_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+---
+
+class:inverse
+
+The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
+
+A factorial design is used when there is an interest in how two or more variables (or factors) affect the outcome. 
+
+* Rather than conduct separate one-way ANOVAs for each factor, they are all included in one analysis. 
+
+* The unique and important advantage to a factorial ANOVA over separate one-way ANOVAs is the ability to examine interactions.
+
+---
+
+
+
+.pull-left[
+The example data are from a simulated study in which 180 participants performed an eye-hand coordination task in which they were required to keep a mouse pointer on a red dot that moved in a circular motion.  
+]
+.pull-right[
+![](images/dot.jpg)
+]
+
+The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second.  The second factor was noise condition.  Some participants performed the task without any noise; others were subjected to periodic and unpredictable 3-second bursts of 85 dB white noise played over earphones.  Of those subjected to noise, half could do nothing to stop the noise (uncontrollable noise); half believed they could stop the noise by pressing a button (controllable noise).
+
+---
+
+In a **completely crossed** factorial design, each level of one factor occurs in combination with each level of the other factor.
+
+If equal numbers of participants occur in each combination, the design is **balanced**.  This has some distinct advantages (described later). 
+
+| | Slow | Medium | Fast |
+|:-|:-:|:-:|:-:|
+| No Noise | X | X | X |
+| Controllable Noise | X | X | X |
+| Uncontrollable Noise | X | X | X |
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+There are three important ways we can view the results of this experiment.  Two of them correspond to questions that would arise in a simple one-way ANOVA:
+
+Regardless of noise condition, does speed of the moving dot affect performance?
+
+Regardless of dot speed, does noise condition affect performance?
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+We can answer those questions by examining the marginal means, which isolate one factor while collapsing across the other factor.
+
+Regardless of noise condition, does speed of the moving dot affect performance?  Faster moving dots are harder to track and lead to faster average failure times.
+
+Adding information about variability allows us a sense of whether these are significant and meaningful differences...
+
+---
+
+
+```r
+library(ggpubr)
+ggbarplot(data = Data, x = "Speed", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nspeed condition") + cowplot::theme_cowplot(font_size = 20)
+```
+
+![](15-interactions_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+Looks like the mean differences are substantial.  The ANOVA will be able to tell us if the means are significantly different  and the magnitude of those differences in terms of variance accounted for.
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Regardless of dot speed, does noise condition affect performance?  Performance declines in the presence of noise, especially if the noise is uncontrollable.
+
+Here, too adding information about variability allows us a sense of whether these are significant and meaningful differences...
+
+---
+
+
+```r
+ggbarplot(data = Data, x = "Noise", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition") + cowplot::theme_cowplot(font_size = 20)
+```
+
+![](15-interactions_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+The mean differences are not as apparent for this factor. The ANOVA will be particularly important for informing us about statistical significance and effect size.
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+The **marginal mean differences** correspond to main effects. They tell us what impact a particular factor has, ignoring the impact of the other factor. 
+
+The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine **conditional mean differences**. 
+
+---
+
+.pull-left[
+**Marginal Mean Differences**
+
+Results of one-way ANOVA
+
+
+```r
+lm(y ~ GROUP)
+```
+
+`$$\hat{Y} = b_0 + b_1D$$`
+
+]
+
+.pull-left[
+**Conditional Mean Differences**
+
+Results of Factorial ANOVA
+
+
+```r
+lm(y ~ GROUP*other_VARIABLE)
+```
+
+`$$\hat{Y} = b_0 + b_1D + b_2O + b_3DO$$`
+
+]
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white !important;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;background-color: white !important;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;background-color: white !important;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;background-color: white !important;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;background-color: white !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Are the marginal mean differences for noise condition a good representation of what is happening within each of the dot speed conditions?
+
+If not, then we would need to say that the noise condition effect depends upon (is conditional on) dot speed.  We would have an interaction between noise condition and dot speed condition.
+
+---
+
+
+```r
+ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
+```
+
+![](15-interactions_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+
+The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
+
+---
+
+The presence of an interaction qualifies any main effect conclusions, leading to "yes, but" or "it depends" kinds of inferences.
+
+.pull-left[
+
+![](15-interactions_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+
+]
+
+.pull-right[
+
+Does noise condition affect failure time? 
+]
+--
+.pull-right[
+"Yes, but the magnitude of the effect is strongest for the medium speed condition, weaker for the fast speed condition, and mostly absent for the slow speed condition."
+]
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white !important;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white !important;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white !important;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: white !important;background-color: grey !important;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;color: white !important;background-color: grey !important;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;color: white !important;background-color: grey !important;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;color: white !important;background-color: grey !important;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;background-color: white !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Interactions are symmetrical.
+
+Are the marginal mean differences for speed condition a good representation of what is happening within each of the noise conditions?
+
+If not, then we would need to say that the speed condition effect depends upon (is conditional on) noise condition.  
+
+
+---
+
+.left-column[
+.small[
+The speed condition means are clearly different in each noise condition, but the pattern of those differences is not the same. 
+
+The marginal speed condition means do not represent well the means in each noise condition.
+
+An interaction.]
+
+]
+
+![](15-interactions_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{1.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{1.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+The two main effects and the interaction represent three independent questions we can ask about the data. We have three null hypotheses to test.
+
+One null hypothesis refers to the marginal row means.
+
+$$
+`\begin{aligned}
+\large H_0&amp;: \mu_{1.} = \mu_{2.} = \dots = \mu_{R.}\\
+H_1&amp;: \text{Not true that }\mu_{1.} = \mu_{2.} = \dots = \mu_{R.}
+\end{aligned}`
+$$
+
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{1.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{1.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+We can state this differently (it will make stating the interaction null hypothesis easier when we get to it).
+
+$$
+`\begin{aligned}
+\large \alpha_r&amp;= \mu_{r.} - \mu_{..} \\
+\large H_0&amp;: \alpha_1 = \alpha_2 = \dots = \alpha_R = 0\\
+H_1&amp;: \text{At least one }\alpha_r \neq 0
+\end{aligned}`
+$$
+
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{1.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{1.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+The main effect for dot speed (column marginal means) can be stated similarly:
+
+
+$$
+`\begin{aligned}
+\large \beta_c&amp;= \mu_{.c} - \mu_{..} \\
+\large H_0&amp;: \beta_1 = \beta_2 = \dots = \beta_C = 0\\
+H_1&amp;: \text{At least one }\beta_c \neq 0
+\end{aligned}`
+$$
+
+---
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{1.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{1.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+The interaction null hypothesis can then be stated as follows:
+
+$$
+`\begin{aligned}
+\large (\alpha\beta)_{rc}&amp;= \mu_{rc} - \alpha_r - \beta_c  - \mu_{..} \\
+\large H_0&amp;: (\alpha\beta)_{11} = (\alpha\beta)_{12} = \dots = (\alpha\beta)_{RC} = 0\\
+H_1&amp;: \text{At least one }(\alpha\beta)_{rc} \neq 0
+\end{aligned}`
+$$
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
