@@ -29,15 +29,46 @@ always?
 
 ---
 
-## Sewll Wright
+## Karl Pearson
 
-- Guinea pig
+- Francis Galton demonstrates that one phenomenon -- regression to the mean -- is not caused by external factors, but merely the result of natural chance variation.
+
+- Pearson (his student) takes this to the extreme, which is causation can never be proven.
+
+"Force as a cause of motion is exactly on the same footding as a tree-god as a cause of growth."
+
+---
+
+## Sewall Wright
+
+.pull-left[
+![](images/wright.jpeg)
+]
+.pull-right[
+Geneticist; studied of guinea pigs at the USDA
+
+Developed path models as a way to identify causal forces and estimate values
+
+Rebuke from mathematical community, including from Ronald Fisher
+  ]
 
 ---
 
 ## Judea Pearl
 
---- 
+.pull-left[
+- [Professor of computer science at UCLA](http://bayes.cs.ucla.edu/jp_home.html); studies AI
+
+- Extensively studied this history of causation in statistics, inferring causality through data, and the development of path analysis
+
+- Popularized the use of causal graph theory
+]
+
+.pull-right[
+![](images/pearl.jpg)
+]
+
+---
 
 ## Julia Rohrer, (2018)
 
@@ -407,6 +438,15 @@ dag.obj = dagify(c ~ x,
 
 Sampling from a specific environment (or a specific subpopulation) can result in collider bias. 
 
+Be wary of: 
+
+* Missing data
+* Subgroup analysis
+* Any post treatment variables
+
+
+This will extend to not just controlling for constructs, but estimating interactions with them. If your moderating variable is a collider, you've introduced collider bias. 
+
 ]
 .pull-right[
 
@@ -421,11 +461,13 @@ ggdag_dseparated(dag.obj,
 ]
 
 .small[Sackett et al. (1979)]
+
 ---
 There is a **strong** assumption of DAG models, and that it's that no relevant variables have been ommited from the graph and that causal pathways have been correctly specified. This is a tall order, and potentially impossible to meet. Moreover, two different researchers may reasonably disagree with what the true model looks like. 
 
 It's your responsibility to decide for yourself what you think the model is, provide as much evidence as you can, and listen when an open mind to those who disagree. 
 
+![](images/xkcd.png)
 
 &lt;!-- --- --&gt;
 
