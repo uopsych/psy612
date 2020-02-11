@@ -65,6 +65,40 @@ This, by the way, is ANCOVA.
 
 ---
 ![](15-interactions_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+---
+
+We might be interested in the relative contributions of our two variables, but we have to remember that they're on different scales, so we cannot compare them using the unstandardized regression coefficient.
+
+Standardized coefficients can be used if we only have two groups, but what if we have 3 or more?
+
+--
+
+Just like we use `\(R^2\)` to report how much variance in Y is explained by the model, we can break this down into the unique contributions of each variable in the model, including factors with 3+ levels. 
+
+`$$\large \eta^2 = \frac{SS_{\text{Variable}}}{SS_{Y}}== \frac{SS_{\text{Variable}}}{SS_{\text{Total}}}$$`
+
+---
+
+
+```r
+mod = lm(Y ~ X + D, data = df)
+anova(mod)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Y
+##           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## X          1 64.045  64.045  61.489 4.788e-07 ***
+## D          1 20.071  20.071  19.270 0.0003998 ***
+## Residuals 17 17.707   1.042                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+`$$\large \eta^2_{X} = \frac{64.045}{64.045+20.071+17.707} = .62899 = 63\%$$`
+`$$\large \eta^2_{D} = \frac{20.071}{64.045+20.071+17.707} = .19712 = 20\%$$`
 
 ---
 
@@ -92,7 +126,7 @@ What is the interpretation of `\(b_3?\)`
 
 ---
 
-![](15-interactions_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
 
 Where should we draw the segment to compare means?
 
@@ -179,7 +213,7 @@ library(sjPlot)
 plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in miliseconds)", "Response to bearded faces (in miliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -374,7 +408,7 @@ summary(solomon.mod)
 plot_model(solomon.mod, type = "int")
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -524,7 +558,7 @@ library(ggpubr)
 ggbarplot(data = Data, x = "Speed", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nspeed condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 
 Looks like the mean differences are substantial.  The ANOVA will be able to tell us if the means are significantly different  and the magnitude of those differences in terms of variance accounted for.
 
@@ -584,7 +618,7 @@ Here, too adding information about variability allows us a sense of whether thes
 ggbarplot(data = Data, x = "Noise", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 
 The mean differences are not as apparent for this factor. The ANOVA will be particularly important for informing us about statistical significance and effect size.
 
@@ -722,7 +756,7 @@ If not, then we would need to say that the noise condition effect depends upon (
 ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
 
 The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
 
@@ -732,7 +766,7 @@ The presence of an interaction qualifies any main effect conclusions, leading to
 
 .pull-left[
 
-![](15-interactions_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -809,7 +843,7 @@ An interaction.]
 
 ]
 
-![](15-interactions_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 ---
 
 | | Slow | Medium | Fast | Marginal |

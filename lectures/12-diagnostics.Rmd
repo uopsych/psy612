@@ -11,11 +11,95 @@ output:
       countIncrementalSlides: false
 ---
 
-```{r, echo = F, results = 'hide', message=FALSE}
+## Last time
+
+Assumptions and diagnostics
+
+Evaluate measurement error with reliability statistics $(\alpha, \omega, \text{ Inter-rater, test-retest})$
+
+Use residuals to confirm whether you 
+- correctly specified the form of your model
+- included the correct variables
+- have homoskedasticity
+- have independence among errors
+- have normally distributed errors
+
+Thoughts on Lynam et al. (2006)?
+
+---
+## Today
+
+- Researcher degrees of freedom
+
+- Screening data
+
+- Outliers
+
+- Multicollinearity
+
+---
+
+In addition to the assumptions of models that we discussed last class, there's also an underlying assumption* that our models are developed independent of the data. One easy way to violate this assumption is to change your regression model based on either the significance test(s) of the model or the fit. 
+
+- Changing the model based on assumptions does violate the data-model-independence assumption, but it's unclear how this affects the inferences. In general, it's a good idea to validate the new model using a new dataset. 
+
+- Changing the model based on the significance tests is *bad* and it's fairly clear how this affects our inferences. 
+
+What do you expect the distribution of $p$-values to look like when the null is true and when the null is false?
+
+.small[`*` this is true for all statistical tests]
+
+---
+
+```{r, echo = F, message = F, warning = F, fig.height = 8, fig.width = 10}
 library(tidyverse)
+sim = 6000
+null_p = numeric(length = sim)
+alt_p = numeric(length = sim)
+phack_p = numeric(length = sim)
+# null hypothesis true
+for(i in 1:sim){
+  x = rnorm(30)
+  t = t.test(x, mu = 0)
+  p_null = t$p.value
+  null_p[i] = p_null
+}
+# null hypothesis false
+for(i in 1:sim){
+  x = rnorm(30, mean = 5)
+  t = t.test(x, mu = 0)
+  p_alt = t$p.value
+  alt_p[i] = p_alt
+}
+# null hypothesis true, p-hack
+for(i in 1:sim){
+  x = rnorm(5)
+  t = t.test(x, mu = 0)
+  p_hack = t$p.value
+  while(length(x) < 30 & p_hack >= .05){
+    x = c(x, rnorm(1))
+    t = t.test(x, mu = 0)
+    p_hack = t$p.value
+  }
+  phack_p[i] = p_hack
+}
+
+data.frame(test = rep(c("H0 True", "H0 False", "p-Hacking"), each = sim),
+           p = c(null_p, alt_p, phack_p)) %>%
+  ggplot(aes(x = p, fill = test)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(~test, scales = "free", ncol = 2) +
+  scale_y_continuous("") + 
+  guides(fill = F)+
+  cowplot::theme_cowplot()
+             
 ```
 
-```{r, echo = F, messages = FALSE, warning= FALSE}
+
+---
+
+```{r, echo = F, results = 'hide', message=FALSE}
+library(tidyverse)
 library(here)
 a_data <- read.csv(here("data/anxiety.csv"))
 library(broom)

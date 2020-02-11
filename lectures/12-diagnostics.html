@@ -17,12 +17,51 @@ class: center, middle, inverse, title-slide
 ---
 
 
+## Last time
+
+Assumptions and diagnostics
+
+Evaluate measurement error with reliability statistics `\((\alpha, \omega, \text{ Inter-rater, test-retest})\)`
+
+Use residuals to confirm whether you 
+- correctly specified the form of your model
+- included the correct variables
+- have homoskedasticity
+- have independence among errors
+- have normally distributed errors
+
+Thoughts on Lynam et al. (2006)?
+
+---
+## Today
+
+- Researcher degrees of freedom
+
+- Screening data
+
+- Outliers
+
+- Multicollinearity
+
+---
+
+In addition to the assumptions of models that we discussed last class, there's also an underlying assumption* that our models are developed independent of the data. One easy way to violate this assumption is to change your regression model based on either the significance test(s) of the model or the fit. 
+
+- Changing the model based on assumptions does violate the data-model-independence assumption, but it's unclear how this affects the inferences. In general, it's a good idea to validate the new model using a new dataset. 
+
+- Changing the model based on the significance tests is *bad* and it's fairly clear how this affects our inferences. 
+
+What do you expect the distribution of `\(p\)`-values to look like when the null is true and when the null is false?
+
+.small[`*` this is true for all statistical tests]
+
+---
+
+![](12-diagnostics_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
 
 
+---
 
-```
-## here() starts at /Users/sweston2/Google Drive/Work/Teaching/Courses/Graduate/Statistics and Methods Sequence/psy612
-```
 
 
 ## Screening your data
@@ -511,6 +550,14 @@ Imagine a scenario when X2 and Y are uncorrelated and X2 is correlated with X1.
 Second part of numerator becomes 0
 Bottom part gets smaller
 Bigger value
+
+---
+
+class: inverse
+
+## Next time...
+
+Causal models
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

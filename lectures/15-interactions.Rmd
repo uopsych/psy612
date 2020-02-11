@@ -119,6 +119,27 @@ ggplot(df, aes(X,Y, color = as.factor(D))) +
                inherit.aes = F, size = 1.5)+
   cowplot::theme_cowplot()
 ```
+---
+
+We might be interested in the relative contributions of our two variables, but we have to remember that they're on different scales, so we cannot compare them using the unstandardized regression coefficient.
+
+Standardized coefficients can be used if we only have two groups, but what if we have 3 or more?
+
+--
+
+Just like we use $R^2$ to report how much variance in Y is explained by the model, we can break this down into the unique contributions of each variable in the model, including factors with 3+ levels. 
+
+$$\large \eta^2 = \frac{SS_{\text{Variable}}}{SS_{Y}}== \frac{SS_{\text{Variable}}}{SS_{\text{Total}}}$$
+
+---
+
+```{r}
+mod = lm(Y ~ X + D, data = df)
+anova(mod)
+```
+
+$$\large \eta^2_{X} = \frac{64.045}{64.045+20.071+17.707} = .62899 = 63\%$$
+$$\large \eta^2_{D} = \frac{20.071}{64.045+20.071+17.707} = .19712 = 20\%$$
 
 ---
 

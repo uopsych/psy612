@@ -25,3 +25,10 @@
   * add slides to walk through predicting Y from dummy codes
   * how was wisdom measured in the psych science article?
   * if time, show how factor variable is doing the same as dummy codes (how?)
+  
+10-m_regression.html
+
+  * demonstrate that degrees of freedom are the same (ANOVA table and F-test of omnibus)
+  * Make F-distribution plot number-free (don't give numbers that don't correspond to example)
+  * reiterate example before diving back into R code
+  * remind students to do reading?
