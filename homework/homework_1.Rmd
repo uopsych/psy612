@@ -138,6 +138,9 @@ There are some missing values in the output, labeled with red letters. Complete 
 
 * Dichotomize the political preferences data into a dichotomous conservative and liberal variable, assuming the midpoint is conservative. Then run a linear model with this new binary variable predicting redistribution. What are the conceptual differences between the regression in #5 and #6. Which one would you prefer?
 
+<!-- *Compare the model that uses the continuous version of political preference to the model that uses the dichotomous version. What are the conceptual differences between the two models. Which one would you prefer? -->
+
+
 ### Question 2
 
 *t*-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the the character variable associated with X and creates a new variable of 0's and 1's. 0's correspond to a reference group and 1's correspond to the other group. 

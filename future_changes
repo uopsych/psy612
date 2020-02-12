@@ -35,3 +35,8 @@ final-project.html
   * Make F-distribution plot number-free (don't give numbers that don't correspond to example)
   * reiterate example before diving back into R code
   * remind students to do reading?
+
+homework-1.html
+
+Question 10.1
+* last bullet point should not say "#5 and #6" but should refer to specific models. Suggestions have been made in Markdown files. 
