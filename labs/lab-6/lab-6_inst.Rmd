@@ -23,7 +23,14 @@ library(broom)
 library(sjPlot)
 df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>% janitor::clean_names() # to get things into snake_case
 
-df_het <- import("./labs/lab-6/data/df_het.csv")
+df_het <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_het.csv")
+
+df_mc <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_mc.csv")
+
+df_nne <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_nne.csv")
+
+df_out <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/lab6_outliers.txt") %>% 
+  janitor::clean_names()
 ```
 
 # Normality Assumption
@@ -33,20 +40,119 @@ df_het <- import("./labs/lab-6/data/df_het.csv")
 
 *That's right, we assume that the errors or residuals are normally distributed*
 
-We can examine the normality of our errors using a few different methods. First, we could examine a density plot of the residuals and compare that to a normal distribution:
+Let's start by fitting our regression model. We are going to regress happiness on Extraversion using two different datasets. The first will be the data we've worked with previously:
 
 ```{r}
-
+model_1a <- lm(happiness ~ extraversion, data = df) 
 ```
 
+Then we'll use one of our new datasets:
+
+```{r}
+model_1b <- lm(happiness ~ extraversion, data = df_nne)
+```
+
+We can examine the normality of our errors using a few different methods. First, we could examine a density plot of the residuals and compare that to a normal distribution.
+
+Remember, one way we can get our residual values in a dataframe is to use `broom::augment()`. Then we can plot the residuals using `geom_density()` and overlay a normal curve:
+
+```{r}
+model_1a %>% 
+  augment() %>% 
+  ggplot(aes(x= .resid)) + 
+  geom_density(fill = "purple") +
+  stat_function(linetype = 2, fun = dnorm, # add normal curve
+                args = list(mean = mean(augment(model_1a)$.resid), # define mean and sd
+                            sd = sd(augment(model_1a)$.resid)))+
+  theme_minimal()
+```
+
+### Q2
+>**Question: Are these errors normally distributed?**
+
+*yeah, close enough at least*
+
+Now let's check our other model:
+
+```{r}
+model_1b %>% 
+  augment() %>% 
+  ggplot(aes(x= .resid)) + 
+  geom_density(fill = "purple") +
+  stat_function(linetype = 2, fun = dnorm, # add normal curve
+                args = list(mean = mean(augment(model_1b)$.resid), # define mean and sd
+                            sd = sd(augment(model_1b)$.resid))) 
+```
+
+### Q3
+>**Question: Are these errors normally distributed?**
+
+*No, there is a distinct right-skew / positive skew*
+
+The other method we could use is to look at a q-q plot of the residuals, which shows expected vs. observed residual values. In it, we're looking for all of the points to more-or-less lay along the diagonal. 
+
+This is pretty easy to do in R using broom and ggplot. First, we `augment()` the model, then we call `ggplot()`, and then transform the data using `stat_qq()`. Then we add a `geom_abline()`, which will plot a diagonal line by default.
+
+Let's see it with our first model:
+```{r}
+model_1a %>% 
+  augment() %>% 
+  ggplot() +
+  stat_qq(aes(sample = .std.resid)) + # this is where it creates the qq plot data
+  geom_abline() + # diagonal line
+  theme_minimal()
+```
+
+And now with our second model:
+```{r}
+model_1b %>% 
+  augment() %>% 
+  ggplot() +
+  stat_qq(aes(sample = .std.resid)) + # this is where it creates the qq plot data
+  geom_abline() + # diagonal line
+  theme_minimal()
+```
+
+Note that the points are no longer laying along the diagonal, but instead show a distinctive pattern, where again the positive residuals are much higher than expected
+
+# Homoscedasticity / Heteroscedasticity
+
+Let's talk about the assumption of homoscedasticity and how to see if it's violated (i.e., how to see if there is heteroscedasticity).
+
+### Q4
+>**Question: What is the assumption of homoscedasticity?**
+
+*Yes, it's that the variance in the outcome, Y, is constant across all predictors.*
+
+### Q5
+>**Question: Does anyone remember what the anologous assumption in the case of a t test is usually called?**
+
+*homogeneity of variance*
+
+For this, we'll regress happiness on extraversion using another dataframe, callled `df_het`
+```{r}
+mod_1c <- lm(happiness ~ extraversion, data = df_het)
+```
+
+The main way we usually check heteroscedasticity is to examine a plot of the residuals by fitted values. We can do this again using the data provided by running `augment()` on our model:
+
+```{r}
+mod_1c %>% 
+  augment() %>% 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  theme_minimal()
+```
+
+### Q5
+>**Question: Does anyone remember what the anologous assumption in the case of a t test is usually called?**
 
 # Outlier Detection
 ```{r}
 df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>% 
   janitor::clean_names() # to get things into snake_case
 
-df_out <- import("lab6_outliers.txt") %>% 
-  janitor::clean_names()
+
 
 df_het <- df %>% 
   select(extraversion, happiness) %>% 
