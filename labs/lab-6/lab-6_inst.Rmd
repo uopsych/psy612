@@ -1,0 +1,161 @@
+---
+title: "Lab 6: Regression Diagnostics"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+---
+
+# Purpose
+
+Today we'll be going over the assumptions of regression and how to check whether or not they are violated using common diagnostics.
+
+We'll be working with several versions of the happiness and extraversion data that we've worked with in previous labs.
+
+```{r}
+library(rio)
+library(tidyverse)
+library(broom)
+library(sjPlot)
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>% janitor::clean_names() # to get things into snake_case
+
+df_het <- import("./labs/lab-6/data/df_het.csv")
+```
+
+# Normality Assumption
+
+### Q1
+>**Question: What do we assume is normally distributed?**
+
+*That's right, we assume that the errors or residuals are normally distributed*
+
+We can examine the normality of our errors using a few different methods. First, we could examine a density plot of the residuals and compare that to a normal distribution:
+
+```{r}
+
+```
+
+
+# Outlier Detection
+```{r}
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>% 
+  janitor::clean_names() # to get things into snake_case
+
+df_out <- import("lab6_outliers.txt") %>% 
+  janitor::clean_names()
+
+df_het <- df %>% 
+  select(extraversion, happiness) %>% 
+  mutate(happiness = ifelse())
+```
+
+```{r}
+mod_1 <- lm(happiness ~ extraversion,
+   data = df)
+```
+
+## Bi-variate plot
+```{r}
+ggplot(data = df, aes(x = extraversion, y = happiness)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "purple")
+```
+
+```{r}
+ggplot(data = mod_1, aes(x = scale(.fitted), y = scale(.resid))) +
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 0, color = "red")
+```
+
+```{r}
+ggplot(mod_1) +
+  stat_qq(aes(sample = .stdresid)) +
+  geom_abline() +
+  theme_bw(base_size = 20)
+```
+
+```{r}
+mod_2 <- lm(happiness ~ extraversion,
+   data = df_out)
+```
+
+## Bi-variate plot
+```{r}
+ggplot(data = df_out, aes(x = extraversion, y = happiness)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "purple")
+```
+
+```{r}
+ggplot(data = mod_2, aes(x = scale(.fitted), y = scale(.resid))) +
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 0, color = "red")
+```
+
+```{r}
+ggplot(data = mod_2, aes(x = scale(.fitted), y = scale(.resid))) +
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 0, color = "red")
+```
+
+```{r}
+ggplot(mod_2) +
+  stat_qq(aes(sample = .stdresid)) +
+  geom_abline() +
+  theme_bw(base_size = 20)
+```
+
+
+What does this scatterplot tell us?
+
+Q: Is the relationship between extraversion and happiness linear?   
+A:
+
+Q: Are outliers present?    
+A: 
+
+Q: In our regression analysis, how much does it seem like our slope could have been affected by outliers?   
+A: 
+
+Q: Is heteroscedasticity present?
+A:
+
+# Multi-colinearity
+
+# Easy & Quick check 
+Violates:
+```{r}
+mod <- lm(runtime ~ weight + restpulse + runpulse + maxpulse, data = olsrr::fitness)
+  
+mod %>% 
+  sjPlot::plot_model(type = "diag")
+```
+
+Violates:
+```{r}
+mod_3 <- lm(happiness ~ extraversion, data = df_out)
+  
+mod_3 %>% 
+  sjPlot::plot_model(type = "diag")
+```
+
+### Plot the standardized residuals
+
+Next we can examine a standardized residuals plot. This can help us see if there are people with very large residuals (i.e., people for whom the regression line is not predicting well). We'll 
+
+```{r}
+ggplot(data = mod_3, aes(x = scale(.fitted), y = scale(.resid))) +
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 0, color = "red")
+```
+
+
+```{r}
+mod_3 %>% 
+  augment()
+```
+
