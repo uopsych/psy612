@@ -614,3 +614,252 @@ $$
 H_1&: \text{At least one }(\alpha\beta)_{rc} \neq 0
 \end{aligned}
 $$
+---
+
+As was true for the simpler one-way ANOVA, we will partition the total variability in the data matrix into two basic parts. 
+
+One part will represent variability **within groups**.  This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions). 
+
+The other part will be **between-group variability**.  This part will include variability due to experimental conditions.  We will further partition this between-group variability into parts due to the two main effects and the interaction.
+
+---
+
+$$
+\begin{aligned}
+\large SS_{\text{total}} &= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
+\large SS_R &= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
+SS_C &= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
+\large SS_{RC} &= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\large SS_{RC} &= N\sum_{r=1}^R\sum_{c=1}^C(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\end{aligned}
+$$
+---
+
+If the design is balanced (equal cases in all conditions), then:
+
+$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$
+
+$df$, $MS$, and $F$ ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+$$
+\begin{aligned}
+\large df_R &= R-1 \\
+\large df_C &= C-1 \\
+\large df_{RxC} &= (R-1)(C-1) \\
+\large df_{within} &= N-G \\
+&= N-(R-1)-(C-1)-[(R-1)(C-1)]-1
+\end{aligned}
+$$
+
+---
+
+If the design is balanced (equal cases in all conditions), then:
+
+$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$
+
+$df$, $MS$, and $F$ ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+
+.pull-left[
+$$
+\begin{aligned}
+\large MS_R &= \frac{SS_R}{df_R} \\
+\large MS_C &= \frac{SS_C}{df_C} \\
+\large MS_{RxC} &= \frac{SS_{RxC}}{df_{RxC}} \\
+\large MS_{within} &= \frac{SS_{within}}{df_{within}} \\
+\end{aligned}
+$$
+]
+
+.pull-right[
+
+Each mean square is a variance estimate.  $MS_{within}$  is the pooled estimate of the within-groups variance.  It represents only random or residual variation.  $MS_R$, $MS_C$, and $MS_{RxC}$ also contain random variation, but include systematic variability too.
+
+]
+
+---
+
+If the design is balanced (equal cases in all conditions), then:
+
+$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$
+
+$df$, $MS$, and $F$ ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+
+.pull-left[
+$$
+\begin{aligned}
+\large F_R &= \frac{MS_R}{MS_{within}} \\
+ \\
+\large F_C &= \frac{MS_C}{MS_{within}} \\
+ \\
+\large F_{RxC} &= \frac{MS_{RxC}}{MS_{within}} \\
+\end{aligned}
+$$
+]
+
+.pull-right[
+
+If the null hypotheses are true, these ratios will be approximately 1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
+
+]
+
+---
+
+The degrees of freedom for the different F ratios might not be the same. Different degrees of freedom define different theoretical F density distributions for determining what is an unusual value under the null hypothesis.
+
+
+Which is to say, you might get the same F-ratio for two different tests, but they could have different p-values, if they represent different numbers of groups. 
+
+---
+
+```{r}
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+Interpretation?
+
+--
+All three null hypotheses are rejected.  This only tells us that systemic differences among the means are present; follow-up comparisons are necessary to determine the nature of the differences. 
+---
+
+```{r}
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+Both main effects and the interaction are significant.
+
+The significant interaction qualifies the main effects:
+
+- The magnitude of the speed main effect varies across the noise conditions.
+
+- The magnitude of the noise main effect varies across the speed conditions.
+
+---
+
+All of the effects in the ANOVA are statistically significant, but how big are they?  The effect size, h2, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+
+$$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$
+If the design is balanced...
+
+$$\large SS_{\text{total}} = SS_{\text{speed}} + SS_{\text{noise}}+SS_{\text{speed:noise}}+SS_{\text{residual}}$$
+---
+
+
+```{r, echo = F, results = 'asis'}
+options(knitr.kable.NA = '') # print NA's as blank
+
+eta.tab = as.data.frame(lsr::etaSquared(fit))
+aov.fit = anova(fit)
+eta.tab$source = rownames(eta.tab)
+eta.tab[4, "source"] = "Residuals"
+eta.tab$SS = aov.fit$`Sum Sq`
+eta.tab[5, "source"] = "Total"
+eta.tab[5, "SS"] = sum(eta.tab$SS)
+eta.tab[,c("source", "SS", "eta.sq", "eta.sq.part")] %>%
+  kable(., digits = 2,  format = "html",
+        col.names = c("Source", "SS", "$\\eta^2$", '$\\text{partial }\\eta^2$'), 
+         row.names = F, escape = F) %>%
+  column_spec(3, width = "10em")
+```
+
+The Speed main effect accounts for 8 to 9 times as much variance in the outcome as the Noise main effect and the Speed x Noise interaction.
+
+---
+
+![](images/eta_sq.jpg)
+---
+
+### $\eta^2$
+
+.pull-left[
+**If the design is balanced:**
+
+There is no overlap among the independent variables. They are uncorrelated.
+
+The variance accounted for by any effect is unique. There is no ambiguity about the source of variance accounted for in the outcome.
+
+The sum of the $\eta^2$ for effects and residual is 1.00.
+]
+
+.pull-right[
+![](images/eta_sq.jpg)
+]
+
+---
+
+### $\eta^2$
+
+One argument against $\eta^2$ is that its magnitude depends in part on the magnitude of the other effects in the design. If the amount of variability due to Noise or Speed x Noise changes, so to does the effect size for Speed.
+
+$$\large \eta^2_{speed} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{noise}} + SS_{\text{speed:noise}}+ SS_{\text{residual}}}$$
+
+An alternative is to pretend the other effects do not exist and reference the effect sum of squares to residual variability.
+
+$$\large \text{partial }\eta^2_{speed} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{residual}}}$$
+---
+
+### $\eta^2$
+
+One rationale for partial $\eta^2$ is that the residual variability represents the expected variability in the absence of any treatments or manipulations.  The presence of any treatments or manipulations only adds to total variability.  Viewed from that perspective, residual variability is a sensible benchmark against which to judge any effect.
+
+$$\large \text{partial }\eta^2_{effect} = \frac{SS_{\text{effect}}}{SS_{\text{effect}} + SS_{\text{residual}}}$$
+
+Partial $\eta^2$ is sometimes described as the expected effect size in a study in which the effect in question is the only effect present.
+
+---
+
+```{r, echo = F, results = 'asis'}
+options(knitr.kable.NA = '') # print NA's as blank
+
+eta.tab = as.data.frame(lsr::etaSquared(fit))
+aov.fit = anova(fit)
+eta.tab$source = rownames(eta.tab)
+eta.tab[4, "source"] = "Residuals"
+eta.tab$SS = aov.fit$`Sum Sq`
+eta.tab[5, "source"] = "Total"
+eta.tab[5, "SS"] = sum(eta.tab$SS)
+eta.tab[,c("source", "SS", "eta.sq", "eta.sq.part")] %>%
+  kable(., digits = 2,  format = "html",
+        col.names = c("Source", "SS", "$\\eta^2$", '$\\text{partial }\\eta^2$'), 
+         row.names = F, escape = F) %>%
+  column_spec(3, width = "10em")
+```
+
+Partial $\eta^2$ will be larger than $\eta^2$ if the ignored effects account for any variability.
+
+The sum of partial $\eta^2$ does not have a meaningful interpretation.
+
+---
+
+### Precision
+
+In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
+
+```{r, echo = F, results = 'asis', message = F, warning = F}
+mean.summary = Data %>%
+  group_by(Noise, Speed) %>%
+  summarize(Time = mean(Time)) %>%
+  spread("Speed", "Time")
+mean.summary$Noise = as.character(mean.summary$Noise)
+mean.summary$Marginal = rowMeans(mean.summary[2:4])
+mean.summary[4,1] = "Marginal"
+mean.summary[4,2:5] = colMeans(mean.summary[2:5], na.rm=T)
+library(knitr)
+library(kableExtra)
+kable(mean.summary, digits = 2) %>% kable_styling() %>% group_rows(start_row = 1, end_row = 3)
+```
+
+These means will be based on different sample sizes, which has an impact on the width of the confidence interval.
+
+If the homogeneity of variances assumption holds, a common estimate of score variability $(MS_{residual})$ underlies all of the confidence intervals. 
+---
+
+### Precision
+
+$$\large SE_{mean} = \sqrt{\frac{MS_{residual}}{N}}$$
+
+$$\large CI_{mean} = Mean \pm t_{df_{residual}, \alpha = .05}\sqrt{\frac{MS_{residual}}{N}}$$
+
+The sample size, $N$, depends on how many cases are aggregated to create the mean.
+
+The $MS_{residual}$ is common to all calculations if homogeneity of variances is met.  The degrees of freedom for $MS_{residual}$ determine the value of $t$ to use.

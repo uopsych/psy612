@@ -26,7 +26,7 @@ Evaluate measurement error with reliability statistics `\((\alpha, \omega, \text
 Use residuals to confirm whether you 
 - correctly specified the form of your model
 - included the correct variables
-- have homoskedasticity
+- have homoscedasticity
 - have independence among errors
 - have normally distributed errors
 
@@ -61,6 +61,7 @@ What do you expect the distribution of `\(p\)`-values to look like when the null
 
 
 ---
+
 
 
 
@@ -187,31 +188,7 @@ aug_2&lt;- augment(model.2)
 
 ```r
 library(car)
-```
-
-```
-## Loading required package: carData
-```
-
-```
-## 
-## Attaching package: 'car'
-```
-
-```
-## The following object is masked from 'package:dplyr':
-## 
-##     recode
-```
-
-```
-## The following object is masked from 'package:purrr':
-## 
-##     some
-```
-
-```r
-leveragePlots(model.1)
+leveragePlots(model.2)
 ```
 
 ![](12-diagnostics_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
@@ -293,7 +270,7 @@ One common metric for describing leverage is **Mahalanobis Distance**, which is 
   
   * In units of Y.
   
-What's might be problematic at looking at residuals in order to identify outliers?
+What might be problematic at looking at residuals in order to identify outliers?
 
 ???
 
@@ -303,11 +280,11 @@ Problem: outliers influence the regression line, won't be easy to spot them
 ## Outliers
 ### Distance
 
-- Raw residuals come from a model that is influenced by the outliers, making it harder to detect the outliers in the first placee. To avoid this issue, it is advisable to examine the **deleted residuals.**
+- Raw residuals come from a model that is influenced by the outliers, making it harder to detect the outliers in the first place. To avoid this issue, it is advisable to examine the **deleted residuals.**
 
   - This value represents the distance between the observed value from a predicted value _that is calculated from a regression model based on all data except the case at hand_
   
-  - The leave-one-out procedure is often referred to as "jackknifing"
+  - The leave-one-out procedure is often referred to as a "jack-knife" procedure.
   
 ---
 
@@ -347,21 +324,7 @@ where `\(h_i\)` is the ith element on the diagonal of the hat matrix, `\(\mathbf
 
 ```r
 library(olsrr)
-```
-
-```
-## 
-## Attaching package: 'olsrr'
-```
-
-```
-## The following object is masked from 'package:datasets':
-## 
-##     rivers
-```
-
-```r
-ols_plot_resid_stand(model.1)
+ols_plot_resid_stand(model.2)
 ```
 
 ![](12-diagnostics_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
@@ -370,7 +333,7 @@ ols_plot_resid_stand(model.1)
 
 
 ```r
-ols_plot_resid_stud_fit(model.1)
+ols_plot_resid_stud_fit(model.2)
 ```
 
 ![](12-diagnostics_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
@@ -397,7 +360,7 @@ Like distance, there are several metrics by which you might assess any case's le
 
 **Cook’s Distance** is calculated by removing the ith data point from the model and recalculating the regression. It summarizes how much all the values in the regression model change when the ith observation is removed.
 
-`$$CD_i = \frac{\sum_{j=1}^n(\hat{Y}_j-\hat{Y}_{j(1)})^2}{p(MSE)}$$`
+`$$CD_i = \frac{\sum_{j=1}^n(\hat{Y}_j-\hat{Y}_{j(1)})^2}{(p+1)MSE}$$`
 
 ---
 ### Cook's Distance
@@ -495,7 +458,7 @@ Multicollinearity can be diagnosed with tolerance.
 
 Tolerance: `\(1-R_{12}^2\)`
 
-- Also look for models in which the coefficient of determination is large and the model is significant but the slope coefficients are small and nonsignificant. 
+- Also look for models in which the coefficient of determination is large and the model is significant but the slope coefficients are small and non-significant. 
 
 - Look for unstable slope coefficients (i.e., large standard errors)
 
@@ -524,8 +487,8 @@ Tolerance: `\(1-R_{12}^2\)`
 
 ## Suppression
 
-Multicollinearity is related to suppression. Normally our standardized partial regression coefficients fall between 0 and `\(r_{Y1}\)`. However, it is possible for `\(b_{Y1}\)` to be larger than `\(r_{Y1}\)`. We refer to this phenomemnon as **suppression.**
-* A nonsignificant `\(r_{Y1}\)` can become a significant `\(b_{Y1}\)` when additional variables are added to the model.
+Multicollinearity is related to suppression. Normally our standardized partial regression coefficients fall between 0 and `\(r_{Y1}\)`. However, it is possible for `\(b_{Y1}\)` to be larger than `\(r_{Y1}\)`. We refer to this phenomenon as **suppression.**
+* A non-significant `\(r_{Y1}\)` can become a significant `\(b_{Y1}\)` when additional variables are added to the model.
 
 * A *positive* `\(r_{Y1}\)` can become a *negative* and significant `\(b_{Y1}\)`.
 
@@ -545,7 +508,7 @@ Is suppression meaningful?
 
 Imagine a scenario when X2 and Y are uncorrelated and X2 is correlated with X1.
 
-(Draw venn diagram of this)
+(Draw Venn diagram of this)
 
 Second part of numerator becomes 0
 Bottom part gets smaller

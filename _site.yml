@@ -29,6 +29,8 @@ navbar:
         href: "lectures/10-m_regression.html" 
       - text: "11-Diagnostics"
         href: "lectures/11-diagnostics.html"         
+      - text: "12-Diagnostics"
+        href: "lectures/12-diagnostics.html"         
     - text: Labs
       menu:
       - text: "Correlations"

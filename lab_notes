@@ -100,6 +100,12 @@ Lab 7: Interactions *BRENDAN*
 Lab 8: Factorial ANOVA *BRENDAN*
 -look at factorial ANOVA slides
 
+- lsmeans package for obtaining means and SEs for groups
+ > fit = lm(Y ~ X1*X2, data = data)
+ > library(lsmeans)
+ > all.means = ref.grid(fit)
+ > x1.means = ref.grid(fit, "x1")
+
 ------------------------------------------------------------------------------------------------------
 
 Lab 9: Papaja *CORY*

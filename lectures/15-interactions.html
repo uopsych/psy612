@@ -921,6 +921,229 @@ $$
 H_1&amp;: \text{At least one }(\alpha\beta)_{rc} \neq 0
 \end{aligned}`
 $$
+---
+
+As was true for the simpler one-way ANOVA, we will partition the total variability in the data matrix into two basic parts. 
+
+One part will represent variability **within groups**.  This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions). 
+
+The other part will be **between-group variability**.  This part will include variability due to experimental conditions.  We will further partition this between-group variability into parts due to the two main effects and the interaction.
+
+---
+
+$$
+`\begin{aligned}
+\large SS_{\text{total}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
+\large SS_R &amp;= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
+SS_C &amp;= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
+\large SS_{RC} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\large SS_{RC} &amp;= N\sum_{r=1}^R\sum_{c=1}^C(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\end{aligned}`
+$$
+---
+
+If the design is balanced (equal cases in all conditions), then:
+
+`$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$`
+
+`\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+$$
+`\begin{aligned}
+\large df_R &amp;= R-1 \\
+\large df_C &amp;= C-1 \\
+\large df_{RxC} &amp;= (R-1)(C-1) \\
+\large df_{within} &amp;= N-G \\
+&amp;= N-(R-1)-(C-1)-[(R-1)(C-1)]-1
+\end{aligned}`
+$$
+
+---
+
+If the design is balanced (equal cases in all conditions), then:
+
+`$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$`
+
+`\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+
+.pull-left[
+$$
+`\begin{aligned}
+\large MS_R &amp;= \frac{SS_R}{df_R} \\
+\large MS_C &amp;= \frac{SS_C}{df_C} \\
+\large MS_{RxC} &amp;= \frac{SS_{RxC}}{df_{RxC}} \\
+\large MS_{within} &amp;= \frac{SS_{within}}{df_{within}} \\
+\end{aligned}`
+$$
+]
+
+.pull-right[
+
+Each mean square is a variance estimate.  `\(MS_{within}\)`  is the pooled estimate of the within-groups variance.  It represents only random or residual variation.  `\(MS_R\)`, `\(MS_C\)`, and `\(MS_{RxC}\)` also contain random variation, but include systematic variability too.
+
+]
+
+---
+
+If the design is balanced (equal cases in all conditions), then:
+
+`$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$`
+
+`\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+
+.pull-left[
+$$
+`\begin{aligned}
+\large F_R &amp;= \frac{MS_R}{MS_{within}} \\
+ \\
+\large F_C &amp;= \frac{MS_C}{MS_{within}} \\
+ \\
+\large F_{RxC} &amp;= \frac{MS_{RxC}}{MS_{within}} \\
+\end{aligned}`
+$$
+]
+
+.pull-right[
+
+If the null hypotheses are true, these ratios will be approximately 1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
+
+]
+
+---
+
+The degrees of freedom for the different F ratios might not be the same. Different degrees of freedom define different theoretical F density distributions for determining what is an unusual value under the null hypothesis.
+
+
+Which is to say, you might get the same F-ratio for two different tests, but they could have different p-values, if they represent different numbers of groups. 
+
+---
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
+## Noise         2  341315  170658  13.3075 4.252e-06 ***
+## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
+## Residuals   171 2192939   12824                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Interpretation?
+
+--
+All three null hypotheses are rejected.  This only tells us that systemic differences among the means are present; follow-up comparisons are necessary to determine the nature of the differences. 
+---
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
+## Noise         2  341315  170658  13.3075 4.252e-06 ***
+## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
+## Residuals   171 2192939   12824                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Both main effects and the interaction are significant.
+
+The significant interaction qualifies the main effects:
+
+- The magnitude of the speed main effect varies across the noise conditions.
+
+- The magnitude of the noise main effect varies across the speed conditions.
+
+---
+
+All of the effects in the ANOVA are statistically significant, but how big are they?  The effect size, h2, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+
+`$$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$`
+If the design is balanced...
+
+`$$\large SS_{\text{total}} = SS_{\text{speed}} + SS_{\text{noise}}+SS_{\text{speed:noise}}+SS_{\text{residual}}$$`
+---
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Source &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SS &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; `\(\eta^2\)` &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; `\(\text{partial }\eta^2\)` &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Speed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2805871.4 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.56 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Noise &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 341315.2 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.06 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Speed:Noise &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 295719.7 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Residuals &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2192938.9 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+The Speed main effect accounts for 8 to 9 times as much variance in the outcome as the Noise main effect and the Speed x Noise interaction.
+
+---
+
+![](images/eta_sq.jpg)
+---
+
+.pull-left[
+**If the design is balanced:**
+
+There is no overlap among the independent variables. They are uncorrelated.
+
+The variance accounted for by any effect is unique. There is no ambiguity about the source of variance accounted for in the outcome.
+
+The sum of the `\(\eta^2\)` for effects and residual is 1.00.
+]
+
+.pull-right[
+![](images/eta_sq.jpg)
+]
+---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
