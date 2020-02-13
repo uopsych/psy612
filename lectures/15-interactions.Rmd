@@ -684,15 +684,8 @@ $$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$
 $df$, $MS$, and $F$ ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
 
 .pull-left[
-$$
-\begin{aligned}
-\large F_R &= \frac{MS_R}{MS_{within}} \\
- \\
-\large F_C &= \frac{MS_C}{MS_{within}} \\
- \\
-\large F_{RxC} &= \frac{MS_{RxC}}{MS_{within}} \\
-\end{aligned}
-$$
+Caution:  Comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means.
+
 ]
 
 .pull-right[
@@ -863,3 +856,203 @@ $$\large CI_{mean} = Mean \pm t_{df_{residual}, \alpha = .05}\sqrt{\frac{MS_{res
 The sample size, $N$, depends on how many cases are aggregated to create the mean.
 
 The $MS_{residual}$ is common to all calculations if homogeneity of variances is met.  The degrees of freedom for $MS_{residual}$ determine the value of $t$ to use.
+---
+
+```{r, message = F}
+anova(fit)
+library(emmeans)
+(time_rg = ref_grid(fit))
+summary(time_rg)
+```
+
+---
+The lsmeans( ) function produces marginal and cell means along with their confidence intervals. These are the marginal means for the Noise main effect.
+
+```{r}
+noise_lsm = emmeans::lsmeans(time_rg, "Noise")
+noise_lsm
+```
+
+---
+
+```{r, message=F, warning=F, fig.width=10, fig.height=8, echo = F}
+library(sjPlot)
+noise_m = plot_model(fit, type = "pred", terms = c("Noise")) + 
+  theme_sjplot(base_size = 20)
+speed_m = plot_model(fit, type = "pred", terms = c("Speed")) + 
+  theme_sjplot(base_size = 20)
+both_m = plot_model(fit, type = "pred", terms = c("Speed", "Noise")) + 
+  theme_sjplot(base_size = 20) + theme(legend.position = "bottom")
+library(ggpubr)
+ggarrange(ggarrange(noise_m, speed_m, ncol = 2), both_m, nrow=2)
+```
+
+---
+
+### Precision
+
+A reminder that comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means. 
+
+
+$$
+\begin{aligned}
+\large SE_{\text{mean}} &= \sqrt{\frac{MS_{residual}}{N}}\\
+\large SE_{\text{mean difference}} &= \sqrt{MS_{residual}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
+\large SE_{\text{mean difference}} &= \sqrt{\frac{2MS_{residual}}{N}} \\
+\end{aligned}
+$$
+
+---
+
+Interpretation of the main effects and interaction in a factorial design will usually require follow-up comparisons.  These need to be conducted at the level of the effect.
+
+Interpretation of a main effect requires comparisons among the marginal means.
+
+Interpretation of the interaction requires comparisons among the cell means.
+
+The `emmeans` package makes these comparisons very easy to conduct.
+
+---
+
+```{r}
+noise_lsm = emmeans::lsmeans(time_rg, "Noise")
+pairs(noise_lsm, adjust = "holm")
+```
+
+---
+
+## Assumptions
+
+You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.
+
+Homogeneity of variance, for example, can be tested using Levene's test, instead of examining a plot.
+
+```{r, message = F, warning = F}
+library(car)
+leveneTest(Time ~ Speed*Noise, data = Data)
+```
+
+---
+
+## Unbalanced designs
+
+If designs are balanced, then the main effects and interpretation effects are independent/orthogonal. In other words, knowing what condition a case is in on Variable 1 will not make it any easier to guess what condition they were part of in Variable 2. 
+
+However, if your design is unbalanced, the main effects and interactoin effect are partly confounded. 
+
+```{r, echo = F}
+set.seed(23)
+SD=120
+
+DV_Soft_C <- rnorm(10,mean=590,sd=SD) # draw 10 from normal distribution
+DV_Soft_U <- rnorm(30,mean=585,sd=SD) # draw 30 from normal distribution
+
+DV_Loud_C <- rnorm(20,mean=450,sd=SD) # draw 20 from normal
+DV_Loud_U <- rnorm(20,mean=300,sd=SD) # draw 20 from normal
+
+
+
+# put DVs together in a Data2 frame; specify Speed and Noise Values
+Data2 = data.frame(Time = c(DV_Soft_U,
+                           DV_Soft_C,
+                           DV_Loud_U,
+                           DV_Loud_C),
+                  Level = rep(c("Soft", "Loud"), each = 40),
+                  Noise = c(rep("Controllable", 10), 
+                            rep("Uncontrollable", 30), 
+                            rep(c("Controllable", "Uncontrollable"), each = 20)))
+Data2$Level = factor(Data2$Level, levels = c("Soft", "Loud")) # set order of levels as I want them presented
+Data2$Noise = factor(Data2$Noise, levels = c("Controllable", "Uncontrollable")) # set order of levels as I want them presented
+```
+
+```{r}
+table(Data2$Level, Data2$Noise)
+```
+
+---
+
+### Sums of Squares
+
+.pull-left[
+In a Venn diagram, the overlap represents the variance shared by the variables. Now there is variance accounted for in the outcome (Time) that cannot be unambiguously attributed to just one of the predictors There are several options for handling the ambiguous regions.]
+.pull-right[
+![](images/eta_sq_unbalanced.jpg)
+]
+---
+
+### Sums of Squares (III)
+
+.pull-left[
+![](images/eta_sq_unbalanced_iii.jpg)]
+
+.pull-right[
+There are three basic ways that overlapping variance accounted for in the outcome can be handled.  These are known as Type I, Type II, and Type III sums of squares. 
+
+Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome.
+]
+
+---
+
+### Sums of Squares (I)
+
+.pull-left[
+Type I sums of squares allocates the overlapping variance according to some priority rule.  All of the variance is claimed, but the rule needs to be justified well or else suspicions about p-hacking are likely.  The rule might be based on theory or causal priority or methodological argument.
+]
+
+.pull-right[
+![](images/eta_sq_unbalanced_i.jpg)]
+
+---
+
+### Sums of Squares (I)
+If a design is quite unbalanced, different orders of effects can produce quite different results.
+
+```{r}
+fit_1 = aov(Time ~ Noise + Level, data = Data2)
+summary(fit_1)
+lsr::etaSquared(fit_1, type = 1)
+```
+
+---
+### Sums of Squares (I)
+If a design is quite unbalanced, different orders of effects can produce quite different results.
+
+```{r}
+fit_1 = aov(Time ~ Level + Noise, data = Data2)
+summary(fit_1)
+lsr::etaSquared(fit_1, type = 1)
+```
+
+---
+### Sums of Squares (II)
+Type II sums of squares are the most commonly used but also a bit more complex to understand.  
+
+An approximately true description is that an effect is allocated the proportion of variance in the outcome that is unshared with effects at a similar or lower level.
+
+A technically correct description is that a target effect is allocated the proportion of variance in the outcome that is unshared with other effects that do not contain the target.
+
+---
+### Sums of Squares 
+In an A x B design, the A effect is the proportion of variance that is accounted for by A after removing the variance accounted for by B.
+
+The A x B interaction is allocated the proportion of variance that is accounted for by A x B after removing the variance accounted for by A and B.
+
+There is no convenient way to illustrate this in a Venn diagram.
+
+---
+
+The `aov( )` function in R produces Type I sums of squares. The `Anova( )` function from the car package provides Type II and Type III sums of squares.
+
+These work as expected provided the predictors are factors.
+
+
+---
+
+All of the between-subjects variance is accounted for by an effect in Type I sums of squares.  The sums of squares for each effect and the residual will equal the total sum of squares.
+
+For Type II and Type III sums of squares, the sums of squares for effects and residual will be less than the total sum of squares. Some variance (in the form of SS) goes unclaimed.
+
+The highest order effect (assuming standard ordering) has the same SS in all three models.
+
+When a design is balanced, Type I, II, and III sums of squares are equivalent.
+
