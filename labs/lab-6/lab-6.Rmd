@@ -176,7 +176,7 @@ Now let's run a model with all of these predictors in the model and check the to
 mr_model_1 <- lm(happiness ~ ., data = df)
 ```
 
-To get tolerance, we'll use a function from the {olsrr} library called `ols_vif_tol()`. It's very easy to use - we just supply it our model and it gets tolerance values for each predictor:
+To get tolerance, we'll use a function from the {olsrr} library called `ols_vif_tol()`. It's very easy to use - we just supply it our model and it calculates tolerance and variance inflation factor (its reciprocal) for each predictor:
 
 ```{r}
 ols_vif_tol(mr_model_1)
@@ -311,7 +311,7 @@ model_1d %>%
 
 You can see that in the case of a single predictor, it gives you a qq plot, a density plot of the residuals, and the fitted by residuals (whcih can be used for outliers and homoscedasticity).
 
-If we have multiple predictors, it also gives us tolerance plots:
+If we have multiple predictors, it also gives us a plot of variance inflation factor to assess multicollinearity:
 
 ```{r}
 mr_model_2 %>% 
@@ -369,7 +369,7 @@ Check the multicollinearity of predictors. Is multicollinearity at a tolerable l
 
 ```
 
-If there are multicollinearity issues, deal with it using one of the methods Sara went over in class. Then compare the relevant output of the new model with the old. What changed?
+If there are multicollinearity issues, deal with it using one of the methods covered in lecture. Then compare the relevant output of the new model with the old. What changed?
 
 ```{r}
 
