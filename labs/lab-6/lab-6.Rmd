@@ -39,7 +39,6 @@ df_out <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/l
 ### Q1
 >**Question: What do we assume is normally distributed?**
 
-*That's right, we assume that the errors or residuals are normally distributed*
 
 Let's start by fitting our regression model. We are going to regress happiness on Extraversion using two different datasets. The first will be the data we've worked with previously:
 
@@ -71,8 +70,6 @@ model_1a %>%
 ### Q2
 >**Question: Are these errors normally distributed?**
 
-*yeah, close enough at least*
-
 Now let's check our other model:
 
 ```{r}
@@ -87,8 +84,6 @@ model_1b %>%
 
 ### Q3
 >**Question: Are these errors normally distributed?**
-
-*No, there is a distinct right-skew / positive skew*
 
 The other method we could use is to look at a q-q plot of the residuals, which shows expected vs. observed residual values. In it, we're looking for all of the points to more-or-less lay along the diagonal. 
 
@@ -123,19 +118,16 @@ Let's talk about the assumption of homoscedasticity and how to see if it's viola
 ### Q4
 >**Question: What is the assumption of homoscedasticity?**
 
-*Yes, it's that the variance in the outcome, Y, is constant across all predictors.*
 
 ### Q5
->**Question: Does anyone remember what the anologous assumption in the case of a t test is usually called?**
-
-*homogeneity of variance*
+>**Question: Does anyone remember what the anologous assumption in the case of a t test is usually called (from 611)?**
 
 For this, we'll regress happiness on extraversion using another dataframe, callled `df_het`
 ```{r}
 model_1c <- lm(happiness ~ extraversion, data = df_het)
 ```
 
-The main way we usually check heteroscedasticity is to examine a plot of the residuals by fitted values. We can do this again using the data provided by running `augment()` on our model. Let's do it for our first model:
+The main way we usually check heteroscedasticity is to examine a plot of the residuals by fitted values. We can do this using the data provided by running `augment()` on our model. Let's do it for our first model:
 
 ```{r}
 model_1a %>% 
@@ -148,8 +140,6 @@ model_1a %>%
 
 ### Q6
 >**Question: Do these data look lik they meet the assumption of homoscedasticity?**
-
-*yeah, looks like variance is systematically related to fitted values*
 
 Now let's check the residuals from model_1c that we fit above:
 
@@ -165,16 +155,12 @@ model_1c %>%
 ### Q7
 >**Question: Do these data look lik they meet the assumption of homoscedasticity?**
 
-*no, these data are heteroscedastic. You can see residual variance increases along the x-axis. People sometimes call this a fan shape, and it's the main visual cue you can use to look for heteroscedasticity.*
-
 # Multicollinearity
 
 Recall that multicollinearity occurs when one or more predictors in our model are highly correlated. Note that this only applies to models with multiple continuous predictors.
 
 ### Q8
 >**Question: What are the practical impact(s) of multicolinearity (i.e., how does it affect our modeling results)?**
-
-*It leads to less stable parameter estimates, inflated SEs, and ultimately lower power (bc inflated SEs)*
 
 One way we can check this before we even run our model is to look at the zero-order correlations between variables. Let's do that for all of the variables except happiness in our main dataset `df`:
 
@@ -196,9 +182,9 @@ To get tolerance, we'll use a function from the {olsrr} library called `ols_vif_
 ols_vif_tol(mr_model_1)
 ```
 
-A common rule of thumb for tolerance is $\geq$ .20 is OK, so it looks like these variables are OK. Let's take a look at another dataset called `df_mc`.
+A common rule of thumb for tolerance is that values $\geq$ .20 are OK. It looks like these variables are OK. Let's take a look at another dataset called `df_mc`.
 
-In it, we have happiness, extraversion, and social_engagement. Social engagement describes how much people engage with others socially, so it seems conceptually similar to extraversion. First, we can check the correlation matrix:
+In it, we have happiness, extraversion, and social_engagement. Social engagement is a facet of Extraversion, so it should be pretty related. First, we can check the correlation matrix:
 
 ```{r}
 df_mc %>% 
@@ -256,7 +242,6 @@ df_out %>%
 ### Q8
 >**Question: Are there any univariate outliers on either happiness or extraversion**
 
-*No, nothing that looks too extreme.*
 
 ## Multivariate outliers
 
@@ -272,12 +257,8 @@ ggplot(data = df_out, aes(x = extraversion, y = happiness)) +
 ### Q9
 >**Question: Are any multivariate outliers apparent in the above graph?**
 
-*Yes, there are 4 points clustered in the top left of the graph*
-
 ### Q10
 >**Question: If there are multivariate outliers, do they look like they could have a large or small effect on our model?**
-
-*seems like maybe a larger impact, since they're in the corner but it's a little hard to say.*
 
 Let's check. Recall from lecture that there are several metrics we can examine to see how much impact an outlier has on our model. Let's look at cook's distance, which summarizes how much the regression model changes if we remove each value. This value is provided by `augment()`, so getting it and plotting it is pretty simple:
 
@@ -346,44 +327,31 @@ First, create a model regressing age on the 5 items for Conscientiousness (label
 
 ```{r}
 data(bfi, package = "psych")
-
-model <- lm(age ~ C1 + C2 + C3 + C4 + C5, data = bfi) 
 ```
 
 
 Next, check if the data meet the homoscedasticity assumption.
 
 ```{r}
-model %>% 
-  augment() %>% 
-  ggplot(aes(x = .fitted, y = .resid)) +
-  geom_point() +
-  theme_minimal() +
-  geom_hline(yintercept = 0, color = "red")
 ```
 
 Next, check if the errors are normally distributed using one of the plots we covered.
 
 ```{r}
-# multiple options here. I'll use plot_model and just grab the 3rd plot,
-# which has the distribution of the resdiuals
-plot_model(model, type = "diag")[[3]]
+
 ```
 
 # Minihack 2
 
 Using the `df_out` data from above, run a regression model with and without the outliers we identified. 
 ```{r}
-model_w_out <- lm(happiness ~ extraversion, data = df_out)
-model_no_out <- df_out[-c(134, 149, 161, 165), ] %>% 
-  lm(happiness ~ extraversion, data = .)
 ```
 
 Compare the output of the two models. How similar/different are they? What values change?
 
 Next, put both models in a single table.
 ```{r}
-tab_model(outliers = model_w_out, model_no_out)
+
 ```
 
 
@@ -392,22 +360,18 @@ tab_model(outliers = model_w_out, model_no_out)
 Using the fitness data from the olsrr package (loaded for you below), regress `runtime` on `weight`, `restpulse`, `runpulse`, and `maxpulse`.
 
 ```{r}
-data("fitness") # load data
-model_3 <- lm(runtime ~ weight + restpulse + runpulse + maxpulse, data = fitness)
+data("fitness")
 ```
 
 Check the multicollinearity of predictors. Is multicollinearity at a tolerable level? 
 
 ```{r}
-model_3 %>% 
-  ols_vif_tol()
+
 ```
 
 If there are multicollinearity issues, deal with it using one of the methods Sara went over in class. Then compare the relevant output of the new model with the old. What changed?
 
 ```{r}
-model_3b <- lm(runtime ~ weight + restpulse + runpulse , data = fitness)
-summary(model_3)
-summary(model_3b)
+
 ```
 
