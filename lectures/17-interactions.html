@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Interactions (IV)</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Interactions (IV)
+
+---
+
+
+## Last time...
+
+Factorial ANOVA
+
+---
+
+## Today
+
+- Polynomials
+
+- 3-way interactions
+
+---
+
+## Non-linear relationships
+
+Linear lines often make bad predictions -- very few processes that we study actually have linear relationships. For example, effort had diminishing returns (e.g., log functions), or small advantages early in life can have significant effects on mid-life outcones (e.g., exponentional functions). In cases where the direction of the effect is constant but changing in magnitude, the best way to handle the data is to transform a variable (usually the outcome) and run linear analyses.
+
+
+```r
+log_y = ln(y)
+lm(log_y ~ x)
+```
+---
+
+## Polynomial relationships
+
+Other processes represent changes in the directon of relationship -- for example, it is believed that a small amount of anxiety is benefitial for performance on some tasks (positive direction) but too much is detrimental (negative direction). When the shape of the effect includes change(s) in direction, then a polynomial term(s) may be more appropriate.
+
+It should be noted that polynomials are often a poor approximation for a non-linear effect of X on Y. However, correctly testing for non-linear effects usually requires (a) a lot of data and (b) making a number of assumptions about the data. Polynomial regression can be a useful tool for exploratory analysis and in cases when data are limited in terms of quantity and/or quality.
+
+
+---
+## Polynomial regression 
+ 
+Polynomial regression is most often a form of hierarchical regressoin that systematically tests a series of higher order functions for a single variable.
+
+$$
+`\begin{aligned}
+\large \textbf{Linear: } \hat{Y} &amp;= b_0 + b_1X \\
+\large \textbf{Quadtratic: } \hat{Y} &amp;= b_0 + b_1X + b_2X^2 \\
+\large \textbf{Cubic: } \hat{Y} &amp;= b_0 + b_1X + b_2X^2 + b_3X^3\\
+\end{aligned}`
+$$
+
+---
+![](17-interactions_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+
+---
+
+
+```r
+library(broom)
+tidy(quad)
+```
+
+```
+## # A tibble: 3 x 5
+##   term         estimate std.error statistic  p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) 40.4      2.74          14.7  5.23e-15
+## 2 hp          -0.213    0.0349        -6.11 1.16e- 6
+## 3 I(hp^2)      0.000421 0.0000984      4.27 1.89e- 4
+```
+
+---
+
+## When should you use polynomial terms?
+- theory
+- scatter plots
+- residual plot
+- safeguard
+
+---
+## Interpretation
+
+- intercept is predicted value when x = 0
+- The b1 coefficient is the tangent to the curve when X=0.     
+    + rate of change when x = 0  
+    + thus important to center
+
+
+```r
+mtcars2$hp.c &lt;- scale(mtcars2$hp, center = TRUE, scale = FALSE)
+mtcars2$hp.c &lt;- as.numeric(mtcars2$hp.c)
+quad.c &lt;- lm(mpg ~ hp.c + I(hp.c^2), data = mtcars2)
+tidy(quad.c)
+```
+
+```
+## # A tibble: 3 x 5
+##   term         estimate std.error statistic  p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) 18.2      0.705         25.8  1.53e-21
+## 2 hp.c        -0.0899   0.00952       -9.44 2.39e-10
+## 3 I(hp.c^2)    0.000421 0.0000984      4.27 1.89e- 4
+```
+
+---
+![](17-interactions_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+---
+## Interpretation
+
+- The b2 coefficient is the acceleration 
+- More specifically, 2*b2 is the acceleration – the rate of change in b1 for a 1-unit change in X   
+
+&lt;br&gt;
+b1+2*b2X = slope of tangent line at a particular value of X
+
+
+```r
+ -0.0898514747 + 2*0.0004208156*106.75
+```
+
+```
+## [1] -7.3441e-06
+```
+
+
+```r
+ -0.0898514747 + 2*0.0004208156*180
+```
+
+```
+## [1] 0.06164214
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

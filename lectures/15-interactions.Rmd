@@ -1,5 +1,5 @@
 ---
-title: 'Interactions (II)'
+title: 'Interactions (II and III)'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -27,6 +27,8 @@ Start discussing Factorial ANOVA
 
 ---
 
+## Mixing categorical and continuous
+
 Consider the case where D is a variable representing two groups. In a univariate regression, how do we interpret the coefficient for D?
 
 $$\hat{Y} = b_{0} + b_{1}D$$
@@ -37,6 +39,8 @@ $b_0$ is the mean of the reference group, and D represents the difference in mea
 
 ---
 
+### Interpreting slopes
+
 Extending this to the multivariate case, where X is continuous and D is a dummy code representing two groups.
 
 $$\hat{Y} = b_{0} + b_{1}D + b_2X$$
@@ -45,11 +49,14 @@ How do we interpret $b_1?$
 
 --
 
+
 $b_1$ is the difference in means between the two groups *if the two groups have the same average level of X* or holding X constant. 
 
 This, by the way, is ANCOVA.
 
 ---
+
+### Visualizing
 
 ```{r, echo = F, message=F, warning = F}
 library(tidyverse)
@@ -81,6 +88,7 @@ ggplot(df, aes(X,Y, color = as.factor(D))) +
 ```
 
 ---
+### Visualizing
 ```{r, echo = F}
 mod = lm(Y ~ X + D, data = df)
 df$pmod = predict(mod)
@@ -100,6 +108,7 @@ ggplot(df, aes(X,Y, color = as.factor(D))) +
 ```
 
 ---
+### Visualizing
 ```{r, echo = F}
 mod = lm(Y ~ X + D, data = df)
 df$pmod = predict(mod)
@@ -121,6 +130,8 @@ ggplot(df, aes(X,Y, color = as.factor(D))) +
 ```
 ---
 
+### 3 or more groups
+
 We might be interested in the relative contributions of our two variables, but we have to remember that they're on different scales, so we cannot compare them using the unstandardized regression coefficient.
 
 Standardized coefficients can be used if we only have two groups, but what if we have 3 or more?
@@ -133,6 +144,7 @@ $$\large \eta^2 = \frac{SS_{\text{Variable}}}{SS_{Y}}== \frac{SS_{\text{Variable
 
 ---
 
+
 ```{r}
 mod = lm(Y ~ X + D, data = df)
 anova(mod)
@@ -142,6 +154,8 @@ $$\large \eta^2_{X} = \frac{64.045}{64.045+20.071+17.707} = .62899 = 63\%$$
 $$\large \eta^2_{D} = \frac{20.071}{64.045+20.071+17.707} = .19712 = 20\%$$
 
 ---
+
+## Interactions
 
 Now extend this example to include joint effects, not just additive effects:
 
@@ -167,6 +181,8 @@ $b_3$ is the difference in slopes between the reference group and the other grou
 
 ---
 
+### Visualizing
+
 ```{r, echo = F}
 ggplot(df, aes(X,Y, color = as.factor(D))) +
   geom_point(size = 3) +
@@ -183,6 +199,9 @@ Where should we draw the segment to compare means?
 Where you draw the segment changes the difference in means. That's why $b_1$ can only be interpreted as the difference in means when X = 0.
 
 ---
+
+## Example 
+
 A recent study by [Craig, Nelson, & Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces.
 
 .pull-left[
@@ -193,6 +212,9 @@ A recent study by [Craig, Nelson, & Dixson, 2019](https://journals.sagepub.com/d
 Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. I want to know whether men who are good at identifying expressions of clean-shaven men are also good at identifying bearded men; I also want to know if that relationship differs among men (participants) who are bearded.
 ]
 ---
+
+### `R` code
+
 ```{r, message = F, warning = F}
 library(here)
 beards = read.csv(here("data/beards.csv"), stringsAsFactors = F)
@@ -211,12 +233,15 @@ describe(beards[,c("BA_mean", "CA_mean")], fast = T)
 ```
 
 ---
+### Model summary
 
 ```{r}
 beard.mod = lm(BA_mean ~ CA_mean*beard, data = beards)
 summary(beard.mod)
 ```
 ---
+
+### Plotting results
 
 ```{r, message = F, warning = F, fig.width=10, fig.height=6}
 library(sjPlot)
@@ -243,6 +268,8 @@ head(solomon[,c("PERSPECTIVE", "DISTANCE", "WISDOM")])
 ```
 ---
 
+### Model summary
+
 ```{r, highlight.output = 11}
 solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
 summary(solomon.mod)
@@ -250,6 +277,7 @@ summary(solomon.mod)
 
 ---
 
+### Model summary
 ```{r, highlight.output = 12}
 solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
 summary(solomon.mod)
@@ -257,6 +285,7 @@ summary(solomon.mod)
 
 ---
 
+### Model summary
 ```{r, highlight.output = 13}
 solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
 summary(solomon.mod)
@@ -264,6 +293,7 @@ summary(solomon.mod)
 
 ---
 
+### Model summary
 ```{r, highlight.output = 14}
 solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
 summary(solomon.mod)
@@ -271,18 +301,22 @@ summary(solomon.mod)
 
 ---
 
+### Model summary
 ```{r, highlight.output = 21}
 solomon.mod = lm(WISDOM ~ PERSPECTIVE*DISTANCE, data = solomon)
 summary(solomon.mod)
 ```
 
 ---
+
+### Plotting results
 ```{r}
 plot_model(solomon.mod, type = "int")
 ```
 
 ---
 
+## Factorial ANOVA
 class:inverse
 
 The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
@@ -339,6 +373,8 @@ The outcome was the time of the 10th failure. The experiment used a completely c
 
 ---
 
+### Terminology 
+
 In a **completely crossed** factorial design, each level of one factor occurs in combination with each level of the other factor.
 
 If equal numbers of participants occur in each combination, the design is **balanced**.  This has some distinct advantages (described later). 
@@ -351,6 +387,7 @@ If equal numbers of participants occur in each combination, the design is **bala
 
 ---
 
+### Questions 
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 mean.summary = Data %>%
   group_by(Noise, Speed) %>%
@@ -373,6 +410,8 @@ Regardless of noise condition, does speed of the moving dot affect performance?
 Regardless of dot speed, does noise condition affect performance?
 
 ---
+
+### Marginal means
 
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 kable(mean.summary, digits = 2) %>% 
@@ -398,6 +437,8 @@ Looks like the mean differences are substantial.  The ANOVA will be able to tell
 
 ---
 
+### Marginal means
+
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 kable(mean.summary, digits = 2) %>% 
   kable_styling() %>% 
@@ -419,6 +460,8 @@ The mean differences are not as apparent for this factor. The ANOVA will be part
 
 ---
 
+### Marginal means
+
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 kable(mean.summary, digits = 2) %>% 
   kable_styling() %>% 
@@ -429,6 +472,8 @@ The **marginal mean differences** correspond to main effects. They tell us what 
 The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine **conditional mean differences**. 
 
 ---
+
+### One-way vs Factorial
 
 .pull-left[
 **Marginal Mean Differences**
@@ -458,6 +503,8 @@ $$\hat{Y} = b_0 + b_1D + b_2O + b_3DO$$
 
 ---
 
+### Mean differences
+
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 kable(mean.summary, digits = 2) %>% 
   kable_styling() %>% 
@@ -483,6 +530,8 @@ The noise condition means are most distinctly different in the medium speed cond
 
 ---
 
+### Interpretation of interactions
+
 The presence of an interaction qualifies any main effect conclusions, leading to "yes, but" or "it depends" kinds of inferences.
 
 .pull-left[
@@ -504,6 +553,8 @@ Does noise condition affect failure time?
 
 ---
 
+### Interactions are symmetrical
+
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 kable(mean.summary, digits = 2) %>% 
   kable_styling() %>% 
@@ -514,8 +565,6 @@ kable(mean.summary, digits = 2) %>%
   row_spec(4, background = "grey", color = "white") %>%
   column_spec(5, background = "white")
 ```
-
-Interactions are symmetrical.
 
 Are the marginal mean differences for speed condition a good representation of what is happening within each of the noise conditions?
 
@@ -539,6 +588,8 @@ ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci
 ```
 ---
 
+### Null Hypotheses
+
 | | Slow | Medium | Fast | Marginal |
 |:-|:-:|:-:|:-:|:-:|
 | No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
@@ -559,6 +610,8 @@ $$
 
 ---
 
+### Null Hypotheses
+
 | | Slow | Medium | Fast | Marginal |
 |:-|:-:|:-:|:-:|:-:|
 | No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
@@ -577,6 +630,9 @@ H_1&: \text{At least one }\alpha_r \neq 0
 $$
 
 ---
+
+### Null Hypotheses
+
 
 | | Slow | Medium | Fast | Marginal |
 |:-|:-:|:-:|:-:|:-:|
@@ -598,6 +654,9 @@ $$
 
 ---
 
+### Null Hypothesis
+
+
 | | Slow | Medium | Fast | Marginal |
 |:-|:-:|:-:|:-:|:-:|
 | No Noise |             $\mu_{11}$ | $\mu_{12}$ | $\mu_{13}$ | $\mu_{1.}$ |
@@ -616,6 +675,8 @@ H_1&: \text{At least one }(\alpha\beta)_{rc} \neq 0
 $$
 ---
 
+### Variability 
+
 As was true for the simpler one-way ANOVA, we will partition the total variability in the data matrix into two basic parts. 
 
 One part will represent variability **within groups**.  This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions). 
@@ -623,6 +684,9 @@ One part will represent variability **within groups**.  This within-group variab
 The other part will be **between-group variability**.  This part will include variability due to experimental conditions.  We will further partition this between-group variability into parts due to the two main effects and the interaction.
 
 ---
+
+### Variability 
+
 
 $$
 \begin{aligned}
@@ -634,6 +698,9 @@ SS_C &= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
 \end{aligned}
 $$
 ---
+
+### Variability 
+
 
 If the design is balanced (equal cases in all conditions), then:
 
@@ -651,6 +718,8 @@ $$
 $$
 
 ---
+
+### Variability 
 
 If the design is balanced (equal cases in all conditions), then:
 
@@ -677,6 +746,9 @@ Each mean square is a variance estimate.  $MS_{within}$  is the pooled estimate 
 
 ---
 
+### F-statistics 
+
+
 If the design is balanced (equal cases in all conditions), then:
 
 $$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$
@@ -696,12 +768,16 @@ If the null hypotheses are true, these ratios will be approximately 1.00 because
 
 ---
 
+### Degrees of freedom
+
 The degrees of freedom for the different F ratios might not be the same. Different degrees of freedom define different theoretical F density distributions for determining what is an unusual value under the null hypothesis.
 
 
 Which is to say, you might get the same F-ratio for two different tests, but they could have different p-values, if they represent different numbers of groups. 
 
 ---
+
+### Interpretation of significance tests
 
 ```{r}
 fit = lm(Time ~ Speed*Noise, data = Data)
@@ -713,6 +789,8 @@ Interpretation?
 --
 All three null hypotheses are rejected.  This only tells us that systemic differences among the means are present; follow-up comparisons are necessary to determine the nature of the differences. 
 ---
+
+### Interpretation of significance tests
 
 ```{r}
 fit = lm(Time ~ Speed*Noise, data = Data)
@@ -729,7 +807,90 @@ The significant interaction qualifies the main effects:
 
 ---
 
-All of the effects in the ANOVA are statistically significant, but how big are they?  The effect size, h2, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+### Visualizing main effects and interactions
+
+Different combinations of main effects and interactions yield different shapes when plotted. An important skill is recognizing how plots will change based on the presence or absence of specific effects. 
+
+Main effects are tests of differences in means; a significant main effect will yield a difference -- the mean of Group 1 will be different than the mean of Group 2, for example.
+
+Interactions are tests of the differences of differences of means -- is the difference between Group 1 and Group 2 different in Condition A than that difference is in Condition B, for example.
+
+---
+
+### Visualizing main effects and interactions
+
+```{r, echo = F, fig.width=7, fig.height=7}
+data.frame(A = c(1,2,1,2), 
+           B = c("B1","B1","B2","B2"),
+           Y = c(10, 10, 20, 20)) %>%
+  ggplot(aes(x = A, y = Y, color =B)) +
+  geom_point(size = 3) +
+  geom_line() + 
+  scale_x_continuous(breaks = c(1,2), labels = c("A1", "A2")) +
+  scale_y_continuous(limits = c(5, 25), labels = NULL)+
+  cowplot::theme_cowplot(font_size = 20)
+
+```
+
+???
+No effect of A
+Main effect of B
+No interaction
+---
+
+### Visualizing main effects and interactions
+
+```{r, echo = F, fig.width=7, fig.height=7}
+data.frame(A = c(1,2,1,2), 
+           B = c("B1","B1","B2","B2"),
+           Y = c(10, 20, 20, 20)) %>%
+  ggplot(aes(x = A, y = Y, color =B)) +
+  geom_point(size = 3) +
+  geom_line() + 
+  scale_x_continuous(breaks = c(1,2), labels = c("A1", "A2")) +
+  scale_y_continuous(limits = c(5, 25), labels = NULL)+
+  cowplot::theme_cowplot(font_size = 20)
+
+```
+???
+Main effect of A
+Main effect of B
+Interaction
+---
+
+### Visualizing main effects and interactions
+
+```{r, echo = F, fig.width=7, fig.height=7}
+data.frame(A = c(1,2,1,2), 
+           B = c("B1","B1","B2","B2"),
+           Y = c(10, 20, 20, 10)) %>%
+  ggplot(aes(x = A, y = Y, color =B)) +
+  geom_point(size = 3) +
+  geom_line() + 
+  scale_x_continuous(breaks = c(1,2), labels = c("A1", "A2")) +
+  scale_y_continuous(limits = c(5, 25), labels = NULL)+
+  cowplot::theme_cowplot(font_size = 20)
+
+```
+
+???
+No effect of A
+No effect of B
+Interaction
+---
+
+### Visualizing main effects and interactions
+
+How would you plot....
+
+* A main effect of A, no main effect of B, and no interaction?
+* A main effect of A, a main effect of B, and no interaction?
+* No main effect of A, a main effect of B, and an interaction?
+---
+
+### Effect size
+
+All of the effects in the ANOVA are statistically significant, but how big are they?  The effect size, $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
 
 $$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$
 If the design is balanced...
@@ -824,7 +985,7 @@ The sum of partial $\eta^2$ does not have a meaningful interpretation.
 
 ---
 
-### Precision
+### Standard errors
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
 
@@ -903,6 +1064,8 @@ $$
 $$
 
 ---
+
+### Follow-up comparisons
 
 Interpretation of the main effects and interaction in a factorial design will usually require follow-up comparisons.  These need to be conducted at the level of the effect.
 
@@ -1055,4 +1218,27 @@ For Type II and Type III sums of squares, the sums of squares for effects and re
 The highest order effect (assuming standard ordering) has the same SS in all three models.
 
 When a design is balanced, Type I, II, and III sums of squares are equivalent.
+
+---
+
+## Summary (and Regression)
+
+Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability. 
+
+---
+
+.pull-left[
+#### Factorial ANOVA
+
+Interaction tests whether there are differences in differences.
+
+A main effect is the effect of one IV on the DV **ignoring the other variable(s)**.
+]
+.pull-right[
+#### Regresssion
+
+Interaction tests whether slope changes. 
+
+A conditional effect is the effect of IV on the DV **assuming all the other variables are 0**.
+]
 
