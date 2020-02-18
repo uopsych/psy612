@@ -387,6 +387,17 @@ If equal numbers of participants occur in each combination, the design is **bala
 
 ---
 
+### Terminology
+
+We describe the factorial ANOVA design by the number of **levels** of each **factor.** 
+
+  - Factor: a variable that is being manipulated or in which there are two or more groups
+  - Level: the different groups within a factor
+
+In this case, we have a 3 x 3 ANOVA ("three by three"), because our first factor (speed) has three levels (slow, medium, and fast) and our second factor (noise) also has three levels (none, controllable, and uncontrollable)
+
+---
+
 ### Questions 
 ```{r, echo = F, results = 'asis', message = F, warning = F}
 mean.summary = Data %>%

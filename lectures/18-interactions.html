@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Interactions (V)</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Interactions (V)
+
+---
+
+
+## Last time...
+
+- Polynomials
+
+- 3-way interactions
+
+---
+
+## Today
+
+- Statistical power
+
+---
+
+## Power
+
+What is (statistical) power? How can we increase power?
+
+--
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+![](18-interactions_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+---
+
+## Power in multiple regression (additive effects)
+
+When calculating power for the omnibus test, use the expected multiple `\(R^2\)` value to calculate an effect size:
+
+`$$\large f^2 = \frac{R^2}{1-R^2}$$`
+---
+
+### Omnibus power
+
+```r
+R2 = .10
+(f = R2/(1-R2))
+```
+
+```
+## [1] 0.1111111
+```
+
+```r
+library(pwr)
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+```
+## 
+##      Multiple regression power calculation 
+## 
+##               u = 3
+##               v = 127.5235
+##              f2 = 0.1111111
+##       sig.level = 0.05
+##           power = 0.9
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+---
+
+### Coefficient power
+
+To estimate power for a single coefficient, you need to consider (1) how much variance is accounted for by just the variable and (2) how much variance you'll account for in Y overall.
+
+`$$\large f^2 = \frac{R^2_Y-R^2_{Y.X}}{1-R_Y^2}$$`
+---
+### Coefficient power
+
+
+```r
+R2 = .10
+RX1 = .03
+(f = (R2-RX1)/(1-R2))
+```
+
+```
+## [1] 0.07777778
+```
+
+```r
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+```
+## 
+##      Multiple regression power calculation 
+## 
+##               u = 3
+##               v = 182.1634
+##              f2 = 0.07777778
+##       sig.level = 0.05
+##           power = 0.9
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+---
+
+## Effect sizes (interactions)
+
+To start our discussion on powering interaction terms, we need to first consider the effect size of an interaction. 
+
+How big can we reasonably expect an interaction to be?
+
+- Interactions are always partialled effects; that is, we examine the relationship between the product of variables X and Z only after we have controlled for X and controlled for Z. How does this affect the size of the relationship between XZ and Y?
+
+???
+
+The effect of XZ and Y will be made smaller as X or Z (or both) is related to the product -- the semi-partial correlation is always smaller than or equal to the zero-order correlation. 
+
+---
+
+## McClelland and Judd (1993)
+
+Is it more difficult to find interaction effects in experimental studies or observational studies?
+
+--
+
+What factors make it relatively easier to find interactions in experimental work?
+
+---
+
+### Factors influencing power in experimental studies
+
+- No measurement error of IV 
+    * don't have to guess what condition a participant is in
+    * measurement error is exacerbated when two variables measured with error are multiplied by each other
+    
+- Experimentalists can force cross-over interactions; observational studies may be restricted to fan interactions
+    * cross-over interactions are easier to detect than fan interactions
+
+- Experimentalists can concentrate scores on extreme ends on both X and Z
+    * in observational studies, data tends to cluster around the mean 
+    * increases variability in both X and Z, and in XZ
+
+- Experimentalists can also force orthognality in X and Z
+
+???
+
+Other things: 
+
+you can insure that you study the full range of X in an experiment, but you may have restricted range in an observational study
+
+---
+
+### McClelland and Judd's simulation
+
+For the experiment simulations, we used 2 X 2 factorial designs, with values of X and Z equal to +1 and —1 and an equal number of observations at each of the four combinations of X and Z values.
+
+
+```r
+X = rep(c(-1,1), each = 50)
+Z = rep(c(-1,1), times = 50)
+table(X,Z)
+```
+
+```
+##     Z
+## X    -1  1
+##   -1 25 25
+##   1  25 25
+```
+
+---
+
+### McClelland and Judd's simulation
+
+For the field study simulations, we used values of X and Z that varied between the extreme values of +1 and —1. More specifically, in the field study simulations, values of X and Z were each sampled independently from a normal distribution with a mean of 0 and a standard deviation of 0.5. Values of X and Z were rounded to create equally spaced 9-point scales ranging from -1 to +1 because ranges in field studies are always finite and because ratings are often on scales with discrete intervals.
+
+
+```r
+X = rnorm(n = 100, mean = 0, sd = .5)
+Z = rnorm(n = 100, mean = 0, sd = .5)
+X = round(X/.2)*.2
+Z = round(Z/.2)*.2
+
+psych::describe(data.frame(X,Z), fast = T)
+```
+
+```
+##   vars   n  mean   sd  min max range   se
+## X    1 100  0.04 0.50 -1.4 1.2   2.6 0.05
+## Z    2 100 -0.03 0.42 -1.2 1.0   2.2 0.04
+```
+---
+
+For the simulations of both the field studies and the experiments, `\(\beta_0 = 0, \beta_X=\beta_Z=\beta_{XZ} = 1.\)` There were 100 observations, and errors for the model were sampled from the same normal distribution with a mean of 0 and a standard deviation of 4.
+
+
+```r
+Y = 0 + 1*X + 1*Z + 1*X*Z + rnorm(n = 100, mean = 0, sd = 4)
+summary(lm(Y ~ X*Z))
+```
+
+```
+## 
+## Call:
+## lm(formula = Y ~ X * Z)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.6358  -2.2099  -0.0507   1.8171  11.7725 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)   0.1179     0.3785   0.311  0.75613   
+## X             2.3965     0.7510   3.191  0.00192 **
+## Z            -0.8156     0.9113  -0.895  0.37301   
+## X:Z          -0.0947     2.3057  -0.041  0.96732   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.764 on 96 degrees of freedom
+## Multiple R-squared:  0.1038,	Adjusted R-squared:  0.07577 
+## F-statistic: 3.705 on 3 and 96 DF,  p-value: 0.01428
+```
+
+---
+
+From 100 simulations each, estimates of the model parameter `\(\beta_{XZ}\)` the moderator or interaction effect equaled 0.977 and 0.979 for the field studies and experiments, respectively.
+
+```r
+set.seed(0305)
+```
+
+.pull-left[
+
+```r
+# for experimental studies
+sim = 100
+ebeta_xz = numeric(length = 100)
+et_xz = numeric(length = 100)
+for(i in 1:sim){
+  # simulate data
+  X = rep(c(-1,1), each = 50)
+  Z = rep(c(-1,1), times = 50)
+ 
+  
+   Y = 0 + 1*X + 1*Z + 1*X*Z + 
+    rnorm(n = 100, mean = 0, sd = 4)
+  #run model
+  model = lm(Y ~ X*Z)
+  coef = coef(summary(model))
+  #extract coefficients
+  beta = coef["X:Z", "Estimate"]
+  t_val = coef["X:Z", "t value"]
+  #save to vectors
+  ebeta_xz[i] = beta
+  et_xz[i] = t_val
+}
+```
+]
+.pull-right[
+
+```r
+# for observational studies
+
+obeta_xz = numeric(length = 100)
+ot_xz = numeric(length = 100)
+for(i in 1:sim){
+  # simulate data
+  X = rnorm(n = 100, mean=0, sd = .5)
+  Z = rnorm(n = 100, mean=0, sd = .5)
+  X = round(X/.2)*.2
+  Z = round(Z/.2)*.2
+  Y = 0 + 1*X + 1*Z + 1*X*Z + 
+    rnorm(n = 100, mean = 0, sd = 4)
+  #run model
+  model = lm(Y ~ X*Z)
+  coef = coef(summary(model))
+  #extract coefficients
+  beta = coef["X:Z", "Estimate"]
+  t_val = coef["X:Z", "t value"]
+  #save to vectors
+  obeta_xz[i] = beta
+  ot_xz[i] = t_val
+}
+```
+]
+---
+
+
+```r
+mean(ebeta_xz)
+```
+
+```
+## [1] 0.9440304
+```
+
+```r
+mean(obeta_xz)
+```
+
+```
+## [1] 1.175444
+```
+
+![](18-interactions_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+mean(et_xz)
+```
+
+```
+## [1] 2.383435
+```
+
+```r
+mean(ot_xz)
+```
+
+```
+## [1] 0.7411209
+```
+
+![](18-interactions_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+cv = qt(p = .975, df = 100-3-1)
+esig = et_xz &gt; cv
+sum(esig)
+```
+
+```
+## [1] 66
+```
+
+```r
+osig = ot_xz &gt; cv
+sum(osig)
+```
+
+```
+## [1] 12
+```
+
+In our simulation, 66% of experimental studies were statistically significant, whereas only 12% of observational studies were significant. Remember, we built our simulation based on data where there really is an interaction effect (i.e., the null is false). 
+
+McClelland and Judd found that 74% of experimental studies and 9% of observational studies were significant.
+
+---
+
+### Efficiency
+
+&lt;img src="images/efficiency.png" width="55%" /&gt;
+
+???
+Efficiency = the ratio of the variance of XZ (controlling for X and Z) of a design to the best possible design (upper right corner). High efficiency is better; best efficiency is 1. 
+
+---
+
+### Efficiency
+
+.pull-left[
+If the optimal design has N obserations, then to have the same standard error (i.e., the same power), any other design needs to have N*(1/efficency). 
+
+So a design with .06 efficency needs `\(\frac{1}{.06} = 16.67\)` times the sample size to detect the effect. 
+]
+
+.pull-right[
+![](images/common.png)
+]
+
+This particular point has been ["rediscovered"](https://statmodeling.stat.columbia.edu/2018/03/15/need-16-times-sample-size-estimate-interaction-estimate-main-effect/) as recently as 2018: 
+
+* you need 16 times the sample size to detect an interaction as you need for a main effect of the same size. 
+
+???
+
+This generalizes to higher-order interactions as well. If you have a three-way interaction, you need 16*16 (256 times the number of people). 
+
+---
+
+## Observational studies: What NOT to do
+
+Recode X and Z into more extreme values (e.g., median splits)
+    * while this increases variance in X and Z, it also increases measurement error
+
+Collect a random sample and then only perform analyses on the subsample with extreme values
+    * reduces sample size and also generalizability
+    
+#### What can be done?
+M&amp;J suggest oversampling extremes and using weighted and unweighted samples
+
+---
+
+## Experimental studies: What NOT to do
+
+Be mean to field researchers
+
+Forget about lack of external validity and generalizability
+
+Ignore power when comparing interaction between covariate and experimental predictors (ANCOVA or multiple regression with categorical and continuous predictors)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

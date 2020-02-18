@@ -23,17 +23,17 @@ always?
 
 ---
 
-## Karl Pearson
+## Karl Pearson (1857-1936)
 
 - Francis Galton demonstrates that one phenomenon -- regression to the mean -- is not caused by external factors, but merely the result of natural chance variation.
 
 - Pearson (his student) takes this to the extreme, which is causation can never be proven.
 
-"Force as a cause of motion is exactly on the same footding as a tree-god as a cause of growth."
+"Force as a cause of motion is exactly on the same footing as a tree-god as a cause of growth." .small[(Pearson, 1892, pp 119)]
 
 ---
 
-## Sewall Wright
+## Sewall Wright (1889-1988)
 
 .pull-left[
 ![](images/wright.jpeg)
@@ -64,7 +64,7 @@ Rebuke from mathematical community, including from Ronald Fisher
 
 ---
 
-## Julia Rohrer, (2018)
+## Article: Rohrer (2018)
 
 **Thinking clearly about correlation and causation: Graphical causal models for observational data**
 
@@ -94,7 +94,7 @@ It is impossible to infer causation from correlation without background knowledg
 * Share many features with structural equation models
 
 There are many small differences between SEMs and DAGs, but this is the biggest: 
-* SEMs are quantitative models -- they are used to estimate various parametes (think, several multiple regressions strung together)
+* SEMs are quantitative models -- they are used to estimate various parameters (think, several multiple regressions strung together)
 * DAG models qualitative: you will not use a DAG model to estimate numeric values.
   * The benefit of DAG models is that they (1) help you clarify the causal model at the heart of your research question and (2) identify which variables you should and should **not** include in a regression model, based on your causal assumptions.
   
@@ -198,7 +198,7 @@ ggdag(dag.obj, text = FALSE, use_labels = "label",
 
 ## Paths: Inverted Forks
 
-Inverted have the structure 
+Inverted forks have the structure 
 
 A &rarr; B &larr; C.
 
@@ -273,7 +273,7 @@ Importantly, we don't need to control for variables that causes just X and not Y
 ---
 
 
-```{r open, eval = F}
+```{r open, eval = F, highlight.code = 8}
 dag.obj = dagify(gpa ~ iq,
                  edu ~ gpa + iq, 
                  income ~ edu + iq,
@@ -440,6 +440,52 @@ ggdag_dseparated(dag.obj,
 
 .small[Sackett et al. (1979)]
 
+---
+
+## Example
+
+A health researcher is interested in studying the relationship between dieting and weight loss. She collects a sample of participants, mesaures their weight, and then asks whether they are on a diet. She returns to these participants two months later and assess weight again. What should the researcher control when assessing the relationship between dieting and weight loss?
+
+---
+
+```{r}
+dag.obj = dagify(diet ~ wi,
+                 wf ~ diet + wi,
+                 loss ~ wi + wf,
+                 labels = c("diet" = "Diet",
+                            "wi" = "Initial Weight",
+                            "wf" = "Final Weight",
+                            "loss" = "Weight loss"), 
+                 exposure = "diet", outcome = "loss")
+```
+
+---
+
+```{r, fig.width=10}
+ggdag_adjustment_set(dag.obj, text = FALSE, use_labels = "label") + theme_bw()
+```
+
+---
+
+What should be controlled here?
+
+```{r, fig.width = 10, echo = F}
+dag.obj = dagify(
+  X ~ A,
+  B ~ A + D,
+  E ~ X + D,
+  C ~ B,
+  Y ~ E,
+  exposure = "X", outcome = "Y"
+)
+ggdag(dag.obj)
+```
+---
+
+
+```{r, fig.width=10}
+ggdag_adjustment_set(dag.obj) + theme_bw()
+```
 ---
 There is a **strong** assumption of DAG models, and that it's that no relevant variables have been ommited from the graph and that causal pathways have been correctly specified. This is a tall order, and potentially impossible to meet. Moreover, two different researchers may reasonably disagree with what the true model looks like. 
 
