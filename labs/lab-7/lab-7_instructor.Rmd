@@ -45,6 +45,11 @@ The tendency to suppress the expression of emotion when regulating one's emotion
     * Scale ranges from 1 (receives no social support from friends) to 5 (receives an extreme amount of social support from friends)
 <br>
 
+```{r}
+social <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/social_support.csv")
+```
+
+
 ## Our Model
 
 $SocSupport_{i} = b_0 + b_1Suppression_{i} + b_2Individualism_{i} +  b_3(Suppression*Individualism)_{i} + e_{i}$  
