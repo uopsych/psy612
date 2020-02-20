@@ -29,7 +29,7 @@ navbar:
         href: "lectures/10-m_regression.html" 
       - text: "11-Diagnostics"
         href: "lectures/11-diagnostics.html"         
-      - text: "12-Diagnostics"
+      - text: "12-Diagnostics (II)"
         href: "lectures/12-diagnostics.html"  
       - text: "13-DAGs"
         href: "lectures/13-dag.html"  
