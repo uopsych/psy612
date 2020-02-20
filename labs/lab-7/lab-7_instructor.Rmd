@@ -1,0 +1,85 @@
+---
+title: "Lab 7: Continuous x Continuous Interactions"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# suppress scientific notation
+options(scipen = 999)
+```
+
+
+# Purpose
+
+
+1. [Regression with categorical predictors](#regression)
+
+
+Be sure to have the following packages loaded:
+
+```{r message=FALSE}
+library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+library(psych) # for descriptives
+```
+
+***
+# Research scenario
+
+The tendency to suppress the expression of emotion when regulating one's emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:  
+
+* Predictor 1 (continuous): _Expressive Suppression_
+    * Scale ranges from 1 (rarely uses suppression to regulate one's emotions) to 5 (frequently uses suppression to regulate one's emotions)
+<br>
+*	Predictor 2 (continuous): _Individualism/Collectivism_
+    * Scale ranges from 1 (strongly endorses values related to collectivism) to 5 (strongly endorses values related to individualism)
+<br>    
+*	DV (continuous): Social support received from friends
+    * Scale ranges from 1 (receives no social support from friends) to 5 (receives an extreme amount of social support from friends)
+<br>
+
+## Our Model
+
+$SocSupport_{i} = b_0 + b_1Suppression_{i} + b_2Individualism_{i} +  b_3(Suppression*Individualism)_{i} + e_{i}$  
+
+* Conceptual interpretation (SEE SLIDES 11 & 12)
+
+***
+
+# Centering
+
+***
+
+# Model coefficients
+
+## Run the model
+
+## Interpret the coefficients
+
+***
+
+# Simple slopes
+
+## By hand
+
+## `reghelper::simpleslopes()`
+
+***
+
+# Plotting simple slops
+
+## By hand
+
+## `sjPlot::plot_model()`
+
+***
+
+# Minihacks{#minihacks}
+
