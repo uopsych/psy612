@@ -3049,6 +3049,19 @@ lm(socsup ~ suppression*indiv, data = social) %&gt;%
 <blockquote>
 <p><strong>Answer:</strong> Yes, both predictor variables are highly correlated with the interaction term, which is not surprising because the interaction term is a linear combination of the two predictor variables.</p>
 </blockquote>
+<ul>
+<li>Now let’s look at the correlation matrix including our <strong>centered</strong> predictor variables. What do you notice?</li>
+</ul>
+<pre class="r"><code>social %&gt;% 
+  mutate(suppression_x_indiv_c = suppression_c * indiv_c) %&gt;% # create the interaction term
+  select(suppression_c,                    
+         indiv_c, 
+         suppression_x_indiv_c) %&gt;% # select the 3 variables we want to correlate
+  cor() # generate a correlation matrix of these 3 variables</code></pre>
+<pre><code>##                       suppression_c      indiv_c suppression_x_indiv_c
+## suppression_c            1.00000000 -0.098924158           0.055129871
+## indiv_c                 -0.09892416  1.000000000          -0.009086891
+## suppression_x_indiv_c    0.05512987 -0.009086891           1.000000000</code></pre>
 <hr />
 </div>
 </div>

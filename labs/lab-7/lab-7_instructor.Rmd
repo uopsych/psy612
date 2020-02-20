@@ -207,6 +207,17 @@ social %>%
 
 >**Answer:** Yes, both predictor variables are highly correlated with the interaction term, which is not surprising because the interaction term is a linear combination of the two predictor variables. 
 
+* Now let's look at the correlation matrix including our **centered** predictor variables. What do you notice? 
+
+```{r}
+social %>% 
+  mutate(suppression_x_indiv_c = suppression_c * indiv_c) %>% # create the interaction term
+  select(suppression_c,                    
+         indiv_c, 
+         suppression_x_indiv_c) %>% # select the 3 variables we want to correlate
+  cor() # generate a correlation matrix of these 3 variables
+```
+
 ***
 
 # Simple slopes
