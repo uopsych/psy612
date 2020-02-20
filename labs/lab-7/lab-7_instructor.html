@@ -2886,12 +2886,6 @@ library(olsrr) # for diagnostics</code></pre>
 <p><strong>Answer:</strong> the expected value of social support when all other variables in the model (suppression and individualism) are 0</p>
 </blockquote>
 <blockquote>
-<p><strong>Question:</strong> What does b3 represent?</p>
-</blockquote>
-<blockquote>
-<p><strong>Answer:</strong> the effect of the interaction term XZ on Y controlling for X and controlling for Z (i.e. holding X and Z constant); more specifically, it refers to the amount of change in b1 and b2 for every one-unit increase in XZ (we’ll get more into what that means soon)</p>
-</blockquote>
-<blockquote>
 <p><strong>Question:</strong> What does b1 represent?</p>
 </blockquote>
 <blockquote>
@@ -2902,6 +2896,12 @@ library(olsrr) # for diagnostics</code></pre>
 </blockquote>
 <blockquote>
 <p><strong>Answer:</strong> the effect of Z on Y specifically when X = 0 (NOT “controlling for X” or “when X is held constant”)</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b3 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> b3 represents the amount of change in b1 (the slope of suppression) for every one-unit increase in individualism (we’ll get more into what that means soon). In other words, b3 represents the change in the slope of X as a function of Z.</p>
 </blockquote>
 <hr />
 </div>
@@ -2984,13 +2984,7 @@ summary(model_int)</code></pre>
 <p><strong>Question:</strong> What does b0 represent?</p>
 </blockquote>
 <blockquote>
-<p><strong>Answer:</strong> the expected value of social support when all other variables in the model (suppression and individualism) are at their MEAN</p>
-</blockquote>
-<blockquote>
-<p><strong>Question:</strong> What does b3 represent?</p>
-</blockquote>
-<blockquote>
-<p><strong>Answer:</strong> for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support.</p>
+<p><strong>Answer:</strong> the expected value of social support when all other variables in the model (suppression and individualism) are at their MEAN. This is more meaningful to interpret than “when all other variables are 0” because none of our variables actually include 0!</p>
 </blockquote>
 <blockquote>
 <p><strong>Question:</strong> What does b1 represent?</p>
@@ -3003,6 +2997,12 @@ summary(model_int)</code></pre>
 </blockquote>
 <blockquote>
 <p><strong>Answer:</strong> the effect of individualism on social support at a mean level of emotion suppression</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b3 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support. The value/interpreation of b3 DOES NOT CHANGE because of centering!</p>
 </blockquote>
 </div>
 <div id="a-note-about-multicollinearity" class="section level2">
@@ -3067,6 +3067,9 @@ lm(socsup ~ suppression*indiv, data = social) %&gt;%
 </div>
 <div id="simple-slopes" class="section level1">
 <h1>Simple slopes</h1>
+<ul>
+<li>Interpreting what the interaction between emotion suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are “simple slopes”</li>
+</ul>
 <div id="by-hand" class="section level2">
 <h2>By hand</h2>
 </div>
