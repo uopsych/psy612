@@ -32,7 +32,9 @@ navbar:
       - text: "12-Diagnostics"
         href: "lectures/12-diagnostics.html"  
       - text: "13-DAGs"
-        href: "lectures/13-dag.html"          
+        href: "lectures/13-dag.html"  
+      - text: "14-Interactions"
+        href: "lectures/14-interactions.html"          
     - text: Labs
       menu:
       - text: "Correlations"
