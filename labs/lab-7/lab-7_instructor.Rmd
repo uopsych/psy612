@@ -28,45 +28,184 @@ Be sure to have the following packages loaded:
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
+library(olsrr) # for diagnostics
 ```
 
 ***
 # Research scenario
 
-The tendency to suppress the expression of emotion when regulating one's emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:  
+The tendency to suppress the expression of emotion when regulating one's emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the emotion regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:  
 
-* Predictor 1 (continuous): _Expressive Suppression_
-    * Scale ranges from 1 (rarely uses suppression to regulate one's emotions) to 5 (frequently uses suppression to regulate one's emotions)
+*	**Social support received from friends** = `Y`
+    * 1 = receives no social support from friends
+    * 5 = receives an extreme amount of social support from friends
+    
 <br>
-*	Predictor 2 (continuous): _Individualism/Collectivism_
-    * Scale ranges from 1 (strongly endorses values related to collectivism) to 5 (strongly endorses values related to individualism)
-<br>    
-*	DV (continuous): Social support received from friends
-    * Scale ranges from 1 (receives no social support from friends) to 5 (receives an extreme amount of social support from friends)
+
+* **Expressive Suppression** = `X`
+    * 1 = rarely uses suppression to regulate one's emotions 
+    * 5 = frequently uses suppression to regulate one's emotions
+    
 <br>
+
+*	**Individualism/Collectivism** = `Z` (moderator)
+    * 1 = strongly endorses values related to collectivism
+    * 5 = strongly endorses values related to individualism
+    
+## The data
+
+* Import the data:
 
 ```{r}
 social <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/social_support.csv")
 ```
 
+* Look at the structure
 
-## Our Model
+```{r}
+str(social)
+```
 
-$SocSupport_{i} = b_0 + b_1Suppression_{i} + b_2Individualism_{i} +  b_3(Suppression*Individualism)_{i} + e_{i}$  
+* And the descriptives
 
-* Conceptual interpretation (SEE SLIDES 11 & 12)
+```{r}
+describe(social)
+```
+
+
+## The model
+
+* Written generically...
+
+$$\hat{Y} = b_0 + b_1X + b_2Z +  b_3(XZ)$$  
+
+* With our variable names...
+
+$$\hat{SocSupport} = b_0 + b_1Suppression + b_2Individualism +  b_3(Suppression*Individualism)$$  
+<br>
+
+* Conceptual interpretation
+
+>**Question:** What does b0 represent?
+
+>**Answer:** the expected value of social support when all other variables in the model (suppression and individualism) are 0
+
+>**Question:** What does b3 represent?
+
+>**Answer:** the effect of the interaction term XZ on Y controlling for X and controlling for Z (i.e. holding X and Z constant); more specifically, it refers to the amount of change in b1 and b2 for every one-unit increase in XZ (we'll get more into what that means soon)
+
+>**Question:** What does b1 represent?
+
+>**Answer:** the effect of X on Y specifically when Z = 0 (NOT "controlling for Z" or "when Z is held constant")
+
+>**Question:** What does b2 represent?
+
+>**Answer:** the effect of Z on Y specifically when X = 0 (NOT "controlling for X" or "when X is held constant")
+
 
 ***
 
 # Centering
 
+* Centering (or "mean centering") a variable refers to subtracting the mean of that variable from every individual value. When working with models that contain interaction terms, it is generally a good idea to center your predictor variables, because...
+  * centering addresses issues of multicollinearity 
+
+  * centering makes the model coefficients more interpretable 
+
+<br>
+
+* We'll talk about each of these ideas in more detail in a moment, but first let's discuss how to center a variable in R...
+
+<br>
+
+* To center our predictors, we'll use the `mutate()` and `scale()` functions. By default, `scale()` z-scores variables, but we can get it to just perform mean centering by setting the argument `scale = FALSE`. Remember, a z score is $\frac{X - \bar{X}}{\sigma_X}$, or a mean-centered score divided by the SD; by setting `scale = FALSE` we're telling R to center it but not scale it (i.e., don't divide by the SD). 
+
+<br>
+
+* The default settings for `scale()` are `scale(x, center = TRUE, scale = TRUE)`. To be very explicit, we'll set `center = TRUE` and `scale = FALSE`...
+
+```{r}
+social <- social %>% 
+  mutate(suppression_c = scale(suppression, center = TRUE, scale = FALSE),
+         indiv_c = scale(indiv, center = TRUE, scale = FALSE))
+```
+
+* Let's peek at our new data frame. We now have both centered and un-centered versions of our predictor variables
+
+```{r}
+head(social)
+```
+
+
 ***
 
-# Model coefficients
+# Run the model
 
-## Run the model
+* Next we'll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., `lm(Y ~ X*Z)`, which tells R to include `X`, `Z`, and `XZ` (the interaction term). It is equivalent to running it spelled out, e.g., `lm(Y ~ X + Z + X:Z)`. If we wanted *just* the interaction, we would run a model with just the last term, e.g.,  `lm(Y ~ X:Z)`...but DON'T DO THIS! 
+
+```{r}
+model_int <- lm(socsup ~ suppression_c*indiv_c, data = social)
+summary(model_int)
+```
+
+>**Question:** What can we conclude? Is there an interaction between suppression and individualism predicting social support?
+
+>**Answer:** Yes, there is a significant interaction between suppression and individualism. 
 
 ## Interpret the coefficients
+
+* Remember that we first centered our predictor variables before running the model. With that in mind...
+
+<br> 
+
+>**Question:** What does b0 represent?
+
+>**Answer:** the expected value of social support when all other variables in the model (suppression and individualism) are at their MEAN
+
+>**Question:** What does b3 represent?
+
+>**Answer:** for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support.
+
+>**Question:** What does b1 represent?
+
+>**Answer:** the effect of emotion suppression on social support at a mean level of individualism (because we centered our predictors)
+
+>**Question:** What does b2 represent?
+
+>**Answer:** the effect of individualism on social support at a mean level of emotion suppression
+
+## A note about multicollinearity 
+
+```{r}
+ols_vif_tol(model_int)
+```
+
+>**Question:** Do we have any multicollinearity issues?
+
+>**Answer:** No!
+
+* And now let's see how these diagnostics look if we had *not* centered the predictors first...
+
+```{r}
+# piping the uncentered model to the tolerance function
+lm(socsup ~ suppression*indiv, data = social) %>% 
+  ols_vif_tol()
+```
+
+* To think about why we have multicollinearity, let's look at the correlation matrix including our two predicor variables, `suppression` and `indiv`, and the interaction term (a linear combination of these two variables), that we'll call `suppression_x_indiv`...
+
+```{r}
+social %>% 
+  mutate(suppression_x_indiv = suppression * indiv) %>% # create the interaction term
+  select(suppression,                    
+         indiv, 
+         suppression_x_indiv) %>% # select the 3 variables we want to correlate
+  cor() # generate a correlation matrix of these 3 variables
+```
+
+>**Question:** Do you see a problem here? 
+
+>**Answer:** Yes, both predictor variables are highly correlated with the interaction term, which is not surprising because the interaction term is a linear combination of the two predictor variables. 
 
 ***
 

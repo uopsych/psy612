@@ -2810,33 +2810,265 @@ div.tocify {
 <p>Be sure to have the following packages loaded:</p>
 <pre class="r"><code>library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
-library(psych) # for descriptives</code></pre>
+library(psych) # for descriptives
+library(olsrr) # for diagnostics</code></pre>
 <hr />
 </div>
 <div id="research-scenario" class="section level1">
-<h1>RESEARCH SCENARIO</h1>
-<p>The tendency to suppress the expression of emotion when regulating one’s emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:</p>
+<h1>Research scenario</h1>
+<p>The tendency to suppress the expression of emotion when regulating one’s emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the emotion regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:</p>
 <ul>
-<li>Predictor 1 (continuous): <em>Expressive Suppression</em>
+<li><strong>Social support received from friends</strong> = <code>Y</code>
 <ul>
-<li>Scale ranges from 1 (rarely uses suppression to regulate one’s emotions) to 5 (frequently uses suppression to regulate one’s emotions) <br></li>
-</ul></li>
-<li>Predictor 2 (continuous): <em>Individualism/Collectivism</em>
-<ul>
-<li>Scale ranges from 1 (strongly endorses values related to collectivism) to 5 (strongly endorses values related to individualism) <br><br />
-</li>
-</ul></li>
-<li>DV (continuous): Social support received from friends
-<ul>
-<li>Scale ranges from 1 (receives no social support from friends) to 5 (receives an extreme amount of social support from friends) <br></li>
+<li>1 = receives no social support from friends</li>
+<li>5 = receives an extreme amount of social support from friends</li>
 </ul></li>
 </ul>
-<div id="what-are-our-models" class="section level2">
-<h2>What are our models?</h2>
+<p><br></p>
 <ul>
-<li><p>No interaction <span class="math inline">\(SocSupport = b_0 + b_1Suppression + b_2Individualism + e\)</span></p></li>
-<li><p>Interaction <span class="math inline">\(SocSupport = b_0 + b_1Suppression + b_2Individualism + b_3(Suppression*Individualism) + e\)</span></p></li>
+<li><strong>Expressive Suppression</strong> = <code>X</code>
+<ul>
+<li>1 = rarely uses suppression to regulate one’s emotions</li>
+<li>5 = frequently uses suppression to regulate one’s emotions</li>
+</ul></li>
 </ul>
+<p><br></p>
+<ul>
+<li><strong>Individualism/Collectivism</strong> = <code>Z</code> (moderator)
+<ul>
+<li>1 = strongly endorses values related to collectivism</li>
+<li>5 = strongly endorses values related to individualism</li>
+</ul></li>
+</ul>
+<div id="the-data" class="section level2">
+<h2>The data</h2>
+<ul>
+<li>Import the data:</li>
+</ul>
+<pre class="r"><code>social &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/social_support.csv&quot;)</code></pre>
+<ul>
+<li>Look at the structure</li>
+</ul>
+<pre class="r"><code>str(social)</code></pre>
+<pre><code>## 'data.frame':    72 obs. of  4 variables:
+##  $ ID         : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ socsup     : int  5 2 4 3 5 3 1 3 1 4 ...
+##  $ suppression: int  1 4 1 2 1 4 5 3 4 1 ...
+##  $ indiv      : int  5 4 5 4 4 5 3 5 3 4 ...</code></pre>
+<ul>
+<li>And the descriptives</li>
+</ul>
+<pre class="r"><code>describe(social)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["vars"],"name":[1],"type":["int"],"align":["right"]},{"label":["n"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["mean"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["median"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["trimmed"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["mad"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["min"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["max"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["range"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["skew"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["kurtosis"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[13],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"72","3":"36.500000","4":"20.928450","5":"36.5","6":"36.500000","7":"26.6868","8":"1","9":"72","10":"71","11":"0.00000000","12":"-1.250103","13":"2.4664414","_rn_":"ID"},{"1":"2","2":"72","3":"3.027778","4":"1.299753","5":"3.0","6":"3.034483","7":"1.4826","8":"1","9":"5","10":"4","11":"-0.05058331","12":"-1.129611","13":"0.1531774","_rn_":"socsup"},{"1":"3","2":"72","3":"2.986111","4":"1.347852","5":"3.0","6":"2.982759","7":"1.4826","8":"1","9":"5","10":"4","11":"0.02481306","12":"-1.244778","13":"0.1588459","_rn_":"suppression"},{"1":"4","2":"72","3":"2.958333","4":"1.271990","5":"3.0","6":"2.948276","7":"1.4826","8":"1","9":"5","10":"4","11":"-0.04478009","12":"-1.065068","13":"0.1499054","_rn_":"indiv"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="the-model" class="section level2">
+<h2>The model</h2>
+<ul>
+<li>Written generically…</li>
+</ul>
+<p><span class="math display">\[\hat{Y} = b_0 + b_1X + b_2Z +  b_3(XZ)\]</span></p>
+<ul>
+<li>With our variable names…</li>
+</ul>
+<p><span class="math display">\[\hat{SocSupport} = b_0 + b_1Suppression + b_2Individualism +  b_3(Suppression*Individualism)\]</span><br />
+<br></p>
+<ul>
+<li>Conceptual interpretation</li>
+</ul>
+<blockquote>
+<p><strong>Question:</strong> What does b0 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the expected value of social support when all other variables in the model (suppression and individualism) are 0</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b3 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the effect of the interaction term XZ on Y controlling for X and controlling for Z (i.e. holding X and Z constant); more specifically, it refers to the amount of change in b1 and b2 for every one-unit increase in XZ (we’ll get more into what that means soon)</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b1 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the effect of X on Y specifically when Z = 0 (NOT “controlling for Z” or “when Z is held constant”)</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b2 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the effect of Z on Y specifically when X = 0 (NOT “controlling for X” or “when X is held constant”)</p>
+</blockquote>
+<hr />
+</div>
+</div>
+<div id="centering" class="section level1">
+<h1>Centering</h1>
+<ul>
+<li>Centering (or “mean centering”) a variable refers to subtracting the mean of that variable from every individual value. When working with models that contain interaction terms, it is generally a good idea to center your predictor variables, because…
+<ul>
+<li><p>centering addresses issues of multicollinearity</p></li>
+<li><p>centering makes the model coefficients more interpretable</p></li>
+</ul></li>
+</ul>
+<p><br></p>
+<ul>
+<li>We’ll talk about each of these ideas in more detail in a moment, but first let’s discuss how to center a variable in R…</li>
+</ul>
+<p><br></p>
+<ul>
+<li>To center our predictors, we’ll use the <code>mutate()</code> and <code>scale()</code> functions. By default, <code>scale()</code> z-scores variables, but we can get it to just perform mean centering by setting the argument <code>scale = FALSE</code>. Remember, a z score is <span class="math inline">\(\frac{X - \bar{X}}{\sigma_X}\)</span>, or a mean-centered score divided by the SD; by setting <code>scale = FALSE</code> we’re telling R to center it but not scale it (i.e., don’t divide by the SD).</li>
+</ul>
+<p><br></p>
+<ul>
+<li>The default settings for <code>scale()</code> are <code>scale(x, center = TRUE, scale = TRUE)</code>. To be very explicit, we’ll set <code>center = TRUE</code> and <code>scale = FALSE</code>…</li>
+</ul>
+<pre class="r"><code>social &lt;- social %&gt;% 
+  mutate(suppression_c = scale(suppression, center = TRUE, scale = FALSE),
+         indiv_c = scale(indiv, center = TRUE, scale = FALSE))</code></pre>
+<ul>
+<li>Let’s peek at our new data frame. We now have both centered and un-centered versions of our predictor variables</li>
+</ul>
+<pre class="r"><code>head(social)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["int"],"align":["right"]},{"label":["socsup"],"name":[2],"type":["int"],"align":["right"]},{"label":["suppression"],"name":[3],"type":["int"],"align":["right"]},{"label":["indiv"],"name":[4],"type":["int"],"align":["right"]},{"label":["suppression_c"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["indiv_c"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"5","3":"1","4":"5","5":"-1.9861111","6":"2.041667","_rn_":"1"},{"1":"2","2":"2","3":"4","4":"4","5":"1.0138889","6":"1.041667","_rn_":"2"},{"1":"3","2":"4","3":"1","4":"5","5":"-1.9861111","6":"2.041667","_rn_":"3"},{"1":"4","2":"3","3":"2","4":"4","5":"-0.9861111","6":"1.041667","_rn_":"4"},{"1":"5","2":"5","3":"1","4":"4","5":"-1.9861111","6":"1.041667","_rn_":"5"},{"1":"6","2":"3","3":"4","4":"5","5":"1.0138889","6":"2.041667","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<hr />
+</div>
+<div id="run-the-model" class="section level1">
+<h1>Run the model</h1>
+<ul>
+<li>Next we’ll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., <code>lm(Y ~ X*Z)</code>, which tells R to include <code>X</code>, <code>Z</code>, and <code>XZ</code> (the interaction term). It is equivalent to running it spelled out, e.g., <code>lm(Y ~ X + Z + X:Z)</code>. If we wanted <em>just</em> the interaction, we would run a model with just the last term, e.g., <code>lm(Y ~ X:Z)</code>…but DON’T DO THIS!</li>
+</ul>
+<pre class="r"><code>model_int &lt;- lm(socsup ~ suppression_c*indiv_c, data = social)
+summary(model_int)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = socsup ~ suppression_c * indiv_c, data = social)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.79330 -0.81716  0.02792  1.00532  2.45494 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)            2.976971   0.141778  20.997 &lt; 0.0000000000000002 ***
+## suppression_c         -0.009945   0.106094  -0.094             0.925591    
+## indiv_c                0.161361   0.112255   1.437             0.155175    
+## suppression_c:indiv_c -0.303784   0.083044  -3.658             0.000497 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.197 on 68 degrees of freedom
+## Multiple R-squared:  0.1874, Adjusted R-squared:  0.1515 
+## F-statistic: 5.227 on 3 and 68 DF,  p-value: 0.002632</code></pre>
+<blockquote>
+<p><strong>Question:</strong> What can we conclude? Is there an interaction between suppression and individualism predicting social support?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> Yes, there is a significant interaction between suppression and individualism.</p>
+</blockquote>
+<div id="interpret-the-coefficients" class="section level2">
+<h2>Interpret the coefficients</h2>
+<ul>
+<li>Remember that we first centered our predictor variables before running the model. With that in mind…</li>
+</ul>
+<p><br></p>
+<blockquote>
+<p><strong>Question:</strong> What does b0 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the expected value of social support when all other variables in the model (suppression and individualism) are at their MEAN</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b3 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support.</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b1 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the effect of emotion suppression on social support at a mean level of individualism (because we centered our predictors)</p>
+</blockquote>
+<blockquote>
+<p><strong>Question:</strong> What does b2 represent?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> the effect of individualism on social support at a mean level of emotion suppression</p>
+</blockquote>
+</div>
+<div id="a-note-about-multicollinearity" class="section level2">
+<h2>A note about multicollinearity</h2>
+<pre class="r"><code>ols_vif_tol(model_int)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Variables"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Tolerance"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["VIF"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"suppression_c","2":"0.9872728","3":"1.012891"},{"1":"indiv_c","2":"0.9902008","3":"1.009896"},{"1":"suppression_c:indiv_c","2":"0.9969474","3":"1.003062"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<blockquote>
+<p><strong>Question:</strong> Do we have any multicollinearity issues?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> No!</p>
+</blockquote>
+<ul>
+<li>And now let’s see how these diagnostics look if we had <em>not</em> centered the predictors first…</li>
+</ul>
+<pre class="r"><code># piping the uncentered model to the tolerance function
+lm(socsup ~ suppression*indiv, data = social) %&gt;% 
+  ols_vif_tol()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Variables"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Tolerance"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["VIF"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"suppression","2":"0.1492592","3":"6.699753"},{"1":"indiv","2":"0.1688655","3":"5.921871"},{"1":"suppression:indiv","2":"0.0947337","3":"10.555906"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<ul>
+<li>To think about why we have multicollinearity, let’s look at the correlation matrix including our two predicor variables, <code>suppression</code> and <code>indiv</code>, and the interaction term (a linear combination of these two variables), that we’ll call <code>suppression_x_indiv</code>…</li>
+</ul>
+<pre class="r"><code>social %&gt;% 
+  mutate(suppression_x_indiv = suppression * indiv) %&gt;% # create the interaction term
+  select(suppression,                    
+         indiv, 
+         suppression_x_indiv) %&gt;% # select the 3 variables we want to correlate
+  cor() # generate a correlation matrix of these 3 variables</code></pre>
+<pre><code>##                     suppression       indiv suppression_x_indiv
+## suppression          1.00000000 -0.09892416           0.6667002
+## indiv               -0.09892416  1.00000000           0.6095234
+## suppression_x_indiv  0.66670020  0.60952336           1.0000000</code></pre>
+<blockquote>
+<p><strong>Question:</strong> Do you see a problem here?</p>
+</blockquote>
+<blockquote>
+<p><strong>Answer:</strong> Yes, both predictor variables are highly correlated with the interaction term, which is not surprising because the interaction term is a linear combination of the two predictor variables.</p>
+</blockquote>
+<hr />
+</div>
+</div>
+<div id="simple-slopes" class="section level1">
+<h1>Simple slopes</h1>
+<div id="by-hand" class="section level2">
+<h2>By hand</h2>
+</div>
+<div id="reghelpersimpleslopes" class="section level2">
+<h2><code>reghelper::simpleslopes()</code></h2>
+<hr />
+</div>
+</div>
+<div id="plotting-simple-slops" class="section level1">
+<h1>Plotting simple slops</h1>
+<div id="by-hand-1" class="section level2">
+<h2>By hand</h2>
+</div>
+<div id="sjplotplot_model" class="section level2">
+<h2><code>sjPlot::plot_model()</code></h2>
 <hr />
 </div>
 </div>
