@@ -64,7 +64,7 @@ visreg2d(mr.model,"x1", "x2", plot.type = "persp")
 
 ### Multivariate regression with an interaction
 
-```{r, echo = F, fig.width = 10, fig.height = 10}
+```{r, echo = F, fig.width = 10, fig.height = 8}
 mr.model2 = lm(y ~ x1*x2)
 visreg2d(mr.model2,"x1", "x2", plot.type = "persp")
 ```
@@ -90,7 +90,7 @@ i.model1 = lm(Stress ~ Anxiety + Support + Anxiety:Support,
 i.model2 = lm(Stress ~ Anxiety*Support, data = stress.data)
 ```
 
-Both methods of specifying the interaction above will work in R. Using the `*` tells R to create both the main effects and interaction effect. Note, however that the following code *gives you the wrong results*
+Both methods of specifying the interaction above will work in R. Using the `*` tells R to create both the (partial) main effects and interaction effect. Note, however that the following code *gives you the wrong results*:
 
 ```{r eval = F}
 imodel_bad = lm(Stress ~ Anxiety:Support, 
@@ -106,15 +106,15 @@ summary(i.model1)
 ```
 ---
 
-### Conceptual interpretation
+### Conceptual interpretation 
 
 $$\hat{Y} = b_{0} + b_{1}X + b_{2}Z + b_{3}XZ$$
 
-In some ways, the interpretation of coefficients in the regression stays the same. The intercept continues to represent the best guess of Y when all predictors in the model are equal to 0 (which may or may not be a meaningful situation). The other coefficients represent the effect of the relative variable holding all the others constant. 
+You can interpret the interaction term in the same way you normally interpret a slope coefficient -- this is the effect of the interaction controlling for other variables in the model. 
 
-What differs is that you have a new term in the model, which represents the product of two independent variables. So your interpretation of coefficients requires holding this value constant as well. When you add products to the model, you have to change your interpretation of other variables:
+You can also interpret the intercept the same way as before (the expected value of Y when all predictors are 0).
 
-$b_1$ is now the effect of X on Y when Z is equal to 0.
+But here, $b_1$ is the effect of X on Y when Z is equal to 0.
 
 ---
 
@@ -136,10 +136,10 @@ Ask what values $b_0$ depends on -- both intercept and slope. Maybe be helpful t
 ---
 ### Conceptual interpretation
 
-Higher-order terms represent:
+Higher-order interaction terms represent:
 - the change in the slope of X as a function of Z
 - the degree of curvature in the regression plane
-- the linear effect of the product of indepenent variables
+- the linear effect of the product of independent variables
 
 ```{r}
 stress.data$AxS = stress.data$Anxiety*stress.data$Support
@@ -182,7 +182,7 @@ C.round = round(C.vector,2)
 ```
 
 $$\hat{Stress} = `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]`(\text{Sup})+ `r C.round[4]`(\text{Anx} \times \text{Sup})$$
-
+--
 **Set Support to 5**
 $$
 \begin{aligned}
@@ -191,7 +191,7 @@ $$
 &= `r C.round[1] + C.round[3]*5` + `r C.round[2] + C.round[4]*5`(\text{Anx})
 \end{aligned}
 $$
-
+--
 **Set Support to 10**
 $$
 \begin{aligned}
@@ -205,7 +205,7 @@ $$
 
 ## Interaction shapes
 
-Often we graph the simple slopes as a way to understand the interaction. hile it's technically not impossible to interpret an interaction from the coefficient terms alone, it requires a lot of calculation and mental rotation to understand the shape of the interaction. For those reasons, consider it a requirement that you graph interactions in order to interpret them. 
+Often we graph the simple slopes as a way to understand the interaction. Interpreting the shape of an interaction can be done using the numbers alone, but it requires a lot of calculation and mental rotation. For those reasons, consider it a requirement that you graph interactions in order to interpret them. 
 
 ---
 ## Interaction shapes
@@ -267,9 +267,9 @@ plot_model(imodel, type = "pred", terms = c("Support", "Anxiety"), mdrt.values =
 
 ### Simple slopes - Significance tests
 
-Recall that the slope at any particular value is a combination of both b1 and b3 
+Recall that the slope at any particular value is a combination of both $b_1$ and $b_3$ 
 $$\large \hat{Y} = (b_{0} + b_{2}Z) + (b_{1} + b_{3}Z)X$$
-$$\large se_{b@z} = \sqrt{se_{b1}^2 + (2 * Z * cov_{b1b3})+ (Z^2 se_{b3}^2)}$$
+$$\large se_{b@z} = \sqrt{se_{b_1}^2 + (2 * Z * cov_{b_1b_3})+ (Z^2 se_{b_3}^2)}$$
 In this formula, $cov_{b_1b_3}$ refers to the covariance of the coefficients, not the covariance of the variables. This may seem a strange concept, as we only ever have one value for $b_1$ and $b_3$ -- the covariance of these coefficients refer to idea that if we randomly sample from a population, estimate the coefficients each time, and then examine the covariance of coefficients across random samples, it will not be 0.
 
 ---
@@ -348,6 +348,8 @@ summary(lm(Stress ~ Anxiety.c*Support.c, data = stress.data))
 summary(imodel)
 ```
 What changed? What stayed the same?
+
+
 ---
  
 ## Standardized regression equation
@@ -378,16 +380,10 @@ Y ~ z(X) + z(Z) + z(X*Z)
 ---
 
 ```{r}
-z_score = function(x){
-    d = x-mean(x,na.rm=T)
-    z = d/sd(x, na.rm=T)
-  return(z)
-}
-
 stress.data = stress.data %>%
-  mutate(zStress = z_score(Stress), 
-         zAnxiety = z_score(Anxiety), 
-         zSupport = z_score(Support))
+  mutate(zStress = scale(Stress), 
+         zAnxiety = scale(Anxiety), 
+         zSupport = scale(Support))
 head(stress.data[,c("zStress", "zAnxiety", "zSupport")])
 
 ```
@@ -397,5 +393,24 @@ zmodel = lm(zStress ~ zAnxiety*zSupport, stress.data)
 summary(zmodel)
 ```
 
+---
 
+```{r, echo = F}
+stress.data = stress.data %>%
+  mutate(zAxS = scale(AxS))
 
+```
+
+```{r}
+zmodel = lm(zStress ~ zAnxiety + zSupport + zAxS, stress.data)
+summary(zmodel)
+```
+
+---
+class: inverse
+
+## Next time...
+
+Mixing categorical and continuous predictors
+
+Factorial ANOVA

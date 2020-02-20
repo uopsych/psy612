@@ -1199,11 +1199,12 @@ How would you plot....
 * A main effect of A, no main effect of B, and no interaction?
 * A main effect of A, a main effect of B, and no interaction?
 * No main effect of A, a main effect of B, and an interaction?
+
 ---
 
-### Effect size
+## Effect size
 
-All of the effects in the ANOVA are statistically significant, but how big are they?  The effect size, `\(\eta^2\)`, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+All of the effects in the ANOVA are statistically significant, but how big are they?  An effect size, `\(\eta^2\)`, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
 
 `$$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$`
 If the design is balanced...
@@ -1348,9 +1349,10 @@ Partial `\(\eta^2\)` will be larger than `\(\eta^2\)` if the ignored effects acc
 
 The sum of partial `\(\eta^2\)` does not have a meaningful interpretation.
 
+
 ---
 
-### Standard errors
+## Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
 
@@ -1488,6 +1490,58 @@ noise_lsm
 ---
 
 ![](15-interactions_files/figure-html/unnamed-chunk-44-1.png)&lt;!-- --&gt;
+
+--- 
+
+### Cohen's D
+
+`\(\eta^2\)` is useful for comparing the relative effect sizes of one factor to another. If you want to compare the differences between groups, Cohen's d is the more appropriate metric. Like in a t-test, you'll divide the differences in means by the pooled standard deviation. The pooled variance estimate is the `\(MS_{error}\)`
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)[,"Mean Sq"]
+```
+
+```
+## [1] 1402935.71  170657.62   73929.93   12824.20
+```
+
+```r
+MS_error = anova(fit)[,"Mean Sq"][4]
+```
+
+So to get the pooled standard deviation:
+
+
+```r
+pooled_sd = sqrt(MS_error)
+```
+
+---
+
+### Cohen's D
+
+
+```r
+(noise_df = as.data.frame(noise_lsm))
+```
+
+```
+##            Noise   lsmean       SE  df lower.CL upper.CL
+## 1           None 495.0976 14.61974 171 466.2392 523.9560
+## 2   Controllable 452.2079 14.61974 171 423.3495 481.0663
+## 3 Uncontrollable 389.0759 14.61974 171 360.2175 417.9343
+```
+
+```r
+(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+```
+
+```
+## [1] -0.3787367
+```
+
 
 ---
 

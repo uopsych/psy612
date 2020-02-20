@@ -897,11 +897,12 @@ How would you plot....
 * A main effect of A, no main effect of B, and no interaction?
 * A main effect of A, a main effect of B, and no interaction?
 * No main effect of A, a main effect of B, and an interaction?
+
 ---
 
-### Effect size
+## Effect size
 
-All of the effects in the ANOVA are statistically significant, but how big are they?  The effect size, $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+All of the effects in the ANOVA are statistically significant, but how big are they?  An effect size, $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
 
 $$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$
 If the design is balanced...
@@ -994,9 +995,10 @@ Partial $\eta^2$ will be larger than $\eta^2$ if the ignored effects account for
 
 The sum of partial $\eta^2$ does not have a meaningful interpretation.
 
+
 ---
 
-### Standard errors
+## Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
 
@@ -1058,6 +1060,35 @@ both_m = plot_model(fit, type = "pred", terms = c("Speed", "Noise")) +
 library(ggpubr)
 ggarrange(ggarrange(noise_m, speed_m, ncol = 2), both_m, nrow=2)
 ```
+
+--- 
+
+### Cohen's D
+
+$\eta^2$ is useful for comparing the relative effect sizes of one factor to another. If you want to compare the differences between groups, Cohen's d is the more appropriate metric. Like in a t-test, you'll divide the differences in means by the pooled standard deviation. The pooled variance estimate is the $MS_{error}$
+
+```{r}
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)[,"Mean Sq"]
+MS_error = anova(fit)[,"Mean Sq"][4]
+```
+
+So to get the pooled standard deviation:
+
+```{r}
+pooled_sd = sqrt(MS_error)
+```
+
+---
+
+### Cohen's D
+
+```{r}
+(noise_df = as.data.frame(noise_lsm))
+
+(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+```
+
 
 ---
 

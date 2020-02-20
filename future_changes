@@ -35,8 +35,14 @@ final-project.html
   * Make F-distribution plot number-free (don't give numbers that don't correspond to example)
   * reiterate example before diving back into R code
   * remind students to do reading?
+  
+11-diagnostics.html
+* add something about weighted least squares (homoscedasticity)
 
 homework-1.html
 
 Question 10.1
 * last bullet point should not say "#5 and #6" but should refer to specific models. Suggestions have been made in Markdown files. 
+
+13-dag.html
+* add something before about dag models are pre-data collection tools

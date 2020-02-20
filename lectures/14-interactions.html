@@ -95,7 +95,7 @@ i.model1 = lm(Stress ~ Anxiety + Support + Anxiety:Support,
 i.model2 = lm(Stress ~ Anxiety*Support, data = stress.data)
 ```
 
-Both methods of specifying the interaction above will work in R. Using the `*` tells R to create both the main effects and interaction effect. Note, however that the following code *gives you the wrong results*
+Both methods of specifying the interaction above will work in R. Using the `*` tells R to create both the (partial) main effects and interaction effect. Note, however that the following code *gives you the wrong results*:
 
 
 ```r
@@ -136,15 +136,15 @@ summary(i.model1)
 ```
 ---
 
-### Conceptual interpretation
+### Conceptual interpretation 
 
 `$$\hat{Y} = b_{0} + b_{1}X + b_{2}Z + b_{3}XZ$$`
 
-In some ways, the interpretation of coefficients in the regression stays the same. The intercept continues to represent the best guess of Y when all predictors in the model are equal to 0 (which may or may not be a meaningful situation). The other coefficients represent the effect of the relative variable holding all the others constant. 
+You can interpret the interaction term in the same way you normally interpret a slope coefficient -- this is the effect of the interaction controlling for other variables in the model. 
 
-What differs is that you have a new term in the model, which represents the product of two independent variables. So your interpretation of coefficients requires holding this value constant as well. When you add products to the model, you have to change your interpretation of other variables:
+You can also interpret the intercept the same way as before (the expected value of Y when all predictors are 0).
 
-`\(b_1\)` is now the effect of X on Y when Z is equal to 0.
+But here, `\(b_1\)` is the effect of X on Y when Z is equal to 0.
 
 ---
 
@@ -166,10 +166,10 @@ Ask what values `\(b_0\)` depends on -- both intercept and slope. Maybe be helpf
 ---
 ### Conceptual interpretation
 
-Higher-order terms represent:
+Higher-order interaction terms represent:
 - the change in the slope of X as a function of Z
 - the degree of curvature in the regression plane
-- the linear effect of the product of indepenent variables
+- the linear effect of the product of independent variables
 
 
 ```r
@@ -267,7 +267,7 @@ The conditional nature of these effects is easiest to see by "plugging in" diffe
 
 
 `$$\hat{Stress} = -2.74 + 0.62(\text{Anx})+ 0.67(\text{Sup})+ -0.04(\text{Anx} \times \text{Sup})$$`
-
+--
 **Set Support to 5**
 $$
 `\begin{aligned}
@@ -276,7 +276,7 @@ $$
 &amp;= 0.61 + 0.42(\text{Anx})
 \end{aligned}`
 $$
-
+--
 **Set Support to 10**
 $$
 `\begin{aligned}
@@ -290,7 +290,7 @@ $$
 
 ## Interaction shapes
 
-Often we graph the simple slopes as a way to understand the interaction. hile it's technically not impossible to interpret an interaction from the coefficient terms alone, it requires a lot of calculation and mental rotation to understand the shape of the interaction. For those reasons, consider it a requirement that you graph interactions in order to interpret them. 
+Often we graph the simple slopes as a way to understand the interaction. Interpreting the shape of an interaction can be done using the numbers alone, but it requires a lot of calculation and mental rotation. For those reasons, consider it a requirement that you graph interactions in order to interpret them. 
 
 ---
 ## Interaction shapes
@@ -337,9 +337,9 @@ plot_model(imodel, type = "pred", terms = c("Support", "Anxiety"), mdrt.values =
 
 ### Simple slopes - Significance tests
 
-Recall that the slope at any particular value is a combination of both b1 and b3 
+Recall that the slope at any particular value is a combination of both `\(b_1\)` and `\(b_3\)` 
 `$$\large \hat{Y} = (b_{0} + b_{2}Z) + (b_{1} + b_{3}Z)X$$`
-`$$\large se_{b@z} = \sqrt{se_{b1}^2 + (2 * Z * cov_{b1b3})+ (Z^2 se_{b3}^2)}$$`
+`$$\large se_{b@z} = \sqrt{se_{b_1}^2 + (2 * Z * cov_{b_1b_3})+ (Z^2 se_{b_3}^2)}$$`
 In this formula, `\(cov_{b_1b_3}\)` refers to the covariance of the coefficients, not the covariance of the variables. This may seem a strange concept, as we only ever have one value for `\(b_1\)` and `\(b_3\)` -- the covariance of these coefficients refer to idea that if we randomly sample from a population, estimate the coefficients each time, and then examine the covariance of coefficients across random samples, it will not be 0.
 
 ---
@@ -505,6 +505,8 @@ summary(imodel)
 ## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
 ```
 What changed? What stayed the same?
+
+
 ---
  
 ## Standardized regression equation
@@ -538,16 +540,10 @@ Y ~ z(X) + z(Z) + z(X*Z)
 
 
 ```r
-z_score = function(x){
-    d = x-mean(x,na.rm=T)
-    z = d/sd(x, na.rm=T)
-  return(z)
-}
-
 stress.data = stress.data %&gt;%
-  mutate(zStress = z_score(Stress), 
-         zAnxiety = z_score(Anxiety), 
-         zSupport = z_score(Support))
+  mutate(zStress = scale(Stress), 
+         zAnxiety = scale(Anxiety), 
+         zSupport = scale(Support))
 head(stress.data[,c("zStress", "zAnxiety", "zSupport")])
 ```
 
@@ -589,6 +585,48 @@ summary(zmodel)
 ## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
 ## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
 ```
+
+---
+
+
+
+
+```r
+zmodel = lm(zStress ~ zAnxiety + zSupport + zAxS, stress.data)
+summary(zmodel)
+```
+
+```
+## 
+## Call:
+## lm(formula = zStress ~ zAnxiety + zSupport + zAxS, data = stress.data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.03400 -0.57471  0.01989  0.49037  1.92453 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  2.833e-17  7.173e-02   0.000  1.00000    
+## zAnxiety     8.161e-01  1.725e-01   4.732 6.44e-06 ***
+## zSupport     1.165e+00  1.668e-01   6.986 2.02e-10 ***
+## zAxS        -5.003e-01  1.569e-01  -3.188  0.00185 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7792 on 114 degrees of freedom
+## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
+## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
+```
+
+---
+class: inverse
+
+## Next time...
+
+Mixing categorical and continuous predictors
+
+Factorial ANOVA
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

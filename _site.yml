@@ -29,10 +29,12 @@ navbar:
         href: "lectures/10-m_regression.html" 
       - text: "11-Diagnostics"
         href: "lectures/11-diagnostics.html"         
-      - text: "12-Diagnostics"
+      - text: "12-Diagnostics (II)"
         href: "lectures/12-diagnostics.html"  
       - text: "13-DAGs"
-        href: "lectures/13-dag.html"          
+        href: "lectures/13-dag.html"  
+      - text: "14-Interactions"
+        href: "lectures/14-interactions.html"          
     - text: Labs
       menu:
       - text: "Correlations"
