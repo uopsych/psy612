@@ -451,3 +451,46 @@ test_perf <- import("https://raw.githubusercontent.com/uopsych/psy612/master/lab
 
 
 ## Minihack 1 
+
+* Run a model testing whether test anxiety moderates the relationship between time spent studying and test performance. Don't forget to first center your predictors. 
+
+```{r}
+test_perf <- test_perf %>% 
+  mutate(anxiety_c = as.numeric(scale(anxiety, scale = FALSE)),
+         study_time_c = as.numeric(scale(study_time, scale = FALSE)))
+```
+
+
+```{r}
+anx_x_time_model <- lm(perf ~  study_time_c * anxiety_c, data = test_perf)
+summary(anx_x_time_model)
+```
+
+* What do the model coefficients mean? Try explaining them to a friend. 
+
+***
+
+## Minihack 2
+
+* Visualize the interaction. For an extra challenge, try doing this without using `{sjPlot}`.
+
+```{r}
+plot_model(model = anx_x_time_model, 
+           type = "int", 
+           mdrt.values = "meansd") 
+```
+
+* What can you infer from this plot? Again, try explaining it to a friend. 
+
+***
+
+## Minihack 3
+
+* Test whether each simple slope is significantly different from 0. 
+
+```{r}
+simple_slopes(anx_x_time_model) %>% 
+  filter(study_time_c == "sstest")
+```
+
+* What do the results of these significance tests mean? 
