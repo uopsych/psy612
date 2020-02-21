@@ -240,6 +240,7 @@ lm(socsup ~ suppression*indiv, data = social) %>%
 ##### Code
 
 ```{r lab-7-instructor-12, eval=FALSE}
+# using the {olsrr} package 
 ols_vif_tol(model_int)
 ```
 
