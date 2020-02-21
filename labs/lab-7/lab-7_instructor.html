@@ -2804,10 +2804,16 @@ div.tocify {
 
 <div id="purpose" class="section level1">
 <h1>Purpose</h1>
+<p>Today we will review how to run models containing interactions between two continuous predictors. We will go over how to specify interaction terms in R, how to interpret the model output and how to visualize the results.</p>
 <ol style="list-style-type: decimal">
-<li><a href="#regression">Regression with categorical predictors</a></li>
+<li><a href="#scenario">Research scenario</a></li>
+<li><a href="#centering">Centering</a></li>
+<li><a href="#run">Running interaction models</a></li>
+<li><a href="#simpleslopes">Simple slopes</a></li>
+<li><a href="#sig">Significance tests of simple slopes</a></li>
+<li><a href="#minihacks">Minihacks</a></li>
 </ol>
-<p>Be sure to have the following packages loaded:</p>
+<p>Be sure to have the following packages installed and loaded:</p>
 <pre class="r"><code>library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
@@ -2817,7 +2823,7 @@ library(reghelper) # for calculating simple slopes
 library(sjPlot) # for plotting simple slopes</code></pre>
 <hr />
 </div>
-<div id="research-scenario" class="section level1">
+<div id="scenario" class="section level1">
 <h1>Research scenario</h1>
 <p>The tendency to suppress the expression of emotion when regulating one’s emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the emotion regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:</p>
 <ul>
@@ -2948,8 +2954,8 @@ library(sjPlot) # for plotting simple slopes</code></pre>
 </div>
 <hr />
 </div>
-<div id="run-the-model" class="section level1">
-<h1>Run the model</h1>
+<div id="run" class="section level1">
+<h1>Runing interaction models</h1>
 <ul>
 <li>Next we’ll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., <code>lm(Y ~ X*Z)</code>, which tells R to include <code>X</code>, <code>Z</code>, and <code>XZ</code> (the interaction term). It is equivalent to running it spelled out, e.g., <code>lm(Y ~ X + Z + X:Z)</code>. If we wanted <em>just</em> the interaction, we would run a model with just the last term, e.g., <code>lm(Y ~ X:Z)</code>…but DON’T DO THIS!</li>
 </ul>
@@ -3075,7 +3081,7 @@ lm(socsup ~ suppression*indiv, data = social) %&gt;%
 <hr />
 </div>
 </div>
-<div id="simple-slopes" class="section level1">
+<div id="simpleslopes" class="section level1">
 <h1>Simple slopes</h1>
 <ul>
 <li>Interpreting what the interaction between emotion suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are “simple slopes” so we will discuss what this means first before diving into making plots.</li>
@@ -3248,7 +3254,7 @@ int_plot_df &lt;- data.frame(cbind(
 <hr />
 </div>
 </div>
-<div id="significance-tests-of-simple-slopes" class="section level1">
+<div id="sig" class="section level1">
 <h1>Significance tests of simple slopes</h1>
 <ul>
 <li>Let’s talk about how to run significance tests on simple slopes. For each simple slope we can test whether it is significantly different from 0.</li>
@@ -3307,7 +3313,7 @@ int_plot_df %&gt;%
 </div>
 <div id="minihacks" class="section level1">
 <h1>Minihacks</h1>
-<div id="research-scenario-1" class="section level2">
+<div id="research-scenario" class="section level2">
 <h2>Research Scenario:</h2>
 <ul>
 <li><p>For her masters project, a grad student wants to see whether the time students spend studying (<code>study_time</code>) interacts with test anxiety (<code>anxiety</code>) to predict students’ test performance (<code>perf</code>).</p></li>
@@ -3377,7 +3383,7 @@ summary(anx_x_time_model)</code></pre>
   </script>
 </div>
 <ul>
-<li>What do the results of these significance tests mean?</li>
+<li>What do the results of these significance tests mean? s</li>
 </ul>
 </div>
 </div>

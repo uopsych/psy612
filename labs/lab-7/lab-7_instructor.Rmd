@@ -18,11 +18,17 @@ options(scipen = 999)
 
 # Purpose
 
+Today we will review how to run models containing interactions between two continuous predictors. We will go over how to specify interaction terms in R, how to interpret the model output and how to visualize the results. 
 
-1. [Regression with categorical predictors](#regression)
+1. [Research scenario](#scenario)
+2. [Centering](#centering)
+3. [Running interaction models](#run)
+4. [Simple slopes](#simpleslopes)
+5. [Significance tests of simple slopes](#sig)
+6. [Minihacks](#minihacks)
 
 
-Be sure to have the following packages loaded:
+Be sure to have the following packages installed and loaded:
 
 ```{r message=FALSE}
 library(tidyverse) # for plotting and data wrangling
@@ -35,7 +41,7 @@ library(sjPlot) # for plotting simple slopes
 ```
 
 ***
-# Research scenario
+# Research scenario{#scenario}
 
 The tendency to suppress the expression of emotion when regulating one's emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the emotion regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:  
 
@@ -108,7 +114,7 @@ $$\hat{SocSupport} = b_0 + b_1Suppression + b_2Individualism +  b_3(Suppression*
 
 ***
 
-# Centering
+# Centering{#centering}
 
 * Centering (or "mean centering") a variable refers to subtracting the mean of that variable from every individual value. When working with models that contain interaction terms, it is generally a good idea to center your predictor variables, because...
   * centering addresses issues of multicollinearity 
@@ -146,7 +152,7 @@ head(social)
 
 ***
 
-# Run the model
+# Runing interaction models{#run}
 
 * Next we'll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., `lm(Y ~ X*Z)`, which tells R to include `X`, `Z`, and `XZ` (the interaction term). It is equivalent to running it spelled out, e.g., `lm(Y ~ X + Z + X:Z)`. If we wanted *just* the interaction, we would run a model with just the last term, e.g.,  `lm(Y ~ X:Z)`...but DON'T DO THIS! 
 
@@ -229,7 +235,7 @@ social %>%
 
 ***
 
-# Simple slopes
+# Simple slopes{#simpleslopes}
 
 * Interpreting what the interaction between emotion suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are "simple slopes" so we will discuss what this means first before diving into making plots. 
 
@@ -392,7 +398,7 @@ plot_model(model = model_int, # model fit object
 
 ***
 
-# Significance tests of simple slopes
+# Significance tests of simple slopes{#sig}
 
 * Let's talk about how to run significance tests on simple slopes. For each simple slope we can test whether it is significantly different from 0. 
 
@@ -493,4 +499,4 @@ simple_slopes(anx_x_time_model) %>%
   filter(study_time_c == "sstest")
 ```
 
-* What do the results of these significance tests mean? 
+* What do the results of these significance tests mean? s
