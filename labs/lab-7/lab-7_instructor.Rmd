@@ -439,22 +439,14 @@ int_plot_df %>%
 
 # Minihacks{#minihacks}
 
-Research Scenario: 
+## Research Scenario: 
 
-For her masters project, a grad student wants to see whether the time students spend studying (`study_time`) interacts with test anxiety (`anxiety`) to predict students' test performance (`perf`).
+* For her masters project, a grad student wants to see whether the time students spend studying (`study_time`) interacts with test anxiety (`anxiety`) to predict students' test performance (`perf`).
+
+* Import the data below:
 
 ```{r}
-simple_slopes_df <- import(here("labs/lab-7/data/613_Lab03_simple_slopes.sav")) %>% 
-  janitor::clean_names()
-
-test_perf <- simple_slopes_df %>% 
-  mutate_all(as.numeric) %>% 
-  rename(study_time = time,
-         anxiety = anx) %>% 
-  mutate(study_time = round(study_time, 2))
-
-
-write_csv(test_perf, here("labs/lab-7/data/test_perf.csv"))
+test_perf <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/test_perf.csv")
 ```
 
 
