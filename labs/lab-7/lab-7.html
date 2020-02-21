@@ -3348,32 +3348,40 @@ int_plot_df &lt;- data.frame(cbind(
 <h5>Code</h5>
 <pre class="r"><code>social %&gt;% 
   ggplot(aes(x = suppression_c, y = socsup)) + 
+  
   # add points for scatterplot and make them invisible
    geom_point(alpha = 0) + 
+  
   # add line for low level of individualism
   geom_abline(aes(intercept = int_plot_df$simple_intercepts[1], 
                   slope = int_plot_df$simple_slopes[1], 
                   color = &quot;-1SD Individualism&quot;), # This will  give it  a label
               show.legend = TRUE) +
+  
   # add line for mid level of individualism
   geom_abline(aes(intercept = int_plot_df$simple_intercepts[2], 
                   slope = int_plot_df$simple_slopes[2], 
                   color = &quot;Mean Individualism&quot;), 
               show.legend = TRUE) + 
+  
   # add line for high level of individualism
   geom_abline(aes(intercept = int_plot_df$simple_intercepts[3], 
                   slope = int_plot_df$simple_slopes[3], 
                   color = &quot;+1SD Individualism&quot;), 
               show.legend = TRUE) +
+  
   # add a title and label the axes
   labs(title = &quot;Effect of expressive suppression on social support \nat low, mid, &amp; high levels of individualism&quot;, 
-       x = &quot;Expressive suppression (Centered)&quot;, y = &quot;Social Support&quot;) +
+       x = &quot;Expressive suppression (Centered)&quot;,
+       y = &quot;Social Support&quot;) +
+  
   # we need to set the colors of the lines manually, which requires scale_color_manual()
   scale_color_manual(&quot;Individualism Level&quot;, 
   # values() is where you specify the colors, in the form label = color_name
                      values = c(&quot;-1SD Individualism&quot; = &quot;salmon&quot;, 
                               &quot;Mean Individualism&quot; = &quot;purple&quot;,
                               &quot;+1SD Individualism&quot; = &quot;cornflower blue&quot;)) + 
+  
   theme_minimal()</code></pre>
 </div>
 <div id="output-10" class="section level5">
@@ -3400,7 +3408,7 @@ int_plot_df &lt;- data.frame(cbind(
 <h5>Code</h5>
 <pre class="r"><code>plot_model(model = model_int, # model fit object
            type = &quot;int&quot;, # interaction 
-           mdrt.values = &quot;meansd&quot;) # which values of the moderator variable should be used</code></pre>
+           mdrt.values = &quot;meansd&quot;) # which values of the moderator variable to use</code></pre>
 </div>
 <div id="output-11" class="section level5">
 <h5>Output</h5>

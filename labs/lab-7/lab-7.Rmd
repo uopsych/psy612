@@ -479,32 +479,40 @@ int_plot_df
 ```{r lab-7-instructor-33, eval=FALSE}
 social %>% 
   ggplot(aes(x = suppression_c, y = socsup)) + 
+  
   # add points for scatterplot and make them invisible
    geom_point(alpha = 0) + 
+  
   # add line for low level of individualism
   geom_abline(aes(intercept = int_plot_df$simple_intercepts[1], 
                   slope = int_plot_df$simple_slopes[1], 
                   color = "-1SD Individualism"), # This will  give it  a label
               show.legend = TRUE) +
+  
   # add line for mid level of individualism
   geom_abline(aes(intercept = int_plot_df$simple_intercepts[2], 
                   slope = int_plot_df$simple_slopes[2], 
                   color = "Mean Individualism"), 
               show.legend = TRUE) + 
+  
   # add line for high level of individualism
   geom_abline(aes(intercept = int_plot_df$simple_intercepts[3], 
                   slope = int_plot_df$simple_slopes[3], 
                   color = "+1SD Individualism"), 
               show.legend = TRUE) +
+  
   # add a title and label the axes
   labs(title = "Effect of expressive suppression on social support \nat low, mid, & high levels of individualism", 
-       x = "Expressive suppression (Centered)", y = "Social Support") +
+       x = "Expressive suppression (Centered)",
+       y = "Social Support") +
+  
   # we need to set the colors of the lines manually, which requires scale_color_manual()
   scale_color_manual("Individualism Level", 
   # values() is where you specify the colors, in the form label = color_name
                      values = c("-1SD Individualism" = "salmon", 
                               "Mean Individualism" = "purple",
                               "+1SD Individualism" = "cornflower blue")) + 
+  
   theme_minimal()
 ```
 
@@ -529,7 +537,7 @@ social %>%
 ```{r lab-7-instructor-35, eval=FALSE}
 plot_model(model = model_int, # model fit object
            type = "int", # interaction 
-           mdrt.values = "meansd") # which values of the moderator variable should be used
+           mdrt.values = "meansd") # which values of the moderator variable to use
 ```
 
 ##### Output
