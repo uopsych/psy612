@@ -705,4 +705,4 @@ simple_slopes(anx_x_time_model) %>%
   filter(study_time_c == "sstest")
 ```
 
-* What do the results of these significance tests mean? s
+* What do the results of these significance tests mean?

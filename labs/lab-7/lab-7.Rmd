@@ -658,4 +658,4 @@ test_perf <- import("https://raw.githubusercontent.com/uopsych/psy612/master/lab
 
 * Test whether each simple slope is significantly different from 0. 
 
-* What do the results of these significance tests mean? s
+* What do the results of these significance tests mean?
