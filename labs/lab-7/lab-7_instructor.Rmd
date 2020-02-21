@@ -29,6 +29,9 @@ library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
 library(olsrr) # for diagnostics
+library(broom) # for tidying model output
+library(reghelper) # for calculating simple slopes
+library(sjPlot) # for plotting simple slopes
 ```
 
 ***
@@ -122,12 +125,16 @@ $$\hat{SocSupport} = b_0 + b_1Suppression + b_2Individualism +  b_3(Suppression*
 
 <br>
 
-* The default settings for `scale()` are `scale(x, center = TRUE, scale = TRUE)`. To be very explicit, we'll set `center = TRUE` and `scale = FALSE`...
+* The default settings for `scale()` are `scale(x, center = TRUE, scale = TRUE)`. To be very explicit, we'll set `center = TRUE` and `scale = FALSE`. 
+
+<br> 
+
+* Highly technical but important note: `scale()` actually changes the class of the resulting variable to be `matrix`, so we'll use `as.numeric()` to force the resulting centered variables to be of type `numeric`.
 
 ```{r}
 social <- social %>% 
-  mutate(suppression_c = scale(suppression, center = TRUE, scale = FALSE),
-         indiv_c = scale(indiv, center = TRUE, scale = FALSE))
+  mutate(suppression_c = as.numeric(scale(suppression, center = TRUE, scale = FALSE)),
+         indiv_c = as.numeric(scale(indiv, center = TRUE, scale = FALSE)))
 ```
 
 * Let's peek at our new data frame. We now have both centered and un-centered versions of our predictor variables
@@ -172,9 +179,11 @@ summary(model_int)
 
 >**Question:** What does b3 represent?
 
->**Answer:** for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support. The value/interpreation of b3 DOES NOT CHANGE because of centering! 
+>**Answer:** for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support. The value/interpretation of b3 DOES NOT CHANGE because of centering! 
 
 ## A note about multicollinearity 
+
+* Let's assess the multicollinearity of the model we just ran...
 
 ```{r}
 ols_vif_tol(model_int)
@@ -192,7 +201,7 @@ lm(socsup ~ suppression*indiv, data = social) %>%
   ols_vif_tol()
 ```
 
-* To think about why we have multicollinearity, let's look at the correlation matrix including our two predicor variables, `suppression` and `indiv`, and the interaction term (a linear combination of these two variables), that we'll call `suppression_x_indiv`...
+* To think about why we have multicollinearity, let's look at the correlation matrix including our two predictor variables, `suppression` and `indiv`, and the interaction term (a linear combination of these two variables), that we'll call `suppression_x_indiv`...
 
 ```{r}
 social %>% 
@@ -222,19 +231,206 @@ social %>%
 
 # Simple slopes
 
-* Interpreting what the interaction between emotion suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are "simple slopes"
+* Interpreting what the interaction between emotion suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are "simple slopes" so we will discuss what this means first before diving into making plots. 
 
-## By hand
+<br> 
 
-## `reghelper::simpleslopes()`
+* "Simple slope" refers to both 
+  * the equation for the effect of X on Y at different levels of Z (moderator) AND...
+  * just the coefficient for X in this equation
+  
+<br> 
+
+* We'll review how to calculate simple slopes "by hand" (the hard way) and using a function (the easy way). 
+
+## Calculating simple slopes by hand
+
+* First we'll get the coefficients from our model (`model_int`) into a nicely formatted data frame using `broom::tidy()`...
+
+```{r}
+model_int_coefs <- model_int %>% 
+  tidy()
+
+model_int_coefs # view the data frame of coefficients
+```
+
+* Now we'll pull out each individual coefficient using `{dplyr}` functions. 
+
+```{r}
+# b0 (the intercept)
+b0 <- model_int_coefs %>% 
+  filter(term == "(Intercept)") %>% 
+  select(estimate)  
+
+# b1 = the slope for supression
+b_supp <- model_int_coefs %>% 
+  filter(term == "suppression_c") %>% 
+  select(estimate) 
+  
+# b2 = the slope for individualism
+b_indiv <- model_int_coefs %>% 
+  filter(term == "indiv_c") %>% 
+  select(estimate)
+
+# b3 = the coefficient for the interaction term
+b_supp_x_indiv <- model_int_coefs %>% 
+  filter(term == "suppression_c:indiv_c") %>% 
+  select(estimate)
+```
+
+* Next let's calculate low (-1 SD), mid (mean), and high (+ 1 SD) values of individualism based on the mean and standard deviation of this variable
+
+```{r}
+# low = mean - 1 SD
+low_indiv <- mean(social$indiv_c, na.rm = TRUE) - sd(social$indiv_c, na.rm = TRUE) 
+
+# mid = mean
+mid_indiv <- mean(social$indiv_c, na.rm = TRUE)
+
+# high = mean + 1 SD
+high_indiv <- mean(social$indiv_c, na.rm = TRUE) + sd(social$indiv_c, na.rm = TRUE)
+```
+
+* Calculate simple intercepts by plugging in low, mid and high values of Individualism. To review how this works algebraically, see [this slide](https://uopsych.github.io/psy612/lectures/14-interactions.html#18){target="_blank"} from class
+
+```{r}
+# calculate simple intercepts and bind them together into 3 rows
+simple_intercepts <- rbind(
+                    b0 + (b_indiv * low_indiv),
+                    b0 + (b_indiv * mid_indiv), 
+                    b0 + (b_indiv * high_indiv)
+                    )
+
+# We'll give it a column name which will help below
+colnames(simple_intercepts) <- "simple_intercepts"
+
+# View
+simple_intercepts
+```
+
+* Calculate simple slopes, again by plugging in low, mid and high values of Individualism. 
+
+```{r}
+# Calculate simple slopes
+simple_slopes <-rbind(
+                b_supp + (b_supp_x_indiv * low_indiv),
+                b_supp + (b_supp_x_indiv * mid_indiv), 
+                b_supp + (b_supp_x_indiv * high_indiv)
+                )
+
+# Again, give it a column name
+colnames(simple_slopes) <- "simple_slopes"
+
+# View
+simple_slopes
+```
+
+* Now combine all this information into one data frame so we can more easily plot it
+
+```{r}
+# create labels for the different levels of individualism
+indiv_levels <- c("low","mid","high")
+
+# put them all together into a data frame
+int_plot_df <- data.frame(cbind(
+                         indiv_levels, # labels
+                         simple_intercepts, # simple intercepts 
+                         simple_slopes)) # simple slopes
+```
+
+## Plotting simple slopes by hand
+
+* Finally, we'll make the plot using `ggplot` and a few different `geoms`, including `geom_point()` and `geom_abline()`
+
+```{r}
+social %>% 
+  ggplot(aes(x = suppression_c, y = socsup)) + 
+  # add points for scatterplot and make them invisible
+   geom_point(alpha = 0) + 
+  # add line for low level of individualism
+  geom_abline(aes(intercept = int_plot_df$simple_intercepts[1], 
+                  slope = int_plot_df$simple_slopes[1], 
+                  color = "-1SD Individualism"), # This will  give it  a label
+              show.legend = TRUE) +
+  # add line for mid level of individualism
+  geom_abline(aes(intercept = int_plot_df$simple_intercepts[2], 
+                  slope = int_plot_df$simple_slopes[2], 
+                  color = "Mean Individualism"), 
+              show.legend = TRUE) + 
+  # add line for high level of individualism
+  geom_abline(aes(intercept = int_plot_df$simple_intercepts[3], 
+                  slope = int_plot_df$simple_slopes[3], 
+                  color = "+1SD Individualism"), 
+              show.legend = TRUE) +
+  # add a title and label the axes
+  labs(title = "Effect of emotion suppression on social support \nat low, mid, & high levels of individualism", 
+       x = "Emotion suppression (Centered)", y = "Social Support") +
+  # we need to set the colors of the lines manually, which requires scale_color_manual()
+  scale_color_manual("Individualism Level", 
+  # values() is where you specify the colors, in the form label = color_name
+                     values = c("-1SD Individualism" = "salmon", 
+                              "Mean Individualism" = "purple",
+                              "+1SD Individualism" = "cornflower blue")) + 
+  theme_minimal()
+```
+
+
+## `sjPlot::plot_model()`
+
+* Ok that was intense...Fortunately there is a much easier way to plot interactions! We can use the `plot_model()` function from `{sjPlot}`. This function takes in a fitted model object as the first argument (i.e. `model`). You can then specify the `type` of plot; in this case we will tell it to plot the simple slopes of our interaction model by specifying `type = "int"`. Lastly, we will specify which values of the moderator variable (in our case, Individualism) to plot as separate lines. 
+
+```{r}
+plot_model(model = model_int, # model fit object
+           type = "int", # interaction 
+           mdrt.values = "meansd") # which values of the moderator variable should be used
+```
+
+* You can read more about using `sjPlot::plot_model()` to plot interactions [here](http://www.strengejacke.de/sjPlot/articles/plot_interactions.html){target="_blank"}
 
 ***
 
-# Plotting simple slops
+# Significance tests of simple slopes
 
-## By hand
+* Let's talk about how to run significance tests on simple slopes. For each simple slope we can test whether it is significantly different from 0. 
 
-## `sjPlot::plot_model()`
+<br>
+
+* We'll use the function `simple_slopes()` from the `{reghelper}` package (make sure you have this installed). This function takes in a model object and outputs a data frame with a row for each simple effect. 
+
+<br>
+
+* The first few columns identify the level at which each variable in your model was set for that test. A `sstest` value in a particular column indicates that the simple slope for this variable is being tested. The column labeled `Test Estimate` will give you the simple slopes (by default at -1 SD, mean, and + 1 SD), and the remaining columns have the information that pertains to the significance test. 
+
+```{r}
+simple_slopes(model = model_int)
+```
+
+* In our case, we are only interested in the simple slopes of Suppression (at different levels of Individualism), so we can filter the resulting data frame from to only give us the relevant information
+
+```{r}
+simple_slopes(model_int) %>% 
+  filter(suppression_c == "sstest")
+```
+
+* Lastly, let's prove to ourselves and our long and arduous way of calculating simple slopes by hand was correct!
+
+<br>
+
+* Here are the simple slopes calculated by `reghelper::simple_slopes()`...
+
+```{r}
+simple_slopes(model_int) %>% 
+  filter(suppression_c == "sstest") %>% 
+  select(`Test Estimate`)
+```
+
+* Here are the simple slopes we calculated by hand...
+
+```{r}
+# we created this data frame earlier
+int_plot_df %>% 
+  select(simple_slopes)
+```
 
 ***
 
