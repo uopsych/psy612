@@ -186,7 +186,7 @@ head(social)
 
 ***
 
-# Runing interaction models{#run}
+# Running interaction models{#run}
 
 * Next we'll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., `lm(Y ~ X*Z)`, which tells R to include `X`, `Z`, and `XZ` (the interaction term). It is equivalent to running it spelled out, e.g., `lm(Y ~ X + Z + X:Z)`. If we wanted *just* the interaction, we would run a model with just the last term, e.g.,  `lm(Y ~ X:Z)`...but DON'T DO THIS! 
 

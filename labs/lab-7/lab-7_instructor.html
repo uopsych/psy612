@@ -2994,7 +2994,7 @@ library(sjPlot) # for plotting simple slopes</code></pre>
 </div>
 </div>
 <div id="run" class="section level1">
-<h1>Runing interaction models</h1>
+<h1>Running interaction models</h1>
 <ul>
 <li>Next we’ll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., <code>lm(Y ~ X*Z)</code>, which tells R to include <code>X</code>, <code>Z</code>, and <code>XZ</code> (the interaction term). It is equivalent to running it spelled out, e.g., <code>lm(Y ~ X + Z + X:Z)</code>. If we wanted <em>just</em> the interaction, we would run a model with just the last term, e.g., <code>lm(Y ~ X:Z)</code>…but DON’T DO THIS!</li>
 </ul>
