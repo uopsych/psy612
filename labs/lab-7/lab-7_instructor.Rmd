@@ -116,8 +116,6 @@ $$\hat{Y} = b_0 + b_1X + b_2Z +  b_3(XZ)$$
 $$\hat{SocSupport} = b_0 + b_1Suppression + b_2Individualism +  b_3(Suppression*Individualism)$$  
 <br>
 
-* Conceptual interpretation
-
 >**Question:** What does b0 represent?
 
 >**Answer:** the expected value of social support when all other variables in the model (suppression and individualism) are 0
@@ -166,6 +164,8 @@ social <- social %>%
          indiv_c = as.numeric(scale(indiv, center = TRUE, scale = FALSE)))
 ```
 
+<br>
+
 * Let's peek at our new data frame. We now have both centered and un-centered versions of our predictor variables
 
 #### {.tabset .tabset-fade .tabset-pills}
@@ -213,7 +213,12 @@ summary(model_int)
 
 ## Interpret the coefficients
 
-* Remember that we first centered our predictor variables before running the model. With that in mind...
+* Remember that we first centered our predictor variables before running the model. With that in mind, let's interpret what the model coefficients mean. Here are the coefficients again...
+
+```{r echo=FALSE}
+summary(model_int)
+```
+
 
 <br> 
 
@@ -223,15 +228,15 @@ summary(model_int)
 
 >**Question:** What does b1 represent?
 
->**Answer:** the effect of emotion suppression on social support at a mean level of individualism (because we centered our predictors)
+>**Answer:** the effect of expressive suppression on social support at a mean level of individualism (because we centered our predictors); at the mean of individualism, we expect virtually no change in social support for a 1-unit increase in expressive suppression
 
 >**Question:** What does b2 represent?
 
->**Answer:** the effect of individualism on social support at a mean level of emotion suppression
+>**Answer:** the effect of individualism on social support at a mean level of expressive suppression; at the mean of suppression, we expect a 0.16-unit change in social support for a 1-unit increase in individualism
 
 >**Question:** What does b3 represent?
 
->**Answer:** for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of emotion suppression on social support. The value/interpretation of b3 DOES NOT CHANGE because of centering! 
+>**Answer:** for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of expressive suppression on social support. The value/interpretation of b3 DOES NOT CHANGE because of centering! 
 
 ## A note about multicollinearity 
 
@@ -331,7 +336,7 @@ social %>%
 
 # Simple slopes{#simpleslopes}
 
-* Interpreting what the interaction between emotion suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are "simple slopes" so we will discuss what this means first before diving into making plots. 
+* Interpreting what the interaction between expressive suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are "simple slopes" so we will discuss what this means first before diving into making plots. 
 
 <br> 
 
@@ -502,8 +507,8 @@ social %>%
                   color = "+1SD Individualism"), 
               show.legend = TRUE) +
   # add a title and label the axes
-  labs(title = "Effect of emotion suppression on social support \nat low, mid, & high levels of individualism", 
-       x = "Emotion suppression (Centered)", y = "Social Support") +
+  labs(title = "Effect of expressive suppression on social support \nat low, mid, & high levels of individualism", 
+       x = "Expressive suppression (Centered)", y = "Social Support") +
   # we need to set the colors of the lines manually, which requires scale_color_manual()
   scale_color_manual("Individualism Level", 
   # values() is where you specify the colors, in the form label = color_name
@@ -523,7 +528,7 @@ social %>%
 
 >**Question:** How would you interpret this plot?  
 
->**Answer:** At high levels of individualism there is a negative relationship between emotion suppression and social support. In other words, for people who are more individualistic, suppressing emotion corresponds to less social support. At low levels of individualism/high levels of collectivism, there is a positive relationship between emotion suppression and social support. In other words, for people who are highly collectivistic, suppressing emotion leads to more social support. 
+>**Answer:** At high levels of individualism there is a negative relationship between expressive suppression and social support. In other words, for people who are more individualistic, suppressing emotion expression corresponds to less social support. At low levels of individualism/high levels of collectivism, there is a positive relationship between expressive suppression and social support. In other words, for people who are highly collectivistic, suppressing emotion corresponds to more social support. 
 
 ## `sjPlot::plot_model()`
 
