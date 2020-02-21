@@ -3060,6 +3060,31 @@ summary(model_int)</code></pre>
 <blockquote>
 <p><strong>Question:</strong> What does b3 represent?</p>
 </blockquote>
+<p><br></p>
+<ul>
+<li>For comparison, here is the model output if we had NOT centered our predictors. The lower-order coefficients (b0, b1, b2) are less meaningful/interpretable here. But notice that the higher-order coefficient (b3) does not change!</li>
+</ul>
+<pre><code>## 
+## Call:
+## lm(formula = socsup ~ suppression * indiv, data = social)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.79330 -0.81716  0.02792  1.00532  2.45494 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       -0.15430    0.91326  -0.169 0.866336    
+## suppression        0.88875    0.27286   3.257 0.001757 ** 
+## indiv              1.06850    0.27183   3.931 0.000201 ***
+## suppression:indiv -0.30378    0.08304  -3.658 0.000497 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.197 on 68 degrees of freedom
+## Multiple R-squared:  0.1874, Adjusted R-squared:  0.1515 
+## F-statistic: 5.227 on 3 and 68 DF,  p-value: 0.002632</code></pre>
+<p><br></p>
 </div>
 <div id="a-note-about-multicollinearity" class="section level2">
 <h2>A note about multicollinearity</h2>
