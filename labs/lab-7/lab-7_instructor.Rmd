@@ -374,6 +374,9 @@ social %>%
   theme_minimal()
 ```
 
+>**Question:** How would you interpret this?  
+
+>**Answer:** At high levels of individualism there is a negative relationship between emotion suppression and social support. In other words, for people who are more individualistic, suppressing emotion corresponds to less social support. At low levels of individualism/high levels of collectivism, there is a positive relationship between emotion suppression and social support. In other words, for people who are highly collectivistic, suppressing emotion leads to more social support. 
 
 ## `sjPlot::plot_model()`
 
