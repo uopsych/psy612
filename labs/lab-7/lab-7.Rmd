@@ -69,6 +69,8 @@ The tendency to suppress the expression of emotion when regulating one's emotion
 social <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/social_support.csv")
 ```
 
+<br> 
+
 * Look at the structure
 
 #### {.tabset .tabset-fade .tabset-pills}
