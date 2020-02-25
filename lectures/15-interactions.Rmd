@@ -235,64 +235,100 @@ Where you draw the segment changes the difference in means. That's why $b_1$ can
 
 ## Example 
 
-A recent study by [Craig, Nelson, & Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces.
+```{r, echo = F}
+set.seed(022520)
+x = rnorm(n = 50)
+econ_income = 120 + 20*x + rnorm(n = 50, sd = 15)
+psych_income = 80 + 30*x+ rnorm(n = 50, sd = 15)
+english_income = 60 + 20*x+ rnorm(n = 50, sd = 15)
+econ_gpa = .3*x + 3.0 + rnorm(n = 50, sd = .05)
+psych_gpa = .3*x + 3.5 + rnorm(n = 50, sd = .05)
+english_gpa = .3*x + 3.7 + rnorm(n = 50, sd = .05)
 
-.pull-left[
-![](images/beard photos.png)
-]
+inc_data = data.frame(major = rep(c("Econ", "Psych", "English"), each = 50),
+                      gpa = c(econ_gpa, psych_gpa, english_gpa),
+                      income = c(econ_income, psych_income, english_income))
+inc_data$income[inc_data$income < 21] = rnorm(n = length(which(inc_data$income < 21)),
+                                              m = 55, sd = 10)
+```
 
-.pull-right[
-Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. 
-]
+The University of Oregon is interested in understanding how undergraduates' academic performance and choice of major impacts their career success. They contact 150 alumni between the ages of 25 and 35 and collect their current salary (in thousands of dollars), their primary undergarduate major, and their GPA upon graduating. 
 
----
-.pull-left[
-I want to know whether men who are good at identifying angry expressions of clean-shaven men are also good at identifying angry expressions of bearded men. 
 
-I also want to know if that relationship differs among men (participants) who are bearded.
-]
 
-.pull-right[
-![](images/beard photos.png)
-]
+<!-- A recent study by [Craig, Nelson, & Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces. -->
+
+<!-- ![](images/beard photos.png) -->
+
+<!-- Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome.  -->
+
+<!-- I want to know whether men who are good at identifying angry expressions of clean-shaven men are also good at identifying angry expressions of bearded men.  -->
+<!-- I also want to know if that relationship differs among men (participants) who are bearded. -->
+<!-- ![](images/beard photos.png) -->
+
 
 ---
 
 ### `R` code
 
-```{r, message = F, warning = F}
+```{r, message = F, warning = F, echo = F, eval = F}
 library(here)
 beards = read.csv(here("data/beards.csv"), stringsAsFactors = F)
 ```
 
-```{r, echo = F}
+
+```{r, echo = F, eval = F}
 beards = beards %>% 
   filter(beard %in% c("No","Yes")) %>%
   mutate(beard = factor(beard, levels = c("No", "Yes")))
 ```
 
-```{r, message = F, warning = F}
+```{r, message = F, warning = F, echo = F, eval = F}
 library(psych)
 table(beards$beard)
 describe(beards[,c("BA_mean", "CA_mean")], fast = T)
 ```
 
+```{r, message = F, warning = F}
+library(psych)
+table(inc_data$major)
+describe(inc_data[,c("gpa", "income")], fast = T)
+```
 ---
 ### Model summary
 
-```{r}
+```{r, echo = F, eval = F}
 beard.mod = lm(BA_mean ~ CA_mean*beard, data = beards)
 summary(beard.mod)
 ```
+
+```{r}
+career.mod = lm(income ~ gpa*major, data = inc_data)
+summary(career.mod)
+```
+
+---
+### Model summary: centering predictors
+
+```{r}
+inc_data$gpa_c = inc_data$gpa - mean(inc_data$gpa)
+career.mod_c = lm(income ~ gpa_c*major, data = inc_data)
+summary(career.mod_c)
+```
+
 ---
 
 ### Plotting results
 
-```{r, message = F, warning = F, fig.width=10, fig.height=6}
+```{r, message = F, warning = F, fig.width=10, fig.height=6, echo = F, eval = F}
 library(sjPlot)
 plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in milliseconds)", "Response to bearded faces (in milliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
 ```
 
+```{r, message = F, warning = F, fig.width=10, fig.height=6}
+library(sjPlot)
+plot_model(career.mod, type = "int", show.data = T, axis.title = c("Grade Point Average", "Income (in thousands of dollars)"), legend.title = "Undergraduate Major", title = "I'm in the wrong profession", wrap.title = T)
+```
 ---
 
 ## Two categorical predictors
@@ -302,6 +338,7 @@ If both X and M are categorical variables, the interpretation of coefficients is
 Recall our Solomon's paradox example from a few weeks ago:
 
 ```{r}
+library(here)
 solomon = read.csv(here("data/solomon.csv"))
 ```
 ```{r, echo = F}

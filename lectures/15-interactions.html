@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
   <head>
-    <title>Interactions (II and III)</title>
+    <title>Interactions (II)</title>
     <meta charset="utf-8" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Interactions (II and III)
+# Interactions (II)
 
 ---
 
@@ -223,104 +223,139 @@ Where you draw the segment changes the difference in means. That's why `\(b_1\)`
 
 ## Example 
 
-A recent study by [Craig, Nelson, &amp; Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces.
 
-.pull-left[
-![](images/beard photos.png)
-]
 
-.pull-right[
-Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. 
-]
+The University of Oregon is interested in understanding how undergraduates' academic performance and choice of major impacts their career success. They contact 150 alumni between the ages of 25 and 35 and collect their current salary (in thousands of dollars), their primary undergarduate major, and their GPA upon graduating. 
 
----
-.pull-left[
-I want to know whether men who are good at identifying angry expressions of clean-shaven men are also good at identifying angry expressions of bearded men. 
 
-I also want to know if that relationship differs among men (participants) who are bearded.
-]
 
-.pull-right[
-![](images/beard photos.png)
-]
+&lt;!-- A recent study by [Craig, Nelson, &amp; Dixson, 2019](https://journals.sagepub.com/doi/full/10.1177/0956797619834876) examined whether the presence or absence of a beard made it easier to decode a man's facial expression. In this study, participants were presented with photographs of bearded and clean-shaven men making expressive faces. --&gt;
+
+&lt;!-- ![](images/beard photos.png) --&gt;
+
+&lt;!-- Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome.  --&gt;
+
+&lt;!-- I want to know whether men who are good at identifying angry expressions of clean-shaven men are also good at identifying angry expressions of bearded men.  --&gt;
+&lt;!-- I also want to know if that relationship differs among men (participants) who are bearded. --&gt;
+&lt;!-- ![](images/beard photos.png) --&gt;
+
 
 ---
 
 ### `R` code
 
 
-```r
-library(here)
-beards = read.csv(here("data/beards.csv"), stringsAsFactors = F)
-```
+
+
+
 
 
 
 
 ```r
 library(psych)
-table(beards$beard)
+table(inc_data$major)
 ```
 
 ```
 ## 
-##  No Yes 
-##  97  42
+##    Econ English   Psych 
+##      50      50      50
 ```
 
 ```r
-describe(beards[,c("BA_mean", "CA_mean")], fast = T)
+describe(inc_data[,c("gpa", "income")], fast = T)
 ```
 
 ```
-##         vars   n   mean     sd    min     max   range    se
-## BA_mean    1 139 592.91 142.36 239.65 1128.24  888.59 12.08
-## CA_mean    2 139 606.56 143.89 264.12 1278.69 1014.57 12.20
+##        vars   n  mean   sd   min    max  range   se
+## gpa       1 150  3.36  0.4  2.44   4.19   1.74 0.03
+## income    2 150 84.35 34.0 24.67 160.27 135.60 2.78
 ```
-
 ---
 ### Model summary
 
 
+
+
 ```r
-beard.mod = lm(BA_mean ~ CA_mean*beard, data = beards)
-summary(beard.mod)
+career.mod = lm(income ~ gpa*major, data = inc_data)
+summary(career.mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = BA_mean ~ CA_mean * beard, data = beards)
+## lm(formula = income ~ gpa * major, data = inc_data)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -196.024  -23.649    0.276   25.731  175.955 
+##     Min      1Q  Median      3Q     Max 
+## -42.625 -11.869   0.376   9.301  40.942 
 ## 
 ## Coefficients:
-##                   Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)       -8.01682   23.16591  -0.346  0.72984    
-## CA_mean            0.99245    0.03733  26.583  &lt; 2e-16 ***
-## beardYes         128.11638   40.08496   3.196  0.00173 ** 
-## CA_mean:beardYes  -0.21542    0.06398  -3.367  0.00099 ***
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       -59.181     22.902  -2.584   0.0108 *  
+## gpa                59.660      7.705   7.743 1.58e-12 ***
+## majorEnglish      -81.747     37.149  -2.201   0.0294 *  
+## majorPsych       -175.314     35.462  -4.944 2.10e-06 ***
+## gpa:majorEnglish   -4.562     11.089  -0.411   0.6814    
+## gpa:majorPsych     29.545     10.949   2.698   0.0078 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 51.24 on 135 degrees of freedom
-## Multiple R-squared:  0.8733,	Adjusted R-squared:  0.8705 
-## F-statistic: 310.1 on 3 and 135 DF,  p-value: &lt; 2.2e-16
+## Residual standard error: 14.91 on 144 degrees of freedom
+## Multiple R-squared:  0.8142,	Adjusted R-squared:  0.8077 
+## F-statistic: 126.2 on 5 and 144 DF,  p-value: &lt; 2.2e-16
 ```
+
+---
+### Model summary: centering predictors
+
+
+```r
+inc_data$gpa_c = inc_data$gpa - mean(inc_data$gpa)
+career.mod_c = lm(income ~ gpa_c*major, data = inc_data)
+summary(career.mod_c)
+```
+
+```
+## 
+## Call:
+## lm(formula = income ~ gpa_c * major, data = inc_data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -42.625 -11.869   0.376   9.301  40.942 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         141.428      3.752  37.691  &lt; 2e-16 ***
+## gpa_c                59.660      7.705   7.743 1.58e-12 ***
+## majorEnglish        -97.086      4.907 -19.783  &lt; 2e-16 ***
+## majorPsych          -75.965      4.384 -17.327  &lt; 2e-16 ***
+## gpa_c:majorEnglish   -4.562     11.089  -0.411   0.6814    
+## gpa_c:majorPsych     29.545     10.949   2.698   0.0078 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 14.91 on 144 degrees of freedom
+## Multiple R-squared:  0.8142,	Adjusted R-squared:  0.8077 
+## F-statistic: 126.2 on 5 and 144 DF,  p-value: &lt; 2.2e-16
+```
+
 ---
 
 ### Plotting results
 
 
+
+
 ```r
 library(sjPlot)
-plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in milliseconds)", "Response to bearded faces (in milliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
+plot_model(career.mod, type = "int", show.data = T, axis.title = c("Grade Point Average", "Income (in thousands of dollars)"), legend.title = "Undergraduate Major", title = "I'm in the wrong profession", wrap.title = T)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
-
+![](15-interactions_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 ---
 
 ## Two categorical predictors
@@ -329,6 +364,14 @@ If both X and M are categorical variables, the interpretation of coefficients is
 
 Recall our Solomon's paradox example from a few weeks ago:
 
+
+```r
+library(here)
+```
+
+```
+## here() starts at /Users/sweston2/Google Drive/Work/Teaching/Courses/Graduate/Statistics and Methods Sequence/psy612
+```
 
 ```r
 solomon = read.csv(here("data/solomon.csv"))
@@ -522,7 +565,7 @@ summary(solomon.mod)
 plot_model(solomon.mod, type = "int")
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
 
 ---
 class:inverse
@@ -690,7 +733,7 @@ library(ggpubr)
 ggbarplot(data = Data, x = "Speed", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nspeed condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
 
 Looks like the mean differences are substantial.  The ANOVA will be able to tell us if the means are significantly different  and the magnitude of those differences in terms of variance accounted for.
 
@@ -752,7 +795,7 @@ Here, too adding information about variability allows us a sense of whether thes
 ggbarplot(data = Data, x = "Noise", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 
 The mean differences are not as apparent for this factor. The ANOVA will be particularly important for informing us about statistical significance and effect size.
 
