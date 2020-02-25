@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Bootstrapping</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Bootstrapping
+
+---
+
+
+#Last time...
+
+Wrapping up interactions
+
+* Power
+
+# Today
+
+Robust estimation
+* Weighted Least Squares
+* Boostrapping
+
+---
+
+ADD WLS Here
+* violation of homoscedasticity
+
+---
+
+WLS is a robust method for dealing with heteroscedasticity. What if you violate the normality assumption of regression?
+
+--
+
+A **bootstrapping** approach is useful when the theoretical sampling distribution for an estimate is unknown or unverifiable. In other words, if you have reason to suspect that either the variables in your model are not normally distributed, or that they're non-normally distributed, then bootstrapping can help ensure non-bias estimation and appropriately sized confidence intervals. 
+
+---
+
+## Bootstrapping
+
+In bootstrapping, the theoretical sampling distribution is assumed to be unknown or unverifiable. Under the weak assumption that the sample in hand is representative of some population, then that population sampling distribution can be built empirically by randomly sampling with replacement from the sample.
+
+The resulting empirical sampling distribution can be used to construct confidence intervals and make inferences.
+---
+### Example
+
+A sample of 216 response times. What is their central tendency and variability?
+
+There are several candidates for central tendency (e.g., mean, median) and for variability (e.g., standard deviation, interquartile range).  Some of these do not have well understood theoretical sampling distributions.
+
+For the mean and standard deviation, we have theoretical sampling distributions to help us, provided we think the mean and standard deviation are the best indices. For the others, we can use bootstrapping.
+
+---
+![](19-bootstrapping_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+---
+### Bootstrapping
+
+Before now, if we wanted to estimate the mean and the 95% confidence interval around the mean, we would find the theoretical sampling distribution by scaling a t-distribution to be centered on the mean of our sample and have a standard deviation equal to `\(\frac{s}{\sqrt{N}}.\)` But we have to make many assumptions to use this sampling distribution, and we may have good reason not to.  
+
+Instead, we can build a population sampling distribution empirically by randomly sampling with replacement from the sample.
+
+---
+
+### Illustration
+
+Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, and Ross. To bootstrap their heights, you would draw from this group many samples of 6 people *with replacement*, each time calculating the average height of the sample.
+
+
+```
+## [1] "Rachel"   "Ross"     "Ross"     "Chandler" "Ross"     "Joey"
+```
+
+```
+## [1] 71
+```
+
+```
+## [1] "Monica" "Joey"   "Monica" "Joey"   "Joey"   "Joey"
+```
+
+```
+## [1] 68.33333
+```
+
+```
+## [1] "Rachel"   "Ross"     "Chandler" "Phoebe"   "Rachel"   "Phoebe"
+```
+
+```
+## [1] 68.5
+```
+
+```
+## [1] "Monica" "Joey"   "Ross"   "Rachel" "Monica" "Joey"
+```
+
+```
+## [1] 68
+```
+
+```
+## [1] "Chandler" "Joey"     "Rachel"   "Joey"     "Joey"     "Monica"
+```
+
+```
+## [1] 68.66667
+```
+
+```
+## [1] "Ross"     "Ross"     "Phoebe"   "Phoebe"   "Monica"   "Chandler"
+```
+
+```
+## [1] 69.83333
+```
+
+```
+## [1] "Ross" "Ross" "Ross" "Ross" "Joey" "Ross"
+```
+
+```
+## [1] 72.5
+```
+
+```
+## [1] "Phoebe"   "Monica"   "Phoebe"   "Chandler" "Monica"   "Chandler"
+```
+
+```
+## [1] 68.33333
+```
+
+---
+
+
+```r
+boot = 10000
+response_means = numeric(length = boot)
+for(i in 1:boot){
+  sample_response = sample(response, size = 216, replace = T)
+  response_means[i] = mean(sample_response)
+}
+```
+
+![](19-bootstrapping_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+---
+
+
+```r
+mean(response_means)
+```
+
+```
+## [1] 687.5241
+```
+
+```r
+median(response_means)
+```
+
+```
+## [1] 686.9465
+```
+
+```r
+quantile(response_means, probs = c(.025, .975))
+```
+
+```
+##     2.5%    97.5% 
+## 632.2850 746.9348
+```
+
+What about something like the median?
+
+---
+
+
+```r
+boot = 10000
+response_med = numeric(length = boot)
+for(i in 1:boot){
+  sample_response = sample(response, size = 216, replace = T)
+  response_med[i] = median(sample_response)
+}
+```
+.pull-left[
+![](19-bootstrapping_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+]
+.pull-right[
+
+```r
+mean(response_med)
+```
+
+```
+## [1] 578.6415
+```
+
+```r
+median(response_med)
+```
+
+```
+## [1] 577.5063
+```
+
+```r
+quantile(response_med, 
+         probs = c(.025, .975))
+```
+
+```
+##     2.5%    97.5% 
+## 514.9828 630.1810
+```
+]
+---
+
+
+```r
+boot = 10000
+response_sd = numeric(length = boot)
+for(i in 1:boot){
+  sample_response = sample(response, size = 216, replace = T)
+  response_sd[i] = sd(sample_response)
+}
+```
+.pull-left[
+![](19-bootstrapping_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+.pull-right[
+
+```r
+mean(response_sd)
+```
+
+```
+## [1] 430.5549
+```
+
+```r
+median(response_sd)
+```
+
+```
+## [1] 430.1805
+```
+
+```r
+quantile(response_sd, 
+         probs = c(.025, .975))
+```
+
+```
+##     2.5%    97.5% 
+## 369.9810 493.0265
+```
+]
+
+---
+
+You can bootstrap estimates and 95% confidence intervals for *any* statistics you'll need to estimate. 
+
+The `boot` function provides some functions to speed this process along.
+
+
+```r
+library(boot)
+
+# function to obtain R-Squared from the data
+rsq &lt;- function(formula, data, indices) {
+  d &lt;- data[indices,] # allows boot to select sample
+  fit &lt;- lm(formula, data=d)
+  return(summary(fit)$r.square)
+}
+# bootstrapping with 10000 replications
+results &lt;- boot(data=mtcars, statistic=rsq,
+   R=10000, formula=mpg~wt+disp)
+```
+
+---
+.pull-left[
+
+```r
+data.frame(rsq = results$t) %&gt;%
+  ggplot(aes(x = rsq)) +
+  geom_histogram(color = "white", bins = 100) 
+```
+
+![](19-bootstrapping_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+median(results$t)
+```
+
+```
+## [1] 0.7962451
+```
+
+```r
+boot.ci(results, type = "perc")
+```
+
+```
+## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 10000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = results, type = "perc")
+## 
+## Intervals : 
+## Level     Percentile     
+## 95%   ( 0.6868,  0.8773 )  
+## Calculations and Intervals on Original Scale
+```
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

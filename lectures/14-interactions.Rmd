@@ -255,6 +255,7 @@ plot_model(imodel, type = "int")
 
 ```{r, results = 'hide', message = F, warning = F}
 plot_model(imodel, type = "int", mdrt.values = "meansd")
+plot_model(imodel, type = "pred", terms = c("Support", "Anxiety[5,10]"))
 ```
 
 ---

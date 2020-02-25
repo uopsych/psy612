@@ -24,6 +24,75 @@ Introduction to interactions with two continuous predictors
 
 ---
 
+### Recap
+
+We use interaction terms to test the hypothesis that the relationship between X and Y changes as a function of Z. 
+  - social support buffers the effect of anxiety and stress
+  - conscientiousness predicts better health for affluent individuals and worse health for non-affluent individuals
+  
+The interaction term represents how much the slope of X changes as you increase on Z, and also how much the slope of Z changes as you increase on X. Interactions are symmetric. 
+
+---
+### Recap: Output
+
+
+```r
+cars_model = lm(mpg ~ disp*hp, data = mtcars)
+summary(cars_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = mpg ~ disp * hp, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.5153 -1.6315 -0.6346  0.9038  5.7030 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.967e+01  2.914e+00  13.614 7.18e-14 ***
+## disp        -7.337e-02  1.439e-02  -5.100 2.11e-05 ***
+## hp          -9.789e-02  2.474e-02  -3.956 0.000473 ***
+## disp:hp      2.900e-04  8.694e-05   3.336 0.002407 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.692 on 28 degrees of freedom
+## Multiple R-squared:  0.8198,	Adjusted R-squared:  0.8005 
+## F-statistic: 42.48 on 3 and 28 DF,  p-value: 1.499e-10
+```
+
+---
+### Recap: Simple slopes
+
+
+```r
+library(reghelper)
+simple_slopes(cars_model, levels = list(hp = c(78, 147, 215)))
+```
+
+```
+##     disp  hp Test Estimate Std. Error t value df  Pr(&gt;|t|) Sig.
+## 1 sstest  78       -0.0507     0.0088 -5.7448 28 3.645e-06  ***
+## 2 sstest 147       -0.0307     0.0064 -4.8207 28 4.528e-05  ***
+## 3 sstest 215       -0.0110     0.0086 -1.2782 28    0.2117
+```
+---
+### Recap: Plot simple slopes
+
+
+```r
+library(sjPlot)
+plot_model(cars_model, type = "int", mdrt.values = "meansd")
+```
+
+![](15-interactions_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+
+---
+
 ## Today
 
 Mixing categorical and continuous predictors
@@ -65,15 +134,15 @@ This, by the way, is ANCOVA.
 
 ### Visualizing
 
-![](15-interactions_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
 
 ---
 ### Visualizing
-![](15-interactions_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
 
 ---
 ### Visualizing
-![](15-interactions_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 ---
 
 ### 3 or more groups
@@ -126,7 +195,7 @@ How do we interpret `\(b_1?\)`
 
 `\(b_1\)` is the difference in means between the two groups *when X is 0*.
 
-What is the intrepretation of `\(b_2\)`?
+What is the interpretation of `\(b_2\)`?
 
 --
 
@@ -142,7 +211,7 @@ What is the interpretation of `\(b_3?\)`
 
 ### Visualizing
 
-![](15-interactions_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 
 Where should we draw the segment to compare means?
 
@@ -161,8 +230,20 @@ A recent study by [Craig, Nelson, &amp; Dixson, 2019](https://journals.sagepub.c
 ]
 
 .pull-right[
-Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. I want to know whether men who are good at identifying expressions of clean-shaven men are also good at identifying bearded men; I also want to know if that relationship differs among men (participants) who are bearded.
+Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. 
 ]
+
+---
+.pull-left[
+I want to know whether men who are good at identifying angry expressions of clean-shaven men are also good at identifying angry expressions of bearded men. 
+
+I also want to know if that relationship differs among men (participants) who are bearded.
+]
+
+.pull-right[
+![](images/beard photos.png)
+]
+
 ---
 
 ### `R` code
@@ -235,10 +316,10 @@ summary(beard.mod)
 
 ```r
 library(sjPlot)
-plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in miliseconds)", "Response to bearded faces (in miliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
+plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in milliseconds)", "Response to bearded faces (in milliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -441,12 +522,12 @@ summary(solomon.mod)
 plot_model(solomon.mod, type = "int")
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
 
 ---
-
-## Factorial ANOVA
 class:inverse
+## Factorial ANOVA
+
 
 The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
 
@@ -490,6 +571,7 @@ If equal numbers of participants occur in each combination, the design is **bala
 We describe the factorial ANOVA design by the number of **levels** of each **factor.** 
 
   - Factor: a variable that is being manipulated or in which there are two or more groups
+  
   - Level: the different groups within a factor
 
 In this case, we have a 3 x 3 ANOVA ("three by three"), because our first factor (speed) has three levels (slow, medium, and fast) and our second factor (noise) also has three levels (none, controllable, and uncontrollable)
@@ -608,7 +690,7 @@ library(ggpubr)
 ggbarplot(data = Data, x = "Speed", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nspeed condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
 
 Looks like the mean differences are substantial.  The ANOVA will be able to tell us if the means are significantly different  and the magnitude of those differences in terms of variance accounted for.
 
@@ -670,7 +752,7 @@ Here, too adding information about variability allows us a sense of whether thes
 ggbarplot(data = Data, x = "Noise", y = "Time", add = c("mean_ci"), fill = "#562457", xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
 
 The mean differences are not as apparent for this factor. The ANOVA will be particularly important for informing us about statistical significance and effect size.
 
@@ -811,10 +893,10 @@ If not, then we would need to say that the noise condition effect depends upon (
 
 
 ```r
-ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
+ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci"), position = position_dodge(), xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 
 The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
 
@@ -826,16 +908,14 @@ The presence of an interaction qualifies any main effect conclusions, leading to
 
 .pull-left[
 
-![](15-interactions_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
 
 ]
 
 .pull-right[
 
 Does noise condition affect failure time? 
-]
---
-.pull-right[
+
 "Yes, but the magnitude of the effect is strongest for the medium speed condition, weaker for the fast speed condition, and mostly absent for the slow speed condition."
 ]
 
@@ -903,7 +983,7 @@ An interaction.]
 
 ]
 
-![](15-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-36-1.png)&lt;!-- --&gt;
 ---
 
 ### Null Hypotheses
@@ -1079,9 +1159,7 @@ Caution:  Comparing the confidence intervals for two means (overlap) is not the 
 ]
 
 .pull-right[
-
-If the null hypotheses are true, these ratios will be approximately 1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
-
+If the null hypotheses are true, these ratios will be ~1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
 ]
 
 ---
@@ -1165,7 +1243,7 @@ Interactions are tests of the differences of differences of means -- is the diff
 
 ### Visualizing main effects and interactions
 
-![](15-interactions_files/figure-html/unnamed-chunk-36-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-39-1.png)&lt;!-- --&gt;
 
 ???
 No effect of A
@@ -1175,7 +1253,7 @@ No interaction
 
 ### Visualizing main effects and interactions
 
-![](15-interactions_files/figure-html/unnamed-chunk-37-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-40-1.png)&lt;!-- --&gt;
 ???
 Main effect of A
 Main effect of B
@@ -1184,7 +1262,7 @@ Interaction
 
 ### Visualizing main effects and interactions
 
-![](15-interactions_files/figure-html/unnamed-chunk-38-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-41-1.png)&lt;!-- --&gt;
 
 ???
 No effect of A
@@ -1352,7 +1430,7 @@ The sum of partial `\(\eta^2\)` does not have a meaningful interpretation.
 
 ---
 
-## Differences in means
+**Differences in means**
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
 
@@ -1489,7 +1567,7 @@ noise_lsm
 
 ---
 
-![](15-interactions_files/figure-html/unnamed-chunk-44-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-47-1.png)&lt;!-- --&gt;
 
 --- 
 
@@ -1622,7 +1700,7 @@ leveneTest(Time ~ Speed*Noise, data = Data)
 
 If designs are balanced, then the main effects and interpretation effects are independent/orthogonal. In other words, knowing what condition a case is in on Variable 1 will not make it any easier to guess what condition they were part of in Variable 2. 
 
-However, if your design is unbalanced, the main effects and interactoin effect are partly confounded. 
+However, if your design is unbalanced, the main effects and interaction effect are partly confounded. 
 
 
 
@@ -1779,7 +1857,7 @@ Interaction tests whether there are differences in differences.
 A main effect is the effect of one IV on the DV **ignoring the other variable(s)**.
 ]
 .pull-right[
-#### Regresssion
+#### Regression
 
 Interaction tests whether slope changes. 
 

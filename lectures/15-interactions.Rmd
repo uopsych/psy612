@@ -17,6 +17,40 @@ Introduction to interactions with two continuous predictors
 
 ---
 
+### Recap
+
+We use interaction terms to test the hypothesis that the relationship between X and Y changes as a function of Z. 
+  - social support buffers the effect of anxiety and stress
+  - conscientiousness predicts better health for affluent individuals and worse health for non-affluent individuals
+  
+The interaction term represents how much the slope of X changes as you increase on Z, and also how much the slope of Z changes as you increase on X. Interactions are symmetric. 
+
+---
+### Recap: Output
+
+```{r}
+cars_model = lm(mpg ~ disp*hp, data = mtcars)
+summary(cars_model)
+```
+
+---
+### Recap: Simple slopes
+
+```{r, message = F}
+library(reghelper)
+simple_slopes(cars_model, levels = list(hp = c(78, 147, 215)))
+```
+---
+### Recap: Plot simple slopes
+
+```{r, message=FALSE, fig.width = 10, fig.height = 6}
+library(sjPlot)
+plot_model(cars_model, type = "int", mdrt.values = "meansd")
+```
+
+
+---
+
 ## Today
 
 Mixing categorical and continuous predictors
@@ -167,7 +201,7 @@ How do we interpret $b_1?$
 
 $b_1$ is the difference in means between the two groups *when X is 0*.
 
-What is the intrepretation of $b_2$?
+What is the interpretation of $b_2$?
 
 --
 
@@ -183,13 +217,12 @@ $b_3$ is the difference in slopes between the reference group and the other grou
 
 ### Visualizing
 
-```{r, echo = F}
+```{r, echo = F, fig.width=10, fig.height=6}
 ggplot(df, aes(X,Y, color = as.factor(D))) +
   geom_point(size = 3) +
   geom_smooth(method = "lm", se = F)+
   labs(color = "D") +
   cowplot::theme_cowplot()
-
 ```
 
 Where should we draw the segment to compare means?
@@ -209,8 +242,20 @@ A recent study by [Craig, Nelson, & Dixson, 2019](https://journals.sagepub.com/d
 ]
 
 .pull-right[
-Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. I want to know whether men who are good at identifying expressions of clean-shaven men are also good at identifying bearded men; I also want to know if that relationship differs among men (participants) who are bearded.
+Participants were asked to categorize each face as "happy" or "angry" as quickly as possible. Reaction time (in ms) was the outcome. 
 ]
+
+---
+.pull-left[
+I want to know whether men who are good at identifying angry expressions of clean-shaven men are also good at identifying angry expressions of bearded men. 
+
+I also want to know if that relationship differs among men (participants) who are bearded.
+]
+
+.pull-right[
+![](images/beard photos.png)
+]
+
 ---
 
 ### `R` code
@@ -245,7 +290,7 @@ summary(beard.mod)
 
 ```{r, message = F, warning = F, fig.width=10, fig.height=6}
 library(sjPlot)
-plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in miliseconds)", "Response to bearded faces (in miliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
+plot_model(beard.mod, type = "int", show.data = T, axis.title = c("Response to clean-shaven faces (in milliseconds)", "Response to bearded faces (in milliseconds)"), legend.title = "Participant beard?", title = "Smaller difference in reaction to clean-shaven and bearded faces among clean-shaven participants", wrap.title = T)
 ```
 
 ---
@@ -310,14 +355,14 @@ summary(solomon.mod)
 ---
 
 ### Plotting results
-```{r}
+```{r, fig.width=9, fig.height=6}
 plot_model(solomon.mod, type = "int")
 ```
 
 ---
-
-## Factorial ANOVA
 class:inverse
+## Factorial ANOVA
+
 
 The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
 
@@ -392,6 +437,7 @@ If equal numbers of participants occur in each combination, the design is **bala
 We describe the factorial ANOVA design by the number of **levels** of each **factor.** 
 
   - Factor: a variable that is being manipulated or in which there are two or more groups
+  
   - Level: the different groups within a factor
 
 In this case, we have a 3 x 3 ANOVA ("three by three"), because our first factor (speed) has three levels (slow, medium, and fast) and our second factor (noise) also has three levels (none, controllable, and uncontrollable)
@@ -534,7 +580,7 @@ If not, then we would need to say that the noise condition effect depends upon (
 ---
 
 ```{r, message = F, warning = F, fig.width = 10, fig.height = 4.5}
-ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
+ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci"), position = position_dodge(), xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
 ```
 
 The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
@@ -548,7 +594,7 @@ The presence of an interaction qualifies any main effect conclusions, leading to
 .pull-left[
 
 ```{r, message = F, warning = F, fig.width = 5, fig.height = 3,echo =F}
-ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 10)
+ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci"), position = position_dodge(), xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 10)
 ```
 
 ]
@@ -556,9 +602,7 @@ ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci
 .pull-right[
 
 Does noise condition affect failure time? 
-]
---
-.pull-right[
+
 "Yes, but the magnitude of the effect is strongest for the medium speed condition, weaker for the fast speed condition, and mostly absent for the slow speed condition."
 ]
 
@@ -595,7 +639,7 @@ An interaction.]
 ]
 
 ```{r, message = F, warning = F, fig.width = 7, fig.height = 8.5, echo = F}
-ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 15)
+ggbarplot(data = Data, x = "Noise", y = "Time", fill = "Speed", add = c("mean_ci"), position = position_dodge(), xlab = "Noise Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 15) + theme(legend.position = "top")
 ```
 ---
 
@@ -772,9 +816,7 @@ Caution:  Comparing the confidence intervals for two means (overlap) is not the 
 ]
 
 .pull-right[
-
-If the null hypotheses are true, these ratios will be approximately 1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
-
+If the null hypotheses are true, these ratios will be ~1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
 ]
 
 ---
@@ -998,7 +1040,7 @@ The sum of partial $\eta^2$ does not have a meaningful interpretation.
 
 ---
 
-## Differences in means
+**Differences in means**
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
 
@@ -1143,7 +1185,7 @@ leveneTest(Time ~ Speed*Noise, data = Data)
 
 If designs are balanced, then the main effects and interpretation effects are independent/orthogonal. In other words, knowing what condition a case is in on Variable 1 will not make it any easier to guess what condition they were part of in Variable 2. 
 
-However, if your design is unbalanced, the main effects and interactoin effect are partly confounded. 
+However, if your design is unbalanced, the main effects and interaction effect are partly confounded. 
 
 ```{r, echo = F}
 set.seed(23)
@@ -1277,7 +1319,7 @@ Interaction tests whether there are differences in differences.
 A main effect is the effect of one IV on the DV **ignoring the other variable(s)**.
 ]
 .pull-right[
-#### Regresssion
+#### Regression
 
 Interaction tests whether slope changes. 
 
