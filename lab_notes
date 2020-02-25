@@ -98,17 +98,40 @@ Lab 7: Interactions *BRENDAN*
 ------------------------------------------------------------------------------------------------------
 
 Lab 8: Factorial ANOVA *BRENDAN*
--look at factorial ANOVA slides
 
-- lsmeans package for obtaining means and SEs for groups
+-use lm() function (it'll give you the same thing as aov())
+  -anova() on lm object gives you anova table
+-create tables:
+  -apa.aov.table() - factorial ANOVA output
+  -apa.2way.table() --> gives you just means and marginal means
+  -https://cran.r-project.org/web/packages/apaTables/vignettes/apaTables.html
+
+- emmeans package for obtaining means and SEs for groups (look at slides for Thursday 2/27)
  > fit = lm(Y ~ X1*X2, data = data)
- > library(lsmeans)
  > all.means = ref.grid(fit)
  > x1.means = ref.grid(fit, "x1")
+ 
+-sjPlot:: plot_model() to get plots of marginal means and conditional means --> this gives you dots
+
+-if you want barplots instead...
+-ggpubr will give you a bar plot instead of dots (which plot_model gives you)
+  -NOTE: the confidence intervals will look different for each group because it does not pool standard deviations (which isn't accurate if you've met the homogeniety of variance assumption)
+  -don't go over ggpubr in lab, just link to ggpubr page or point them to Sara's source code from lecture
+  -you can also show them code for using sjplot::plot_model() output (means and CIs) to create a ggplot bar graph (see Sara's code from Slack)
+
+-calculating eta squared
+-lsr::etaSquared
 
 ------------------------------------------------------------------------------------------------------
 
 Lab 9: Papaja *CORY*
+
+-creating tables
+https://crsh.github.io/papaja_man/reporting.html#tables (also link to this whole book)
+
+-create a model
+-apa_print() will allow you to index separate coefficients that you can put in in-line code
+-apa_table(apa_print(model_object)$table) will genereate latex code to give you a formatted model summary table  
 
 ------------------------------------------------------------------------------------------------------
 
