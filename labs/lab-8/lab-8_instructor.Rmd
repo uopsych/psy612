@@ -1,0 +1,39 @@
+---
+title: "Lab 8: Factorial ANOVA"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# suppress scientific notation
+options(scipen = 999)
+```
+
+
+# Purpose
+XXX
+
+
+1. [Research scenario](#scenario)
+
+
+
+Be sure to have the following packages installed and loaded:
+
+```{r message=FALSE}
+library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+library(psych) # for descriptives
+```
+
+***
+
+# Research scenario{#scenario}
+
+
