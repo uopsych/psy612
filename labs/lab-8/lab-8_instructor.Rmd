@@ -36,4 +36,11 @@ library(psych) # for descriptives
 
 # Research scenario{#scenario}
 
+Based on subjects' self-reports of rejection sensitivity (N = 80), a researcher divides subjects into two equal groups (low RS and high RS).  Whereas half of the subjects in each group interact with a partner who displays a happy emotional expression during the interaction, the other half of the subjects in each group interact with a partner who displays a neutral emotional expression during the interaction.  After the interaction, subjects are asked to rate the statement, my interaction partner likes me, on a scale from 1 (strongly disagree) to 7 (strongly agree).
+
+## Data
+
+```{r}
+reject <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-8/data/reject.csv")
+```
 
