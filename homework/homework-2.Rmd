@@ -141,7 +141,7 @@ Estimating the weights is a bit of art. One common strategy is to extract the re
 
 ### Question 1
 
-In lecture (17-interactions), we simulated the power to detect an interaction when X and Z were drawn from a normal distribution. However, in this simulation, we assumed that X and Z were uncorrelated. 
+In lecture ([17-interactions](https://uopsych.github.io/psy612/lectures/17-interactions.html#1)), we simulated the power to detect an interaction when X and Z were drawn from a normal distribution. However, in this simulation, we assumed that X and Z were uncorrelated. 
 
 * Repeat the simulations performed in class with the following changes:
 1. Include a third scenario in which X and Z are correlated with each other. 
