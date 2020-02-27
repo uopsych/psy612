@@ -21,7 +21,7 @@ class: center, middle, inverse, title-slide
 ## Last time
 
 Mixing categorical and continuous variables
-- [Review example](https://uopsych.github.io/psy612/lectures/15-interactions.html#23)
+- [New example](https://uopsych.github.io/psy612/lectures/15-interactions.html#23)
 
 - Starting factorial ANOVA
 ---
@@ -49,7 +49,7 @@ The example data are from a simulated study in which 180 participants performed 
 ![](images/dot.jpg)
 ]
 
-The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second.  The second factor was noise condition.  Some participants performed the task without any noise; others were subjected to periodic and unpredictable 3-second bursts of 85 dB white noise played over earphones.  Of those subjected to noise, half could do nothing to stop the noise (uncontrollable noise); half believed they could stop the noise by pressing a button (controllable noise).
+The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second.  The second factor was noise condition: no noise, controllable noise, and uncontrollable noise.  The design was balanced. 
 
 ---
 
@@ -255,12 +255,8 @@ If not, then we would need to say that the noise condition effect depends upon (
 ---
 
 
-```r
-library(ggpubr)
-ggbarplot(data = Data, x = "Speed", y = "Time", fill = "Noise", add = c("mean_ci"), position = position_dodge(), xlab = "Speed Condition", ylab = "Mean Seconds (95% CI)", title = "Failure time as a function of\nnoise condition and speed condition") + cowplot::theme_cowplot(font_size = 20)
-```
-
 ![](16-interactions_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
 
 The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
 
@@ -452,14 +448,29 @@ The other part will be **between-group variability**.  This part will include va
 
 $$
 `\begin{aligned}
-\large SS_{\text{total}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
+\large SS_{\text{total}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{...})^2 \\
+\large SS_{\text{Within}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
 \large SS_R &amp;= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
 SS_C &amp;= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
 \large SS_{RC} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\end{aligned}`
+$$
+---
+
+### Variability 
+
+
+$$
+`\begin{aligned}
+\large SS_{\text{total}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{...})^2 \\
+\large SS_{\text{Within}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
+\large SS_R &amp;= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
+SS_C &amp;= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
 \large SS_{RC} &amp;= N\sum_{r=1}^R\sum_{c=1}^C(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
 \end{aligned}`
 $$
 ---
+
 
 ### Variability 
 
@@ -475,7 +486,8 @@ $$
 \large df_C &amp;= C-1 \\
 \large df_{RxC} &amp;= (R-1)(C-1) \\
 \large df_{within} &amp;= N-G \\
-&amp;= N-(R-1)-(C-1)-[(R-1)(C-1)]-1
+&amp;= N-(R-1)-(C-1)-[(R-1)(C-1)]-1\\
+&amp;= df_{total} - df_{R} - df_C - df_{RxC}
 \end{aligned}`
 $$
 
@@ -518,7 +530,15 @@ If the design is balanced (equal cases in all conditions), then:
 `\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
 
 .pull-left[
-Caution:  Comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means.
+$$
+`\begin{aligned}
+\large F_R &amp;= \frac{MS_R}{MS_{within}} \\
+\\
+\large F_C &amp;= \frac{MS_C}{MS_{within}} \\
+\\
+\large F_{RxC} &amp;= \frac{MS_{RxC}}{MS_{within}} \\
+\end{aligned}`
+$$
 
 ]
 
@@ -651,7 +671,7 @@ All of the effects in the ANOVA are statistically significant, but how big are t
 `$$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$`
 If the design is balanced...
 
-`$$\large SS_{\text{total}} = SS_{\text{speed}} + SS_{\text{noise}}+SS_{\text{speed:noise}}+SS_{\text{residual}}$$`
+`$$\large SS_{\text{total}} = SS_{\text{speed}} + SS_{\text{noise}}+SS_{\text{speed:noise}}+SS_{\text{within}}$$`
 ---
 
 
@@ -727,18 +747,18 @@ The sum of the `\(\eta^2\)` for effects and residual is 1.00.
 
 One argument against `\(\eta^2\)` is that its magnitude depends in part on the magnitude of the other effects in the design. If the amount of variability due to Noise or Speed x Noise changes, so to does the effect size for Speed.
 
-`$$\large \eta^2_{speed} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{noise}} + SS_{\text{speed:noise}}+ SS_{\text{residual}}}$$`
+`$$\large \eta^2_{\text{speed}} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{noise}} + SS_{\text{speed:noise}}+ SS_{\text{within}}}$$`
 
 An alternative is to pretend the other effects do not exist and reference the effect sum of squares to residual variability.
 
-`$$\large \text{partial }\eta^2_{speed} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{residual}}}$$`
+`$$\large \text{partial }\eta^2_{\text{speed}} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{within}}}$$`
 ---
 
 ### `\(\eta^2\)`
 
 One rationale for partial `\(\eta^2\)` is that the residual variability represents the expected variability in the absence of any treatments or manipulations.  The presence of any treatments or manipulations only adds to total variability.  Viewed from that perspective, residual variability is a sensible benchmark against which to judge any effect.
 
-`$$\large \text{partial }\eta^2_{effect} = \frac{SS_{\text{effect}}}{SS_{\text{effect}} + SS_{\text{residual}}}$$`
+`$$\large \text{partial }\eta^2_{\text{effect}} = \frac{SS_{\text{effect}}}{SS_{\text{effect}} + SS_{\text{within}}}$$`
 
 Partial `\(\eta^2\)` is sometimes described as the expected effect size in a study in which the effect in question is the only effect present.
 
@@ -794,7 +814,7 @@ The sum of partial `\(\eta^2\)` does not have a meaningful interpretation.
 
 ---
 
-**Differences in means**
+### Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
 
@@ -843,18 +863,19 @@ In a factorial design, marginal means or cell means must be calculated in order 
 
 These means will be based on different sample sizes, which has an impact on the width of the confidence interval.
 
-If the homogeneity of variances assumption holds, a common estimate of score variability `\((MS_{residual})\)` underlies all of the confidence intervals. 
 ---
 
 ### Precision
 
-`$$\large SE_{mean} = \sqrt{\frac{MS_{residual}}{N}}$$`
+If the homogeneity of variances assumption holds, a common estimate of score variability `\((MS_{within})\)` underlies all of the confidence intervals. 
 
-`$$\large CI_{mean} = Mean \pm t_{df_{residual}, \alpha = .05}\sqrt{\frac{MS_{residual}}{N}}$$`
+`$$\large SE_{mean} = \sqrt{\frac{MS_{within}}{N}}$$`
+
+`$$\large CI_{mean} = Mean \pm t_{df_{within}, \alpha = .05}\sqrt{\frac{MS_{within}}{N}}$$`
 
 The sample size, `\(N\)`, depends on how many cases are aggregated to create the mean.
 
-The `\(MS_{residual}\)` is common to all calculations if homogeneity of variances is met.  The degrees of freedom for `\(MS_{residual}\)` determine the value of `\(t\)` to use.
+The `\(MS_{within}\)` is common to all calculations if homogeneity of variances is met.  The degrees of freedom for `\(MS_{within}\)` determine the value of `\(t\)` to use.
 ---
 
 
@@ -874,6 +895,7 @@ anova(fit)
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
+---
 
 ```r
 library(emmeans)
@@ -931,9 +953,30 @@ noise_lsm
 
 ---
 
-![](16-interactions_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 
---- 
+```r
+library(sjPlot)
+noise_m = plot_model(fit, type = "pred", terms = c("Noise")) + 
+  theme_sjplot(base_size = 20)
+speed_m = plot_model(fit, type = "pred", terms = c("Speed")) + 
+  theme_sjplot(base_size = 20)
+library(ggpubr)
+ggarrange(noise_m, speed_m, ncol = 2)
+```
+
+![](16-interactions_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+plot_model(fit, type = "pred", terms = c("Speed", "Noise")) + 
+  theme_sjplot(base_size = 20) + theme(legend.position = "bottom")
+```
+
+![](16-interactions_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+---
 
 ### Cohen's D
 
@@ -994,9 +1037,9 @@ A reminder that comparing the confidence intervals for two means (overlap) is no
 
 $$
 `\begin{aligned}
-\large SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{residual}}{N}}\\
-\large SE_{\text{mean difference}} &amp;= \sqrt{MS_{residual}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
-\large SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{residual}}{N}} \\
+\large SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{within}}{N}}\\
+\large SE_{\text{mean difference}} &amp;= \sqrt{MS_{within}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
+\large SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{within}}{N}} \\
 \end{aligned}`
 $$
 
