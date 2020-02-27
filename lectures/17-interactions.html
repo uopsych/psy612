@@ -6,6 +6,7 @@
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
     <link rel="stylesheet" href="my-theme.css" type="text/css" />
   </head>
   <body>
@@ -21,11 +22,566 @@ class: center, middle, inverse, title-slide
 
 - Factorial ANOVA
 
+
+
+
 ---
 
-## Today
 
-- Statistical power
+
+.pull-left[
+The example data are from a simulated study in which 180 participants performed an eye-hand coordination task in which they were required to keep a mouse pointer on a red dot that moved in a circular motion.  
+]
+.pull-right[
+![](images/dot.jpg)
+]
+
+The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second.  The second factor was noise condition: no noise, controllable noise, and uncontrollable noise.  The design was balanced. 
+---
+
+### Marginal/cell means
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white !important;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;background-color: white !important;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;background-color: white !important;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;background-color: white !important;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;background-color: white !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+
+
+### Differences in means
+
+In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left; padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+These means will be based on different sample sizes, which has an impact on the width of the confidence interval.
+
+---
+
+## Running the analysis of variance
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
+## Noise         2  341315  170658  13.3075 4.252e-06 ***
+## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
+## Residuals   171 2192939   12824                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
+lsr::etaSquared(fit)
+```
+
+```
+##                 eta.sq eta.sq.part
+## Speed       0.49786168   0.5613078
+## Noise       0.06056150   0.1346807
+## Speed:Noise 0.05247123   0.1188269
+```
+
+
+---
+
+### Precision
+
+If the homogeneity of variances assumption holds, a common estimate of score variability `\((MS_{within})\)` underlies all of the confidence intervals. 
+
+`$$\large SE_{mean} = \sqrt{\frac{MS_{within}}{N}}$$`
+
+`$$\large CI_{mean} = Mean \pm t_{df_{within}, \alpha = .05}\sqrt{\frac{MS_{within}}{N}}$$`
+
+The sample size, `\(N\)`, depends on how many cases are aggregated to create the mean.
+
+The `\(MS_{within}\)` is common to all calculations if homogeneity of variances is met.  The degrees of freedom for `\(MS_{within}\)` determine the value of `\(t\)` to use.
+---
+
+
+```r
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
+## Noise         2  341315  170658  13.3075 4.252e-06 ***
+## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
+## Residuals   171 2192939   12824                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+---
+
+```r
+library(emmeans)
+(time_rg = ref_grid(fit))
+```
+
+```
+## 'emmGrid' object with variables:
+##     Speed = Slow, Medium, Fast
+##     Noise = None, Controllable, Uncontrollable
+```
+
+```r
+summary(time_rg)
+```
+
+```
+##  Speed  Noise          prediction   SE  df
+##  Slow   None                  631 25.3 171
+##  Medium None                  525 25.3 171
+##  Fast   None                  329 25.3 171
+##  Slow   Controllable          577 25.3 171
+##  Medium Controllable          493 25.3 171
+##  Fast   Controllable          287 25.3 171
+##  Slow   Uncontrollable        594 25.3 171
+##  Medium Uncontrollable        305 25.3 171
+##  Fast   Uncontrollable        268 25.3 171
+```
+
+---
+The lsmeans( ) function produces marginal and cell means along with their confidence intervals. These are the marginal means for the Noise main effect.
+
+
+```r
+noise_lsm = emmeans::lsmeans(time_rg, "Noise")
+```
+
+```
+## NOTE: Results may be misleading due to involvement in interactions
+```
+
+```r
+noise_lsm
+```
+
+```
+##  Noise          lsmean   SE  df lower.CL upper.CL
+##  None              495 14.6 171      466      524
+##  Controllable      452 14.6 171      423      481
+##  Uncontrollable    389 14.6 171      360      418
+## 
+## Results are averaged over the levels of: Speed 
+## Confidence level used: 0.95
+```
+
+---
+
+
+```r
+library(sjPlot)
+noise_m = plot_model(fit, type = "pred", terms = c("Noise")) + 
+  theme_sjplot(base_size = 20)
+speed_m = plot_model(fit, type = "pred", terms = c("Speed")) + 
+  theme_sjplot(base_size = 20)
+library(ggpubr)
+ggarrange(noise_m, speed_m, ncol = 2)
+```
+
+![](17-interactions_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+plot_model(fit, type = "pred", terms = c("Speed", "Noise")) + 
+  theme_sjplot(base_size = 20) + theme(legend.position = "bottom")
+```
+
+![](17-interactions_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+
+### Cohen's D
+
+`\(\eta^2\)` is useful for comparing the relative effect sizes of one factor to another. If you want to compare the differences between groups, Cohen's d is the more appropriate metric. Like in a t-test, you'll divide the differences in means by the pooled standard deviation. The pooled variance estimate is the `\(MS_{error}\)`
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)[,"Mean Sq"]
+```
+
+```
+## [1] 1402935.71  170657.62   73929.93   12824.20
+```
+
+```r
+MS_error = anova(fit)[,"Mean Sq"][4]
+```
+
+So to get the pooled standard deviation:
+
+
+```r
+pooled_sd = sqrt(MS_error)
+```
+
+---
+
+### Cohen's D
+
+
+```r
+(noise_df = as.data.frame(noise_lsm))
+```
+
+```
+##            Noise   lsmean       SE  df lower.CL upper.CL
+## 1           None 495.0976 14.61974 171 466.2392 523.9560
+## 2   Controllable 452.2079 14.61974 171 423.3495 481.0663
+## 3 Uncontrollable 389.0759 14.61974 171 360.2175 417.9343
+```
+
+```r
+(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+```
+
+```
+## [1] -0.3787367
+```
+
+
+---
+
+### Precision
+
+A reminder that comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means. 
+
+
+$$
+`\begin{aligned}
+\large SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{within}}{N}}\\
+\large SE_{\text{mean difference}} &amp;= \sqrt{MS_{within}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
+\large SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{within}}{N}} \\
+\end{aligned}`
+$$
+
+---
+
+### Follow-up comparisons
+
+Interpretation of the main effects and interaction in a factorial design will usually require follow-up comparisons.  These need to be conducted at the level of the effect.
+
+Interpretation of a main effect requires comparisons among the marginal means.
+
+Interpretation of the interaction requires comparisons among the cell means.
+
+The `emmeans` package makes these comparisons very easy to conduct.
+
+---
+
+
+```r
+noise_lsm = emmeans::lsmeans(time_rg, "Noise")
+```
+
+```
+## NOTE: Results may be misleading due to involvement in interactions
+```
+
+```r
+pairs(noise_lsm, adjust = "holm")
+```
+
+```
+##  contrast                      estimate   SE  df t.ratio p.value
+##  None - Controllable               42.9 20.7 171 2.074   0.0395 
+##  None - Uncontrollable            106.0 20.7 171 5.128   &lt;.0001 
+##  Controllable - Uncontrollable     63.1 20.7 171 3.053   0.0052 
+## 
+## Results are averaged over the levels of: Speed 
+## P value adjustment: holm method for 3 tests
+```
+
+---
+
+## Assumptions
+
+You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.
+
+Homogeneity of variance, for example, can be tested using Levene's test, instead of examining a plot.
+
+
+```r
+library(car)
+leveneTest(Time ~ Speed*Noise, data = Data)
+```
+
+```
+## Levene's Test for Homogeneity of Variance (center = median)
+##        Df F value Pr(&gt;F)
+## group   8  0.5879  0.787
+##       171
+```
+
+---
+
+## Unbalanced designs
+
+If designs are balanced, then the main effects and interpretation effects are independent/orthogonal. In other words, knowing what condition a case is in on Variable 1 will not make it any easier to guess what condition they were part of in Variable 2. 
+
+However, if your design is unbalanced, the main effects and interaction effect are partly confounded. 
+
+
+
+
+```r
+table(Data2$Level, Data2$Noise)
+```
+
+```
+##       
+##        Controllable Uncontrollable
+##   Soft           10             30
+##   Loud           20             20
+```
+
+---
+
+### Sums of Squares
+
+.pull-left[
+In a Venn diagram, the overlap represents the variance shared by the variables. Now there is variance accounted for in the outcome (Time) that cannot be unambiguously attributed to just one of the predictors There are several options for handling the ambiguous regions.]
+.pull-right[
+![](images/eta_sq_unbalanced.jpg)
+]
+---
+
+### Sums of Squares (III)
+
+.pull-left[
+![](images/eta_sq_unbalanced_iii.jpg)]
+
+.pull-right[
+There are three basic ways that overlapping variance accounted for in the outcome can be handled.  These are known as Type I, Type II, and Type III sums of squares. 
+
+Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome.
+]
+
+---
+
+### Sums of Squares (I)
+
+.pull-left[
+Type I sums of squares allocates the overlapping variance according to some priority rule.  All of the variance is claimed, but the rule needs to be justified well or else suspicions about p-hacking are likely.  The rule might be based on theory or causal priority or methodological argument.
+]
+
+.pull-right[
+![](images/eta_sq_unbalanced_i.jpg)]
+
+---
+
+### Sums of Squares (I)
+If a design is quite unbalanced, different orders of effects can produce quite different results.
+
+
+```r
+fit_1 = aov(Time ~ Noise + Level, data = Data2)
+summary(fit_1)
+```
+
+```
+##             Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
+## Noise        1  579478  579478   41.78 8.44e-09 ***
+## Level        1  722588  722588   52.10 3.20e-10 ***
+## Residuals   77 1067848   13868                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+lsr::etaSquared(fit_1, type = 1)
+```
+
+```
+##          eta.sq eta.sq.part
+## Noise 0.2445144   0.3517689
+## Level 0.3049006   0.4035822
+```
+
+---
+### Sums of Squares (I)
+If a design is quite unbalanced, different orders of effects can produce quite different results.
+
+
+```r
+fit_1 = aov(Time ~ Level + Noise, data = Data2)
+summary(fit_1)
+```
+
+```
+##             Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
+## Level        1 1035872 1035872   74.69 5.86e-13 ***
+## Noise        1  266194  266194   19.20 3.68e-05 ***
+## Residuals   77 1067848   13868                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+lsr::etaSquared(fit_1, type = 1)
+```
+
+```
+##          eta.sq eta.sq.part
+## Level 0.4370927   0.4924002
+## Noise 0.1123222   0.1995395
+```
+
+---
+### Sums of Squares (II)
+Type II sums of squares are the most commonly used but also a bit more complex to understand.  
+
+An approximately true description is that an effect is allocated the proportion of variance in the outcome that is unshared with effects at a similar or lower level.
+
+A technically correct description is that a target effect is allocated the proportion of variance in the outcome that is unshared with other effects that do not contain the target.
+
+---
+### Sums of Squares 
+In an A x B design, the A effect is the proportion of variance that is accounted for by A after removing the variance accounted for by B.
+
+The A x B interaction is allocated the proportion of variance that is accounted for by A x B after removing the variance accounted for by A and B.
+
+There is no convenient way to illustrate this in a Venn diagram.
+
+---
+
+The `aov( )` function in R produces Type I sums of squares. The `Anova( )` function from the car package provides Type II and Type III sums of squares.
+
+These work as expected provided the predictors are factors.
+
+
+---
+
+All of the between-subjects variance is accounted for by an effect in Type I sums of squares.  The sums of squares for each effect and the residual will equal the total sum of squares.
+
+For Type II and Type III sums of squares, the sums of squares for effects and residual will be less than the total sum of squares. Some variance (in the form of SS) goes unclaimed.
+
+The highest order effect (assuming standard ordering) has the same SS in all three models.
+
+When a design is balanced, Type I, II, and III sums of squares are equivalent.
+
+---
+
+## Summary (and Regression)
+
+Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability. 
+
+---
+
+.pull-left[
+#### Factorial ANOVA
+
+Interaction tests whether there are differences in differences.
+
+A main effect is the effect of one IV on the DV **ignoring the other variable(s)**.
+]
+.pull-right[
+#### Regression
+
+Interaction tests whether slope changes. 
+
+A conditional effect is the effect of IV on the DV **assuming all the other variables are 0**.
+]
+
 
 ---
 
@@ -44,7 +600,7 @@ The likelihood of finding an effect *if the effect actually exists.* Power gets 
 
 ---
 
-![](17-interactions_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -212,8 +768,8 @@ psych::describe(data.frame(X,Z), fast = T)
 
 ```
 ##   vars   n  mean   sd  min max range   se
-## X    1 100 -0.03 0.46 -1.0 1.0   2.0 0.05
-## Z    2 100  0.02 0.55 -1.2 1.2   2.4 0.05
+## X    1 100  0.02 0.47 -1.2 1.0   2.2 0.05
+## Z    2 100 -0.05 0.50 -1.2 1.2   2.4 0.05
 ```
 ---
 
@@ -231,21 +787,19 @@ summary(lm(Y ~ X*Z))
 ## lm(formula = Y ~ X * Z)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -9.9177 -2.9250 -0.0226  2.8417  8.9904 
+##      Min       1Q   Median       3Q      Max 
+## -12.2691  -1.8418  -0.0396   2.6666   9.1478 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)  -0.2430     0.4599  -0.528   0.5985  
-## X             2.0522     1.0168   2.018   0.0464 *
-## Z             1.5751     0.8661   1.819   0.0721 .
-## X:Z           0.3858     1.9122   0.202   0.8405  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)   0.1573     0.4070   0.386    0.700
+## X             0.7812     0.8712   0.897    0.372
+## Z             0.6686     0.8108   0.825    0.412
+## X:Z           0.9635     1.9267   0.500    0.618
 ## 
-## Residual standard error: 4.582 on 96 degrees of freedom
-## Multiple R-squared:  0.07045,	Adjusted R-squared:  0.0414 
-## F-statistic: 2.425 on 3 and 96 DF,  p-value: 0.07035
+## Residual standard error: 4.043 on 96 degrees of freedom
+## Multiple R-squared:  0.01752,	Adjusted R-squared:  -0.01318 
+## F-statistic: 0.5706 on 3 and 96 DF,  p-value: 0.6357
 ```
 
 ---
@@ -329,7 +883,7 @@ mean(obeta_xz)
 ## [1] 1.175444
 ```
 
-![](17-interactions_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -350,7 +904,7 @@ mean(ot_xz)
 ## [1] 0.7411209
 ```
 
-![](17-interactions_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 
 ---
 
