@@ -21,6 +21,8 @@ Factorial ANOVA refers to a special case of the general linear model in which th
 
 
 1. [Research scenario](#scenario)
+2. [Tables of means](#means)
+3. [Run the model](#model)
 
 Be sure to have the following packages installed and loaded:
 
@@ -33,6 +35,8 @@ library(emmeans) # for marginal means and simple effects
 library(sjPlot) # for plotting model results 
 library(ggpubr) # for arranging plots
 library(apaTables) # for tables of means
+library(car) # for testing model assumptions
+library(broom) # for tidying model output
 ```
 
 ***
@@ -104,7 +108,9 @@ reject %>%
   summarize(n = n())
 ```
 
-# Tables of means
+***
+
+# Tables of means{#means}
 
 ## Using `summarize()`
 
@@ -173,9 +179,30 @@ apa.2way.table(iv1 = rs,
 
 * An added plus is that you can easily export these tables to word (see `?apa.2way.table`).
 
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+apa.2way.table(iv1 = rs,
+               iv2 = partner,
+               dv = liking,
+               data = reject,
+               show.marginal.means = TRUE,
+               table.number = 1,
+               filename = here::here("/labs/lab-8/images/means.doc")) # example file path
+```
+
+##### Output
+
 <center>
 ![](images/means.png)
 </center>
+
+####
+<br>
+
+* Remember, a **main effect** is the effect of one IV on the DV completely ignoring the other variable(s).
 
 <br>
 
@@ -191,24 +218,122 @@ apa.2way.table(iv1 = rs,
 
 >**Answer:** the cell means
 
+*** 
 
-```{r}
-# contrasts(reject$rs) <- c(1, -1)
-# contrasts(reject$partner) <- c(1, -1)
-```
+# Running the model{#model}
 
-# 
+* Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability.
+
+<br>
+
+## Specify the model
+
+* We can specify the factorial ANOVA model using `lm()` the same way we specified 
 
 ```{r}
 model <- lm(liking ~ rs * partner, data = reject) 
 ```
 
+* We can look at the regression coefficients from the model. However, in the case of factorial ANOVA, these are less useful to interpret. 
+
 ```{r}
 summary(model)
 ```
 
+## ANOVA table
+
+* Instead, we will focus on the ANOVA table output. We can get this using `anova()`.
+
 ```{r}
 anova(model)
+```
+
+>**Question:** Is there a main effect of rejection sensitivity on perceived liking? 
+
+>**Answer:** Yes, BUT it depends on the interaction partner
+
+>**Question:** Is there a main effect of interaction partner on perceived liking? 
+
+>**Answer:** Yes, BUT it depends on the perceiver's rejection sensitivity 
+
+>**Question:** Is there an interaction between rejection sensitivity and interaction partner? 
+
+>**Answer:** Yes
+
+* We can tidy the ANOVA table output with `broom::tidy()`
+
+```{r}
+anova(model) %>% 
+  broom::tidy()
+```
+
+* `apaTables::apa.aov.table()` will generate an APA-formatted comprehensive ANOVA table for you
+
+```{r}
+# might need to have the {MBESS} package installed to use this function
+# install.packages("MBESS")
+
+apa.aov.table(lm_output = model,
+              conf.level = .95)
+```
+
+* This also allows you to ouput tables to Word. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r eval=FALSE}
+apa.aov.table(lm_output = model,
+              conf.level = .95,
+              table.number = 2,
+              filename = here::here("/labs/lab-8/images/anova_table.doc"))
+```
+
+##### Output
+
+<center>
+![](images/anova_table.png)
+</center>
+
+####
+<br>
+
+## Checking assumptions
+
+* You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.
+
+* Homogeneity of variance, for example, can be tested using Levene's test, instead of examining a plot.
+
+```{r}
+car::leveneTest(liking ~ rs * partner, data = reject)
+```
+
+>**Question:** Have we met the homogeneity of variance assumption?
+
+>**Answer:** Yes
+
+***
+
+# Plotting
+
+```{r}
+rs_plot <- plot_model(model, type = "pred", terms = c("rs")) 
+partner_plot <- plot_model(model, type = "pred", terms = c("partner")) 
+
+ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
+```
+
+* Plot the interaction
+
+```{r}
+plot_model(model, type = "int")
+```
+
+* Switch the terms
+
+```{r}
+plot_model(model, type = "pred", terms = c("partner", "rs"))
 ```
 
 
@@ -224,8 +349,9 @@ rs_lsm
 
 partner_lsm <- lsmeans(model, specs = "partner")
 partner_lsm
+```
 
-
+```{r}
 pairs(rs_lsm)
 pairs(partner_lsm)
 ```
@@ -234,3 +360,10 @@ pairs(partner_lsm)
 plot_model(model, type = "int")
 ```
 
+```{r}
+lsr::etaSquared(model)
+```
+
+>**Question:** Why might be prefer partial eta squared over eta squared? 
+
+>**Answer:** One argument against eta squared is that its magnitude depends in part on the magnitude of the other effects in the design. Partial eta squared pretends the other effects do not exist, comparing only to residual variability. 
