@@ -313,9 +313,25 @@ car::leveneTest(liking ~ rs * partner, data = reject)
 
 >**Answer:** Yes
 
+## Effect size
+
+* All of the effects in the ANOVA are statistically significant, but how big are they? An effect size $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs. You can think of it the same way as $R^2$ (proportion of variance explained).
+
+* To calculate $\eta^2$, we'll use  `etaSquared` from `{lsr}` (the companion package to your textbook). 
+
+```{r}
+lsr::etaSquared(model)
+```
+
+>**Question:** What does partial eta squared represent? Why might be prefer partial eta squared over eta squared? 
+
+>**Answer:** One argument against eta squared is that its magnitude depends in part on the magnitude of the other effects in the design. Partial eta squared pretends the other effects do not exist, comparing only to residual variability. 
+
 ***
 
 # Plotting
+
+* Plot the main effects 
 
 ```{r}
 rs_plot <- plot_model(model, type = "pred", terms = c("rs")) 
@@ -330,40 +346,30 @@ ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
 plot_model(model, type = "int")
 ```
 
-* Switch the terms
+* Switch how the interaction is visualized
 
 ```{r}
 plot_model(model, type = "pred", terms = c("partner", "rs"))
 ```
 
+***
+
+# Simple effects
+
+* Since we had a significant interaction above, we should look at the simple effects. Recall that simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
+
+<br> 
+
+* We'll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We'll use the `{emmeans}` packege, which Sara will go over more in lecture next week. 
+
+<br>
+
+* To get simple effects, we combine the `emmeans()` function with the `contrast()` function (both from `{emmeans}`). `emmeans()` works by passing it a model and then specifying which variables you're looking at. Then, we pass that along to `contrast()`, which can give us a variety of different contrasts. If we want simple effects for interaction partner expression at each level of rejection sensitivity we can use `by = "rs"` and `simple = "partner"`.
 
 ```{r}
-reject_ref_grid <- ref_grid(model)
-summary(reject_ref_grid)
+model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
+  contrast(by = "rs", # by is the variable we are looking at each level of
+           simple = "partner") # simple is what we want simple effects of.
 ```
 
-
-```{r}
-rs_lsm <- lsmeans(model, specs = "rs")
-rs_lsm
-
-partner_lsm <- lsmeans(model, specs = "partner")
-partner_lsm
-```
-
-```{r}
-pairs(rs_lsm)
-pairs(partner_lsm)
-```
-
-```{r}
-plot_model(model, type = "int")
-```
-
-```{r}
-lsr::etaSquared(model)
-```
-
->**Question:** Why might be prefer partial eta squared over eta squared? 
-
->**Answer:** One argument against eta squared is that its magnitude depends in part on the magnitude of the other effects in the design. Partial eta squared pretends the other effects do not exist, comparing only to residual variability. 
+* The output has two lines per simple effect, which just shows you what it looks like in either direction (note that they are equivalent), so you would just pick the direction that makes the most sense. 
