@@ -221,7 +221,7 @@ reject %>%
   group_by(partner) %>% # instead of grouping by both factors, we just group by interaction partner
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %>% 
-knitr::kable(digits = c(NA, 0, 2, 2),
+knitr::kable(digits = c(NA, 2, 2, 2),
              caption = "Marginal Means & SD for Interaction Partner")
 ```
 
