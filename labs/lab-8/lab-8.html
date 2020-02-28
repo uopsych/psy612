@@ -3253,7 +3253,7 @@ knitr::kable(digits = c(2, 2, 2),
 </ul>
 <pre class="r"><code>model &lt;- lm(liking ~ rs * partner, data = reject) </code></pre>
 <ul>
-<li>We can look at the regression coefficients from the model. However, in the case of factorial ANOVA, these are less useful to interpret.</li>
+<li>We can look at the regression coefficients from the model. However, in the case of factorial ANOVA, these are less useful to interpret when thinking about main effects.</li>
 </ul>
 <div id="section-22" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
@@ -3608,6 +3608,37 @@ plot_model(model, type = &quot;pred&quot;, terms = c(&quot;partner&quot;, &quot;
 <ul>
 <li>The output has two lines per simple effect, which just shows you what it looks like in either direction (note that they are equivalent), so you would just pick the direction that makes the most sense.</li>
 </ul>
+<p><br></p>
+<ul>
+<li>Now let’s look at simple effects for rejection sensitivity at each level of partner expression.</li>
+</ul>
+</div>
+<div id="section-46" class="section level4 tabset tabset-fade tabset-pills">
+<h4></h4>
+<div id="code-23" class="section level5">
+<h5>Code</h5>
+<pre class="r"><code>model %&gt;% emmeans(specs = c(&quot;partner&quot;, &quot;rs&quot;)) %&gt;% # specify our two factors
+  contrast(by = &quot;partner&quot;, # by is the variable we are looking at each level of
+           simple = &quot;rs&quot;) # simple is what we want simple effects of.</code></pre>
+</div>
+<div id="output-23" class="section level5">
+<h5>Output</h5>
+<pre><code>## partner = Neutral:
+##  contrast    estimate    SE df t.ratio p.value
+##  Low effect     1.875 0.127 76  14.754 &lt;.0001 
+##  High effect   -1.875 0.127 76 -14.754 &lt;.0001 
+## 
+## partner = Happy:
+##  contrast    estimate    SE df t.ratio p.value
+##  Low effect    -0.225 0.127 76  -1.770 0.0807 
+##  High effect    0.225 0.127 76   1.770 0.0807 
+## 
+## P value adjustment: fdr method for 2 tests</code></pre>
+</div>
+</div>
+<div id="section-47" class="section level4">
+<h4></h4>
+<p><br></p>
 </div>
 </div>
 

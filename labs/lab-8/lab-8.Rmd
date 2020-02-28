@@ -349,7 +349,7 @@ apa.2way.table(iv1 = rs,
 model <- lm(liking ~ rs * partner, data = reject) 
 ```
 
-* We can look at the regression coefficients from the model. However, in the case of factorial ANOVA, these are less useful to interpret. 
+* We can look at the regression coefficients from the model. However, in the case of factorial ANOVA, these are less useful to interpret when thinking about main effects. 
 
 #### {.tabset .tabset-fade .tabset-pills}
 
@@ -639,3 +639,26 @@ model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
 <br>
 
 * The output has two lines per simple effect, which just shows you what it looks like in either direction (note that they are equivalent), so you would just pick the direction that makes the most sense. 
+
+<br>
+
+* Now let's look at simple effects for rejection sensitivity at each level of partner expression.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-48, eval=FALSE}
+model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
+  contrast(by = "partner", # by is the variable we are looking at each level of
+           simple = "rs") # simple is what we want simple effects of.
+```
+
+##### Output
+
+```{r lab-8-instructor-49, echo=FALSE, ref.label='lab-8-instructor-48'}
+```
+
+####
+<br>
+
