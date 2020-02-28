@@ -3260,8 +3260,6 @@ knitr::kable(digits = c(2, 2, 2),
 <li>Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability.</li>
 </ul>
 <p><br></p>
-<div id="specify-the-model" class="section level2">
-<h2>Specify the model</h2>
 <ul>
 <li>We can specify the factorial ANOVA model using <code>lm()</code> the same way we specified</li>
 </ul>
@@ -3302,7 +3300,6 @@ knitr::kable(digits = c(2, 2, 2),
 <div id="section-23" class="section level4">
 <h4></h4>
 <p><br></p>
-</div>
 </div>
 <div id="anova-table" class="section level2">
 <h2>ANOVA table</h2>
@@ -3381,19 +3378,6 @@ knitr::kable(digits = c(2, 2, 2),
 
 apa.aov.table(lm_output = model,
               conf.level = .95)</code></pre>
-<pre><code>## 
-## 
-## ANOVA results using liking as the dependent variable
-##  
-## 
-##     Predictor     SS df     MS      F    p partial_eta2 CI_95_partial_eta2
-##   (Intercept) 616.05  1 616.05 953.56 .000                                
-##            rs 140.62  1 140.62 217.67 .000          .74         [.64, .80]
-##       partner   2.03  1   2.03   3.13 .081          .04         [.00, .15]
-##  rs x partner  88.20  1  88.20 136.52 .000          .64         [.51, .73]
-##         Error  49.10 76   0.65                                            
-## 
-## Note: Values in square brackets indicate the bounds of the 95% confidence interval for partial eta-squared</code></pre>
 </div>
 <div id="output-14" class="section level5">
 <h5>Output</h5>

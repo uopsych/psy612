@@ -351,8 +351,6 @@ apa.2way.table(iv1 = rs,
 
 <br>
 
-## Specify the model
-
 * We can specify the factorial ANOVA model using `lm()` the same way we specified 
 
 ```{r lab-8-instructor-26}
@@ -434,9 +432,7 @@ anova(model) %>%
 
 ##### Code
 
-```{r lab-8-instructor-33, eval=FALSE}
-
-```{r lab-8-instructor-34}
+```{r lab-8-instructor-34, eval = FALSE}
 # might need to have the {MBESS} package installed to use this function
 # install.packages("MBESS")
 
