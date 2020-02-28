@@ -474,6 +474,8 @@ apa.aov.table(lm_output = model,
 
 * You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.
 
+<br>
+
 * Homogeneity of variance, for example, can be tested using Levene's test, instead of examining a plot.
 
 #### {.tabset .tabset-fade .tabset-pills}
@@ -498,7 +500,9 @@ car::leveneTest(liking ~ rs * partner, data = reject)
 
 ## Effect size
 
-* All of the effects in the ANOVA are statistically significant, but how big are they? An effect size $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs. You can think of it the same way as $R^2$ (proportion of variance explained).
+* All of the effects in the ANOVA are statistically significant, but how big are they? An effect size, $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs. You can think of it the same way as $R^2$ (proportion of variance explained).
+
+<br>
 
 * To calculate $\eta^2$, we'll use  `etaSquared` from `{lsr}` (the companion package to your textbook). 
 
@@ -526,16 +530,20 @@ lsr::etaSquared(model)
 
 # Plotting{#plotting}
 
-* Plot the main effects 
+## Main effects 
 
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
 ```{r lab-8-instructor-41, eval=FALSE}
+# main effect of rejection sensitivity
 rs_plot <- plot_model(model, type = "pred", terms = c("rs")) 
+
+# main effect of interaction partner
 partner_plot <- plot_model(model, type = "pred", terms = c("partner")) 
 
+# arrange these two plots next to each other
 ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
 ```
 
@@ -547,13 +555,14 @@ ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
 ####
 <br>
 
-* Plot the interaction
+## Interaction
 
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
 ```{r lab-8-instructor-43, eval=FALSE}
+# plot the interaction 
 plot_model(model, type = "int")
 ```
 
@@ -572,12 +581,44 @@ plot_model(model, type = "int")
 ##### Code
 
 ```{r lab-8-instructor-45, eval=FALSE}
+# switch the order of the terms
 plot_model(model, type = "pred", terms = c("partner", "rs"))
 ```
 
 ##### Output
 
 ```{r lab-8-instructor-46, echo=FALSE, ref.label='lab-8-instructor-45'}
+```
+
+####
+<br>
+
+* The following ggplot code will generate a bar plot version of the interaction plot. The `emmeans()` function at the beginning calculates cell means (more on this below).
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-45.1, eval=FALSE}
+emmeans(model, specs = c("partner", "rs")) %>% 
+  broom::tidy() %>% 
+  ggplot(aes(x = rs, y = estimate, fill = partner)) + 
+  geom_bar(stat = "identity", 
+           position = "dodge", 
+           alpha = 0.7) + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), 
+                width = 0.20, 
+                position = position_dodge(0.9)) +
+  labs(title = "Effects of Rejection Sensitivity and Interaction Partner Expression \non Perceived Liking",
+       x = "Rejection Sensitivity",
+       y = "Perceived liking") +
+  guides(fill=guide_legend(title = "Partner's Expression")) + 
+  theme_minimal()
+```
+
+##### Output
+
+```{r lab-8-instructor-46.1, echo=FALSE, ref.label='lab-8-instructor-45.1'}
 ```
 
 ####
