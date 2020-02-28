@@ -17,12 +17,10 @@ options(scipen = 999)
 
 
 # Purpose
-XXX
+Factorial ANOVA refers to a special case of the general linear model in which there is an interaction of two or more categorical variables (i.e. *factors*). A factorial design is used when there is an interest in how two or more variables (or factors) affect some outcomes variable. Rather than conduct separate one-way ANOVAs for each factor, they are all included in one analysis. Today we will review how to run factorial ANOVA models in R and how to interpret and visualize the results. 
 
 
 1. [Research scenario](#scenario)
-
-
 
 Be sure to have the following packages installed and loaded:
 
@@ -30,17 +28,209 @@ Be sure to have the following packages installed and loaded:
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
+library(lsr) # for eta squared functions
+library(emmeans) # for marginal means and simple effects
+library(sjPlot) # for plotting model results 
+library(ggpubr) # for arranging plots
+library(apaTables) # for tables of means
 ```
 
 ***
 
 # Research scenario{#scenario}
 
-Based on subjects' self-reports of rejection sensitivity (N = 80), a researcher divides subjects into two equal groups (low RS and high RS).  Whereas half of the subjects in each group interact with a partner who displays a happy emotional expression during the interaction, the other half of the subjects in each group interact with a partner who displays a neutral emotional expression during the interaction.  After the interaction, subjects are asked to rate the statement, my interaction partner likes me, on a scale from 1 (strongly disagree) to 7 (strongly agree).
+* Based on subjects' self-reports of rejection sensitivity (N = 80), a researcher divides subjects into two equal groups (low RS and high RS).  Whereas half of the subjects in each group interact with a partner who displays a happy emotional expression during the interaction, the other half of the subjects in each group interact with a partner who displays a neutral emotional expression during the interaction.  After the interaction, subjects are asked to rate the statement, "My interaction partner likes me", on a scale from 1 (strongly disagree) to 7 (strongly agree).
+
+>**Question:** What type of factorial ANOVA design is this?  
+
+>**Answer:** This represents a 2 x 2 factorial ANOVA.
+
+<br>
 
 ## Data
 
 ```{r}
 reject <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-8/data/reject.csv")
+```
+
+<br>
+
+* Check out the data
+
+```{r}
+str(reject)
+```
+
+<br> 
+
+```{r}
+head(reject)
+```
+
+* It looks like `rs` and `partner` are both being read in as character variables. Let's go ahead and change those to factors.
+
+```{r}
+reject <- reject %>% 
+  mutate(rs = as.factor(rs),
+         partner = as.factor(partner))
+```
+
+* Check the structure again. Notice that by default R orders factor levels alphabetically. In our case, this means that `High` will be the reference group of rejection sensitivity and `Happy` will be the reference group of interaction partner's emotional expression. However, it might be more intuitive to have `Low` and `Neutral` be the reference groups, respectively. 
+
+```{r}
+str(reject)
+```
+
+* To accomplish this, we can simply re-order the levels of our factor varaibles with `fct_relevel()`.
+
+```{r}
+# manually specify order of factor levels
+reject <- reject %>% 
+  mutate(rs = fct_relevel(rs, c("Low", "High")), 
+         partner = fct_relevel(partner, c("Neutral", "Happy")))
+```
+
+* To make sure this work, check the structure again.
+
+```{r}
+str(reject)
+```
+
+* Do we have a balanced design?
+
+```{r}
+reject %>%
+  group_by(rs, partner) %>% 
+  summarize(n = n())
+```
+
+# Tables of means
+
+## Using `summarize()`
+
+* We'll create 4 tables of means:
+
+1. cell means (i.e., for each combination of the two factors)
+2. marginal means for interaction partner (averaged across levels of rejection sensitivty)
+3. marginal means for RS (averaged across levels of interaction partner)
+- grand mean (averaged across both rejection sensitivity and interaction partner)
+
+### Cell Means
+
+```{r}
+reject %>%
+  group_by(rs, partner) %>% 
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(NA, NA, 0, 2, 2),
+             caption = "Cell Means & SD")
+```
+
+### Marginal Means: Interaction Partner
+
+```{r}
+reject %>%
+  group_by(partner) %>% # instead of grouping by both factors, we just group by interaction partner
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(NA, 0, 2, 2),
+             caption = "Marginal Means & SD for Interaction Partner")
+```
+
+### Marginal Means: Rejection Sensitivity
+
+```{r}
+reject %>%
+  group_by(rs) %>% # just group by rs for this one
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(NA, 0, 2, 2),
+             caption = "Marginal Means & SD for Rejection Sensitivity")
+```
+
+### Grand Mean
+
+```{r}
+reject %>% # note that we don't need group_by for this one
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(0, 2, 2),
+             caption = "Grand Mean")
+```
+
+## An easier way
+
+* The `apa.2way.table()` function from `{apaTables}` is a much more convenienet way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV's and DV are and specify `show.marginal.means = TRUE`. 
+
+```{r}
+apa.2way.table(iv1 = rs, 
+               iv2 = partner, 
+               dv = liking, 
+               data = reject,
+               show.marginal.means = TRUE)
+```
+
+
+* An added plus is that you can easily export these tables to word (see `?apa.2way.table`).
+
+<center>
+![](images/means.png)
+</center>
+
+<br>
+
+>**Question:** Which means are being compared in the main effect of rejection sensitivity?
+
+>**Answer:** marginal means for low (5.78) and high (4.13) levels of rejection sensitivity
+
+>**Question:** Which means are being compared in the main effect of interaction partner?
+
+>**Answer:** Marginal means for neutral partner (3.68) and happy partner (6.22) 
+
+>**Question:**  Which means are involved in the interaction?
+
+>**Answer:** the cell means
+
+
+```{r}
+# contrasts(reject$rs) <- c(1, -1)
+# contrasts(reject$partner) <- c(1, -1)
+```
+
+# 
+
+```{r}
+model <- lm(liking ~ rs * partner, data = reject) 
+```
+
+```{r}
+summary(model)
+```
+
+```{r}
+anova(model)
+```
+
+
+```{r}
+reject_ref_grid <- ref_grid(model)
+summary(reject_ref_grid)
+```
+
+
+```{r}
+rs_lsm <- lsmeans(model, specs = "rs")
+rs_lsm
+
+partner_lsm <- lsmeans(model, specs = "partner")
+partner_lsm
+
+
+pairs(rs_lsm)
+pairs(partner_lsm)
+```
+
+```{r}
+plot_model(model, type = "int")
 ```
 
