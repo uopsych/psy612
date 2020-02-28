@@ -56,7 +56,9 @@ navbar:
       - text: "Regression Assumptions & Diagnostics"
         href: "labs/lab-6/lab-6.html"
       - text: "Interactions"
-        href: "labs/lab-7/lab-7.html"      
+        href: "labs/lab-7/lab-7.html"   
+      - text: "Factorial ANOVA"
+        href: "labs/lab-8/lab-8.html" 
     - text: Homework
       href: homework.html
     - text: Final Project
