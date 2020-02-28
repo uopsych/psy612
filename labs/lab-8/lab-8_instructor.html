@@ -2836,7 +2836,6 @@ library(broom) # for tidying model output</code></pre>
 <blockquote>
 <p><strong>Answer:</strong> This represents a 2 x 2 factorial ANOVA.</p>
 </blockquote>
-<p><br></p>
 <div id="data" class="section level2">
 <h2>Data</h2>
 <ul>
@@ -2915,7 +2914,7 @@ library(broom) # for tidying model output</code></pre>
 <h4></h4>
 <p><br></p>
 <ul>
-<li>To accomplish this, we can simply re-order the levels of our factor varaibles with <code>fct_relevel()</code>.</li>
+<li>To accomplish this, we can simply re-order the levels of our factor variables with <code>fct_relevel()</code>.</li>
 </ul>
 <pre class="r"><code># manually specify order of factor levels
 reject &lt;- reject %&gt;% 
@@ -2980,7 +2979,7 @@ reject &lt;- reject %&gt;%
 </ul>
 <ol style="list-style-type: decimal">
 <li>cell means (i.e., for each combination of the two factors)</li>
-<li>marginal means for interaction partner (averaged across levels of rejection sensitivty)</li>
+<li>marginal means for interaction partner (averaged across levels of rejection sensitivity)</li>
 <li>marginal means for RS (averaged across levels of interaction partner)</li>
 <li>grand mean (averaged across both rejection sensitivity and interaction partner)</li>
 </ol>
@@ -2994,7 +2993,7 @@ reject &lt;- reject %&gt;%
   group_by(rs, partner) %&gt;% 
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %&gt;% 
-knitr::kable(digits = c(NA, NA, 0, 2, 2),
+knitr::kable(digits = c(NA, NA, 2, 2, 2),
              caption = &quot;Cell Means &amp; SD&quot;)</code></pre>
 </div>
 <div id="output-5" class="section level5">
@@ -3013,25 +3012,25 @@ knitr::kable(digits = c(NA, NA, 0, 2, 2),
 <tr class="odd">
 <td align="left">Low</td>
 <td align="left">Neutral</td>
-<td align="right">6</td>
+<td align="right">5.55</td>
 <td align="right">1.05</td>
 </tr>
 <tr class="even">
 <td align="left">Low</td>
 <td align="left">Happy</td>
-<td align="right">6</td>
+<td align="right">6.00</td>
 <td align="right">0.73</td>
 </tr>
 <tr class="odd">
 <td align="left">High</td>
 <td align="left">Neutral</td>
-<td align="right">2</td>
+<td align="right">1.80</td>
 <td align="right">0.70</td>
 </tr>
 <tr class="even">
 <td align="left">High</td>
 <td align="left">Happy</td>
-<td align="right">6</td>
+<td align="right">6.45</td>
 <td align="right">0.69</td>
 </tr>
 </tbody>
@@ -3097,7 +3096,7 @@ knitr::kable(digits = c(NA, 0, 2, 2),
   group_by(rs) %&gt;% # just group by rs for this one
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %&gt;% 
-knitr::kable(digits = c(NA, 0, 2, 2),
+knitr::kable(digits = c(NA, 2, 2, 2),
              caption = &quot;Marginal Means &amp; SD for Rejection Sensitivity&quot;)</code></pre>
 </div>
 <div id="output-7" class="section level5">
@@ -3114,12 +3113,12 @@ knitr::kable(digits = c(NA, 0, 2, 2),
 <tbody>
 <tr class="odd">
 <td align="left">Low</td>
-<td align="right">6</td>
+<td align="right">5.78</td>
 <td align="right">0.92</td>
 </tr>
 <tr class="even">
 <td align="left">High</td>
-<td align="right">4</td>
+<td align="right">4.12</td>
 <td align="right">2.45</td>
 </tr>
 </tbody>
@@ -3140,7 +3139,7 @@ knitr::kable(digits = c(NA, 0, 2, 2),
 <pre class="r"><code>reject %&gt;% # note that we don't need group_by for this one
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %&gt;% 
-knitr::kable(digits = c(0, 2, 2),
+knitr::kable(digits = c(2, 2, 2),
              caption = &quot;Grand Mean&quot;)</code></pre>
 </div>
 <div id="output-8" class="section level5">
@@ -3155,7 +3154,7 @@ knitr::kable(digits = c(0, 2, 2),
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">5</td>
+<td align="right">4.95</td>
 <td align="right">2.02</td>
 </tr>
 </tbody>
@@ -3171,7 +3170,7 @@ knitr::kable(digits = c(0, 2, 2),
 <div id="an-easier-way" class="section level2">
 <h2>An easier way</h2>
 <ul>
-<li>The <code>apa.2way.table()</code> function from <code>{apaTables}</code> is a much more convenienet way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV’s and DV are and specify <code>show.marginal.means = TRUE</code>.</li>
+<li>The <code>apa.2way.table()</code> function from <code>{apaTables}</code> is a much more convenient way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV’s and DV are and specify <code>show.marginal.means = TRUE</code>.</li>
 </ul>
 <div id="section-18" class="section level4 tabset tabset-fade tabset-pills">
 <h4></h4>
@@ -3417,7 +3416,7 @@ apa.aov.table(lm_output = model,
 <h4></h4>
 <p><br></p>
 <ul>
-<li>This also allows you to ouput tables to Word.</li>
+<li>This also allows you to output tables to Word.</li>
 </ul>
 </div>
 <div id="section-30" class="section level4 tabset tabset-fade tabset-pills">
@@ -3574,7 +3573,7 @@ ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)</code></pre>
 </ul>
 <p><br></p>
 <ul>
-<li>We’ll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We’ll use the <code>{emmeans}</code> packege, which Sara will go over more in lecture next week.</li>
+<li>We’ll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We’ll use the <code>{emmeans}</code> package, which Sara will go over more in lecture next week.</li>
 </ul>
 <p><br></p>
 <ul>

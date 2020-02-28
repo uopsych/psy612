@@ -51,8 +51,6 @@ library(broom) # for tidying model output
 
 >**Answer:** This represents a 2 x 2 factorial ANOVA.
 
-<br>
-
 ## Data
 
 * Import the data
@@ -127,7 +125,7 @@ str(reject)
 ####
 <br>
 
-* To accomplish this, we can simply re-order the levels of our factor varaibles with `fct_relevel()`.
+* To accomplish this, we can simply re-order the levels of our factor variables with `fct_relevel()`.
 
 ```{r lab-8-instructor-10}
 # manually specify order of factor levels
@@ -185,7 +183,7 @@ reject %>%
 * We'll create 4 tables of means:
 
 1. cell means (i.e., for each combination of the two factors)
-2. marginal means for interaction partner (averaged across levels of rejection sensitivty)
+2. marginal means for interaction partner (averaged across levels of rejection sensitivity)
 3. marginal means for RS (averaged across levels of interaction partner)
 4. grand mean (averaged across both rejection sensitivity and interaction partner)
 
@@ -200,7 +198,7 @@ reject %>%
   group_by(rs, partner) %>% 
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %>% 
-knitr::kable(digits = c(NA, NA, 0, 2, 2),
+knitr::kable(digits = c(NA, NA, 2, 2, 2),
              caption = "Cell Means & SD")
 ```
 
@@ -246,7 +244,7 @@ reject %>%
   group_by(rs) %>% # just group by rs for this one
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %>% 
-knitr::kable(digits = c(NA, 0, 2, 2),
+knitr::kable(digits = c(NA, 2, 2, 2),
              caption = "Marginal Means & SD for Rejection Sensitivity")
 ```
 
@@ -268,7 +266,7 @@ knitr::kable(digits = c(NA, 0, 2, 2),
 reject %>% # note that we don't need group_by for this one
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %>% 
-knitr::kable(digits = c(0, 2, 2),
+knitr::kable(digits = c(2, 2, 2),
              caption = "Grand Mean")
 ```
 
@@ -282,7 +280,7 @@ knitr::kable(digits = c(0, 2, 2),
 
 ## An easier way
 
-* The `apa.2way.table()` function from `{apaTables}` is a much more convenienet way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV's and DV are and specify `show.marginal.means = TRUE`. 
+* The `apa.2way.table()` function from `{apaTables}` is a much more convenient way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV's and DV are and specify `show.marginal.means = TRUE`. 
 
 #### {.tabset .tabset-fade .tabset-pills}
 
@@ -454,7 +452,7 @@ apa.aov.table(lm_output = model,
 ####
 <br>
 
-* This also allows you to ouput tables to Word. 
+* This also allows you to output tables to Word. 
 
 #### {.tabset .tabset-fade .tabset-pills}
 
@@ -597,7 +595,7 @@ plot_model(model, type = "pred", terms = c("partner", "rs"))
 
 <br> 
 
-* We'll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We'll use the `{emmeans}` packege, which Sara will go over more in lecture next week. 
+* We'll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We'll use the `{emmeans}` package, which Sara will go over more in lecture next week. 
 
 <br>
 
