@@ -292,9 +292,9 @@ noise_lsm
 
 ```r
 library(sjPlot)
-noise_m = plot_model(fit, type = "pred", terms = c("Noise")) + 
+noise_m = plot_model(fit, type = "emm", terms = c("Noise")) + 
   theme_sjplot(base_size = 20)
-speed_m = plot_model(fit, type = "pred", terms = c("Speed")) + 
+speed_m = plot_model(fit, type = "emm", terms = c("Speed")) + 
   theme_sjplot(base_size = 20)
 library(ggpubr)
 ggarrange(noise_m, speed_m, ncol = 2)

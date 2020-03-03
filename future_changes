@@ -46,3 +46,17 @@ Question 10.1
 
 13-dag.html
 * add something before about dag models are pre-data collection tools
+
+homework-2.html
+* make due last week of class
+
+lab-8.html
+* change eemmeans() to lsmeans()
+* use pairs() instead of contrast()
+
+17-interactions.html
+* don't mention regression sums of squares
+* remove "most common" sums of squares in slides
+* add SPSS and SAS defaults are type III
+* add to FA and Regression comparison slide: compare output
+* take out sjPlot main effects
