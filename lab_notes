@@ -133,6 +133,8 @@ https://crsh.github.io/papaja_man/reporting.html#tables (also link to this whole
 -apa_print() will allow you to index separate coefficients that you can put in in-line code
 -apa_table(apa_print(model_object)$table) will genereate latex code to give you a formatted model summary table  
 
+For citations: https://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
+
 ------------------------------------------------------------------------------------------------------
 
 Lab 10: Bootstrapping *CORY*
