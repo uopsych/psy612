@@ -87,6 +87,69 @@ The outcome was the time of the 10th failure. The experiment used a completely c
 
 
 
+## Running the analysis of variance
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
+## Noise         2  341315  170658  13.3075 4.252e-06 ***
+## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
+## Residuals   171 2192939   12824                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
+lsr::etaSquared(fit)
+```
+
+```
+##                 eta.sq eta.sq.part
+## Speed       0.49786168   0.5613078
+## Noise       0.06056150   0.1346807
+## Speed:Noise 0.05247123   0.1188269
+```
+
+An effect size, `\(\eta^2\)`, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+
+`\(\eta^2\)` represents the proportion of variance in Y explained by a single factor (or interaction of factors). It is identical in its calculation to `\(R^2\)`:
+
+`$$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{Y}}}$$`
+---
+
+
+```r
+lsr::etaSquared(fit)
+```
+
+```
+##                 eta.sq eta.sq.part
+## Speed       0.49786168   0.5613078
+## Noise       0.06056150   0.1346807
+## Speed:Noise 0.05247123   0.1188269
+```
+
+In an experimental design, variance in Y is created, rather than observed, by manipulating participants. The ways in which an experimenter chooses to manipulate particiapnts can increase or decrease variance in Y, making it difficult to compare the effect of a single manipulation across studies with different designs. 
+
+Partial `\(\eta^2\)` is meant to aid interpretation by considering only the variance associated with an effect and random variablity, which is naturally occuring and not under the control of the experimenter.
+
+`$$\large \text{Partial }\eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{effect}} + SS_{\text{within}}}$$`
+
+---
+
+
 ### Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
@@ -135,44 +198,6 @@ In a factorial design, marginal means or cell means must be calculated in order 
 &lt;/table&gt;
 
 These means will be based on different sample sizes, which has an impact on the width of the confidence interval.
-
----
-
-## Running the analysis of variance
-
-
-```r
-fit = lm(Time ~ Speed*Noise, data = Data)
-anova(fit)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Response: Time
-##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
-## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
-## Noise         2  341315  170658  13.3075 4.252e-06 ***
-## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
-## Residuals   171 2192939   12824                       
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
----
-
-
-```r
-lsr::etaSquared(fit)
-```
-
-```
-##                 eta.sq eta.sq.part
-## Speed       0.49786168   0.5613078
-## Noise       0.06056150   0.1346807
-## Speed:Noise 0.05247123   0.1188269
-```
-
 
 ---
 
@@ -275,7 +300,7 @@ library(ggpubr)
 ggarrange(noise_m, speed_m, ncol = 2)
 ```
 
-![](17-interactions_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -285,8 +310,21 @@ plot_model(fit, type = "pred", terms = c("Speed", "Noise")) +
   theme_sjplot(base_size = 20) + theme(legend.position = "bottom")
 ```
 
-![](17-interactions_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+---
 
+### Precision
+
+A reminder that comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means. 
+
+
+$$
+`\begin{aligned}
+\large SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{within}}{N}}\\
+\large SE_{\text{mean difference}} &amp;= \sqrt{MS_{within}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
+\large SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{within}}{N}} \\
+\end{aligned}`
+$$
 ---
 
 ### Cohen's D
@@ -339,20 +377,7 @@ pooled_sd = sqrt(MS_error)
 ```
 
 
----
 
-### Precision
-
-A reminder that comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means. 
-
-
-$$
-`\begin{aligned}
-\large SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{within}}{N}}\\
-\large SE_{\text{mean difference}} &amp;= \sqrt{MS_{within}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
-\large SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{within}}{N}} \\
-\end{aligned}`
-$$
 
 ---
 
@@ -528,6 +553,7 @@ lsr::etaSquared(fit_1, type = 1)
 
 ---
 ### Sums of Squares (II)
+
 Type II sums of squares are the most commonly used but also a bit more complex to understand.  
 
 An approximately true description is that an effect is allocated the proportion of variance in the outcome that is unshared with effects at a similar or lower level.
@@ -535,7 +561,8 @@ An approximately true description is that an effect is allocated the proportion 
 A technically correct description is that a target effect is allocated the proportion of variance in the outcome that is unshared with other effects that do not contain the target.
 
 ---
-### Sums of Squares 
+### Sums of Squares (II)
+
 In an A x B design, the A effect is the proportion of variance that is accounted for by A after removing the variance accounted for by B.
 
 The A x B interaction is allocated the proportion of variance that is accounted for by A x B after removing the variance accounted for by A and B.
@@ -544,9 +571,58 @@ There is no convenient way to illustrate this in a Venn diagram.
 
 ---
 
+### Sums of Squares
+
+Let R(·) represent the residual sum of squares for a model, so for example R(A,B,AB) is
+the residual sum of squares fitting the whole model, R(A) is the residual sum of squares 
+fitting just the main effect of A, and R(1) is the residual sum of squares fitting just the
+mean. 
+
+| Effect | Type I            | Type II           | Type III            |
+|--------|-------------------|-------------------|---------------------|
+| A      | R(1)-R(A)         | R(B)-R(A,B)       | R(B,A:B)-R(A,B,A:B) |
+| B      | R(A)-R(A,B)       | R(A)-R(A,B)       | R(A,A:B)-R(A,B,A:B) |
+| A:B    | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B)   |
+
+---
+
+### Sums of Squares
+
+Let R(·) represent the residual sum of squares for a model, so for example R(A,B,AB) is
+the residual sum of squares fitting the whole model, R(A) is the residual sum of squares 
+fitting just the main effect of A, and R(1) is the residual sum of squares fitting just the
+mean. 
+
+| Effect | Type I            | Type II           | Type III            |
+|--------|-------------------|-------------------|---------------------|
+| A      | SS(A)         | SS(A&amp;#124;B)       | SS(A&amp;#124;B,AB) |
+| B      | SS(B&amp;#124;A)       | SS(B&amp;#124;A)       | SS(B&amp;#124;A,AB) |
+| A:B    | SS(AB&amp;#124;A,B)    | SS(AB&amp;#124;A,B)    | SS(AB&amp;#124;A,B)   |
+
+---
+
 The `aov( )` function in R produces Type I sums of squares. The `Anova( )` function from the car package provides Type II and Type III sums of squares.
 
 These work as expected provided the predictors are factors.
+
+
+```r
+Anova(fit, type = "II")
+```
+
+```
+## Anova Table (Type II tests)
+## 
+## Response: Time
+##              Sum Sq  Df  F value    Pr(&gt;F)    
+## Speed       2805871   2 109.3975 &lt; 2.2e-16 ***
+## Noise        341315   2  13.3075 4.252e-06 ***
+## Speed:Noise  295720   4   5.7649 0.0002241 ***
+## Residuals   2192939 171                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
 
 
 ---
@@ -600,7 +676,7 @@ The likelihood of finding an effect *if the effect actually exists.* Power gets 
 
 ---
 
-![](17-interactions_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -883,7 +959,7 @@ mean(obeta_xz)
 ## [1] 1.175444
 ```
 
-![](17-interactions_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -904,7 +980,7 @@ mean(ot_xz)
 ## [1] 0.7411209
 ```
 
-![](17-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+![](17-interactions_files/figure-html/unnamed-chunk-35-1.png)&lt;!-- --&gt;
 
 ---
 

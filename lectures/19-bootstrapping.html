@@ -332,7 +332,7 @@ boot.ci(results, type = "perc")
 
 ---
 
-## Example 2
+### Example 2
 
 Samples of service waiting times for Verizon’s (ILEC) versus other carriers (CLEC) customers. In this district, Verizon must provide line service to all customers or else face a fine. The question is whether the non-Verizon customers are getting ignored or facing greater variability in waiting times.
 
@@ -381,7 +381,7 @@ The difference in means is 7.62 `\([1.66,16.79]\)`.
 
 ---
 
-## Summary
+### Bootstrapping Summary
 
 Bootstrapping can be a useful tool to estimate parameters when 
 1. you've violated assumptions of the test (i.e., normality, homoskedasticity)
@@ -393,7 +393,7 @@ This allows you to create a confidence interval around any statistic you want --
 
 ---
 
-## Summary
+### Bootstrapping Summary
 
 Bootstrapping will NOT help you deal with:
 
@@ -402,6 +402,173 @@ Bootstrapping will NOT help you deal with:
 * improperly specified models or forms -- use theory to guide you here
 
 * measurement error -- why bother?
+
+---
+
+## Yarkoni and Westfall (2017)
+
+Y&amp;W describe the goals of explanation and prediction in science; how are these goals similar to each other and how are they in opposition to each other? 
+
+According to Y&amp;W, how should psychologists change their research, in terms of explanation and prediction, and why?
+
+How do regression models fit into the goals of explanation and prediction? Where do they fall short on one or other or both?
+
+???
+
+Explanation: describe causal underpinnings of behaviors/outcomes
+Prediction: accurately forecast behaviors/outcomes
+
+Similar: both goals of science; good prediction can help us develop theory of explanation and vice versa
+
+Statistical tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes. 
+
+Y&amp;W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
+
+---
+
+## Yarkoni and Westfall (2017)
+
+What is **overfitting** and where does this occur in terms of the models we have discussed in class thus far?
+
+What is **bias** and **variance**, and how does the bias-variance trade-off relate to overfitting?
+
+* How concerned are you about overfitting in your own area of research? How about in the studies you'd like to do in the next couple of years?
+
+???
+
+Overfitting: mistakenly fitting sample-specific noise as if it were signal
+
+OLS models tend to be overfit because they minimize error for a specific sample
+
+Bias: systematically over or under estimating parameters
+Variance: how much estimates tend to jump around
+
+Model-fits tend to prioritizie minimizing bias or variance, and choosing to minimize one inflates the other; OLS models minimize one of these
+
+
+---
+
+## Yarkoni and Westfall (2017)
+
+How do Y&amp;W propose adjusting our current statistical practices to be more successful at prediction? 
+
+???
+
+big data sets
+
+Cross-validation
+
+regularization
+
+---
+
+## Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+### Big Data Sets
+
+"Every pattern that could be observed in a given dataset reflects some... unknown combination of signal and error" (page 1104). 
+
+Error is random, so it cannot correlate with anything; as we aggregate many pieces of information together, we reduce error. 
+
+Thus, as we get bigger and bigger datasets, the amount of error we have gets smaller and smaller
+
+---
+
+### Cross-validation
+
+**Cross-validation** is a family of techniques that involve testing and training a model on different samples of data. 
+* Replication
+* Hold-out samples
+* K-fold
+    * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other
+    * Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit
+    * Can split the dataset into more than 2 sections
+    
+---
+
+
+```r
+library(here)
+stress.data = read.csv(here("data/stress.csv"))
+library(psych)
+describe(stress.data, fast = T)
+```
+
+```
+##         vars   n   mean     sd  min    max  range    se
+## id         1 118 488.65 295.95 2.00 986.00 984.00 27.24
+## Anxiety    2 118   7.61   2.49 0.70  14.64  13.94  0.23
+## Stress     3 118   5.18   1.88 0.62  10.32   9.71  0.17
+## Support    4 118   8.73   3.28 0.02  17.34  17.32  0.30
+## group      5 118    NaN     NA  Inf   -Inf   -Inf    NA
+```
+
+```r
+model.lm = lm(Stress ~ Anxiety*Support*group, 
+              data = stress.data)
+summary(model.lm)$r.squared
+```
+
+```
+## [1] 0.4126943
+```
+
+---
+
+### Example: 10-fold cross validation
+
+
+```r
+# new package!
+library(caret)
+# set control parameters
+ctrl &lt;- trainControl(method="cv", number=10)
+# use train() instead of lm()
+cv.model &lt;- train(Stress ~ Anxiety*Support*group, 
+               data = stress.data, 
+               trControl=ctrl, # what are the control parameters
+               method="lm") # what kind of model
+cv.model
+```
+
+```
+## Linear Regression 
+## 
+## 118 samples
+##   3 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 106, 106, 106, 106, 107, 106, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared   MAE     
+##   1.541841  0.3438326  1.237663
+## 
+## Tuning parameter 'intercept' was held constant at a value of TRUE
+```
+
+---
+
+### Regularization
+
+Penalizing a model as it grows more complex. 
+* Usually involves shrinking coefficient estimates -- the model will fit less well in-sample but may be more predictive
+
+*lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
+- coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
