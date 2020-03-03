@@ -178,6 +178,8 @@ noise_lsm = emmeans::lsmeans(time_rg, "Noise")
 noise_lsm
 ```
 
+
+
 ---
 
 ```{r, message=F, warning=F, fig.width=10, fig.height=6, echo = T}
