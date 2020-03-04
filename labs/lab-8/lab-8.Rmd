@@ -28,14 +28,13 @@ Factorial ANOVA refers to a special case of the general linear model in which th
 
 Be sure to have the following packages installed and loaded:
 
-```{r lab-8-instructor-1, message=FALSE}
+```{r lab-8-1, message=FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
 library(lsr) # for eta squared functions
 library(emmeans) # for marginal means and simple effects
 library(sjPlot) # for plotting model results 
-library(ggpubr) # for arranging plots
 library(apaTables) # for tables of means
 library(car) # for testing model assumptions
 library(broom) # for tidying model output
@@ -53,7 +52,7 @@ library(broom) # for tidying model output
 
 * Import the data
 
-```{r lab-8-instructor-2}
+```{r lab-8-2}
 reject <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-8/data/reject.csv")
 ```
 
@@ -65,13 +64,13 @@ reject <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/l
 
 ##### Code
 
-```{r lab-8-instructor-3, eval=FALSE}
+```{r lab-8-3, eval=FALSE}
 str(reject)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-4, echo=FALSE, ref.label='lab-8-instructor-3'}
+```{r lab-8-4, echo=FALSE, ref.label='lab-8-3'}
 ```
 
 ####
@@ -83,13 +82,13 @@ str(reject)
 
 ##### Code
 
-```{r lab-8-instructor-5, eval=FALSE}
+```{r lab-8-5, eval=FALSE}
 head(reject)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-6, echo=FALSE, ref.label='lab-8-instructor-5'}
+```{r lab-8-6, echo=FALSE, ref.label='lab-8-5'}
 ```
 
 ####
@@ -97,7 +96,7 @@ head(reject)
 
 * It looks like `rs` and `partner` are both being read in as character variables. Let's go ahead and change those to factors.
 
-```{r lab-8-instructor-7}
+```{r lab-8-7}
 reject <- reject %>% 
   mutate(rs = as.factor(rs),
          partner = as.factor(partner))
@@ -111,13 +110,13 @@ reject <- reject %>%
 
 ##### Code
 
-```{r lab-8-instructor-8, eval=FALSE}
+```{r lab-8-8, eval=FALSE}
 str(reject)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-9, echo=FALSE, ref.label='lab-8-instructor-8'}
+```{r lab-8-9, echo=FALSE, ref.label='lab-8-8'}
 ```
 
 ####
@@ -125,7 +124,7 @@ str(reject)
 
 * To accomplish this, we can simply re-order the levels of our factor variables with `fct_relevel()`.
 
-```{r lab-8-instructor-10}
+```{r lab-8-10}
 # manually specify order of factor levels
 reject <- reject %>% 
   mutate(rs = fct_relevel(rs, c("Low", "High")), 
@@ -140,13 +139,13 @@ reject <- reject %>%
 
 ##### Code
 
-```{r lab-8-instructor-11, eval=FALSE}
+```{r lab-8-11, eval=FALSE}
 str(reject)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-12, echo=FALSE, ref.label='lab-8-instructor-11'}
+```{r lab-8-12, echo=FALSE, ref.label='lab-8-11'}
 ```
 
 ####
@@ -158,7 +157,7 @@ str(reject)
 
 ##### Code
 
-```{r lab-8-instructor-13, eval=FALSE}
+```{r lab-8-13, eval=FALSE}
 reject %>%
   group_by(rs, partner) %>% 
   summarize(n = n())
@@ -166,7 +165,7 @@ reject %>%
 
 ##### Output
 
-```{r lab-8-instructor-14, echo=FALSE, ref.label='lab-8-instructor-13'}
+```{r lab-8-14, echo=FALSE, ref.label='lab-8-13'}
 ```
 
 ####
@@ -191,7 +190,7 @@ reject %>%
 
 ##### Code
 
-```{r lab-8-instructor-15, eval=FALSE}
+```{r lab-8-15, eval=FALSE}
 reject %>%
   group_by(rs, partner) %>% 
   summarize(mean = mean(liking, na.rm = TRUE),
@@ -202,7 +201,7 @@ knitr::kable(digits = c(NA, NA, 2, 2, 2),
 
 ##### Output
 
-```{r lab-8-instructor-16, echo=FALSE, ref.label='lab-8-instructor-15'}
+```{r lab-8-16, echo=FALSE, ref.label='lab-8-15'}
 ```
 
 ####
@@ -214,7 +213,7 @@ knitr::kable(digits = c(NA, NA, 2, 2, 2),
 
 ##### Code
 
-```{r lab-8-instructor-17, eval=FALSE}
+```{r lab-8-17, eval=FALSE}
 reject %>%
   group_by(partner) %>% # instead of grouping by both factors, we just group by interaction partner
   summarize(mean = mean(liking, na.rm = TRUE),
@@ -225,7 +224,7 @@ knitr::kable(digits = c(NA, 2, 2, 2),
 
 ##### Output
 
-```{r lab-8-instructor-18, echo=FALSE, ref.label='lab-8-instructor-17'}
+```{r lab-8-18, echo=FALSE, ref.label='lab-8-17'}
 ```
 
 ####
@@ -237,7 +236,7 @@ knitr::kable(digits = c(NA, 2, 2, 2),
 
 ##### Code
 
-```{r lab-8-instructor-19, eval=FALSE}
+```{r lab-8-19, eval=FALSE}
 reject %>%
   group_by(rs) %>% # just group by rs for this one
   summarize(mean = mean(liking, na.rm = TRUE),
@@ -248,7 +247,7 @@ knitr::kable(digits = c(NA, 2, 2, 2),
 
 ##### Output
 
-```{r lab-8-instructor-20, echo=FALSE, ref.label='lab-8-instructor-19'}
+```{r lab-8-20, echo=FALSE, ref.label='lab-8-19'}
 ```
 
 ####
@@ -260,7 +259,7 @@ knitr::kable(digits = c(NA, 2, 2, 2),
 
 ##### Code
 
-```{r lab-8-instructor-21, eval=FALSE}
+```{r lab-8-21, eval=FALSE}
 reject %>% # note that we don't need group_by for this one
   summarize(mean = mean(liking, na.rm = TRUE),
             sd = sd(liking, na.rm = TRUE)) %>% 
@@ -270,7 +269,7 @@ knitr::kable(digits = c(2, 2, 2),
 
 ##### Output
 
-```{r lab-8-instructor-22, echo=FALSE, ref.label='lab-8-instructor-21'}
+```{r lab-8-22, echo=FALSE, ref.label='lab-8-21'}
 ```
 
 ####
@@ -284,7 +283,7 @@ knitr::kable(digits = c(2, 2, 2),
 
 ##### Code
 
-```{r lab-8-instructor-23, eval=FALSE}
+```{r lab-8-23, eval=FALSE}
 apa.2way.table(iv1 = rs, 
                iv2 = partner, 
                dv = liking, 
@@ -294,7 +293,7 @@ apa.2way.table(iv1 = rs,
 
 ##### Output
 
-```{r lab-8-instructor-24, echo=FALSE, ref.label='lab-8-instructor-23'}
+```{r lab-8-24, echo=FALSE, ref.label='lab-8-23'}
 ```
 
 ####
@@ -306,7 +305,7 @@ apa.2way.table(iv1 = rs,
 
 ##### Code
 
-```{r lab-8-instructor-25, eval=FALSE}
+```{r lab-8-25, eval=FALSE}
 apa.2way.table(iv1 = rs,
                iv2 = partner,
                dv = liking,
@@ -345,7 +344,7 @@ apa.2way.table(iv1 = rs,
 
 * We can specify the factorial ANOVA model using `lm()` the same way we specified 
 
-```{r lab-8-instructor-26}
+```{r lab-8-26}
 model <- lm(liking ~ rs * partner, data = reject) 
 ```
 
@@ -355,13 +354,13 @@ model <- lm(liking ~ rs * partner, data = reject)
 
 ##### Code
 
-```{r lab-8-instructor-27, eval=FALSE}
+```{r lab-8-27, eval=FALSE}
 summary(model)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-28, echo=FALSE, ref.label='lab-8-instructor-27'}
+```{r lab-8-28, echo=FALSE, ref.label='lab-8-27'}
 ```
 
 ####
@@ -375,13 +374,13 @@ summary(model)
 
 ##### Code
 
-```{r lab-8-instructor-29, eval=FALSE}
+```{r lab-8-29, eval=FALSE}
 anova(model)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-30, echo=FALSE, ref.label='lab-8-instructor-29'}
+```{r lab-8-30, echo=FALSE, ref.label='lab-8-29'}
 ```
 
 ####
@@ -399,14 +398,14 @@ anova(model)
 
 ##### Code
 
-```{r lab-8-instructor-31, eval=FALSE}
+```{r lab-8-31, eval=FALSE}
 anova(model) %>% 
   broom::tidy()
 ```
 
 ##### Output
 
-```{r lab-8-instructor-32, echo=FALSE, ref.label='lab-8-instructor-31'}
+```{r lab-8-32, echo=FALSE, ref.label='lab-8-31'}
 ```
 
 ####
@@ -418,7 +417,7 @@ anova(model) %>%
 
 ##### Code
 
-```{r lab-8-instructor-34, eval = FALSE}
+```{r lab-8-34, eval = FALSE}
 # might need to have the {MBESS} package installed to use this function
 # install.packages("MBESS")
 
@@ -428,7 +427,7 @@ apa.aov.table(lm_output = model,
 
 ##### Output
 
-```{r lab-8-instructor-35, echo=FALSE, ref.label='lab-8-instructor-34'}
+```{r lab-8-35, echo=FALSE, ref.label='lab-8-34'}
 ```
 
 ####
@@ -440,7 +439,7 @@ apa.aov.table(lm_output = model,
 
 ##### Code
 
-```{r lab-8-instructor-36, eval=FALSE}
+```{r lab-8-36, eval=FALSE}
 apa.aov.table(lm_output = model,
               conf.level = .95,
               table.number = 2,
@@ -468,13 +467,13 @@ apa.aov.table(lm_output = model,
 
 ##### Code
 
-```{r lab-8-instructor-37, eval=FALSE}
+```{r lab-8-37, eval=FALSE}
 car::leveneTest(liking ~ rs * partner, data = reject)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-38, echo=FALSE, ref.label='lab-8-instructor-37'}
+```{r lab-8-38, echo=FALSE, ref.label='lab-8-37'}
 ```
 
 ####
@@ -494,13 +493,13 @@ car::leveneTest(liking ~ rs * partner, data = reject)
 
 ##### Code
 
-```{r lab-8-instructor-39, eval=FALSE}
+```{r lab-8-39, eval=FALSE}
 lsr::etaSquared(model)
 ```
 
 ##### Output
 
-```{r lab-8-instructor-40, echo=FALSE, ref.label='lab-8-instructor-39'}
+```{r lab-8-40, echo=FALSE, ref.label='lab-8-39'}
 ```
 
 ####
@@ -514,74 +513,100 @@ lsr::etaSquared(model)
 
 ## Main effects 
 
+### Main effect of rejection sensitivity
+
+* Remember that main effects correspond to differences in margial means. To plot main effects, we can use `sjPlot::plot_model()`. As usual, the first argument will be the fitted model object. Because we want to plot marginal means, we specify `type = emm` (which stands for "estimated marginal means"). Lastly, because we want to plot the main effect for just rejection sensitivty, we will only specify `terms  = "rs"`. 
+
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r lab-8-instructor-41, eval=FALSE}
+```{r lab-8-41, eval=FALSE}
 # main effect of rejection sensitivity
-rs_plot <- plot_model(model, type = "pred", terms = c("rs")) 
-
-# main effect of interaction partner
-partner_plot <- plot_model(model, type = "pred", terms = c("partner")) 
-
-# arrange these two plots next to each other
-ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
+plot_model(model, type = "emm", terms = "rs") 
 ```
 
 ##### Output
 
-```{r lab-8-instructor-42, echo=FALSE, ref.label='lab-8-instructor-41'}
+```{r lab-8-42, echo=FALSE, ref.label='lab-8-41'}
 ```
 
 ####
 <br>
+
+* Note the warning when plotting this main effect: "Results may be misleading due to involvement in interactions". As we've already discussed, we have to be careful in interpreting main effects when there is also a significant interaction. For example, in this case, we would say that there clearly is a main effect of rejection sensitivity (mean liking is higher for low compared to high rejection sensitivity), BUT this effect depends on the emotional expression of the interaction partner because the interaction between these variables is significant. 
+
+<br>
+
+### Main effect of interaction partner
+
+* Now, to plot the main effect of interaction partner, all we need to change is `terms = "partner"`. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-41.1, eval=FALSE}
+# main effect of rejection sensitivity
+plot_model(model, type = "emm", terms = "partner") 
+```
+
+##### Output
+
+```{r lab-8-42.1, echo=FALSE, ref.label='lab-8-41.1'}
+```
+
+####
+<br>
+
 
 ## Interaction
 
+* Now, to visualize the interaction between rejection sensitivity and interaction partner, we will still use `plot_model`, but instead of plotting estimated marginal means, we will tell it to plot predicted values using `type = "pred"`. Since the interaction involves both variables, we will also specify `terms = c("rs", "partner")`. 
+
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r lab-8-instructor-43, eval=FALSE}
+```{r lab-8-43, eval=FALSE}
 # plot the interaction 
-plot_model(model, type = "int")
+plot_model(model, type = "pred", terms = c("rs", "partner"))
 ```
 
 ##### Output
 
-```{r lab-8-instructor-44, echo=FALSE, ref.label='lab-8-instructor-43'}
+```{r lab-8-44, echo=FALSE, ref.label='lab-8-43'}
 ```
 
 ####
 <br>
 
-* Switch how the interaction is visualized
+* Switch how the interaction is visualized by switching the order of `terms`.
 
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r lab-8-instructor-45, eval=FALSE}
+```{r lab-8-45, eval=FALSE}
 # switch the order of the terms
 plot_model(model, type = "pred", terms = c("partner", "rs"))
 ```
 
 ##### Output
 
-```{r lab-8-instructor-46, echo=FALSE, ref.label='lab-8-instructor-45'}
+```{r lab-8-46, echo=FALSE, ref.label='lab-8-45'}
 ```
 
 ####
 <br>
 
-* The following ggplot code will generate a bar plot version of the interaction plot. The `emmeans()` function at the beginning calculates cell means (more on this below).
+* The following ggplot code will generate a bar plot version of the interaction plot. The `emmeans()` function at the beginning calculates cell means in order to plot them (more on this below).
 
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
-```{r lab-8-instructor-45.1, eval=FALSE}
+```{r lab-8-45.1, eval=FALSE}
 emmeans(model, specs = c("partner", "rs")) %>% 
   broom::tidy() %>% 
   ggplot(aes(x = rs, y = estimate, fill = partner)) + 
@@ -600,7 +625,7 @@ emmeans(model, specs = c("partner", "rs")) %>%
 
 ##### Output
 
-```{r lab-8-instructor-46.1, echo=FALSE, ref.label='lab-8-instructor-45.1'}
+```{r lab-8-46.1, echo=FALSE, ref.label='lab-8-45.1'}
 ```
 
 ####
@@ -610,7 +635,7 @@ emmeans(model, specs = c("partner", "rs")) %>%
 
 # Simple effects{#simple}
 
-* Since we had a significant interaction above, we should look at the simple effects. Recall that simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
+* Since we had a significant interaction above, we should look at the *simple* main effects. Recall that simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
 
 <br> 
 
@@ -624,7 +649,7 @@ emmeans(model, specs = c("partner", "rs")) %>%
 
 ##### Code
 
-```{r lab-8-instructor-47, eval=FALSE}
+```{r lab-8-47, eval=FALSE}
 model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
   contrast(by = "rs", # by is the variable we are looking at each level of
            simple = "partner") # simple is what we want simple effects of.
@@ -632,7 +657,7 @@ model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
 
 ##### Output
 
-```{r lab-8-instructor-48, echo=FALSE, ref.label='lab-8-instructor-47'}
+```{r lab-8-48, echo=FALSE, ref.label='lab-8-47'}
 ```
 
 ####
@@ -648,7 +673,7 @@ model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
 
 ##### Code
 
-```{r lab-8-instructor-48, eval=FALSE}
+```{r lab-8-48, eval=FALSE}
 model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
   contrast(by = "partner", # by is the variable we are looking at each level of
            simple = "rs") # simple is what we want simple effects of.
@@ -656,7 +681,7 @@ model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
 
 ##### Output
 
-```{r lab-8-instructor-49, echo=FALSE, ref.label='lab-8-instructor-48'}
+```{r lab-8-49, echo=FALSE, ref.label='lab-8-48'}
 ```
 
 ####

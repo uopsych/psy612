@@ -35,7 +35,6 @@ library(psych) # for descriptives
 library(lsr) # for eta squared functions
 library(emmeans) # for marginal means and simple effects
 library(sjPlot) # for plotting model results 
-library(ggpubr) # for arranging plots
 library(apaTables) # for tables of means
 library(car) # for testing model assumptions
 library(broom) # for tidying model output
@@ -532,19 +531,17 @@ lsr::etaSquared(model)
 
 ## Main effects 
 
+### Main effect of rejection sensitivity
+
+* Remember that main effects correspond to differences in margial means. To plot main effects, we can use `sjPlot::plot_model()`. As usual, the first argument will be the fitted model object. Because we want to plot marginal means, we specify `type = emm` (which stands for "estimated marginal means"). Lastly, because we want to plot the main effect for just rejection sensitivty, we will only specify `terms  = "rs"`. 
+
 #### {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
 
 ```{r lab-8-instructor-41, eval=FALSE}
 # main effect of rejection sensitivity
-rs_plot <- plot_model(model, type = "pred", terms = c("rs")) 
-
-# main effect of interaction partner
-partner_plot <- plot_model(model, type = "pred", terms = c("partner")) 
-
-# arrange these two plots next to each other
-ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
+plot_model(model, type = "emm", terms = "rs") 
 ```
 
 ##### Output
@@ -555,7 +552,35 @@ ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
 ####
 <br>
 
+* Note the warning when plotting this main effect: "Results may be misleading due to involvement in interactions". As we've already discussed, we have to be careful in interpreting main effects when there is also a significant interaction. For example, in this case, we would say that there clearly is a main effect of rejection sensitivity (mean liking is higher for low compared to high rejection sensitivity), BUT this effect depends on the emotional expression of the interaction partner because the interaction between these variables is significant. 
+
+<br>
+
+### Main effect of interaction partner
+
+* Now, to plot the main effect of interaction partner, all we need to change is `terms = "partner"`. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-41.1, eval=FALSE}
+# main effect of rejection sensitivity
+plot_model(model, type = "emm", terms = "partner") 
+```
+
+##### Output
+
+```{r lab-8-instructor-42.1, echo=FALSE, ref.label='lab-8-instructor-41.1'}
+```
+
+####
+<br>
+
+
 ## Interaction
+
+* Now, to visualize the interaction between rejection sensitivity and interaction partner, we will still use `plot_model`, but instead of plotting estimated marginal means, we will tell it to plot predicted values using `type = "pred"`. Since the interaction involves both variables, we will also specify `terms = c("rs", "partner")`. 
 
 #### {.tabset .tabset-fade .tabset-pills}
 
@@ -563,7 +588,7 @@ ggpubr::ggarrange(rs_plot, partner_plot, ncol = 2)
 
 ```{r lab-8-instructor-43, eval=FALSE}
 # plot the interaction 
-plot_model(model, type = "int")
+plot_model(model, type = "pred", terms = c("rs", "partner"))
 ```
 
 ##### Output
@@ -574,7 +599,7 @@ plot_model(model, type = "int")
 ####
 <br>
 
-* Switch how the interaction is visualized
+* Switch how the interaction is visualized by switching the order of `terms`.
 
 #### {.tabset .tabset-fade .tabset-pills}
 
@@ -628,7 +653,7 @@ emmeans(model, specs = c("partner", "rs")) %>%
 
 # Simple effects{#simple}
 
-* Since we had a significant interaction above, we should look at the simple effects. Recall that simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
+* Since we had a significant interaction above, we should look at the *simple* main effects. Recall that simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
 
 <br> 
 
@@ -657,3 +682,25 @@ model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
 <br>
 
 * The output has two lines per simple effect, which just shows you what it looks like in either direction (note that they are equivalent), so you would just pick the direction that makes the most sense. 
+
+<br>
+
+* Now let's look at simple effects for rejection sensitivity at each level of partner expression.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-48, eval=FALSE}
+model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
+  contrast(by = "partner", # by is the variable we are looking at each level of
+           simple = "rs") # simple is what we want simple effects of.
+```
+
+##### Output
+
+```{r lab-8-instructor-49, echo=FALSE, ref.label='lab-8-instructor-48'}
+```
+
+####
+<br>
