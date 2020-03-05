@@ -31,8 +31,168 @@ Robust estimation
 
 ---
 
-ADD WLS Here
-* violation of homoscedasticity
+## Homoscedasticity
+
+Homoscedasticity is the assumption that the variance of Y is constant across all levels of a predictor.
+
+
+
+
+```r
+library(tidyverse)
+ggplot(Data, aes(x = calm, y = problems)) +
+  geom_point(alpha = .5, position = position_jitter(width = 0, height = .1))
+```
+
+![](19-bootstrapping_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+---
+
+## Weighted least squares
+
+Weighted least squares (WLS) is a commonly used remedial procedure for heteroscedasticity (or failiing to meet the assumptino of homoscedasticity).
+
+In an ordinary least squares (OLS) approach, each case in the dataset is given equal weight. WLS assigns each case a weight `\(w_i\)`, depending upon the precision of the observation of Y in that case. For observations for which the variance around the residuals around the regression line is low, the case is given a high weight.
+
+---
+
+Recall that an OLS estimation chooses values of `\(b_0\)` and `\(b_1\)` that minimizes the sum of squared residuals:
+
+`$$\large \text{min}(\sum e^2_i) = \text{min} \sum (Y_i-b_1X_i-b_0)^2$$`
+
+In a WLS approach, weights are taken into account, such that the values of `\(b_0\)` and `\(b_1\)` are chosen to minimize the sum of the **weighted** squared residuals:
+
+`$$\large \text{min}(\sum w_ie^2_i) = \text{min} \sum w_i(Y_i-b_1X_i-b_0)^2$$`
+
+The value of the weights is the inverse of the conditional variance of the residuals in the population corresponding to the specified value of X:
+
+`$$\large w_i = \frac{1}{\sigma^2_{Y-\hat{Y}|X}}$$`
+---
+
+The value of `\(\sigma^2_{Y-\hat{Y}|X}\)`, the variance of the residuals in the population conditional on X, is not known and must be estimated. A common procedure for estimating weights is to estimate the usual OLS regression equation, square the residuals, and then regress the squared residuals onto X. The weight is then estimated as the inverse of the predicted value for a case. 
+
+Using our own data:
+
+
+```r
+ols.model = lm(problems ~ calm, data = Data)
+library(broom)
+ols_aug = augment(ols.model)
+head(ols_aug)
+```
+
+```
+## # A tibble: 6 x 9
+##   problems  calm .fitted .se.fit .resid   .hat .sigma .cooksd .std.resid
+##      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+## 1        4 1.06     4.87   0.121 -0.872 0.0326  0.665 0.0296      -1.33 
+## 2        5 1.24     4.70   0.111  0.304 0.0278  0.671 0.00306      0.462
+## 3        6 1.30     4.63   0.108  1.37  0.0263  0.653 0.0581       2.07 
+## 4        4 0.852    5.08   0.132 -1.08  0.0391  0.660 0.0558      -1.66 
+## 5        5 1.12     4.82   0.118  0.180 0.0311  0.672 0.00120      0.273
+## 6        5 0.715    5.22   0.140 -0.223 0.0438  0.672 0.00266     -0.341
+```
+---
+
+
+```r
+# square residuals
+ols_aug$resid_sq = ols_aug$.resid^2
+# regress squared resid on predictor
+weight.mod = lm(resid_sq ~ calm, data = ols_aug)
+```
+
+.pull-left[
+
+```r
+coef(ols.model)
+```
+
+```
+## (Intercept)        calm 
+##    5.941940   -1.005699
+```
+
+]
+
+.pull-right[
+
+```r
+coef(weight.mod)
+```
+
+```
+## (Intercept)        calm 
+##   1.0739505  -0.2591579
+```
+
+]
+
+
+```r
+# extract predicted values
+pred.resid = predict(weight.mod)
+head(pred.resid)
+```
+
+```
+##         1         2         3         4         5         6 
+## 0.7982546 0.7527584 0.7366885 0.8530291 0.7849316 0.8886457
+```
+
+```r
+# find inverse of predicted values
+# use absolute value if some of your predicted values are negative  
+est.weights = 1/abs(pred.resid) 
+head(est.weights)
+```
+
+```
+##        1        2        3        4        5        6 
+## 1.252733 1.328447 1.357426 1.172293 1.273996 1.125308
+```
+
+
+---
+
+
+```r
+wls.model = lm(problems ~ calm, data = Data, weights = est.weights)
+```
+
+
+#### OLS solution
+
+```r
+tidy(ols.model)
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)     5.94    0.182       32.6 3.54e-47
+## 2 calm           -1.01    0.0675     -14.9 1.58e-24
+```
+
+#### WLS solution
+
+```r
+tidy(wls.model)
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    5.64     0.182       30.9 1.60e-45
+## 2 calm          -0.884    0.0451     -19.6 7.58e-32
+```
+
+---
+
+![](19-bootstrapping_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
 
 ---
 
@@ -49,6 +209,110 @@ A **bootstrapping** approach is useful when the theoretical sampling distributio
 In bootstrapping, the theoretical sampling distribution is assumed to be unknown or unverifiable. Under the weak assumption that the sample in hand is representative of some population, then that population sampling distribution can be built empirically by randomly sampling with replacement from the sample.
 
 The resulting empirical sampling distribution can be used to construct confidence intervals and make inferences.
+
+---
+
+### Illustration
+
+Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, and Ross. To bootstrap their heights, you would draw from this group many samples of 6 people *with replacement*, each time calculating the average height of the sample.
+
+
+```
+## [1] "Chandler" "Ross"     "Phoebe"   "Monica"   "Rachel"   "Monica"
+```
+
+```
+## [1] 68
+```
+
+```
+## [1] "Rachel"   "Ross"     "Rachel"   "Chandler" "Ross"     "Monica"
+```
+
+```
+## [1] 68.83333
+```
+
+```
+## [1] "Rachel"   "Chandler" "Chandler" "Phoebe"   "Monica"   "Monica"
+```
+
+```
+## [1] 67.83333
+```
+
+```
+## [1] "Phoebe" "Phoebe" "Ross"   "Joey"   "Phoebe" "Phoebe"
+```
+
+```
+## [1] 69.16667
+```
+
+```
+## [1] "Chandler" "Ross"     "Ross"     "Joey"     "Rachel"   "Chandler"
+```
+
+```
+## [1] 70.83333
+```
+
+```
+## [1] "Rachel"   "Chandler" "Ross"     "Chandler" "Rachel"   "Joey"
+```
+
+```
+## [1] 69.5
+```
+
+```
+## [1] "Phoebe"   "Rachel"   "Chandler" "Ross"     "Monica"   "Joey"
+```
+
+```
+## [1] 68.83333
+```
+
+```
+## [1] "Ross"     "Chandler" "Phoebe"   "Chandler" "Rachel"   "Rachel"
+```
+
+```
+## [1] 69.16667
+```
+???
+
+
+
+```r
+heights
+```
+
+```
+##   Rachel   Monica   Phoebe     Joey Chandler     Ross 
+##       65       65       68       70       72       73
+```
+
+---
+### Illustration
+
+
+```r
+boot = 10000
+friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
+heights = c(65, 65, 68, 70, 72, 73)
+sample_means = numeric(length = boot)
+for(i in 1:boot){
+  this_sample = sample(heights, size = length(heights), replace = T)
+  sample_means[i] = mean(this_sample)
+}
+```
+
+---
+
+## Illustration 
+![](19-bootstrapping_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
 ---
 ### Example
 
@@ -59,7 +323,7 @@ There are several candidates for central tendency (e.g., mean, median) and for v
 For the mean and standard deviation, we have theoretical sampling distributions to help us, provided we think the mean and standard deviation are the best indices. For the others, we can use bootstrapping.
 
 ---
-![](19-bootstrapping_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 
 ---
 ### Bootstrapping
@@ -68,79 +332,10 @@ Before now, if we wanted to estimate the mean and the 95% confidence interval ar
 
 Instead, we can build a population sampling distribution empirically by randomly sampling with replacement from the sample.
 
----
-
-### Illustration
-
-Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, and Ross. To bootstrap their heights, you would draw from this group many samples of 6 people *with replacement*, each time calculating the average height of the sample.
-
-
-```
-## [1] "Rachel"   "Ross"     "Ross"     "Chandler" "Ross"     "Joey"
-```
-
-```
-## [1] 71
-```
-
-```
-## [1] "Monica" "Joey"   "Monica" "Joey"   "Joey"   "Joey"
-```
-
-```
-## [1] 68.33333
-```
-
-```
-## [1] "Rachel"   "Ross"     "Chandler" "Phoebe"   "Rachel"   "Phoebe"
-```
-
-```
-## [1] 68.5
-```
-
-```
-## [1] "Monica" "Joey"   "Ross"   "Rachel" "Monica" "Joey"
-```
-
-```
-## [1] 68
-```
-
-```
-## [1] "Chandler" "Joey"     "Rachel"   "Joey"     "Joey"     "Monica"
-```
-
-```
-## [1] 68.66667
-```
-
-```
-## [1] "Ross"     "Ross"     "Phoebe"   "Phoebe"   "Monica"   "Chandler"
-```
-
-```
-## [1] 69.83333
-```
-
-```
-## [1] "Ross" "Ross" "Ross" "Ross" "Joey" "Ross"
-```
-
-```
-## [1] 72.5
-```
-
-```
-## [1] "Phoebe"   "Monica"   "Phoebe"   "Chandler" "Monica"   "Chandler"
-```
-
-```
-## [1] 68.33333
-```
 
 ---
 
+## Response time example
 
 ```r
 boot = 10000
@@ -151,7 +346,7 @@ for(i in 1:boot){
 }
 ```
 
-![](19-bootstrapping_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -162,7 +357,7 @@ mean(response_means)
 ```
 
 ```
-## [1] 687.5241
+## [1] 687.5221
 ```
 
 ```r
@@ -170,7 +365,7 @@ median(response_means)
 ```
 
 ```
-## [1] 686.9465
+## [1] 686.9085
 ```
 
 ```r
@@ -179,7 +374,7 @@ quantile(response_means, probs = c(.025, .975))
 
 ```
 ##     2.5%    97.5% 
-## 632.2850 746.9348
+## 631.6661 746.8103
 ```
 
 What about something like the median?
@@ -196,7 +391,7 @@ for(i in 1:boot){
 }
 ```
 .pull-left[
-![](19-bootstrapping_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 ]
 .pull-right[
 
@@ -205,7 +400,7 @@ mean(response_med)
 ```
 
 ```
-## [1] 578.6415
+## [1] 578.6673
 ```
 
 ```r
@@ -223,7 +418,7 @@ quantile(response_med,
 
 ```
 ##     2.5%    97.5% 
-## 514.9828 630.1810
+## 514.9828 629.3005
 ```
 ]
 ---
@@ -238,7 +433,7 @@ for(i in 1:boot){
 }
 ```
 .pull-left[
-![](19-bootstrapping_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
 ]
 .pull-right[
 
@@ -247,7 +442,7 @@ mean(response_sd)
 ```
 
 ```
-## [1] 430.5549
+## [1] 430.5541
 ```
 
 ```r
@@ -255,7 +450,7 @@ median(response_sd)
 ```
 
 ```
-## [1] 430.1805
+## [1] 430.3614
 ```
 
 ```r
@@ -265,7 +460,7 @@ quantile(response_sd,
 
 ```
 ##     2.5%    97.5% 
-## 369.9810 493.0265
+## 368.9656 492.1912
 ```
 ]
 
@@ -299,7 +494,7 @@ data.frame(rsq = results$t) %&gt;%
   geom_histogram(color = "white", bins = 30) 
 ```
 
-![](19-bootstrapping_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -309,7 +504,7 @@ median(results$t)
 ```
 
 ```
-## [1] 0.7962451
+## [1] 0.7962501
 ```
 
 ```r
@@ -325,7 +520,7 @@ boot.ci(results, type = "perc")
 ## 
 ## Intervals : 
 ## Level     Percentile     
-## 95%   ( 0.6868,  0.8773 )  
+## 95%   ( 0.6871,  0.8773 )  
 ## Calculations and Intervals on Original Scale
 ```
 ]
@@ -341,11 +536,11 @@ Samples of service waiting times for Verizon’s (ILEC) versus other carriers (C
 Verizon = read.csv(here("data/Verizon.csv"))
 ```
 
-![](19-bootstrapping_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
 
 ---
 
-![](19-bootstrapping_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
 
 ```
 ## 
@@ -366,8 +561,12 @@ subsample_CLEC = Verizon %&gt;% filter(Group == "CLEC")
 subsample_ILEC = Verizon %&gt;% filter(Group == "ILEC")
 
 for(i in 1:boot){
-  sample_CLEC = sample(subsample_CLEC$Time, size = nrow(subsample_CLEC), replace = T)
-  sample_ILEC = sample(subsample_ILEC$Time, size = nrow(subsample_ILEC), replace = T)
+  sample_CLEC = sample(subsample_CLEC$Time, 
+                       size = nrow(subsample_CLEC), 
+                       replace = T)
+  sample_ILEC = sample(subsample_ILEC$Time, 
+                       size = nrow(subsample_ILEC), 
+                       replace = T)
   
   difference[i] = mean(sample_CLEC) - mean(sample_ILEC)
 }
@@ -375,9 +574,9 @@ for(i in 1:boot){
 
 ---
 
-![](19-bootstrapping_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](19-bootstrapping_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 
-The difference in means is 7.62 `\([1.66,16.79]\)`.
+The difference in means is 7.62 `\([1.64,16.72]\)`.
 
 ---
 
@@ -569,6 +768,262 @@ Penalizing a model as it grows more complex.
 
 *lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
 - coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
+
+The coefficient `\(\lambda\)` is used to penalize the model.
+
+---
+
+The `glmnet` package has the tools for lasso regression. One small complication is that the package uses matrix algebra, so you need to feed it a matrix of predictors -- specifically, instead of saying "find the interaction between A and B", you need to create the variable that represents this term. How could you do that manually?
+
+--
+
+Luckily, the function `model.matrix()` can do this for you.
+
+---
+
+
+```r
+# provide your original lm model to get matrix of predictors
+X.matrix &lt;- model.matrix.lm(model.lm) 
+head(X.matrix)
+```
+
+```
+##   (Intercept)  Anxiety Support groupTx Anxiety:Support Anxiety:groupTx
+## 1           1 10.18520  6.1602       1        62.74287         10.1852
+## 2           1  5.58873  8.9069       0        49.77826          0.0000
+## 3           1  6.58500 10.5433       1        69.42763          6.5850
+## 4           1  8.95430 11.4605       1       102.62076          8.9543
+## 5           1  7.59910  5.5516       0        42.18716          0.0000
+## 6           1  8.15600  7.5117       1        61.26543          8.1560
+##   Support:groupTx Anxiety:Support:groupTx
+## 1          6.1602                62.74287
+## 2          0.0000                 0.00000
+## 3         10.5433                69.42763
+## 4         11.4605               102.62076
+## 5          0.0000                 0.00000
+## 6          7.5117                61.26543
+```
+
+```r
+library(glmnet)
+lasso.mod &lt;- glmnet(x = X.matrix[,-1], #don't need the intercept 
+                    y = stress.data$Stress)
+```
+
+---
+
+
+```r
+lasso.mod
+```
+
+```
+## 
+## Call:  glmnet(x = X.matrix[, -1], y = stress.data$Stress) 
+## 
+##    Df    %Dev  Lambda
+## 1   0 0.00000 0.97920
+## 2   1 0.04664 0.89220
+## 3   1 0.08537 0.81300
+## 4   1 0.11750 0.74080
+## 5   1 0.14420 0.67500
+## 6   1 0.16640 0.61500
+## 7   1 0.18480 0.56040
+## 8   1 0.20000 0.51060
+## 9   1 0.21270 0.46520
+## 10  1 0.22320 0.42390
+## 11  1 0.23200 0.38620
+## 12  2 0.24110 0.35190
+## 13  2 0.24980 0.32070
+## 14  2 0.25700 0.29220
+## 15  2 0.26290 0.26620
+## 16  3 0.27400 0.24260
+## 17  2 0.29390 0.22100
+## 18  2 0.30440 0.20140
+## 19  2 0.31310 0.18350
+## 20  2 0.32030 0.16720
+## 21  2 0.32630 0.15230
+## 22  2 0.33130 0.13880
+## 23  2 0.33540 0.12650
+## 24  2 0.33880 0.11520
+## 25  2 0.34170 0.10500
+## 26  2 0.34410 0.09567
+## 27  2 0.34600 0.08717
+## 28  2 0.34760 0.07943
+## 29  2 0.34900 0.07237
+## 30  3 0.35400 0.06594
+## 31  3 0.36320 0.06009
+## 32  3 0.37090 0.05475
+## 33  3 0.37720 0.04988
+## 34  3 0.38250 0.04545
+## 35  3 0.38690 0.04141
+## 36  4 0.39060 0.03774
+## 37  4 0.39350 0.03438
+## 38  4 0.39610 0.03133
+## 39  4 0.39810 0.02855
+## 40  4 0.39990 0.02601
+## 41  4 0.40130 0.02370
+## 42  4 0.40250 0.02159
+## 43  4 0.40350 0.01968
+## 44  6 0.40450 0.01793
+## 45  5 0.40570 0.01633
+## 46  5 0.40650 0.01488
+## 47  5 0.40720 0.01356
+## 48  5 0.40780 0.01236
+## 49  5 0.40830 0.01126
+## 50  6 0.40880 0.01026
+## 51  6 0.40950 0.00935
+## 52  6 0.41000 0.00852
+## 53  6 0.41040 0.00776
+## 54  6 0.41080 0.00707
+## 55  6 0.41110 0.00644
+## 56  6 0.41130 0.00587
+## 57  6 0.41150 0.00535
+## 58  6 0.41170 0.00487
+## 59  6 0.41180 0.00444
+## 60  6 0.41190 0.00405
+## 61  6 0.41200 0.00369
+## 62  6 0.41210 0.00336
+## 63  6 0.41220 0.00306
+## 64  6 0.41220 0.00279
+## 65  6 0.41230 0.00254
+## 66  6 0.41230 0.00231
+## 67  6 0.41240 0.00211
+## 68  7 0.41240 0.00192
+## 69  7 0.41240 0.00175
+## 70  7 0.41240 0.00160
+## 71  7 0.41250 0.00145
+## 72  7 0.41250 0.00132
+## 73  7 0.41250 0.00121
+## 74  7 0.41250 0.00110
+## 75  7 0.41250 0.00100
+## 76  7 0.41260 0.00091
+## 77  7 0.41260 0.00083
+## 78  7 0.41260 0.00076
+## 79  7 0.41260 0.00069
+## 80  7 0.41260 0.00063
+## 81  7 0.41260 0.00057
+## 82  7 0.41260 0.00052
+## 83  7 0.41260 0.00048
+## 84  7 0.41260 0.00043
+## 85  7 0.41260 0.00040
+## 86  7 0.41260 0.00036
+## 87  7 0.41260 0.00033
+```
+
+???
+
+DF = number of non-zero coefficients
+dev = `\(R^2\)`
+lambda = complexity parameter (how much to downweight, between 0 and 1)
+
+---
+### What value of `\(\lambda\)` to choose?
+
+
+```r
+plot(lasso.mod, xvar = "lambda", label = TRUE)
+```
+
+![](19-bootstrapping_files/figure-html/unnamed-chunk-38-1.png)&lt;!-- --&gt;
+
+Seems like there was a lot going on right around `\(log(\lambda) = -4\)` so I'm going to look at the coefficients there
+---
+
+
+```r
+coef = coef(lasso.mod, s = exp(-4))
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                                     1
+## (Intercept)             -1.8538689387
+## Anxiety                  0.5028481785
+## Support                  0.5837254774
+## groupTx                 -0.0044703271
+## Anxiety:Support         -0.0302949960
+## Anxiety:groupTx         -0.0034894821
+## Support:groupTx          0.0009984811
+## Anxiety:Support:groupTx  .
+```
+
+
+---
+
+
+```r
+coef = coef(lasso.mod, s = 0)
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                                    1
+## (Intercept)             -2.373766131
+## Anxiety                  0.612812455
+## Support                  0.650290859
+## groupTx                 -1.044285344
+## Anxiety:Support         -0.045146588
+## Anxiety:groupTx          0.025299852
+## Support:groupTx          0.048852216
+## Anxiety:Support:groupTx  0.005913829
+```
+
+`\(\lambda = 0\)` is pretty close to our OLS solution
+
+---
+
+
+```r
+coef = coef(lasso.mod, s = 1)
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                                1
+## (Intercept)             5.180003
+## Anxiety                 .       
+## Support                 .       
+## groupTx                 .       
+## Anxiety:Support         .       
+## Anxiety:groupTx         .       
+## Support:groupTx         .       
+## Anxiety:Support:groupTx .
+```
+
+`\(\lambda = 1\)` is a huge penalty
+
+---
+
+### NHST no more
+
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicity deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+
+---
+
+## Summary: Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+class: inverse
+
+## Next time...
+
+PSY 613 with Elliot Berkman!
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

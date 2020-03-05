@@ -11,6 +11,10 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r, echo = F,message = F, warning = F}
+library(tidyverse)
+```
+
 ## Reminder
 
 Go to lab on Friday!!!
@@ -20,11 +24,6 @@ Go to lab on Friday!!!
 Homework 2 due on Monday (9 am)
 
 ---
-
-```{r, echo = F,message = F, warning = F}
-library(tidyverse)
-```
-
 
 ## Last time...
 
@@ -88,10 +87,24 @@ Interaction tests whether slope changes.
 
 ---
 
+```{r, message = F, warning = F}
+library(car) 
+fit = lm(Time~Speed*Noise, data = Data)
+summary(aov(fit))
+Anova(fit, type = 2)
+```
+---
 ```{r}
 fit = lm(Time~Speed*Noise, data = Data)
 summary(fit)
 ```
+---
+```{r, message = F}
+library(emmeans)
+fit.grid = ref_grid(fit)
+pairs(fit.grid, adjust = "holm")
+```
+
 ---
 
 In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't give it all of M, it will choose every possible value.
@@ -133,7 +146,29 @@ plot_model(fit, type = "pred",
 
 ```
 
+]---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+
+.pull-left[
+```{r pred.plot2, message = F, eval = F}
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", "Speed[Fast]")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
 ]
+
+.pull-left[
+```{r, ref.label = "pred.plot2", message = F, echo = F}
+
+```
+
+]
+
+
 
 ---
 
@@ -271,8 +306,12 @@ What factors make it relatively easier to find interactions in experimental work
     * don't have to guess what condition a participant is in
     * measurement error is exacerbated when two variables measured with error are multiplied by each other
     
-- Experimentalists can force cross-over interactions; observational studies may be restricted to fan interactions
+- Experimentalists are more likely to find cross-over interactions; observational studies may be restricted to fan interactions
     * cross-over interactions are easier to detect than fan interactions
+    
+---
+
+### Factors influencing power in experimental studies
 
 - Experimentalists can concentrate scores on extreme ends on both X and Z
     * in observational studies, data tends to cluster around the mean 
@@ -280,11 +319,7 @@ What factors make it relatively easier to find interactions in experimental work
 
 - Experimentalists can also force orthognality in X and Z
 
-???
-
-Other things: 
-
-you can insure that you study the full range of X in an experiment, but you may have restricted range in an observational study
+- Experimentalists can study the full range of X in an experiment
 
 ---
 
