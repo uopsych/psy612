@@ -17,6 +17,8 @@ class: center, middle, inverse, title-slide
 ---
 
 
+
+
 ## Reminder
 
 Go to lab on Friday!!!
@@ -26,9 +28,6 @@ Go to lab on Friday!!!
 Homework 2 due on Monday (9 am)
 
 ---
-
-
-
 
 ## Last time...
 
@@ -61,6 +60,40 @@ Interaction tests whether slope changes.
 
 ---
 
+
+```r
+library(car) 
+fit = lm(Time~Speed*Noise, data = Data)
+summary(aov(fit))
+```
+
+```
+##              Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.397  &lt; 2e-16 ***
+## Noise         2  341315  170658  13.307 4.25e-06 ***
+## Speed:Noise   4  295720   73930   5.765 0.000224 ***
+## Residuals   171 2192939   12824                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+Anova(fit, type = 2)
+```
+
+```
+## Anova Table (Type II tests)
+## 
+## Response: Time
+##              Sum Sq  Df  F value    Pr(&gt;F)    
+## Speed       2805871   2 109.3975 &lt; 2.2e-16 ***
+## Noise        341315   2  13.3075 4.252e-06 ***
+## Speed:Noise  295720   4   5.7649 0.0002241 ***
+## Residuals   2192939 171                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+---
 
 ```r
 fit = lm(Time~Speed*Noise, data = Data)
@@ -96,6 +129,56 @@ summary(fit)
 ```
 ---
 
+```r
+library(emmeans)
+fit.grid = ref_grid(fit)
+pairs(fit.grid, adjust = "holm")
+```
+
+```
+##  contrast                                    estimate   SE  df t.ratio p.value
+##  Slow,None - Medium,None                        105.4 35.8 171  2.944  0.0553 
+##  Slow,None - Fast,None                          301.4 35.8 171  8.418  &lt;.0001 
+##  Slow,None - Slow,Controllable                   54.1 35.8 171  1.509  1.0000 
+##  Slow,None - Medium,Controllable                138.0 35.8 171  3.854  0.0026 
+##  Slow,None - Fast,Controllable                  343.5 35.8 171  9.592  &lt;.0001 
+##  Slow,None - Slow,Uncontrollable                 36.3 35.8 171  1.013  1.0000 
+##  Slow,None - Medium,Uncontrollable              326.1 35.8 171  9.106  &lt;.0001 
+##  Slow,None - Fast,Uncontrollable                362.6 35.8 171 10.124  &lt;.0001 
+##  Medium,None - Fast,None                        196.0 35.8 171  5.473  &lt;.0001 
+##  Medium,None - Slow,Controllable                -51.4 35.8 171 -1.435  1.0000 
+##  Medium,None - Medium,Controllable               32.6 35.8 171  0.910  1.0000 
+##  Medium,None - Fast,Controllable                238.1 35.8 171  6.648  &lt;.0001 
+##  Medium,None - Slow,Uncontrollable              -69.2 35.8 171 -1.931  0.6615 
+##  Medium,None - Medium,Uncontrollable            220.7 35.8 171  6.162  &lt;.0001 
+##  Medium,None - Fast,Uncontrollable              257.1 35.8 171  7.180  &lt;.0001 
+##  Fast,None - Slow,Controllable                 -247.4 35.8 171 -6.908  &lt;.0001 
+##  Fast,None - Medium,Controllable               -163.4 35.8 171 -4.564  0.0002 
+##  Fast,None - Fast,Controllable                   42.0 35.8 171  1.174  1.0000 
+##  Fast,None - Slow,Uncontrollable               -265.2 35.8 171 -7.405  &lt;.0001 
+##  Fast,None - Medium,Uncontrollable               24.7 35.8 171  0.689  1.0000 
+##  Fast,None - Fast,Uncontrollable                 61.1 35.8 171  1.707  0.9867 
+##  Slow,Controllable - Medium,Controllable         84.0 35.8 171  2.344  0.2627 
+##  Slow,Controllable - Fast,Controllable          289.4 35.8 171  8.082  &lt;.0001 
+##  Slow,Controllable - Slow,Uncontrollable        -17.8 35.8 171 -0.496  1.0000 
+##  Slow,Controllable - Medium,Uncontrollable      272.1 35.8 171  7.597  &lt;.0001 
+##  Slow,Controllable - Fast,Uncontrollable        308.5 35.8 171  8.615  &lt;.0001 
+##  Medium,Controllable - Fast,Controllable        205.5 35.8 171  5.738  &lt;.0001 
+##  Medium,Controllable - Slow,Uncontrollable     -101.7 35.8 171 -2.841  0.0707 
+##  Medium,Controllable - Medium,Uncontrollable    188.1 35.8 171  5.252  &lt;.0001 
+##  Medium,Controllable - Fast,Uncontrollable      224.6 35.8 171  6.271  &lt;.0001 
+##  Fast,Controllable - Slow,Uncontrollable       -307.2 35.8 171 -8.579  &lt;.0001 
+##  Fast,Controllable - Medium,Uncontrollable      -17.4 35.8 171 -0.486  1.0000 
+##  Fast,Controllable - Fast,Uncontrollable         19.1 35.8 171  0.533  1.0000 
+##  Slow,Uncontrollable - Medium,Uncontrollable    289.8 35.8 171  8.093  &lt;.0001 
+##  Slow,Uncontrollable - Fast,Uncontrollable      326.3 35.8 171  9.111  &lt;.0001 
+##  Medium,Uncontrollable - Fast,Uncontrollable     36.5 35.8 171  1.018  1.0000 
+## 
+## P value adjustment: holm method for 36 tests
+```
+
+---
+
 In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't give it all of M, it will choose every possible value.
 
 .pull-left[
@@ -111,7 +194,7 @@ plot_model(fit, type = "pred",
 ]
 
 .pull-left[
-![](18-interactions_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 
 ]
 ---
@@ -131,9 +214,30 @@ plot_model(fit, type = "pred",
 ]
 
 .pull-left[
-![](18-interactions_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+]---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", "Speed[Fast]")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
 
 ]
+
+.pull-left[
+![](18-interactions_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+]
+
+
 
 ---
 
@@ -152,7 +256,7 @@ plot_model(fit, type = "emm",
 ]
 
 .pull-left[
-![](18-interactions_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -170,7 +274,7 @@ The likelihood of finding an effect *if the effect actually exists.* Power gets 
 
 ---
 
-![](18-interactions_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -285,8 +389,12 @@ What factors make it relatively easier to find interactions in experimental work
     * don't have to guess what condition a participant is in
     * measurement error is exacerbated when two variables measured with error are multiplied by each other
     
-- Experimentalists can force cross-over interactions; observational studies may be restricted to fan interactions
+- Experimentalists are more likely to find cross-over interactions; observational studies may be restricted to fan interactions
     * cross-over interactions are easier to detect than fan interactions
+    
+---
+
+### Factors influencing power in experimental studies
 
 - Experimentalists can concentrate scores on extreme ends on both X and Z
     * in observational studies, data tends to cluster around the mean 
@@ -294,11 +402,7 @@ What factors make it relatively easier to find interactions in experimental work
 
 - Experimentalists can also force orthognality in X and Z
 
-???
-
-Other things: 
-
-you can insure that you study the full range of X in an experiment, but you may have restricted range in an observational study
+- Experimentalists can study the full range of X in an experiment
 
 ---
 
@@ -455,7 +559,7 @@ mean(obeta_xz)
 ## [1] 1.175444
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -476,7 +580,7 @@ mean(ot_xz)
 ## [1] 0.7411209
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -635,7 +739,7 @@ ggplot(football, aes(x = talent, y = points)) +
 ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -696,7 +800,7 @@ plot_model(mod2, type = "pred")
 ## $talent
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
 
 ---
 ## Interpretation
@@ -747,7 +851,7 @@ summary(mod2_50)
 ## $talent_c50
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
 ---
 
 Or you can choose another value to center your predictor on, if there's a value that has a particular meaning or interpretation.
@@ -801,7 +905,7 @@ summary(mod2_c)
 ## $talent_c
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-35-1.png)&lt;!-- --&gt;
 ---
 
 
@@ -904,7 +1008,7 @@ ggplot(aug2, aes(x = .fitted, y = .resid)) +
   theme_bw(base_size = 20)
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-37-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-40-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -917,7 +1021,7 @@ plot_model(mod2, type = "pred", show.data = T)
 ## $talent
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-38-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-41-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1059,7 +1163,7 @@ simple_slopes(mod_stress)
 plot_model(mod_stress, type = "int", mdrt.values = "meansd")
 ```
 
-![](18-interactions_files/figure-html/unnamed-chunk-43-1.png)&lt;!-- --&gt;
+![](18-interactions_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
 
 ---
 

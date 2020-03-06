@@ -25,8 +25,128 @@ Robust estimation
 
 ---
 
-ADD WLS Here
-* violation of homoscedasticity
+## Homoscedasticity
+
+Homoscedasticity is the assumption that the variance of Y is constant across all levels of a predictor.
+
+```{r, echo = F}
+set.seed(031020)
+N = 80
+n.per = round(N/4)
+y.x1 = rnorm(n = n.per, mean = 50, sd = 10)
+y.x2 = rnorm(n = n.per, mean = 40, sd = 7)
+y.x3 = rnorm(n = n.per, mean = 30, sd = 5)
+y.x4 = rnorm(n = n.per, mean = 20, sd = 2)
+
+y = c(y.x1, y.x2, y.x3, y.x4)
+
+x.list = sapply(c(1:4), function(x) rnorm(n = n.per, mean = x, sd = .2))
+xvar = as.vector(x.list)
+
+Data = data.frame(calm = xvar, 
+                  problems = round(y/10))
+```
+
+```{r, message = F, fig.height = 4}
+library(tidyverse)
+ggplot(Data, aes(x = calm, y = problems)) +
+  geom_point(alpha = .5, position = position_jitter(width = 0, height = .1))
+```
+
+---
+
+## Weighted least squares
+
+Weighted least squares (WLS) is a commonly used remedial procedure for heteroscedasticity (or failiing to meet the assumptino of homoscedasticity).
+
+In an ordinary least squares (OLS) approach, each case in the dataset is given equal weight. WLS assigns each case a weight $w_i$, depending upon the precision of the observation of Y in that case. For observations for which the variance around the residuals around the regression line is low, the case is given a high weight.
+
+---
+
+Recall that an OLS estimation chooses values of $b_0$ and $b_1$ that minimizes the sum of squared residuals:
+
+$$\large \text{min}(\sum e^2_i) = \text{min} \sum (Y_i-b_1X_i-b_0)^2$$
+
+In a WLS approach, weights are taken into account, such that the values of $b_0$ and $b_1$ are chosen to minimize the sum of the **weighted** squared residuals:
+
+$$\large \text{min}(\sum w_ie^2_i) = \text{min} \sum w_i(Y_i-b_1X_i-b_0)^2$$
+
+The value of the weights is the inverse of the conditional variance of the residuals in the population corresponding to the specified value of X:
+
+$$\large w_i = \frac{1}{\sigma^2_{Y-\hat{Y}|X}}$$
+---
+
+The value of $\sigma^2_{Y-\hat{Y}|X}$, the variance of the residuals in the population conditional on X, is not known and must be estimated. A common procedure for estimating weights is to estimate the usual OLS regression equation, square the residuals, and then regress the squared residuals onto X. The weight is then estimated as the inverse of the predicted value for a case. 
+
+Using our own data:
+
+```{r}
+ols.model = lm(problems ~ calm, data = Data)
+library(broom)
+ols_aug = augment(ols.model)
+head(ols_aug)
+```
+---
+
+```{r}
+# square residuals
+ols_aug$resid_sq = ols_aug$.resid^2
+# regress squared resid on predictor
+weight.mod = lm(resid_sq ~ calm, data = ols_aug)
+```
+
+.pull-left[
+```{r}
+coef(ols.model)
+```
+
+]
+
+.pull-right[
+```{r}
+coef(weight.mod)
+```
+
+]
+
+```{r}
+# extract predicted values
+pred.resid = predict(weight.mod)
+head(pred.resid)
+# find inverse of predicted values
+# use absolute value if some of your predicted values are negative  
+est.weights = 1/abs(pred.resid) 
+head(est.weights)
+```
+
+
+---
+
+```{r}
+wls.model = lm(problems ~ calm, data = Data, weights = est.weights)
+```
+
+
+#### OLS solution
+```{r}
+tidy(ols.model)
+```
+
+#### WLS solution
+```{r}
+tidy(wls.model)
+```
+
+---
+
+```{r, echo = F, fig.width=10, fig.height=8}
+Data %>%
+  ggplot(aes(x = calm, y = problems)) +
+  geom_point(alpha = .5, position = position_jitter(width = 0, height = .1)) +
+  geom_smooth(method = "lm", se = F, aes(color = "OLS")) +
+  geom_smooth(method = "lm", se = F, aes(color = "WLS", weight = est.weights))
+```
+
 
 ---
 
@@ -43,6 +163,82 @@ A **bootstrapping** approach is useful when the theoretical sampling distributio
 In bootstrapping, the theoretical sampling distribution is assumed to be unknown or unverifiable. Under the weak assumption that the sample in hand is representative of some population, then that population sampling distribution can be built empirically by randomly sampling with replacement from the sample.
 
 The resulting empirical sampling distribution can be used to construct confidence intervals and make inferences.
+
+---
+
+### Illustration
+
+Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, and Ross. To bootstrap their heights, you would draw from this group many samples of 6 people *with replacement*, each time calculating the average height of the sample.
+
+```{r, echo = F}
+friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
+heights = c(65, 65, 68, 70, 72, 73)
+names(heights) = friends
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+```
+???
+
+
+```{r}
+heights
+```
+
+---
+### Illustration
+
+```{r}
+boot = 10000
+friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
+heights = c(65, 65, 68, 70, 72, 73)
+sample_means = numeric(length = boot)
+for(i in 1:boot){
+  this_sample = sample(heights, size = length(heights), replace = T)
+  sample_means[i] = mean(this_sample)
+}
+```
+
+---
+
+## Illustration 
+```{r, echo = F, message = F, fig.width = 10, fig.height=6, warning = F}
+library(ggpubr)
+mu = mean(heights)
+sem = sd(heights)/sqrt(length(heights))
+cv_t = qt(p = .975, df = length(heights)-1)
+
+bootstrapped = data.frame(means = sample_means) %>%
+  ggplot(aes(x = means)) + 
+  geom_histogram(color = "white") +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(sample_means), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(sample_means), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = quantile(sample_means, probs = .025), color = "Lower 2.5%"), size = 2) +
+    geom_vline(aes(xintercept = quantile(sample_means, probs = .975), color = "Upper 2.5%"), size = 2) +
+  scale_x_continuous(limits = c(mu-3*sem, mu+3*sem))+
+  ggtitle("Bootstrapped distribution") +
+  cowplot::theme_cowplot()
+
+
+from_prob = data.frame(means = seq(from = min(sample_means), to = max(sample_means))) %>%
+  ggplot(aes(x = means)) +
+  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) + 
+  geom_vline(aes(xintercept = mean(heights), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(heights), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = mu-cv_t*sem, color = "Lower 2.5%"), size = 2) +
+  geom_vline(aes(xintercept = mu+cv_t*sem, color = "Upper 2.5%"), size = 2) +scale_x_continuous(limits = c(mu-3*sem, mu+3*sem))+  
+  ggtitle("Distribution from probability theory") +
+  cowplot::theme_cowplot()
+
+ggarrange(bootstrapped, from_prob, ncol = 1)
+```
+
 ---
 ### Example
 
@@ -86,28 +282,10 @@ Before now, if we wanted to estimate the mean and the 95% confidence interval ar
 
 Instead, we can build a population sampling distribution empirically by randomly sampling with replacement from the sample.
 
----
-
-### Illustration
-
-Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, and Ross. To bootstrap their heights, you would draw from this group many samples of 6 people *with replacement*, each time calculating the average height of the sample.
-
-```{r, echo = F}
-friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
-heights = c(65, 65, 68, 70, 72, 73)
-names(heights) = friends
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
-```
 
 ---
 
+## Response time example
 ```{r}
 boot = 10000
 response_means = numeric(length = boot)
@@ -282,8 +460,12 @@ subsample_CLEC = Verizon %>% filter(Group == "CLEC")
 subsample_ILEC = Verizon %>% filter(Group == "ILEC")
 
 for(i in 1:boot){
-  sample_CLEC = sample(subsample_CLEC$Time, size = nrow(subsample_CLEC), replace = T)
-  sample_ILEC = sample(subsample_ILEC$Time, size = nrow(subsample_ILEC), replace = T)
+  sample_CLEC = sample(subsample_CLEC$Time, 
+                       size = nrow(subsample_CLEC), 
+                       replace = T)
+  sample_ILEC = sample(subsample_ILEC$Time, 
+                       size = nrow(subsample_ILEC), 
+                       replace = T)
   
   difference[i] = mean(sample_CLEC) - mean(sample_ILEC)
 }
@@ -461,3 +643,99 @@ Penalizing a model as it grows more complex.
 
 *lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
 - coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
+
+The coefficient $\lambda$ is used to penalize the model.
+
+---
+
+The `glmnet` package has the tools for lasso regression. One small complication is that the package uses matrix algebra, so you need to feed it a matrix of predictors -- specifically, instead of saying "find the interaction between A and B", you need to create the variable that represents this term. How could you do that manually?
+
+--
+
+Luckily, the function `model.matrix()` can do this for you.
+
+---
+
+```{r, message = F, warning = F}
+# provide your original lm model to get matrix of predictors
+X.matrix <- model.matrix.lm(model.lm) 
+head(X.matrix)
+library(glmnet)
+lasso.mod <- glmnet(x = X.matrix[,-1], #don't need the intercept 
+                    y = stress.data$Stress)
+```
+
+---
+
+```{r}
+lasso.mod
+```
+
+???
+
+DF = number of non-zero coefficients
+dev = $R^2$
+lambda = complexity parameter (how much to downweight, between 0 and 1)
+
+---
+### What value of $\lambda$ to choose?
+
+```{r, fig.height=5}
+plot(lasso.mod, xvar = "lambda", label = TRUE)
+```
+
+Seems like there was a lot going on right around $log(\lambda) = -4$ so I'm going to look at the coefficients there
+---
+
+```{r}
+coef = coef(lasso.mod, s = exp(-4))
+coef
+```
+
+
+---
+
+```{r}
+coef = coef(lasso.mod, s = 0)
+coef
+```
+
+$\lambda = 0$ is pretty close to our OLS solution
+
+---
+
+```{r}
+coef = coef(lasso.mod, s = 1)
+coef
+```
+
+$\lambda = 1$ is a huge penalty
+
+---
+
+### NHST no more
+
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicity deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+
+---
+
+## Summary: Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+class: inverse
+
+## Next time...
+
+PSY 613 with Elliot Berkman!
+
