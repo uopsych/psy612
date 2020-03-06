@@ -1,0 +1,7 @@
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\includegraphics{papaja_example_ms_files/figure-latex/fig-ageXconsc-1.pdf}
+\caption{\label{fig:fig-ageXconsc}Conscientiousness by Age.}
+\end{figure*}
