@@ -4,6 +4,7 @@ course website:
 labs overall
 * show only broom and kable for creating table summaries throughout
 * in lab 9, show them papaja in depth (add links to other options, like stargazer, apaTables, and sjPlot to just create tables in Word)
+* incorporate in-text R code to summarize results throughout 
 
 final-project.html
   * More specific guidelines. suggestions commented out in file. 
