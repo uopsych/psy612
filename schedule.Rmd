@@ -38,11 +38,11 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | 8    | 2/25 | Interactions (Continuous x categorical predictors) | LSR Chapter 16 |  Quiz 7    |             |
 | -    | 2/27 | Interactions (Factorial ANOVA) |  |            |             |
 | -    | 2/28 | _Lab: ANOVA_                      |                    |            |             |
-| 9    | 3/03 | Interactions                      | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
-| -    | 3/05 | Interactions                      |                    |            |             |
+| 9    | 3/03 | Interactions (Factorial ANOVA)    | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
+| -    | 3/05 | Interactions (Power and polynomials)    |                    |            |             |
 | -    | 3/06 | _Lab: papaja_                     |                    |            |  HW 2 Due Monday (March 9)   |
-| 10   | 3/10 | Bootstrapping                     | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
-| -    | 3/12 | Bootstrapping                     |                    |  Quiz 9    |             |
+| 10   | 3/10 | Interactions (polynomials and 3-way)                     | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
+| -    | 3/12 | WLS and Bootstrapping                     |                    |  Quiz 9    |             |
 | -    | 3/13 | _Lab: Bootstrapping_              |                    |            |             |
 |Finals| 3/16 |                                   |                    |            |             |         
 **Final:** The final project is due at 9am on March 20th.

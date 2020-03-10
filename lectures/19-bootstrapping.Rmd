@@ -11,6 +11,11 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r, echo = F, message = F, warning = F}
+library(tidyverse)
+```
+
+
 #Last time...
 
 Wrapping up interactions
@@ -19,10 +24,268 @@ Wrapping up interactions
 
 # Today
 
+Finish polynomials and 3-way interactions
+
 Robust estimation
 * Weighted Least Squares
 * Boostrapping
 
+---
+## Polynomial regression 
+ 
+Polynomial regression is most often a form of hierarchical regressoin that systematically tests a series of higher order functions for a single variable.
+
+$$
+\begin{aligned}
+\large \textbf{Linear: } \hat{Y} &= b_0 + b_1X \\
+\large \textbf{Quadtratic: } \hat{Y} &= b_0 + b_1X + b_2X^2 \\
+\large \textbf{Cubic: } \hat{Y} &= b_0 + b_1X + b_2X^2 + b_3X^3\\
+\end{aligned}
+$$
+
+---
+### Example
+
+Can a team have too much talent? Researchers hypothesized that teams with too many talented players have poor intrateam coordination and therefore perform worse than teams with a moderate amount of talent. To test this hypothesis, they looked at 208 international football teams. Talent was the percentage of players during the 2010 and 2014 World Cup Qualifications phases who also had contracts with elite club teams. Performance was the number of points the team earned during these same qualification phases.
+
+```{r, message=F}
+library(here)
+football = read.csv(here("data/swaab.csv"))
+```
+
+.small[Swaab, R.I., Schaerer, M, Anicich, E.M., Ronay, R., and Galinsky, A.D. (2014). [The too-much-talent effect: Team
+interdependence determines when more talent is too much or not enough.](https://www8.gsb.columbia.edu/cbs-directory/sites/cbs-directory/files/publications/Too%20much%20talent%20PS.pdf) _Psychological Science 25_(8), 1581-1591.]
+
+---
+
+```{r mod1, warning = F, message = F, fig.width = 10, fig.height = 5}
+mod1 = lm(points ~ talent, data = football)
+library(broom)
+aug1 = augment(mod1)
+ggplot(aug1, aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  theme_bw(base_size = 20)
+```
+
+---
+```{r mod2}
+mod2 = lm(points ~ talent + I(talent^2), data = football)
+summary(mod2)
+```
+
+---
+
+```{r, message = F}
+library(sjPlot)
+plot_model(mod2, type = "pred")
+```
+
+---
+## Interpretation
+
+The intercept is the predicted value of Y when x = 0 -- this is always the interpretation of the intercept, no matter what kind of regression model you're running. 
+
+The $b_1$ coefficient is the tangent to the curve when X=0. In other words, this is the rate of change when X is equal to 0. If 0 is not a meaningful value on your X, you may want to center, as this will tell you the rate of change at the mean of X.
+
+---
+
+## Interpretation
+
+The $b_2$ coefficient indexes the acceleration, which is how much the slope is going to change. More specifically, $2 \times b_2$ is the acceleration: the rate of change in $b_1$ for a 1-unit change in X.
+
+You can use this to calculate the slope of the tangent line at any value of X you're interested in:
+$$\large b_1 + (2\times b_2\times X)$$
+
+---
+
+```{r}
+tidy(mod2)
+```
+
+.pull-left[
+**At X = 10**
+```{r}
+54.9 + (2*-.570*10)
+```
+
+]
+.pull-right[
+**At X = 70**
+```{r}
+54.9 + (2*-.570*70)
+```
+
+]
+
+---
+
+## Polynomials are interactions
+
+An term for $X^2$ is a term for $X \times X$ or the multiplication of two independent variables holding the same values. 
+
+```{r}
+football$talent_2 = football$talent*football$talent
+tidy(lm(points ~ talent + talent_2, data = football))
+```
+---
+
+## Polynomials are interactions
+
+Put another way:
+
+$$\large \hat{Y} = b_0 + b_1X + b_2X^2$$
+
+$$\large \hat{Y} = b_0 + \frac{b_1}{2}X + \frac{b_1}{2}X + b_2(X \times X)$$
+
+The interaction term in another model would be interpreted as "how does the slope of X change as I move up in Z?" -- here, we ask "how does the slope of X change as we move up in X?"
+---
+
+## When should you use polynomial terms?
+
+You may choose to fit a polynomial term after looking at a scatterplot of the data or looking at residual plots. A U-shaped curve may be indicative that you need to fit a quadratic form -- although, as we discussed before, you may actually be measuring a different kind of non-linear relationship. 
+
+Polynomial terms should mostly be dictated by theory -- if you don't have a good reason for thinking there will be a change in sign, then a polynomial is not right for you.
+
+And, of course, if you fit a polynomial regression, be sure to once again check your diagnostics before interpreting the coefficients. 
+---
+
+```{r, warning = F, message = F, fig.width=10, fig.height=5}
+aug2 = augment(mod2)
+ggplot(aug2, aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  theme_bw(base_size = 20)
+
+```
+
+---
+
+```{r, warning = F, message = F, fig.width=10, fig.height=7}
+plot_model(mod2, type = "pred", show.data = T)
+```
+
+---
+
+class: inverse
+
+## Three-way interactions and beyond
+
+---
+
+
+### Three-way interactions (regression)
+
+**Regression equation**
+
+$$\hat{Y} = b_{0} + b_{1}X + b_{2}Z + b_{3}W + b_{4}XZ + b_{5}XW + b_{6}ZW + b_{7}XZW$$
+The three-way interaction qualifies the three main effects (and any two-way interactions). 
+
+Like a two-way interaction, the three-way interaction is a conditional effect.  And it is symmetrical, meaning there are several equally correct ways of interpreting it.
+
+**Factorial ANOVA**
+
+We describe the factorial ANOVA design by the number of levels of each factor. "X by Z by W" (e.g., 2 by 3 by 4, or 2x3x4)
+---
+A two-way  (A x B) interaction means that the magnitude of one main effect (e.g., A main effect) depends on levels of the other variable (B).  But, it is equally correct to say that the magnitude of the B main effect depends on levels of A. In regression, we refer to these as **conditional effects** and in ANOVA, they are called **simple main effects.**
+
+A three-way interaction means that the magnitude of one two-way interaction (e.g., A x B) depends on levels of the remaining variable (C). 
+
+It is equally correct to say that the magnitude of the A x C interaction depend on levels of B. Or, that the magnitude of the B x C interaction depends on levels of A. These are known as **simple interaction effects**.
+
+---
+### Example (regression)
+
+```{r, echo = F}
+set.seed(03032020)
+gender = sample(c("male", "female"), size = 150, replace = T)
+bad_day = sample(x = c(1:5), size = 150, replace = T)
+talk = round(2*(gender == "female") + .2*(bad_day) + rnorm(n = 150))
+talk = talk + 1
+talk[talk < 1] = 1
+talk[talk > 5] = 5
+stress = bad_day + talk - (bad_day*talk) + round(rnorm(n = 150, sd = 5))
+stress_m = bad_day + talk + (bad_day*talk)+ round(rnorm(n = 150, sd = 5))
+stress[gender == "male"] = stress_m[gender == "male"]
+stress = stress+1+abs(min(stress))
+
+stress_data = data.frame(gender, bad_day, talk, stress)
+```
+
+
+```{r}
+psych::describe(stress_data, fast = T)
+table(stress_data$gender)
+```
+
+---
+
+```{r}
+mod_stress = lm(stress ~ bad_day*talk*gender, data = stress_data)
+summary(mod_stress)
+```
+
+---
+
+```{r, message = F}
+library(reghelper)
+simple_slopes(mod_stress)
+```
+
+---
+
+```{r, fig.width=10, fig.height = 7}
+plot_model(mod_stress, type = "int", mdrt.values = "meansd")
+```
+
+---
+
+As a reminder, centering will change all but the highest-order terms in a model. 
+
+```{r}
+stress_data = stress_data %>%
+  mutate(bad_day_c = bad_day - mean(bad_day),
+         talk_c = talk - mean(talk))
+newmod = lm(stress ~ bad_day_c*talk_c*gender, data = stress_data)
+```
+
+---
+```{r}
+tidy(mod_stress)
+```
+```{r}
+tidy(newmod)
+```
+
+
+---
+### Four-way? 
+
+
+$$
+\begin{aligned}
+\hat{Y} &= b_0 + b_1X + b_{2}Z + b_{3}W + b_{4}Q + b_{5}XW\\
+&+ b_{6}ZW + b_{7}XZ + b_{8}QX + b_{9}QZ + b_{10}QW\\
+&+ b_{11}XZQ + b_{12}XZW + b_{13}XWQ + b_{14}ZWQ + b_{15}XZWQ\\
+\end{aligned}
+$$
+
+--
+
+3-way (and higher) interactions are incredibly difficult to interpret, in part because they represent incredibly complicated processes. If you have a solid theoretical rationale for conducting a 3-day interaction, be sure you've collected enough subjects to power your test (more on this later). 
+
+---
+
+Especially with small samples, three-way interactions may be the result of a few outliers skewing a regression line. If you have stumbled upon a three-way interactoin during exploratory analyses, **be careful.** This is far more likely to be a result of over-fitting than uncovering a true underlying process.
+
+Best practice for 3-way (and higher) interactions is to use at least one nominal moderator (ideally with only 2 levels), instead of all continuous moderators. This allows you to examine the 2-way interaction at each level of the nominal moderator.
+
+Even better if one of these moderators is experimenter manipulated, which increases the likelihood of balanced conditions. 
+
+---
+class: inverse
+
+no more interactions
 ---
 
 ## Homoscedasticity
@@ -731,11 +994,11 @@ Once you've imposed a shrinkage penalty on your coefficients, you've wandered fa
 **Regularization**
 * Constrain the model to be less overfit 
 
----
+<!-- --- -->
 
-class: inverse
+<!-- class: inverse -->
 
-## Next time...
+<!-- ## Next time... -->
 
-PSY 613 with Elliot Berkman!
+<!-- PSY 613 with Elliot Berkman! -->
 

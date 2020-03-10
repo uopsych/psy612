@@ -49,6 +49,7 @@ Question 10.1
 
 homework-2.html
 * make due last week of class
+* weights are 1/predicted values, not predicted values!!!
 
 lab-8.html
 * change eemmeans() to lsmeans()
