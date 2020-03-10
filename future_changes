@@ -1,3 +1,10 @@
+course website:
+* include in required materials: LaTex
+
+labs overall
+* show only broom and kable for creating table summaries throughout
+* in lab 9, show them papaja in depth (add links to other options, like stargazer, apaTables, and sjPlot to just create tables in Word)
+
 final-project.html
   * More specific guidelines. suggestions commented out in file. 
 
@@ -54,6 +61,9 @@ homework-2.html
 lab-8.html
 * change eemmeans() to lsmeans()
 * use pairs() instead of contrast()
+* need to specify contrasts before running the model `options(contrasts = c("contr.sum", "contr.poly"))` in order for the apaTables apa.aov.table() function to be correct
+* download papaja before lab 9 (this often has errors!!!! do this soon so we can skip troubleshooting in lab 9)
+* laTex may need admin privleges 
 
 17-interactions.html
 * don't mention regression sums of squares
@@ -61,3 +71,6 @@ lab-8.html
 * add SPSS and SAS defaults are type III
 * add to FA and Regression comparison slide: compare output
 * take out sjPlot main effects
+
+lab-9.html
+* we will NOT troubleshoot installing papaja at the beginning of this lab
