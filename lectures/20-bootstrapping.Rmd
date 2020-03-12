@@ -1,0 +1,634 @@
+---
+title: 'Bootstrapping'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo = F, message = F, warning = F}
+library(tidyverse)
+```
+
+
+#Last time...
+
+- Polynomials
+- 3-way interactions
+- Weighted least squares
+
+# Today
+
+* Boostrapping
+* Lessons from machine learning
+
+---
+
+## Bootstrapping
+
+In bootstrapping, the theoretical sampling distribution is assumed to be unknown or unverifiable. Under the weak assumption that the sample in hand is representative of some population, then that population sampling distribution can be built empirically by randomly sampling with replacement from the sample.
+
+The resulting empirical sampling distribution can be used to construct confidence intervals and make inferences.
+
+---
+
+### Illustration
+
+Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, and Ross. To bootstrap their heights, you would draw from this group many samples of 6 people *with replacement*, each time calculating the average height of the sample.
+
+```{r, echo = F}
+friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
+heights = c(65, 65, 68, 70, 72, 73)
+names(heights) = friends
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+(sample1 = sample(friends, size = 6, replace = T)); mean(heights[sample1])
+```
+???
+
+
+```{r}
+heights
+```
+
+---
+### Illustration
+
+```{r}
+boot = 10000
+friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
+heights = c(65, 65, 68, 70, 72, 73)
+sample_means = numeric(length = boot)
+for(i in 1:boot){
+  this_sample = sample(heights, size = length(heights), replace = T)
+  sample_means[i] = mean(this_sample)
+}
+```
+
+---
+
+## Illustration 
+```{r, echo = F, message = F, fig.width = 10, fig.height=6, warning = F}
+library(ggpubr)
+mu = mean(heights)
+sem = sd(heights)/sqrt(length(heights))
+cv_t = qt(p = .975, df = length(heights)-1)
+
+bootstrapped = data.frame(means = sample_means) %>%
+  ggplot(aes(x = means)) + 
+  geom_histogram(color = "white") +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(sample_means), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(sample_means), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = quantile(sample_means, probs = .025), color = "Lower 2.5%"), size = 2) +
+    geom_vline(aes(xintercept = quantile(sample_means, probs = .975), color = "Upper 2.5%"), size = 2) +
+  scale_x_continuous(limits = c(mu-3*sem, mu+3*sem))+
+  ggtitle("Bootstrapped distribution") +
+  cowplot::theme_cowplot()
+
+
+from_prob = data.frame(means = seq(from = min(sample_means), to = max(sample_means))) %>%
+  ggplot(aes(x = means)) +
+  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) + 
+  geom_vline(aes(xintercept = mean(heights), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(heights), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = mu-cv_t*sem, color = "Lower 2.5%"), size = 2) +
+  geom_vline(aes(xintercept = mu+cv_t*sem, color = "Upper 2.5%"), size = 2) +scale_x_continuous(limits = c(mu-3*sem, mu+3*sem))+  
+  ggtitle("Distribution from probability theory") +
+  cowplot::theme_cowplot()
+
+ggarrange(bootstrapped, from_prob, ncol = 1)
+```
+
+---
+### Example
+
+A sample of 216 response times. What is their central tendency and variability?
+
+There are several candidates for central tendency (e.g., mean, median) and for variability (e.g., standard deviation, interquartile range).  Some of these do not have well understood theoretical sampling distributions.
+
+For the mean and standard deviation, we have theoretical sampling distributions to help us, provided we think the mean and standard deviation are the best indices. For the others, we can use bootstrapping.
+
+---
+```{r, echo = F, message=F, fig.width=10, fig.height=8}
+library(tidyverse)
+set.seed(03102020)
+response = rf(n = 216, 3, 50) 
+response = response*500 + rnorm(n = 216, mean = 200, sd = 100)
+
+values = quantile(response, 
+                  probs = c(.025, .5, .975))
+mean_res = mean(response)
+
+data.frame(x = response) %>%
+  ggplot(aes(x)) +
+  geom_histogram(aes(y = ..density..), binwidth = 150, fill = "lightgrey", color = 
+                   "black")+
+  geom_density()+
+  geom_vline(aes(xintercept = values[1], 
+                 color = "Lower 2.5%"), size = 2)+
+  geom_vline(aes(xintercept = values[2], 
+                 color = "Median"), size = 2)+
+  geom_vline(aes(xintercept = values[3], 
+                 color = "Upper 2.5%"), size = 2)+
+  geom_vline(aes(xintercept = mean_res, 
+                 color = "Mean"), size = 2)+
+  labs(x = "Reponse time (ms)", title = "Response Time Distribution") + cowplot::theme_cowplot(font_size = 20)
+```
+
+---
+### Bootstrapping
+
+Before now, if we wanted to estimate the mean and the 95% confidence interval around the mean, we would find the theoretical sampling distribution by scaling a t-distribution to be centered on the mean of our sample and have a standard deviation equal to $\frac{s}{\sqrt{N}}.$ But we have to make many assumptions to use this sampling distribution, and we may have good reason not to.  
+
+Instead, we can build a population sampling distribution empirically by randomly sampling with replacement from the sample.
+
+
+---
+
+## Response time example
+```{r}
+boot = 10000
+response_means = numeric(length = boot)
+for(i in 1:boot){
+  sample_response = sample(response, size = 216, replace = T)
+  response_means[i] = mean(sample_response)
+}
+```
+
+```{r, echo = F, message = F, fig.width = 10, fig.height5}
+data.frame(means = response_means) %>%
+  ggplot(aes(x = means)) + 
+  geom_histogram(color = "white") +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(response_means), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(response_means), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = quantile(response_means, probs = .025), color = "Lower 2.5%"), size = 2) +
+    geom_vline(aes(xintercept = quantile(response_means, probs = .975), color = "Upper 2.5%"), size = 2) +
+  cowplot::theme_cowplot()
+```
+
+
+---
+
+```{r}
+mean(response_means)
+median(response_means)
+
+quantile(response_means, probs = c(.025, .975))
+```
+
+What about something like the median?
+
+---
+
+### bootstrapped distribution of the median
+
+```{r}
+boot = 10000
+response_med = numeric(length = boot)
+for(i in 1:boot){
+  sample_response = sample(response, size = 216, replace = T)
+  response_med[i] = median(sample_response)
+}
+```
+.pull-left[
+```{r echo=F,  message=FALSE}
+data.frame(medians = response_med) %>%
+  ggplot(aes(x = medians)) + 
+  geom_histogram(aes(y = ..density..),
+                 color = "white", fill = "grey") +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(response_med), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(response_med), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = quantile(response_med, probs = .025), color = "Lower 2.5%"), size = 2) +
+    geom_vline(aes(xintercept = quantile(response_med, probs = .975), color = "Upper 2.5%"), size = 2) +
+  cowplot::theme_cowplot()
+```
+]
+.pull-right[
+```{r}
+mean(response_med)
+median(response_med)
+quantile(response_med, 
+         probs = c(.025, .975))
+```
+]
+---
+
+### bootstrapped distribution of the standard deviation
+
+```{r}
+boot = 10000
+response_sd = numeric(length = boot)
+for(i in 1:boot){
+  sample_response = sample(response, size = 216, replace = T)
+  response_sd[i] = sd(sample_response)
+}
+```
+.pull-left[
+```{r echo=F,  message=FALSE}
+data.frame(sds = response_sd) %>%
+  ggplot(aes(x = sds)) + 
+  geom_histogram(aes(y = ..density..),color = "white", fill = "grey") +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(response_sd), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(response_sd), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = quantile(response_sd, probs = .025), color = "Lower 2.5%"), size = 2) +
+    geom_vline(aes(xintercept = quantile(response_sd, probs = .975), color = "Upper 2.5%"), size = 2) +
+  cowplot::theme_cowplot()
+```
+]
+.pull-right[
+```{r}
+mean(response_sd)
+median(response_sd)
+quantile(response_sd, 
+         probs = c(.025, .975))
+```
+]
+
+---
+
+You can bootstrap estimates and 95% confidence intervals for *any* statistics you'll need to estimate. 
+
+The `boot` function provides some functions to speed this process along.
+
+```{r}
+library(boot)
+
+# function to obtain R-Squared from the data
+rsq <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample
+  
+  fit <- lm(mpg~wt+disp, data=d) # this is the code you would have run
+  
+  return(summary(fit)$r.square)
+}
+# bootstrapping with 10000 replications
+results <- boot(data=mtcars, statistic=rsq,
+   R=10000)
+```
+
+---
+.pull-left[
+```{r}
+data.frame(rsq = results$t) %>%
+  ggplot(aes(x = rsq)) +
+  geom_histogram(color = "white", bins = 30) 
+```
+]
+
+.pull-right[
+```{r}
+median(results$t)
+boot.ci(results, type = "perc")
+```
+]
+
+---
+
+### Example 2
+
+Samples of service waiting times for Verizon’s (ILEC) versus other carriers (CLEC) customers. In this district, Verizon must provide line service to all customers or else face a fine. The question is whether the non-Verizon customers are getting ignored or facing greater variability in waiting times.
+
+```{r, message = F, warning = F, echo = 2}
+library(here)
+Verizon = read.csv(here("data/Verizon.csv"))
+```
+
+```{r, echo = F, fig.width = 10, fig.height = 4}
+Verizon %>%
+  ggplot(aes(x = Time, fill = Group)) + 
+  geom_histogram(bins = 30) + 
+  guides(fill = F) +
+  facet_wrap(~Group, scales = "free_y")
+```
+
+---
+
+```{r, echo = F, fig.width = 10, fig.height = 6}
+Verizon %>%
+  ggplot(aes(x = Time, fill = Group)) + 
+  geom_histogram(bins = 50, position = "dodge") + 
+  guides(fill = F)
+table(Verizon$Group)
+```
+
+---
+
+There's no world in which these data meet the typical assumptions of an independent samples t-test. To estimate mean differences we can use boostrapping. Here, we'll resample with replacement separately from the two samples. 
+
+```{r}
+boot = 10000
+difference = numeric(length = boot)
+
+subsample_CLEC = Verizon %>% filter(Group == "CLEC")
+subsample_ILEC = Verizon %>% filter(Group == "ILEC")
+
+for(i in 1:boot){
+  sample_CLEC = sample(subsample_CLEC$Time, 
+                       size = nrow(subsample_CLEC), 
+                       replace = T)
+  sample_ILEC = sample(subsample_ILEC$Time, 
+                       size = nrow(subsample_ILEC), 
+                       replace = T)
+  
+  difference[i] = mean(sample_CLEC) - mean(sample_ILEC)
+}
+```
+
+---
+
+```{r echo=F,  message=FALSE, fig.width=10, fig.height=5}
+data.frame(differences = difference) %>%
+  ggplot(aes(x = differences)) + 
+  geom_histogram(aes(y = ..density..),color = "white", fill = "grey") +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(differences), color = "mean"), size = 2) +
+  geom_vline(aes(xintercept = median(differences), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = quantile(differences, probs = .025), color = "Lower 2.5%"), size = 2) +
+    geom_vline(aes(xintercept = quantile(differences, probs = .975), color = "Upper 2.5%"), size = 2) +
+  cowplot::theme_cowplot()
+```
+
+The difference in means is `r round(median(difference),2)` $[`r round(quantile(difference, probs = .025),2)`,`r round(quantile(difference, probs = .975),2)`]$.
+
+---
+
+### Bootstrapping Summary
+
+Bootstrapping can be a useful tool to estimate parameters when 
+1. you've violated assumptions of the test (i.e., normality, homoskedasticity)
+2. you have good reason to believe the sampling distribution is not normal, but don't know what it is
+3. there are other oddities in your data, like very unbalanced samples 
+
+This allows you to create a confidence interval around any statistic you want -- Cronbach's alpha, ICC, Mahalanobis Distance, $R^2$, AUC, etc. 
+* You can test whether these statistics are significantly different from any other value -- how?
+
+---
+
+### Bootstrapping Summary
+
+Bootstrapping will NOT help you deal with:
+
+* dependence between observations -- for this, you'll need to explicity model dependence (e.g., multilevel model, repeated measures ANOVA)
+
+* improperly specified models or forms -- use theory to guide you here
+
+* measurement error -- why bother?
+
+---
+
+## Yarkoni and Westfall (2017)
+
+Y&W describe the goals of explanation and prediction in science; how are these goals similar to each other and how are they in opposition to each other? 
+
+According to Y&W, how should psychologists change their research, in terms of explanation and prediction, and why?
+
+How do regression models fit into the goals of explanation and prediction? Where do they fall short on one or other or both?
+
+???
+
+Explanation: describe causal underpinnings of behaviors/outcomes
+Prediction: accurately forecast behaviors/outcomes
+
+Similar: both goals of science; good prediction can help us develop theory of explanation and vice versa
+
+Statistical tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes. 
+
+Y&W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
+
+---
+
+## Yarkoni and Westfall (2017)
+
+What is **overfitting** and where does this occur in terms of the models we have discussed in class thus far?
+
+What is **bias** and **variance**, and how does the bias-variance trade-off relate to overfitting?
+
+* How concerned are you about overfitting in your own area of research? How about in the studies you'd like to do in the next couple of years?
+
+???
+
+Overfitting: mistakenly fitting sample-specific noise as if it were signal
+
+OLS models tend to be overfit because they minimize error for a specific sample
+
+Bias: systematically over or under estimating parameters
+Variance: how much estimates tend to jump around
+
+Model-fits tend to prioritizie minimizing bias or variance, and choosing to minimize one inflates the other; OLS models minimize one of these
+
+
+---
+
+## Yarkoni and Westfall (2017)
+
+How do Y&W propose adjusting our current statistical practices to be more successful at prediction? 
+
+???
+
+big data sets
+
+Cross-validation
+
+regularization
+
+---
+
+## Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+### Big Data Sets
+
+"Every pattern that could be observed in a given dataset reflects some... unknown combination of signal and error" (page 1104). 
+
+Error is random, so it cannot correlate with anything; as we aggregate many pieces of information together, we reduce error. 
+
+Thus, as we get bigger and bigger datasets, the amount of error we have gets smaller and smaller
+
+---
+
+### Cross-validation
+
+**Cross-validation** is a family of techniques that involve testing and training a model on different samples of data. 
+* Replication
+* Hold-out samples
+* K-fold
+    * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other
+    * Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit
+    * Can split the dataset into more than 2 sections
+    
+---
+
+```{r, message=FALSE, warning = F}
+library(here)
+stress.data = read.csv(here("data/stress.csv"))
+library(psych)
+describe(stress.data, fast = T)
+
+model.lm = lm(Stress ~ Anxiety*Support*group, 
+              data = stress.data)
+summary(model.lm)$r.squared
+```
+
+---
+
+### Example: 10-fold cross validation
+
+```{r, message = F}
+# new package!
+library(caret)
+# set control parameters
+ctrl <- trainControl(method="cv", number=10)
+# use train() instead of lm()
+cv.model <- train(Stress ~ Anxiety*Support*group, 
+               data = stress.data, 
+               trControl=ctrl, # what are the control parameters
+               method="lm") # what kind of model
+cv.model
+```
+
+---
+
+### Regularization
+
+Penalizing a model as it grows more complex. 
+* Usually involves shrinking coefficient estimates -- the model will fit less well in-sample but may be more predictive
+
+*lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
+- coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
+
+The coefficient $\lambda$ is used to penalize the model.
+
+---
+
+The `glmnet` package has the tools for lasso regression. One small complication is that the package uses matrix algebra, so you need to feed it a matrix of predictors -- specifically, instead of saying "find the interaction between A and B", you need to create the variable that represents this term. How could you do that manually?
+
+--
+
+Luckily, the function `model.matrix()` can do this for you.
+
+---
+
+```{r, message = F, warning = F}
+# provide your original lm model to get matrix of predictors
+X.matrix <- model.matrix.lm(model.lm) 
+head(X.matrix)
+library(glmnet)
+lasso.mod <- glmnet(x = X.matrix[,-1], #don't need the intercept 
+                    y = stress.data$Stress)
+```
+
+---
+
+```{r}
+lasso.mod
+```
+
+???
+
+DF = number of non-zero coefficients
+dev = $R^2$
+lambda = complexity parameter (how much to downweight, between 0 and 1)
+
+---
+### What value of $\lambda$ to choose?
+
+```{r}
+plot(lasso.mod, xvar = "dev", label = T)
+```
+
+Looks like coefficients 1, 2, and 3 have high values even with shrinkage.
+
+---
+### What value of $\lambda$ to choose?
+```{r, fig.height=5}
+plot(lasso.mod, xvar = "lambda", label = TRUE)
+```
+
+I might look for lambda values where those coefficients are still different from 0. 
+
+---
+.pull-left[
+```{r}
+coef = coef(lasso.mod, s = exp(-5))
+coef
+```
+]
+
+.pull-left[
+```{r}
+coef = coef(lasso.mod, s = exp(-4))
+coef
+```
+]
+
+
+---
+
+```{r}
+coef = coef(lasso.mod, s = 0)
+coef
+```
+
+$\lambda = 0$ is pretty close to our OLS solution
+
+---
+
+```{r}
+coef = coef(lasso.mod, s = 1)
+coef
+```
+
+$\lambda = 1$ is a huge penalty
+
+---
+### NHST no more
+
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicity deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+
+---
+
+## Summary: Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+class: inverse
+
+## Next time...
+
+PSY 613 with Elliot Berkman!
+

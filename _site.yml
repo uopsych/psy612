@@ -44,7 +44,9 @@ navbar:
       - text: "18-Interactions (V)"
         href: "lectures/18-interactions.html"    
       - text: "19-Interactions (VI) and WLS"
-        href: "lectures/19-bootstrapping.html"            
+        href: "lectures/19-bootstrapping.html"   
+      - text: "20-Bootstrapping"
+        href: "lectures/20-bootstrapping.html"           
     - text: Labs
       menu:
       - text: "Correlations"
