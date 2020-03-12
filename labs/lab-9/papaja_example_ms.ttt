@@ -1,12 +1,9 @@
 \begin{table*}[hbt]
 \ifnextchar[{\eatarg}{}
 [tbp]
-
 \begin{center}
 \begin{threeparttable}
-
 \caption{\label{tab:descrips-tab}Descriptive statistics of Big Five Scale Scores.}
-
 \begin{tabular}{llllll}
 \toprule
 scale & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{SD} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max}\\
@@ -19,24 +16,18 @@ openness & 4.59 & 4.60 & 0.81 & 1.20 & 6.00\\
 \bottomrule
 \addlinespace
 \end{tabular}
-
 \begin{tablenotes}[para]
 \normalsize{\textit{Note.} This table was created with apa\_table().}
 \end{tablenotes}
-
 \end{threeparttable}
 \end{center}
-
 \end{table*}
 \begin{table*}[hbt]
 \ifnextchar[{\eatarg}{}
 [tbp]
-
 \begin{center}
 \begin{threeparttable}
-
 \caption{\label{tab:scale-intercors-tbl}Example corr matrix}
-
 \begin{tabular}{lllll}
 \toprule
  & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} & \multicolumn{1}{c}{3} & \multicolumn{1}{c}{4}\\
@@ -49,24 +40,18 @@ openness & 4.59 & 4.60 & 0.81 & 1.20 & 6.00\\
 \bottomrule
 \addlinespace
 \end{tabular}
-
 \begin{tablenotes}[para]
 \normalsize{\textit{Note.} * p < 0.05; ** p < 0.01; *** p < 0.001}
 \end{tablenotes}
-
 \end{threeparttable}
 \end{center}
-
 \end{table*}
 \begin{table*}[hbt]
 \ifnextchar[{\eatarg}{}
 [tbp]
-
 \begin{center}
 \begin{threeparttable}
-
 \caption{\label{tab:reg-models-tbl}Regressing Conscientiousness on Age and Education}
-
 \begin{tabular}{lll}
 \toprule
  & \multicolumn{1}{c}{Model 1} & \multicolumn{1}{c}{Model 2}\\
@@ -79,7 +64,7 @@ Education Grad Degree &  & $0.06$ $[-0.09$, $0.22]$\\
 Education Some College &  & $0.25$ $[0.11$, $0.38]$\\
 $R^2$ [90\% CI] & $.01$ $[0.00$, $0.02]$ & $.02$ $[0.01$, $0.03]$\\
 $F$ & 22.16 & 10.93\\
-$df_1$ & 1 & 5\\
+$df_1$ & 2 & 6\\
 $df_2$ & 2575 & 2571\\
 $p$ & < .001 & < .001\\
 $\mathrm{AIC}$ & 6,979.81 & 6,955.69\\
@@ -94,12 +79,9 @@ $\Delta \mathrm{BIC}$ &  & -0.70\\
 \bottomrule
 \addlinespace
 \end{tabular}
-
 \begin{tablenotes}[para]
 \normalsize{\textit{Note.} Model comparison compares a model with just age to a model that has age and education.}
 \end{tablenotes}
-
 \end{threeparttable}
 \end{center}
-
 \end{table*}

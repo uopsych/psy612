@@ -39,11 +39,11 @@ wordcount         : "X"
 
 bibliography      : ["r-references.bib", "lab-9.bib"]
 
-floatsintext      : no # change if you want tables/figures in text rather than at the end
+floatsintext      : yes # change if you want tables/figures in text rather than at the end
 figurelist        : no
 tablelist         : no
 footnotelist      : no
-linenumbers       : yes
+linenumbers       : no
 mask              : no # very cool option now that masked review has become more common
 draft             : no
 
@@ -209,8 +209,6 @@ We next examined the extent to which grand-mean centered age and education are r
 Figure\ \@ref(fig:fig-ageXconsc) depicts the small, linear increase of conscientiousness across the age range of our participants. 
 
 # Discussion
-
-
 
 
 \newpage

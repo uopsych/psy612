@@ -75,7 +75,7 @@ b5 <- psych::bfi %>%
     # which scores questionnaires based on a 
     # key
     psych::scoreVeryFast(psych::bfi.keys, # scoring key goes here, which psych has for this data
-                       psych::bfi) # data goes here
+                        psych::bfi) # data goes here
   )
 ```
 

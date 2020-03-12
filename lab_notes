@@ -142,3 +142,9 @@ Lab 10: Bootstrapping *CORY*
 -use when you can't assume estimate is normally distribution; e.g. correlations 
 -use when comparing very small or unequal samples 
 -use when you want to get precision around some estimate that doens't come with it's own standard error (e.g. R^2, Cronbach's alpha)
+
+- boot::boot() function
+- base R cheatsheet for functions
+- other options to mention:
+  - papaja::apa_print.list()
+  - lavaan
