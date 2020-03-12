@@ -12,6 +12,8 @@ output:
 
 # Announcements
 
+* An online version of Quiz 9 is available at [this link](https://oregon.qualtrics.com/jfe/form/SV_e2oZDEFFgO3HKW9). This link will only be active between 9:30am and 12:30 pm on Thursday, March 12. 
+
 * Download and install a TeX package before lab on March 6. 
   * For Macs: [click here](http://www.tug.org/mactex/mactex-download.html).
   * For Windows: [click here](https://miktex.org/)
