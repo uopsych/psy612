@@ -2882,6 +2882,7 @@ library(boot) # for bootstrapping</code></pre>
 <pre class="r"><code>pretty_mean(df$extraversion)</code></pre>
 <pre><code>## [1] &quot;The Mean is 59.3741496598639&quot;</code></pre>
 <p>Notice that it works how we expected it to, and also it didn’t create an object in our global environment called <code>mean</code>. That variables within a function are local; they only exist within that function (they don’t get created in the global environment).</p>
+<p>To learn more about functions, check out <a href="http://adv-r.had.co.nz/">Hadley Wickham’s Advanced R book</a></p>
 </div>
 <div id="functionsBoot" class="section level1">
 <h1>Writing a function for <code>boot()</code></h1>
@@ -2925,7 +2926,7 @@ boot_r2 &lt;- boot(data = df,
 ##  $ seed     : int [1:626] 10403 624 -1466693457 -1951738076 1541348309 31988370 1791537387 1687984944 544847217 -451016578 ...
 ##  $ statistic:function (d, i)  
 ##   ..- attr(*, &quot;srcref&quot;)= &#39;srcref&#39; int [1:8] 1 11 6 1 11 1 1 6
-##   .. ..- attr(*, &quot;srcfile&quot;)=Classes &#39;srcfilecopy&#39;, &#39;srcfile&#39; &lt;environment: 0x0000000020abff38&gt; 
+##   .. ..- attr(*, &quot;srcfile&quot;)=Classes &#39;srcfilecopy&#39;, &#39;srcfile&#39; &lt;environment: 0x0000000020accc58&gt; 
 ##  $ sim      : chr &quot;ordinary&quot;
 ##  $ call     : language boot(data = df, statistic = get_r2, R = 1000)
 ##  $ stype    : chr &quot;i&quot;

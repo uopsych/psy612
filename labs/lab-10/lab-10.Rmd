@@ -106,6 +106,8 @@ pretty_mean(df$extraversion)
 
 Notice that it works how we expected it to, and also it didn't create an object in our global environment called `mean`. That variables within a function are local; they only exist within that function (they don't get created in the global environment). 
 
+To learn more about functions, check out [Hadley Wickham's Advanced R book](http://adv-r.had.co.nz/)
+
 # Writing a function for `boot()` {#functionsBoot}
 
 Now for `boot()`, we want to write a function that returns the statistic we're interested in bootstrapping. Basically, you want to set up the body such:   
