@@ -67,6 +67,8 @@ navbar:
         href: "labs/lab-8/lab-8.html" 
       - text: "Reproducible Reporting with papaja"
         href: "labs/lab-9/lab-9.html"
+      - text: "Bootstrapping"
+        href: "labs/lab-10/lab-10.html"
     - text: Homework
       href: homework.html
     - text: Final Project
