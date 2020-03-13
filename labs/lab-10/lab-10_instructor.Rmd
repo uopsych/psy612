@@ -19,6 +19,14 @@ options(scipen = 999)
 # Purpose
 Bootstrapping is a procedure for empircally determining a sampling distribution when we cannot assume a statistic follows a known distribution. This lab covers how to use bootstrapping in R using the {boot} library. 
 
+1. [Why Bootstrap?](#why)
+2. [Bootstrapping with {boot}](#boot)
+3. [Writing Functions in R](#functions)
+4. [Writing a Function for boot()](#functionsBoot)
+5. [Running boot()](#runBoot)
+6. [More Advanced Applications](#advanced)
+
+## Libraries
 Be sure to have the following packages installed and loaded:
 
 ```{r lab-8-1, message=FALSE}
@@ -27,11 +35,10 @@ library(rio) # for importing data
 library(boot) # for bootstrapping
 ```
 
-# Bootstrapping with {boot}
-
 ## Data
 
 We'll work with that lab 2 dataset we worked with before. Recall that it has:
+
 1. extraversion: self-reported extraversion
 2. pos_express: self-reported positive expressivity
 3. soc_sup: self-reported social support
@@ -44,19 +51,29 @@ df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2
   janitor::clean_names() # to get things into snake_case
 ```
 
-# The `boot()` function explained
+# Why Bootstrap?{#why}
+
+Recall from lecture that bootstrapping is a general purpose tool to use whenever you can't make assumptions about how a statistic is distributed - as Sara put it, it's the *windex* of the statistical world. Some cases where it is useful include:   
+
+1. Estimating variability in highly unbalanced designs   
+2. Estimating variability for non-normally distributed statistics (e.g., correlations)   
+3. Estimating variability around something that doesn't have its own Standard Error (e.g., $R^2$)
+
+One of its main uses is to construct CIs but it can also be used in a standard error formula to produce a test statistic. We will focus just on CIs and plotting the full (bootstrapped) distribution today.
+
+# Bootstrapping with boot {#boot}
 
 We're going to focus on using the `boot()` function from the {boot} library. `boot()` has many optional arguments, but there are three that are necessary:   
    
-1. `data` = (hopefully) self-explainatory at this point. This is where you tell `boot()` the name of the dataframe you're working with.   
+1. `data` = This is where you tell `boot()` the name of the dataframe you're working with.   
 
-2. `statistic` = a __function__ returns the desired statistic when applied to the data.   
+2. `statistic` = a __function__ that returns the desired statistic when applied to the data.   
 
-3. `R` = the number of resamples. Often, set to a very large number (e.g., 10,000).
+3. `R` = the number of resamples. You usually want to set it to a very large number (e.g., 10,000).
 
 And that's it. The only part that is a little tricky is 2., because you have to *write your own function* to get the statistic you're looking for. This may be new to all of you, but writing functions in R is a powerful skill and so it is something that is definitely worth practicing. 
 
-# Writing functions in R. 
+# Writing functions in R. {#functions}
 
 You can write your own functions using the `function()` function. Functions have a few different parts:   
 
@@ -89,9 +106,9 @@ pretty_mean(df$extraversion)
 
 Notice that it works how we expected it to, and also it didn't create an object in our global environment called `mean`. That variables within a function are local; they only exist within that function (they don't get created in the global environment). 
 
-# Writing a function for `boot()`
+# Writing a function for `boot()` {#functionsBoot}
 
-Now for `boot()`, we want to write a function that returns the statistic we're interested in bootstrapping. There are a couple of added requirements for this function. Basically, you want to set up the body such:   
+Now for `boot()`, we want to write a function that returns the statistic we're interested in bootstrapping. Basically, you want to set up the body such:   
 
 1. Data is subsetted based on the indexes created by `boot()`.    
 2. That subsetted data is then used to calculate the statistic of interest.   
@@ -110,7 +127,7 @@ get_r2 <- function(d, i){ # calling data d; calling index i
 }
 ```
 
-# Running `boot()`
+# Running `boot()` {#runBoot}
 Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Let's go ahead and give it a try. We set (in order) the `data`, `statistic`, and `R` arguments
 
 ```{r}
@@ -126,7 +143,7 @@ Okay, now let's take a look at what it contains:
 str(boot_r2)
 ```
 
-The most important object in the list returned by `boot()` is `t`, which is a matrix that contains our bootstrapped results. It will be the length of R, so in this case it will be length 1000; this means there are 1000 estimates of $R^2$, each pertaining to the estimate obtained in one of the resamplings. 
+The most important object in the list returned by `boot()` is `t`, which is a matrix that contains our bootstrapped results. It will be the length of R, so in this case it will be length 1000 (i.e., 1000 rows); this means there are 1000 estimates of $R^2$, each pertaining to the estimate obtained in one of the resamplings. 
 
 ## Getting Useful Information from `boot()` Results
 
@@ -152,7 +169,8 @@ boot.ci(boot_r2, type = "perc")
 We can also get that 'by hand' by running `quantile()` and setting the `probs =` argument to the CI limits we're interested in. Let's look at the 95% CI, which would be 2.5% and 97.5% for the lower and upper limit respectively:
 
 ```{r}
-quantile(boot_r2$t, probs = c(.025, .975))
+quantile(boot_r2$t, # you just want to pass the $t part 
+         probs = c(.025, .975))
 ```
 
 ## Plotting Bootstrapped Results
@@ -185,9 +203,9 @@ tibble(rsq = boot_r2$t) %>% # turn to tibble
 
 That plot contains a lot of useful information - we can see the lower limit is a little above .45 and the upper limit is right around .65, with the median value between .55 and .6. Plus, you get a sense of the shapre of the distribution as well.
 
-# More advanced applications
+# More advanced applications {#advanced}
 
-What we've done so far works pretty well, but there is some advantage to making a slightly more flexible function in more advanced or complicated cases. For example, let's say we wanted to look at compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
+What we've done so far works pretty well, but there is some advantage to making a slightly more flexible function in more advanced or complicated cases. For example, let's say we wanted to compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
 
 ```{r}
 get_r2 <- function(d, i, formula){ # calling data d; calling index i

@@ -2816,9 +2816,8 @@ div.tocify {
 <div id="libraries" class="section level2">
 <h2>Libraries</h2>
 <p>Be sure to have the following packages installed and loaded:</p>
-<pre class="r"><code>library(tidyverse) # for plotting and data wrangling</code></pre>
-<pre><code>## Warning: package &#39;forcats&#39; was built under R version 3.6.3</code></pre>
-<pre class="r"><code>library(rio) # for importing data
+<pre class="r"><code>library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
 library(boot) # for bootstrapping</code></pre>
 </div>
 <div id="data" class="section level2">
@@ -2838,23 +2837,23 @@ library(boot) # for bootstrapping</code></pre>
 </div>
 <div id="why" class="section level1">
 <h1>Why Bootstrap?</h1>
-<p>Recall from lecture that bootstrapping is a general purpose tool to use whenever you can’t make assumptions about how a statistic is distributed - as Sara put it, it’s the <em>windex</em> of the statistical world. Some examples include:</p>
+<p>Recall from lecture that bootstrapping is a general purpose tool to use whenever you can’t make assumptions about how a statistic is distributed - as Sara put it, it’s the <em>windex</em> of the statistical world. Some cases where it is useful include:</p>
 <ol style="list-style-type: decimal">
-<li>Highly Unequal Groups<br />
+<li>Estimating variability in highly unbalanced designs<br />
 </li>
-<li>Non-normal distributions (e.g., correlations)<br />
+<li>Estimating variability for non-normally distributed statistics (e.g., correlations)<br />
 </li>
-<li>Estimate variability around something that doesn’t have its own Standard Error (e.g., <span class="math inline">\(R^2\)</span>)</li>
+<li>Estimating variability around something that doesn’t have its own Standard Error (e.g., <span class="math inline">\(R^2\)</span>)</li>
 </ol>
 <p>One of its main uses is to construct CIs but it can also be used in a standard error formula to produce a test statistic. We will focus just on CIs and plotting the full (bootstrapped) distribution today.</p>
 </div>
 <div id="boot" class="section level1">
-<h1>Bootstrapping with {boot}</h1>
+<h1>Bootstrapping with boot</h1>
 <p>We’re going to focus on using the <code>boot()</code> function from the {boot} library. <code>boot()</code> has many optional arguments, but there are three that are necessary:</p>
 <ol style="list-style-type: decimal">
-<li><p><code>data</code> = (hopefully) self-explainatory at this point. This is where you tell <code>boot()</code> the name of the dataframe you’re working with.</p></li>
-<li><p><code>statistic</code> = a <strong>function</strong> returns the desired statistic when applied to the data.</p></li>
-<li><p><code>R</code> = the number of resamples. Often, set to a very large number (e.g., 10,000).</p></li>
+<li><p><code>data</code> = This is where you tell <code>boot()</code> the name of the dataframe you’re working with.</p></li>
+<li><p><code>statistic</code> = a <strong>function</strong> that returns the desired statistic when applied to the data.</p></li>
+<li><p><code>R</code> = the number of resamples. You usually want to set it to a very large number (e.g., 10,000).</p></li>
 </ol>
 <p>And that’s it. The only part that is a little tricky is 2., because you have to <em>write your own function</em> to get the statistic you’re looking for. This may be new to all of you, but writing functions in R is a powerful skill and so it is something that is definitely worth practicing.</p>
 </div>
@@ -2886,7 +2885,7 @@ library(boot) # for bootstrapping</code></pre>
 </div>
 <div id="functionsBoot" class="section level1">
 <h1>Writing a function for <code>boot()</code></h1>
-<p>Now for <code>boot()</code>, we want to write a function that returns the statistic we’re interested in bootstrapping. There are a couple of added requirements for this function. Basically, you want to set up the body such:</p>
+<p>Now for <code>boot()</code>, we want to write a function that returns the statistic we’re interested in bootstrapping. Basically, you want to set up the body such:</p>
 <ol style="list-style-type: decimal">
 <li>Data is subsetted based on the indexes created by <code>boot()</code>.<br />
 </li>
@@ -2926,7 +2925,7 @@ boot_r2 &lt;- boot(data = df,
 ##  $ seed     : int [1:626] 10403 624 -1466693457 -1951738076 1541348309 31988370 1791537387 1687984944 544847217 -451016578 ...
 ##  $ statistic:function (d, i)  
 ##   ..- attr(*, &quot;srcref&quot;)= &#39;srcref&#39; int [1:8] 1 11 6 1 11 1 1 6
-##   .. ..- attr(*, &quot;srcfile&quot;)=Classes &#39;srcfilecopy&#39;, &#39;srcfile&#39; &lt;environment: 0x0000000020800fb0&gt; 
+##   .. ..- attr(*, &quot;srcfile&quot;)=Classes &#39;srcfilecopy&#39;, &#39;srcfile&#39; &lt;environment: 0x0000000020abff38&gt; 
 ##  $ sim      : chr &quot;ordinary&quot;
 ##  $ call     : language boot(data = df, statistic = get_r2, R = 1000)
 ##  $ stype    : chr &quot;i&quot;
@@ -2934,7 +2933,7 @@ boot_r2 &lt;- boot(data = df,
 ##  $ weights  : num [1:147] 0.0068 0.0068 0.0068 0.0068 0.0068 ...
 ##  - attr(*, &quot;class&quot;)= chr &quot;boot&quot;
 ##  - attr(*, &quot;boot_type&quot;)= chr &quot;boot&quot;</code></pre>
-<p>The most important object in the list returned by <code>boot()</code> is <code>t</code>, which is a matrix that contains our bootstrapped results. It will be the length of R, so in this case it will be length 1000; this means there are 1000 estimates of <span class="math inline">\(R^2\)</span>, each pertaining to the estimate obtained in one of the resamplings.</p>
+<p>The most important object in the list returned by <code>boot()</code> is <code>t</code>, which is a matrix that contains our bootstrapped results. It will be the length of R, so in this case it will be length 1000 (i.e., 1000 rows); this means there are 1000 estimates of <span class="math inline">\(R^2\)</span>, each pertaining to the estimate obtained in one of the resamplings.</p>
 <div id="getting-useful-information-from-boot-results" class="section level2">
 <h2>Getting Useful Information from <code>boot()</code> Results</h2>
 <p>We could get the mean of of bootstrapped estimates:</p>
@@ -2956,7 +2955,8 @@ boot_r2 &lt;- boot(data = df,
 ## 95%   ( 0.4678,  0.6459 )  
 ## Calculations and Intervals on Original Scale</code></pre>
 <p>We can also get that ‘by hand’ by running <code>quantile()</code> and setting the <code>probs =</code> argument to the CI limits we’re interested in. Let’s look at the 95% CI, which would be 2.5% and 97.5% for the lower and upper limit respectively:</p>
-<pre class="r"><code>quantile(boot_r2$t, probs = c(.025, .975))</code></pre>
+<pre class="r"><code>quantile(boot_r2$t, # you just want to pass the $t part 
+         probs = c(.025, .975))</code></pre>
 <pre><code>##      2.5%     97.5% 
 ## 0.4681916 0.6454955</code></pre>
 </div>
@@ -2987,7 +2987,7 @@ boot_r2 &lt;- boot(data = df,
 </div>
 <div id="advanced" class="section level1">
 <h1>More advanced applications</h1>
-<p>What we’ve done so far works pretty well, but there is some advantage to making a slightly more flexible function in more advanced or complicated cases. For example, let’s say we wanted to look at compare several models with different sets of variables in terms of <span class="math inline">\(R^2\)</span>. One straightforward way to implement this would be to add an additional argument that controls the formula of our <code>lm()</code>. Let’s try it:</p>
+<p>What we’ve done so far works pretty well, but there is some advantage to making a slightly more flexible function in more advanced or complicated cases. For example, let’s say we wanted to compare several models with different sets of variables in terms of <span class="math inline">\(R^2\)</span>. One straightforward way to implement this would be to add an additional argument that controls the formula of our <code>lm()</code>. Let’s try it:</p>
 <pre class="r"><code>get_r2 &lt;- function(d, i, formula){ # calling data d; calling index i
   d2 &lt;- d[i,] # subset data using the i argument
   m &lt;- lm(formula, data = d2) # this changed; now it runs 
