@@ -1,5 +1,6 @@
 course website:
 * include in required materials: LaTex
+* Add link to this: https://statmodeling.stat.columbia.edu/wp-content/uploads/2020/07/raos_tips.pdf
 
 labs overall
 * show only broom and kable for creating table summaries throughout
@@ -12,6 +13,15 @@ final-project.html
 1-correlation.html
 
   * edit -- choppy and unstructured
+  * add power to correlation lectures -- when do correlations stabilize?
+
+  * when talking about Galton (and Pearson and Fisher), discuss racist attitudes and eugenics
+	- important to know history, think twice before revering these men
+	- should we stop using these tools? Of course not! The tools themselves are not racist, and we can do a lot of good with them. 
+	- what are the implications for our tools? How have these tools been used in the past? What assumptions are made by people using these tools and how does it perpetuate norms about their use
+		- examples: using white, cis, able-bodied men as control groups; try to use these methods as justification for racist policies
+	- link to Moin's essay: https://cla.umn.edu/psychology/news-events/story/psychology-must-reckon-its-racist-past-and-present
+		
 
 1-lab.html
 
@@ -22,6 +32,8 @@ final-project.html
   * add notes to slide 18
   * add the squares
   * move regression to the mean here
+
+  * add this! https://joshualoftus.com/post/2020-11-23-least-squares-as-springs/least-squares-as-springs/ 
   
 3-lab.html
 
@@ -54,6 +66,7 @@ Question 10.1
 
 13-dag.html
 * add something before about dag models are pre-data collection tools
+* add paper by Grosz, Rohrer, & Thoemmes (2020) "The taboo against explicit causal inference in non experimental psychology." As optional reading. Describe during class? 
 
 homework-2.html
 * make due last week of class

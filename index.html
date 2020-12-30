@@ -14,6 +14,7 @@
 
 <title>Psy 612: Data Analysis II</title>
 
+<script src="site_libs/header-attrs-2.4/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -28,6 +29,15 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -470,7 +480,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/uopsych/psy612">
+  <a href="https://github.com/uopsych/psy612_2020">
     <span class="fa fa-github"></span>
      
   </a>
@@ -491,18 +501,6 @@ div.tocify {
 </div>
 
 
-<div id="announcements" class="section level1">
-<h1>Announcements</h1>
-<ul>
-<li><p>An online version of Quiz 9 is available at <a href="https://oregon.qualtrics.com/jfe/form/SV_e2oZDEFFgO3HKW9">this link</a>. This link will only be active between 9:30am and 12:30 pm on Thursday, March 12.</p></li>
-<li>Download and install a TeX package before lab on March 6.
-<ul>
-<li>For Macs: <a href="http://www.tug.org/mactex/mactex-download.html">click here</a>.</li>
-<li>For Windows: <a href="https://miktex.org/">click here</a></li>
-</ul></li>
-<li><p>Homework 2 is now due on March 9 at 9am.</p></li>
-</ul>
-</div>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>This course is the second in a 3-term sequence of classes designed to provide a thorough grounding in statistical concepts, methods, and applications of relevance to psychological science and related sciences. The aim of the course is to help students develop skills in the analysis and interpretation of real psychological data. Our focus will be both conceputual and mathematical – that is, understanding the underlying mathematical principals of statistics enhances ones’ ability to interpret and think critically about the use of statistics. Students will also learn the basics of the R language and use this program to wrangle, visualize, summarize, and test hypotheses with data.</p>
@@ -615,7 +613,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
