@@ -1,7 +1,7 @@
 ---
 title: "Psy 612: Data Analysis II"
 subtitle: "Department of Psychology, University of Oregon"
-author: "Winter 2020. Instructor: Sara J. Weston"
+author: "Winter 2021. Instructor: Sara J. Weston"
 output: 
   html_document:
     toc: TRUE
@@ -17,20 +17,20 @@ thorough grounding in statistical concepts, methods, and applications of relevan
 
 ## Meeting times and locations
 
-**Lecture:** Tuesdays and Thursdays, 10 - 11:20am, McKenzie Hall Rm 122 
+**Lecture:** Tuesdays and Thursdays, 10:15 - 11:45am, [Zoom](https://uoregon.zoom.us/j/94436916762?pwd=b1lVcExyVFR5THpRQ0xNLzhjaE5Xdz09)
 
-**Lab:** Friday, 9-10:20am or 10:30-11:50am, Straub Hall Rm 008
+**Lab:** Friday, 10:15 - 11:45 am, [Zoom](https://uoregon.zoom.us/j/92882750193?pwd=UWRubXlRanZFVnNJQ3N2dm9HNER0Zz09)
 
 ## Instructors
 
 **Sara Weston** -- [sweston2@uoregon.edu](mailto:sweston2@uoregon.edu)
-Office Hours: Thursday 11:30am-1:30pm, Straub 325
+Office Hours: [By appointment](https://calendly.com/sara-weston/weston-office-hours)
 
-**Brendan Cullen** -- [bcullen@uoregon.edu](mailto:bcullen@uoregon.edu)
-Office Hours: Tuesday, 1:00-3:00 PM, LISB 229
+**Sarah Dimakis** -- [sdimakis@uoregon.edu](mailto:sdimakis@uoregon.edu)
+Office Hours: TBD
 
-**Cory Costello** -- [ccostell@uoregon.edu](mailto:ccostell@uoregon.edu)
-Office Hours: Wednesday, 1:00-3:00 PM, Straub 464
+**Sara Lieber** -- [slieber@uoregon.edu](mailto:slieber@uoregon.edu)
+Office Hours: TBD
 
 # Materials
 
@@ -38,9 +38,13 @@ Office Hours: Wednesday, 1:00-3:00 PM, Straub 464
 
 We will primarily be referring to chapters in [_Learning Statistics with R_](https://learningstatisticswithr-bookdown.netlify.com/index.html) by Danielle Navarro. This textbook is available for free online. You may choose to purchase a paper copy if you wish, but it is not required. Additional readings assignments will be posted here. 
 
+## LaTex
+
+You'll need to download and install some version of LaTex. There are different software programs for different operating systems -- you can find links to download them all [here](https://www.latex-project.org/get/).
+
 ## R and RStudio
 
-Students must have the latest version of R, which can be downloaded [here](https://ftp.osuosl.org/pub/cran/). It is strongly recommended that students also download the RStudio GUI, available [here](https://www.rstudio.com/products/rstudio/download/#download). Both softwares are free. 
+Students must have the latest version of R, which can be downloaded [here](https://ftp.osuosl.org/pub/cran/). It is strongly recommended that students also download the RStudio GUI, available [here](https://www.rstudio.com/products/rstudio/download/#download). Both softwares programs are free. 
 
 ## Resources for R and RStudio
 

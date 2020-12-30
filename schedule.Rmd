@@ -14,38 +14,40 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 
 | Week | Date |  Topic                            |Readings            | Quiz       | Homework    |
 -------|------|-----------------------------------|--------------------|------------|-------------|
-| 1    | 1/07 | Correlation (statistical test, power)                      | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
-| -    | 1/09 | Correlation II (correlation matrix, reliability)                      |                    |            |             |
-| -    | 1/10 | _Lab: Correlations_               |                    |            |             |
-| 2    | 1/14 | Univariate regression (equation, $\hat{Y}$, $e$)            |  LSR Chapter 15    |  Quiz 1    |             |
-| -    | 1/16 | Univariate regression II (inferential tests)            |                    |            |             |
-| -    | 1/17 | _Lab: Univariate regression_      |                    |            |             |
-| 3    | 1/21 | Univariate regression III (precision, matrices)             |                    |  Quiz 2    |             |
-| -    | 1/23 | General linear model              |                    |            |             |
-| -    | 1/24 | _Lab: General linear model _      |                    |            |             |
-| 4    | 1/28 | Partial correlations              |                    |  Quiz 3    |             |
-| -    | 1/30 | Multiple regression (interpretation, model fit)              |                    |            |             |
-| -    | 1/31 | _Lab: Two continuous predictors_  |                    |            |             |
-| 5    | 2/04 | Multiple regression (tolerance, model comparison, categorical IVs) |  |  Quiz 4    |             |
-| -    | 2/06 | Multiple regression (one-way ANOVA)              |  LSR Chapter 14    |            |             |
-| -    | 2/07 | _Lab: Categorical predictors_     |                    |            |  HW 1 Due   |
-| 6    | 2/11 | Assumptions and diagnostics       | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 5    |             |
-| -    | 2/13 | Assumptions and diagnostics (outliers and multicollinearity)      |                    |            |             |
-| -    | 2/14 | _Lab: Diagnostics_                |                    |            |             |             
-| 7    | 2/18 | Causal models                     | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |
-| -    | 2/20 | Interactions (Continuous predictors)                     |  [McCabe et al (2018)](readings/AMPPS.pdf)                  |            |             |
-| -    | 2/21 | _Lab: Interactions_               |   |            |             |
-| 8    | 2/25 | Interactions (Continuous x categorical predictors) | LSR Chapter 16 |  Quiz 7    |             |
-| -    | 2/27 | Interactions (Factorial ANOVA) |  |            |             |
-| -    | 2/28 | _Lab: ANOVA_                      |                    |            |             |
-| 9    | 3/03 | Interactions (Factorial ANOVA)    | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
-| -    | 3/05 | Interactions (Power and polynomials)    |                    |            |             |
-| -    | 3/06 | _Lab: papaja_                     |                    |            |  HW 2 Due Monday (March 9)   |
-| 10   | 3/10 | Interactions (polynomials and 3-way)                     | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
-| -    | 3/12 | WLS and Bootstrapping                     |                    |  Quiz 9    |             |
-| -    | 3/13 | _Lab: Bootstrapping_              |                    |            |             |
-|Finals| 3/16 |                                   |                    |            |             |         
-**Final:** The final project is due at 9am on March 20th.
+| 1    | 1/05 | Correlation (statistical test, power)                      | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
+| -    | 1/07 | Correlation II (correlation matrix, reliability)                      |                    |            |             |
+| -    | 1/08 | _Lab: Correlations_               |                    |            |             |
+| 2    | 1/12 | Univariate regression (equation, $\hat{Y}$, $e$)            |  LSR Chapter 15    |  Quiz 1    |             |
+| -    | 1/14 | Univariate regression II (inferential tests)            |                    |            |             |
+| -    | 1/15 | _Lab: Univariate regression_      |                    |            |             |
+| 3    | 1/19 | Univariate regression III (precision, matrices)             |                    |  Quiz 2    |             |
+| -    | 1/21 | General linear model              |                    |            |             |
+| -    | 1/22 | _Lab: General linear model _      |                    |            |   HW 1 Due    |
+| 4    | 1/26 | Partial correlations              |                    |  Quiz 3    |             |
+| -    | 1/28 | Multiple regression (interpretation, model fit)              |                    |            |             |
+| -    | 1/29 | _Lab: Two continuous predictors_  |                    |            |             |
+| 5    | 2/02 | Multiple regression (tolerance, model comparison, categorical IVs) |  |  Quiz 4    |             |
+| -    | 2/04 | Multiple regression (one-way ANOVA)              |  LSR Chapter 14    |            |             |
+| -    | 2/05 | _Lab: Categorical predictors_     |                    |            |  HW 2 Due   |
+| 6    | 2/09 | Assumptions and diagnostics       | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 5    |             |
+| -    | 2/11 | Assumptions and diagnostics (outliers and multicollinearity)      |                    |            |             |
+| -    | 2/12 | _Lab: Diagnostics_                |                    |            |             |             
+| 7    | 2/16 | Causal models                     | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |
+| -    | 2/18 | Interactions (Continuous predictors)                     |  [McCabe et al (2018)](readings/AMPPS.pdf)                  |            |             |
+| -    | 2/19 | _Lab: Interactions_               |   |            |             |
+| 8    | 2/23 | Interactions (Continuous x categorical predictors) | LSR Chapter 16 |  Quiz 7    |             |
+| -    | 2/25 | Interactions (Factorial ANOVA) |  |            |             |
+| -    | 2/26 | _Lab: ANOVA_                      |                    |            |     HW 3 Due        |
+| 9    | 3/02 | Interactions (Factorial ANOVA)    | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
+| -    | 3/04 | Interactions (Power and polynomials)    |                    |            |             |
+| -    | 3/05 | _Lab: papaja_                     |                    |            |     |
+| 10   | 3/09 | Interactions (polynomials and 3-way)                     | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
+| -    | 3/11 | WLS and Bootstrapping                     |                    |  Quiz 9    |             |
+| -    | 3/12 | _Lab: Bootstrapping_              |                    |            |             |
+|Finals| 3/14 |                                   |                    |            |             |         
+**HW 4:** The last homework assignment is due on **Tuesday** March 16th[^1]. 
+
+**Final:** The final project is due at 9am on March 19th.
 
 # Graded materials
 
@@ -67,27 +69,29 @@ Homework assignments are intended to gauge your ability to apply the topics cove
 
 Homework assignments are due at the time the first lab starts on the day the assignment is listed. Homework assignments may be resubmitted with corrections and receive full credit. Please note, however, that corrections can only be made to problems that were answered at initial submission. There is no limit to the number of times a homework assignment may be resubmitted.
 
-Late assignments will receive 50\% of the points earned. For example, if you correctly answer questions totalling 28 points, the assignment will receive 14 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points.
+Late assignments will receive 50\% of the points earned. For example, if you correctly answer questions totalling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
 
 You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else's code. If we believe one student has copied another's work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points. 
 
 
 ## Final project
 
-The final project is due at 9am on the last day of finals week (March 20). Please note that, unlike quizzes and homeworks, there will not be an opportunity to re-attempt this assignment. Instructions for the final project can be [found here](https://uopsych.github.io/psy612/final.html).
+The final project is due at 9am on the last day of finals week (March 19). Please note that, unlike quizzes and homeworks, there will not be an opportunity to re-attempt this assignment. Instructions for the final project can be [found here](https://uopsych.github.io/psy612/final.html).
 
 # Materials needed
 
-We will be using R for all data wrangling, visulaization, and analysis. You may not use another statistical program in this course.
-Students must have the latest version of R, which can be downloaded [here](https://ftp.osuosl.org/pub/cran/). It is strongly recommended that students also download the RStudio GUI, available [here](https://www.rstudio.com/products/rstudio/download/#download). Both softwares are free. 
+We will be using R for all data wrangling, visualization, and analysis. You may not use another statistical program in this course.
+Students must have the latest version of R, which can be downloaded [here](https://ftp.osuosl.org/pub/cran/). It is strongly recommended that students also download the RStudio GUI, available [here](https://www.rstudio.com/products/rstudio/download/#download). Both software programs are free. 
+
+You'll also need to download and install some version of LaTex. There are different software programs for different operating systems -- you can find links to download them all [here](https://www.latex-project.org/get/).
 
 All reading assignments will be posted online. 
 
 # Times and locations
 
-**Lecture:** Tuesdays and Thursdays, 10 - 11:20am, McKenzie Hall Rm 122 
+**Lecture:** Tuesdays and Thursdays, 10:15 - 11:45am, [Zoom](https://uoregon.zoom.us/j/94436916762?pwd=b1lVcExyVFR5THpRQ0xNLzhjaE5Xdz09)
 
-**Lab:** Friday, 9-10:20am or 10:30-11:50am, Straub Hall Rm 008
+**Lab:** Friday, 10:15 - 11:45am, [Zoom](https://uoregon.zoom.us/j/92882750193?pwd=UWRubXlRanZFVnNJQ3N2dm9HNER0Zz09)
 
 # Policies
 
@@ -95,4 +99,4 @@ All reading assignments will be posted online.
 
 **Students with special needs.** The UO works to create inclusive learning environments. If there are aspects of the instruction or design of this course that result in disability-related barriers to your participation, please notify me as soon as possible. You may also wish to contact Disability Services in 164 Oregon Hall at 541-346-1155 or [disabsrv@uoregon.edu](mailto:disabsrv@uoregon.edu).
 
-[^1]: Final grades are due the following Tuesday, so there are limited opportunties to redo this particular assignment for points. I will do my best to grade these within 24 hours of receipt so you have a chance to retry any missed points. Consider Monday 12/16 at 9am that last possible moment to turn in this assignment.
+[^1]: Final grades are due the following Monday, so there are limited opportunities to redo this particular assignment for points. I will do my best to grade these within 24 hours of receipt so you have a chance to retry any missed points. Consider Friday 3/19 at 9am that last possible moment to turn in this assignment.
