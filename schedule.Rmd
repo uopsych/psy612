@@ -44,8 +44,7 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | 10   | 3/09 | Interactions (polynomials and 3-way)                     | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
 | -    | 3/11 | WLS and Bootstrapping                     |                    |  Quiz 9    |             |
 | -    | 3/12 | _Lab: Bootstrapping_              |                    |            |             |
-|Finals| 3/14 |                                   |                    |            |             |         
-**HW 5:** The last homework assignment is due on **Tuesday** March 16th[^1]. 
+|Finals| 3/14 |                                   |                    |            |   HW 5 Due (3/16)[^1]          |         
 
 **Final:** The final project is due at 9am on March 19th.
 
