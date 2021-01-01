@@ -13,6 +13,7 @@ output:
 
 ```{r, echo = F, warning = F, message = F}
 library(psych)
+options(scipen=999)
 ```
 
 
@@ -29,26 +30,25 @@ library(psych)
 - Model building
 
 --
-- Correlations
-- Linear regression
-- General linear model
-- Multiple regression
+  - Correlation and regression
+  - General linear model
+  - Multiple regression
 
 ---
 
-## Website
+## PSY 612 details
 
 [UOpsych.github.io/psy612/](uopsych.github.io/psy612/)
 
 Structure of this course:
  - Lectures, Labs, Reading 
  - Weekly quizzes (T/F)
- - Homework assignments (2)
+ - Homework assignments (5, 15 points each)
  - Final project (1)
  
-If you took PSY 611 in Fall 2018 or earlier, take a look at the materials for last term:
-[UOpsych.github.io/psy611/](uopsych.github.io/psy611/)
+Journals are optional (no impact on grade)
 
+One lab time (10:30-11:45, Fridays)
 
 ---
 ## Relationships
@@ -70,7 +70,7 @@ galton.data <- galton
 purples = brewer.pal(n = 3, name = "Purples")
 ```
 
-```{r, echo=FALSE, cache=TRUE}
+```{r, echo=FALSE, cache=TRUE, message=F, warning=F}
 ggplot(galton.data, aes(x=parent, y=child)) +
     geom_jitter() +    
     geom_smooth(method=lm,   # Add linear regression line
@@ -186,7 +186,7 @@ Many other formulas exist for specific types of data, these were more helpful wh
 
 ## Correlations
 
-```{r, echo=FALSE, cache=TRUE}
+```{r, echo=FALSE, cache=TRUE, , message=F, warning=F}
 ggplot(galton.data, aes(x=parent, y=child)) +
     geom_jitter(alpha = .4) +
     geom_smooth(method=lm,   # Add linear regression line
@@ -233,7 +233,7 @@ Assumes:
 
 Univariate distributions
 
-```{r, echo = F, message = F, warning = F}
+```{r, echo = F, message = F, warning = F, fig.width=4, fig.height=7}
 library(tidyverse)
 pop = ggplot(data.frame(x = seq(-30, 30)), aes(x)) +
   stat_function(fun = function(x) dnorm(x, m = 0, sd = 10),
@@ -309,7 +309,7 @@ mtext(expression(list(mu[1]==0,mu[2]==0,sigma[11]==4,sigma[22]==5,sigma[12 ]==2,
 
 ### Sample
 
-```{r, echo = F}
+```{r, echo = F, message=F, warning=F}
 sigma <- matrix( c( 4, 2,
                     2, 5 ), 2, 2 )  # covariance matrix
 
@@ -359,10 +359,36 @@ $$\large t = {\frac{r}{\sqrt{\frac{1-r^{2}}{N-2}}}}$$
 $$\large DF = N-2$$
 ]
 
+---
+
+## Example
+
+You're comparing scores on the GRE Quantitative section and GRE Verbal section. You randomly select 30 applications out of those submitted to the University of Oregon and find a correlation between these scores of .80. Is this significantly different from 0?
+
+```{r, echo = F}
+r = .80
+N = 30
+SE = sqrt((1-r^2)/(N-2))
+tstat = r/SE
+cv = qt(.975, df = N-2)
+```
+
+
+--
+
+$$\large SE_r = \sqrt{\frac{1-.80^2}{30-2}} = `r round(SE, 2)`$$
+$$\large t = \frac{.80}{`r round(SE, 2)`} = `r round(tstat, 2)`$$
+```{r}
+pt(7.055, df = 30-2, lower.tail = F)*2
+```
+
+
 
 
 ---
+
 ## Power calculations
+
 ```{r}
 library(pwr)
 pwr.r.test(n = , r = .1, sig.level = .05 , power = .8)
@@ -370,22 +396,34 @@ pwr.r.test(n = , r = .3, sig.level = .05 , power = .8)
 ```
 
 ---
-## Power calculations
-- But what is your confidence?
 
-- N = 84 gives you CI[.09, .48]
+## Confidence intervals
 
-- Schönbrodt & Perugini (2013) suggest correlations 'stabilize' at 250+ regardless of effect size
+But here's where we get into some trouble. What happens if we try to estimate the precision around our estimate using the techniques we learned in PSY 611?
 
-- CI[.19, .39]
+--
+
+For the CI around a mean or a difference in means, we would use:
+$$CI_{95} = \bar{X} \pm SE(t_{\text{critical value}})$$
+```{r}
+(cv = qt(.975, df = 30-2))
+.80 - 0.11*cv; .80 + 0.11*cv
+```
+
+
 
 ---
-## Fisher's r to z' transformation
-.left-column[
-If we want to make calculations based on $\rho \neq 0$ then we will run into a skewed sampling distribution.
-]
 
-```{r, echo = F}
+## Fisher's r to z' transformation
+
+
+If we want to make calculations around correlation values that are not equal to 0, then we will run into a skewed sampling distribution. This applies to both calculating confidence intervals around estimates of correlations and null hypotheses in which $\rho \neq 0$.
+
+---
+
+## Fisher's r to z' transformation
+
+```{r, echo = F, fig.width = 9.5}
 r_sampling = function(x, r, n){
   z = fisherz(r)
   se = 1/(sqrt(n-3))
@@ -609,45 +647,6 @@ pnorm(abs(zstat), lower.tail = F)*2
 
 - Statistical significance $\neq$ practical significance
 
----
-## Effect size
-How big is practical?
-
-- Cohen (.1, .3., .5)
-- Meyer & Hemphill .3 is average
-- Rosenthaul:
-
-Drug TX?  | Alive |  Dead
-----------|-------|--------
-Treatment |  65   |  35
-No Tx     |  35   |  65
-
-
----
-## What is the size of the correlation?
-- Chemotherapy and breast cancer survival?
-- Batting ability and hit success on a single at bat?
-- Antihistamine use and reduced sneezing/runny nose?
-- Combat exposure and PTSD?
-- Ibuprofen on pain reduction?
-- Gender and weight?
-- Therapy and well being?
-- Observer ratings of attractiveness?
-- Gender and arm strength?
-- Nearness to equator and daily temperature for U.S.?
-
----
-## What is the size of the correlation?
-- Chemotherapy and breast cancer survival? (.03)
-- Batting ability and hit success on a single at bat? (.06)
-- Antihistamine use and reduced sneezing/runny nose? (.11)
-- Combat exposure and PTSD? (.11)
-- Ibuprofen on pain reduction? (.14)
-- Gender and weight? (.26)
-- Therapy and well being? (.32)
-- Observer ratings of attractiveness? (.39)
-- Gender and arm strength? (.55)
-- Nearness to equator and daily temperature for U.S.? (.60)
 
 ---
 ## Questions to ask yourself:
