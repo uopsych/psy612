@@ -51,6 +51,27 @@ Journals are optional (no impact on grade)
 One lab time (10:30-11:45, Fridays)
 
 ---
+
+## PSY 612 goals
+
+- Understand how models are built and estimated
+    - Know how something works so you know how to break it
+    
+- Exposure to a broad range of ideas and tools
+    - Can't learn everything in a year -- exposure helps you when you need to learn something new
+    
+- Practice practical skills
+    - Looking up code online
+    - Troubleshooting errors
+    - Using real data, dealing with real problems
+    - Asking for help* 
+    
+---
+
+![](images/owl.png)
+
+---
+
 ## Relationships
 
 - What is the relationship between IV and DV?
@@ -210,10 +231,6 @@ Ways to think about a correlation:
 * The average squared distance between two vectors in the same space
 
 * The cosine of the angle between Y and the projected Y from X $(\hat{Y})$. 
-
----
-
-![](images/cosine.png)
 
 ---
 
@@ -574,11 +591,34 @@ $$CI_{Z_{UB}} = `r round(z,2)`+(`r round(ct,3)`)`r round(se,2)` = `r round(ubz,2
 
 ---
 
-
+.pull-left[
 $$CI_{r_{LB}} = {\frac{e^{2(`r round(lbz,2)`)}-1}{e^{2(`r round(lbz,2)`)}+1}} = `r round(lb,2)`$$
 
 $$CI_{r_{UB}} = = {\frac{e^{2(`r round(ubz,2)`)}-1}{e^{2(`r round(ubz,2)`)}+1}} = `r round(ub,2)`$$
 
+These formulas are easy to mistype in R -- use the `psych` package and its functions `fisherz()` and `fisherz2r()` to save time and reduce human error. 
+
+]
+
+.pull-right[
+
+```{r, echo = c(1:3,5,7,8,10), highlight = c(3,10)}
+library(psych)
+
+{{z_r = fisherz(.44)}}
+z_r
+se = 1/( sqrt(42-3) )
+se
+ct = qt(p = .975, df = N-2, lower.tail = T)
+lbz = z_r - ( se*ct )
+lbz
+{{lb = fisherz2r(lbz)}}
+lb
+
+
+```
+
+]
 ---
 
 ## Comparing two correlations
@@ -592,7 +632,7 @@ $$se_{z_1-z_2} = \sqrt{se_{z_1}+se_{z_2}} = \sqrt{\frac{1}{n_1-3}+\frac{1}{n_2-3
 
 ## Example
 
-Replication of Hill et al. (2012) where they found that the correlation between narcissism and happiness was greater for young adults compared to older adults
+You measure narcissism and happiness in two sets of adults: young adults (19-25) and older adults (over 25). You calculate the correlations separately for these two groups, and you want to know whether this relationship is stronger for one group or another. 
 
 .pull-left[
 ### Young adults
@@ -613,26 +653,17 @@ $$H_1:\rho_1 \neq \rho_2$$
 
 ---
 
-```{r, echo = F}
+```{r, echo = c(1,3,5,6,7,9,11)}
 z1 = fisherz(.402)
+z1
 z2 = fisherz(.283)
+z2
 n1 = 327
 n2 = 273
 se = sqrt(1/(n1-3) + 1/(n2-3))
-
+se
 zstat = (z1-z2)/se
-```
-
-
-$$z_1^{'} = {\frac{1}{2}}ln{\frac{1+.402}{1-.402}} = `r round(z1,3)`$$
-
-$$z_2^{'} = {\frac{1}{2}}ln{\frac{1+.283}{1-.283}} = `r round(z2,3)`$$
-
-$$se_{z_1-z_2} = \sqrt{\frac{1}{327-3}+\frac{1}{273-3}} = `r round(se,3)`$$
-
-$$\text{Test statistic} = \frac{z_1^{'}-z_2^{'}}{se_{z_1-z_2}} = \frac{`r round(z1,3)`- `r round(z2,3)`}{`r round(se,3)`} = `r round(zstat,3)`$$
-
-```{r}
+zstat
 pnorm(abs(zstat), lower.tail = F)*2
 ```
 

@@ -438,17 +438,42 @@ alpha(measure)
 ---
 
 ## Types of correlations
+
 1. Point Biserial
-    +  continuous and dichtomous
+    +  continuous and dichotomous
 2. Phi coefficient
     + both dichotomous
 3. Spearman rank order
     + ranked data (nonparametric)
-4. Biserial (assumes dichotomous is continous)
-5. Tetrachoric (assumes dichotomous is continous)
+4. Biserial (assumes dichotomous is continuous)
+5. Tetrachoric (assumes dichotomous is continuous)
     + both dichotomous
-6. Polychoric (assumes continous)
+6. Polychoric (assumes continuous)
     + ordinal
+    
+---
+
+## Statistics and racism
+
+The concept of the correlation is primarily attributed to Sir Frances Galton.
+* He was also the founder of the [concept of eugenics](https://www.theguardian.com/commentisfree/2019/oct/03/eugenics-francis-galton-science-ideas).
+
+The correlation coefficient was developed by his student, [Karl Pearson](https://www.britannica.com/biography/Karl-Pearson), and adapted into the ANOVA framework by [Sir Ronald Fisher](https://statmodeling.stat.columbia.edu/2020/08/01/ra-fisher-and-the-science-of-hatred/).
+* Both were prominent advocates for the eugenics movement. 
+
+These men weren't tangentially interested in eugenics -- this was their primary occupation and they developed statistical tools and philsophy's to support this goal.
+
+---
+
+## What do we do with this information?
+
+* Never use the correlation or the later techniques developed on it? Of course not. 
+
+* Acknowledge the horrific development of these techniques. 
+
+* [Understand how the perspectives](https://medium.com/swlh/is-statistics-racist-59cd4ddb5fa9) of Galton, Fisher, Pearson and others shaped our practices -- these are not set in stone, nor are they necessarily the best way to move forward.
+  * "Correlation does not imply causation."
+
 
 ---
 
