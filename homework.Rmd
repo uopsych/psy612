@@ -10,7 +10,7 @@ output:
 
 Homework assignments will appear here. You'll be able to access the assignment, as well as any data that may be used. Homework assignments will be posted **at least one week** before they are due. Submit homework assignments through Canvas by the due date and time. Homework assignments are due prior to the start of the first lab section on the day they are listed. 
 
-### [**Homework 1**](homework/homework_1.html)
+### [**Homework 1**](homework/homework-1.html)
 
 **Due January 22, 9am**
 
