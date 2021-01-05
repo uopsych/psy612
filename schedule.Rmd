@@ -60,15 +60,15 @@ Your final grade is comprised of three components:
 
 Quizzes are intended to assess your understanding of the theoretical principles underlying statistics. There will be a quiz every Tuesday, with the exception of the first week, when there will be no quiz, and the final week, when the quiz will be on Thursday. 
 
-Quizzes may be resubmitted with corrections and receive full credit. To resubmit a quiz, attach a separate piece of paper to your quiz; for each question that was answered incorrectly, identify the correct answer and explain why this is the correct answer. Only if the explaination sufficiently conveys understanding of the theoretical principles will credit be given. There are no limits to the number of times a quiz may be resubmitted.
+Quizzes may be resubmitted with corrections and receive full credit. To resubmit a quiz, attach a separate piece of paper to your quiz; for each question that was answered incorrectly, identify the correct answer and explain why this is the correct answer. Only if the explanation sufficiently conveys understanding of the theoretical principles will credit be given. There are no limits to the number of times a quiz may be resubmitted.
 
 ## Homework assignments
 
-Homework assignments are intended to gauge your ability to apply the topics covered in class to the practice of data analysis. Homework assignments are to be done using R and RMarkdown; completed assignments should be emailed to Dr. Weston and students must attach both the .Rmd file and the compiled HTML file. 
+Homework assignments are intended to gauge your ability to apply the topics covered in class to the practice of data analysis. Homework assignments are to be done using R and RMarkdown; completed assignments should be submitted through Canvas. Be sure to include both the .Rmd file and the compiled HTML file. 
 
 Homework assignments are due at the time the first lab starts on the day the assignment is listed. Homework assignments may be resubmitted with corrections and receive full credit. Please note, however, that corrections can only be made to problems that were answered at initial submission. There is no limit to the number of times a homework assignment may be resubmitted.
 
-Late assignments will receive 50\% of the points earned. For example, if you correctly answer questions totalling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+Late assignments will receive 50\% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
 
 You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else's code. If we believe one student has copied another's work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points. 
 
