@@ -232,6 +232,8 @@ Ways to think about a correlation:
 
 * The cosine of the angle between Y and the projected Y from X $(\hat{Y})$. 
 
+
+
 ---
 
 ## Statistical test

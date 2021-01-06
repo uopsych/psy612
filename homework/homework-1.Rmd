@@ -42,7 +42,7 @@ You are contacted by the Dean's office. They ran a correlation between UO underg
 
 * What would the 95% confidence interval around this estimate be if the sample size were only $N = 60$?
 
-### Question 2{#q3.3}
+### Question 2{#q3.2}
 
 | X | Y  |
 |---|----|
@@ -68,7 +68,7 @@ You are contacted by the Dean's office. They ran a correlation between UO underg
 
 ### Question 3
 
-Refer to the data provided in [Question 3.3](#q3.3).
+Refer to the data provided in [Question 3.2](#q3.2).
 
 * Use the average product of z-scores method to calculate the correlation between x and y. How does this compare to the result of the cor() function? 
 

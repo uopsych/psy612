@@ -11,8 +11,11 @@ output:
       countIncrementalSlides: false
 
 ---
-
 ## Recap
+
+```{r, echo = F}
+options(scipen=999)
+```
 
 Correlations are:
 
@@ -78,8 +81,6 @@ $$\large t = \frac{r}{SE_r} = \frac{`r round(r,2)`}{`r round(se,2)`} = `r round(
 
 .left-column[
 Probability of getting a *t* statistic of `r round(r/se,2)` or greater is `r p1`.
-
-Probability of getting *t* statistic of `r round(r/se,2)` or more extreme is `r p1*2`.
 ]
 
 ```{r, echo = F, message = F, warning = F, results='hide'}
