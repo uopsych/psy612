@@ -99,7 +99,7 @@ There are some missing values in the output, labeled with red letters. Complete 
 
 ### Question 1
 
-* Using the data from [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf)), replicate the correlation matrix part of Table 1. (Note: you will have to create at least one composite to do so, and some of the items may need to be reverse scored.)
+* Using the data from [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), replicate the correlation matrix part of Table 1. (Note: you will have to create at least one composite to do so, and some of the items may need to be reverse scored.)
 
 * Calculate the means and standard deviations for Table 1 variables.
 
