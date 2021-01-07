@@ -30,7 +30,148 @@ Correlations are:
 - an effect size
 
     + Measure of the strength of association between two continuous variables
+    
+- Calculation:
+  - Sum the cross-product of deviation scores
+  - Divide by N-1 
+  - Divide by the product of standard deviation scores
      
+---
+
+### Example
+
+Do Pulizters help newspapers keep readers? (Data from [FiveThirtyEight](https://fivethirtyeight.com/features/do-pulitzers-help-newspapers-keep-readers/)). 
+
+
+```r
+library(fivethirtyeight)
+data("pulitzer")
+head(pulitzer)
+```
+
+```
+##             newspaper circ2004 circ2013 pctchg_circ num_finals1990_2003
+## 1           USA Today  2192098  1674306         -24                   1
+## 2 Wall Street Journal  2101017  2378827          13                  30
+## 3      New York Times  1119027  1865318          67                  55
+## 4   Los Angeles Times   983727   653868         -34                  44
+## 5     Washington Post   760034   474767         -38                  52
+## 6 New York Daily News   712671   516165         -28                   4
+##   num_finals2004_2014 num_finals1990_2014
+## 1                   1                   2
+## 2                  20                  50
+## 3                  62                 117
+## 4                  41                  85
+## 5                  48                 100
+## 6                   2                   6
+```
+
+---
+
+
+```r
+x_var = pulitzer$pctchg_circ
+y_var = pulitzer$num_finals2004_2014
+n = length(x_var)
+
+x_d = x_var - mean(x_var)
+y_d = y_var - mean(y_var)
+
+describe(cbind(x_var, x_d, y_var, y_d))
+```
+
+```
+##       vars  n   mean    sd median trimmed   mad     min   max range skew
+## x_var    1 50 -29.20 27.07 -32.50  -30.20 17.05 -100.00 67.00   167 0.49
+## x_d      2 50   0.00 27.07  -3.30   -1.00 17.05  -70.80 96.20   167 0.49
+## y_var    3 50   6.72 12.14   3.00    3.72  4.45    0.00 62.00    62 3.11
+## y_d      4 50   0.00 12.14  -3.72   -2.99  4.45   -6.72 55.28    62 3.11
+##       kurtosis   se
+## x_var     2.83 3.83
+## x_d       2.83 3.83
+## y_var     9.61 1.72
+## y_d       9.61 1.72
+```
+---
+
+
+```r
+# cross products
+x_d*y_d
+```
+
+```
+##  [1]  -29.744  560.416 5317.936 -164.544 -363.264   -5.664  -48.384  -14.904
+##  [9] -156.704    2.016   17.856   -4.464  126.496   36.816 -189.904 -146.624
+## [17]   25.456  -10.944   27.176  -25.024   14.336    3.976    3.776  116.416
+## [25]   65.536  404.976   -4.864   -7.224 -208.624   13.056   43.896   32.096
+## [33]   12.096  186.816   50.976   56.056  263.376  119.616   59.136   99.456
+## [41]  -21.504   14.336  -61.824  -55.104  206.976  -46.784   40.176   99.456
+## [49]   40.176  -12.584
+```
+
+```r
+# sum of cross products (variation)
+sum(x_d*y_d)
+```
+
+```
+## [1] 6482.2
+```
+
+```r
+# variance
+sum(x_d*y_d)/( n-1 )
+```
+
+```
+## [1] 132.2898
+```
+
+```r
+# correlation
+
+( sum(x_d*y_d)/( n-1 ) ) / ( sd(x_var)*sd(y_var) )
+```
+
+```
+## [1] 0.4025279
+```
+
+---
+
+
+```r
+cor(pulitzer$pctchg_circ,
+    pulitzer$num_finals2004_2014)
+```
+
+```
+## [1] 0.4025279
+```
+
+```r
+cor.test(pulitzer$pctchg_circ,
+    pulitzer$num_finals2004_2014)
+```
+
+```
+## 
+## 	Pearson's product-moment correlation
+## 
+## data:  pulitzer$pctchg_circ and pulitzer$num_finals2004_2014
+## t = 3.0465, df = 48, p-value = 0.003755
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.1398493 0.6122747
+## sample estimates:
+##       cor 
+## 0.4025279
+```
+
+_Note: `cor.test` cannot handle a null hypothesis other than 0. You'll have to calculate significance by hand if you're interested in using another null._
+
+
 ---
 
 ### Recap: testing the significance of a correlation
@@ -78,11 +219,9 @@ In PSY 302, the correlation between midterm exam grades and final exam grades wa
 
 .left-column[
 Probability of getting a *t* statistic of 6.83 or greater is 0.
-
-Probability of getting *t* statistic of 6.83 or more extreme is 0.
 ]
 
-![](2-correlation_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](2-correlation_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -97,6 +236,36 @@ In PSY 302, the correlation between midterm exam grades and final exam grades wa
 `$$\large z^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}= {\frac{1}{2}}ln{\frac{1+0.56}{1-0.56}} = 0.63$$`
 `$$\large z^{'}_{H_0} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}= {\frac{1}{2}}ln{\frac{1+0.4}{1-0.4}} = 0.42$$`
 $$ SE_z = \frac{1}{\sqrt{104-3}} = 0.1$$
+---
+
+
+```r
+r = .56
+N = 104
+null = .40
+zr = psych::fisherz(r)
+```
+
+```
+## [1] 0.6328332
+```
+
+```r
+znull = psych::fisherz(null)
+```
+
+```
+## [1] 0.4236489
+```
+
+```r
+se = 1/sqrt(N-3)
+```
+
+```
+## [1] 0.09950372
+```
+
 
 ---
 
@@ -104,19 +273,11 @@ $$ SE_z = \frac{1}{\sqrt{104-3}} = 0.1$$
 
 
 ```r
-stat
+stat = (zr-znull)/se
 ```
 
 ```
 ## [1] 2.102276
-```
-
-```r
-pnorm(stat, lower.tail = F)
-```
-
-```
-## [1] 0.01776456
 ```
 
 ```r
@@ -149,20 +310,6 @@ Like we use the `summary()` or `describe()` (psych) functions to examine our dat
 
 ```r
 library(psych)
-```
-
-```
-## 
-## Attaching package: 'psych'
-```
-
-```
-## The following objects are masked from 'package:ggplot2':
-## 
-##     %+%, alpha
-```
-
-```r
 data(bfi)
 head(bfi)
 ```
@@ -560,34 +707,34 @@ For a single correlation, best practice is to visualize the relationship using a
 
 ---
 
-![](2-correlation_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
-
-
----
-
-![](2-correlation_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
-
----
-
-![](2-correlation_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
-
----
-
-![](2-correlation_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
-
-
----
-![](2-correlation_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
-
-
----
 ![](2-correlation_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 
+
 ---
+
 ![](2-correlation_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 ---
+
 ![](2-correlation_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+---
+
+![](2-correlation_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+
+---
+![](2-correlation_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+
+
+---
+![](2-correlation_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+
+---
+![](2-correlation_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+---
+![](2-correlation_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -613,7 +760,7 @@ library(corrplot)
 corrplot(cor(bfi, use = "pairwise"), method = "square")
 ```
 
-![](2-correlation_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+![](2-correlation_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -623,15 +770,7 @@ corrplot(cor(bfi, use = "pairwise"), method = "square")
 [Beck, Condon, &amp; Jackson, 2019](https://psyarxiv.com/857ev/)
 ]
 ---
-## Other correlation tests:
-1. Set of correlations
-2. Dependent correlations (i.e., within same group)
-  These are more easily tested via Structural Equation Modeling (SEM)
-3. Intra Class Correlation (ICC)
 
-- Again, best to do these tests in another framework (e.g., interaction, SEM, MLM)
-
----
 ## Factors that influence r (and most other test statistics)
 
 1. Restriction of range (GRE scores and success)
@@ -707,20 +846,24 @@ All measurement includes error
 N needed for .42 = 42
 N needed for .3 = 84 -- need twice as many people!!
 
-it doesn't work the other way -- you can't take your correlation and back calculate the true score, because reliabilities are also estimates. these can be wrong; the correlation you calculate is the max it could bep
+it doesn't work the other way -- you can't take your correlation and back calculate the true score, because reliabilities are also estimates. these can be wrong; the correlation you calculate is the max it could be
 
 ---
 ## Most common ways to assess
 
-- cronbachs alpha
+- Cronbach's alpha
+
 
 ```r
-library (psych)
-alpha(measure)
+library(psych)
+alpha(dataset[,items])
+alpha(bfi[,c("A1", "A2", "A3", "A4", "A5")])
 ## Gives average split half correlation
 ## Can tell you if you are assessing a single construct
+## Conflicts with tidyverse - fix with psych::alpha()
 ```
-- test - retest reliability
+
+- Rest-retest reliability
 - Kappa or ICC
 
 ---
@@ -730,15 +873,14 @@ alpha(measure)
 
 - applies to ALL IVs and DVs, and all designs
 
-- remember this when interpretting other's research
+- remember this when interpreting research
 
 ---
 ## Types of correlations
 
 - Many ways to get at relationship between two variables
 
-- Statistically the different types are almost exactly the same
-
+- Statistically the different types are *almost* exactly the same
 - Exist for historical reasons
 
 ---
@@ -752,14 +894,19 @@ alpha(measure)
 3. Spearman rank order
     + ranked data (nonparametric)
 4. Biserial (assumes dichotomous is continuous)
-5. Tetrachoric (assumes dichotomous is continuous)
-    + both dichotomous
-6. Polychoric (assumes continuous)
-    + ordinal
+
+Some important exceptions to the equivalence rule
+
+5. Tetrachoric 
+    + used for 2x2 contingency table
+    + useful for assessing agreement between reviewers
+6. Polychoric 
+    + ordinal variables (Likert scales)
+    + extension of tetrachoric
     
 ---
 
-## Statistics and racism
+## Statistics and eugenics
 
 The concept of the correlation is primarily attributed to Sir Frances Galton.
 * He was also the founder of the [concept of eugenics](https://www.theguardian.com/commentisfree/2019/oct/03/eugenics-francis-galton-science-ideas).
@@ -767,7 +914,6 @@ The concept of the correlation is primarily attributed to Sir Frances Galton.
 The correlation coefficient was developed by his student, [Karl Pearson](https://www.britannica.com/biography/Karl-Pearson), and adapted into the ANOVA framework by [Sir Ronald Fisher](https://statmodeling.stat.columbia.edu/2020/08/01/ra-fisher-and-the-science-of-hatred/).
 * Both were prominent advocates for the eugenics movement. 
 
-These men weren't tangentially interested in eugenics -- this was their primary occupation and they developed statistical tools and philsophy's to support this goal.
 
 ---
 
@@ -775,10 +921,12 @@ These men weren't tangentially interested in eugenics -- this was their primary 
 
 * Never use the correlation or the later techniques developed on it? Of course not. 
 
-* Acknowledge the horrific development of these techniques. 
+* Acknowledge this history? Certainly.
 
-* [Understand how the perspectives](https://medium.com/swlh/is-statistics-racist-59cd4ddb5fa9) of Galton, Fisher, Pearson and others shaped our practices -- these are not set in stone, nor are they necessarily the best way to move forward.
-  * "Correlation does not imply causation."
+* [Understand how the perspectives](https://medium.com/swlh/is-statistics-racist-59cd4ddb5fa9) of Galton, Fisher, Pearson and others [shaped our practices](http://gppreview.com/2019/12/16/eugenics-ethics-statistical-analysis/)? We must! -- these are not set in stone, [nor are they necessarily the best way](https://www.forbes.com/sites/jerrybowyer/2016/01/06/beer-vs-eugenics-the-good-and-the-bad-uses-of-statistics/?sh=3114a0c82a14) to move forward.
+  * Statistical significance was a way to avoid talking about nuance or degree.
+  * "Correlation does not imply causation" was a refutation of work demonstrating associations between environment and poverty.
+  
 
 
 ---

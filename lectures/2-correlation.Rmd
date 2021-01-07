@@ -14,6 +14,7 @@ output:
 ## Recap
 
 ```{r, echo = F}
+library(psych)
 options(scipen=999)
 ```
 
@@ -26,7 +27,66 @@ Correlations are:
 - an effect size
 
     + Measure of the strength of association between two continuous variables
+    
+- Calculation:
+  - Sum the cross-product of deviation scores
+  - Divide by N-1 
+  - Divide by the product of standard deviation scores
      
+---
+
+### Example
+
+Do Pulizters help newspapers keep readers? (Data from [FiveThirtyEight](https://fivethirtyeight.com/features/do-pulitzers-help-newspapers-keep-readers/)). 
+
+```{r}
+library(fivethirtyeight)
+data("pulitzer")
+head(pulitzer)
+```
+
+---
+
+```{r}
+x_var = pulitzer$pctchg_circ
+y_var = pulitzer$num_finals2004_2014
+n = length(x_var)
+
+x_d = x_var - mean(x_var)
+y_d = y_var - mean(y_var)
+
+describe(cbind(x_var, x_d, y_var, y_d))
+```
+---
+
+```{r}
+# cross products
+x_d*y_d
+
+# sum of cross products (variation)
+sum(x_d*y_d)
+
+# variance
+sum(x_d*y_d)/( n-1 )
+
+# correlation
+
+( sum(x_d*y_d)/( n-1 ) ) / ( sd(x_var)*sd(y_var) )
+```
+
+---
+
+```{r}
+cor(pulitzer$pctchg_circ,
+    pulitzer$num_finals2004_2014)
+
+cor.test(pulitzer$pctchg_circ,
+    pulitzer$num_finals2004_2014)
+```
+
+_Note: `cor.test` cannot handle a null hypothesis other than 0. You'll have to calculate significance by hand if you're interested in using another null._
+
+
 ---
 
 ### Recap: testing the significance of a correlation
@@ -114,14 +174,28 @@ stat = (zr-znull)/se
 $$\large z^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}= {\frac{1}{2}}ln{\frac{1+`r r`}{1-`r r`}} = `r round(zr,2)`$$
 $$\large z^{'}_{H_0} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}= {\frac{1}{2}}ln{\frac{1+`r null`}{1-`r null`}} = `r round(znull,2)`$$
 $$ SE_z = \frac{1}{\sqrt{`r N`-3}} = `r round(se,2)`$$
+---
+
+```{r, echo = c(1:4,6,8)}
+r = .56
+N = 104
+null = .40
+zr = psych::fisherz(r)
+zr
+znull = psych::fisherz(null)
+znull
+se = 1/sqrt(N-3)
+se
+```
+
 
 ---
 
 $$Z_{\text{statistic}} = \frac{z'-\mu}{SE_z}=\frac{`r round(zr,2)`-`r round(znull,2)`}{`r round(se,2)`} = `r round(stat,2)`$$
 
-```{r}
+```{r, echo = c(1, 3)}
+stat = (zr-znull)/se
 stat
-pnorm(stat, lower.tail = F)
 pnorm(stat, lower.tail = F)*2
 ```
 
@@ -319,15 +393,7 @@ corrplot(cor(bfi, use = "pairwise"), method = "square")
 [Beck, Condon, & Jackson, 2019](https://psyarxiv.com/857ev/)
 ]
 ---
-## Other correlation tests:
-1. Set of correlations
-2. Dependent correlations (i.e., within same group)
-  These are more easily tested via Structural Equation Modeling (SEM)
-3. Intra Class Correlation (ICC)
 
-- Again, best to do these tests in another framework (e.g., interaction, SEM, MLM)
-
----
 ## Factors that influence r (and most other test statistics)
 
 1. Restriction of range (GRE scores and success)
@@ -403,19 +469,23 @@ $$\large r_{X_{T} Y_{T}} =  = {\frac {.30} {\sqrt{(.70)(.70)}}} = .42$$
 N needed for .42 = 42
 N needed for .3 = 84 -- need twice as many people!!
 
-it doesn't work the other way -- you can't take your correlation and back calculate the true score, because reliabilities are also estimates. these can be wrong; the correlation you calculate is the max it could bep
+it doesn't work the other way -- you can't take your correlation and back calculate the true score, because reliabilities are also estimates. these can be wrong; the correlation you calculate is the max it could be
 
 ---
 ## Most common ways to assess
 
-- cronbachs alpha
+- Cronbach's alpha
+
 ```{r, eval=FALSE}
-library (psych)
-alpha(measure)
+library(psych)
+alpha(dataset[,items])
+alpha(bfi[,c("A1", "A2", "A3", "A4", "A5")])
 ## Gives average split half correlation
 ## Can tell you if you are assessing a single construct
+## Conflicts with tidyverse - fix with psych::alpha()
 ```
-- test - retest reliability
+
+- Rest-retest reliability
 - Kappa or ICC
 
 ---
@@ -425,15 +495,14 @@ alpha(measure)
 
 - applies to ALL IVs and DVs, and all designs
 
-- remember this when interpretting other's research
+- remember this when interpreting research
 
 ---
 ## Types of correlations
 
 - Many ways to get at relationship between two variables
 
-- Statistically the different types are almost exactly the same
-
+- Statistically the different types are *almost* exactly the same
 - Exist for historical reasons
 
 ---
@@ -447,14 +516,19 @@ alpha(measure)
 3. Spearman rank order
     + ranked data (nonparametric)
 4. Biserial (assumes dichotomous is continuous)
-5. Tetrachoric (assumes dichotomous is continuous)
-    + both dichotomous
-6. Polychoric (assumes continuous)
-    + ordinal
+
+Some important exceptions to the equivalence rule
+
+5. Tetrachoric 
+    + used for 2x2 contingency table
+    + useful for assessing agreement between reviewers
+6. Polychoric 
+    + ordinal variables (Likert scales)
+    + extension of tetrachoric
     
 ---
 
-## Statistics and racism
+## Statistics and eugenics
 
 The concept of the correlation is primarily attributed to Sir Frances Galton.
 * He was also the founder of the [concept of eugenics](https://www.theguardian.com/commentisfree/2019/oct/03/eugenics-francis-galton-science-ideas).
@@ -462,7 +536,6 @@ The concept of the correlation is primarily attributed to Sir Frances Galton.
 The correlation coefficient was developed by his student, [Karl Pearson](https://www.britannica.com/biography/Karl-Pearson), and adapted into the ANOVA framework by [Sir Ronald Fisher](https://statmodeling.stat.columbia.edu/2020/08/01/ra-fisher-and-the-science-of-hatred/).
 * Both were prominent advocates for the eugenics movement. 
 
-These men weren't tangentially interested in eugenics -- this was their primary occupation and they developed statistical tools and philsophy's to support this goal.
 
 ---
 
@@ -470,10 +543,12 @@ These men weren't tangentially interested in eugenics -- this was their primary 
 
 * Never use the correlation or the later techniques developed on it? Of course not. 
 
-* Acknowledge the horrific development of these techniques. 
+* Acknowledge this history? Certainly.
 
-* [Understand how the perspectives](https://medium.com/swlh/is-statistics-racist-59cd4ddb5fa9) of Galton, Fisher, Pearson and others shaped our practices -- these are not set in stone, nor are they necessarily the best way to move forward.
-  * "Correlation does not imply causation."
+* [Understand how the perspectives](https://medium.com/swlh/is-statistics-racist-59cd4ddb5fa9) of Galton, Fisher, Pearson and others [shaped our practices](http://gppreview.com/2019/12/16/eugenics-ethics-statistical-analysis/)? We must! -- these are not set in stone, [nor are they necessarily the best way](https://www.forbes.com/sites/jerrybowyer/2016/01/06/beer-vs-eugenics-the-good-and-the-bad-uses-of-statistics/?sh=3114a0c82a14) to move forward.
+  * Statistical significance was a way to avoid talking about nuance or degree.
+  * "Correlation does not imply causation" was a refutation of work demonstrating associations between environment and poverty.
+  
 
 
 ---
