@@ -13,7 +13,7 @@ editor_options:
 
 # Purpose
 
-In today's lab, we will discuss how to use R to visualize correlations, calculate correlation coefficients, and assess statistical significance of correlations. You can download the Rmd file [here](lab-1.Rmd) to follow along.
+In today's lab, we will discuss how to use R to visualize correlations, calculate correlation coefficients, and assess statistical significance of correlations. You can download the Rmd file [here](lab-1.Rmd) to follow along. And [here](lab-1-instructor.Rmd) is the Rmd file for the instructor copy (so you can see inline code).
 
 For today's lab, you will need to load the following libraries. 
 
@@ -37,9 +37,12 @@ It is very important to *always* visualize your data. There might be patterns in
 
 Scatter plots allow us to visualize the relationship between two variables. Here is the code for a scatter plot using `ggplot()`. Add a line of best fit by adding a `geom_smooth()` layer to the plot. 
 
-```{r}
+```{r, message = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point()
+  geom_point()+
+  geom_smooth(method = "lm")+
+  theme_classic()+
+  labs(title = "Relation between mpg and hp")
 ```
 
 
@@ -93,14 +96,15 @@ To calculate covariance, use the function `cov()` from the `{stats}` package. Th
 * Calculate the covariance between `mtcars$mpg` and `mtcars$hp`:
 
 ```{r}
-#Your code here
+cov(mtcars$mpg, mtcars$hp)
+  
 ```
 
 * Feeding `cov()` a data frame (of numeric variables) will generate a covariance matrix. Calculate a covariance matrix for the `mtcars` data frame. Round to two decimal places. 
 
 
 ```{r}
-# Your code here
+cov(mtcars)
 ```
 
 
@@ -116,14 +120,14 @@ $$\large r_{xy} = {\frac{cov(X,Y)}{\hat\sigma_{x}\hat\sigma_{y}}}$$
 * Calculate the correlation coefficient for `mtcars$mpg` and `mtcars$hp` using the `cor()` function (again, from the `{stats}` package).
 
 ```{r}
-# Your code here
+cor(mtcars$mpg, mtcars$hp)
 ```
 
 
 * As with covariances, we can generate a matrix of correlations by feeding a data frame to `cor()`. Calculate a correlation matrix for the variables in the `mtcars` data set. Round to two decimal places. 
 
 ```{r}
-# Your code here
+cor(mtcars)
 ```
 
 
@@ -255,30 +259,63 @@ Use the `pwr.r.test` function to answer the following questions:
 a. How many participants should we collect if we expect a small correlation (r = .2) and want to achieve power = .8? Assume alpha = .05.
 
 ```{r}
-#pwr.r.test(n = , sig.level = , power = , r = )
+(power_test_1 <- pwr.r.test(n = , sig.level = .05, power = .8, r = .2))
+
 ```
+
+`r ceiling(power_test_1$n)` people.
 
 b. How does the number of participants needed to obtain .8 power change when you decrease the significance level to .01? 
 ```{r}
-#pwr.r.test(n = , sig.level = , power = , r = )
+(power_test_2 <- pwr.r.test(n = , sig.level = .01, power = .8, r = .2))
 ```
+
+It increases (to `r ceiling(power_test_2$n)`).
 
 c. How does the number of participants needed to obtain .8 power change when you increase the effect size (r) to .5? 
 
 ```{r}
-#pwr.r.test(n = , sig.level = , power = , r = )
+(power_test_3 <- pwr.r.test(n = , sig.level = .05, power = .8, r = .5))
+(power_test_4 <- pwr.r.test(n = , sig.level = .01, power = .8, r = .5))
+
 ```
+
+It decreases to `r ceiling(power_test_3$n)` (alpha = .05) or `r ceiling(power_test_4$n)` (alpha = .01). 
 
 ## Minihack 2
 
 For this minihack, calculate a 95% CI "by hand" (i.e., you can use R but not the `cor.test()` function) for the correlation between conscientiousness and self-reported health from the `health()` dataset. Make sure you get the same answer that was given by `cor.test()`. Hint: when calculating CI's, use the functions `fisherz()` and `fisherz2r()` from `{psych}`.
 
-To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#44){target="_blank"}.
+To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#45){target="_blank"}.
 
 ```{r lab-1-45}
-# Your code here
+#calculating correlation coefficient
+r <- cor(health$consc, health$sr_health)
+
+#calculating n
+n <- nrow(health)
+
+#calculating standard error
+se <- 1/(sqrt(n-3))
+
+#transforming r to fisher's z
+z_r <- fisherz(r)
+
+#calculating critical t value for a 95% CI
+crit_t = qt(p = .975, df = n-2, lower.tail = T)
+
+#calculating confidence interval (fisher's z)
+lower_ci_z = z_r - (se*crit_t)
+upper_ci_z = z_r + (se*crit_t)
+
+#converting back from fisher's z to r
+lower_ci <- fisherz2r(lower_ci_z) %>% round(2)
+upper_ci = fisherz2r(upper_ci_z) %>% round(2)
+
+(output <- paste0("95% CI [", lower_ci, ", ", upper_ci, "]"))
 ```
 
+`r output`.
 
 ## Minihack 3
 
@@ -297,13 +334,20 @@ dawtry_clean <- import("https://raw.githubusercontent.com/uopsych/psy612/master/
 
 a. Replicate the correlation matrix from the table using the `apa.cor.table()` function and open it in Microsoft Word. 
 
-```{r}
-#Your text here
+```{r, eval = FALSE}
+apa.cor.table(dawtry_clean, 
+              filename = here("labs", "lab-1", "dawtry.doc"), 
+              table.number = 1)
 ```
 
 b. Visualize the correlations using a SPLOM plot and/or a heat map.
 
 ```{r}
-#Your text here
+pairs.panels(dawtry_clean, lm = TRUE)
+
+```
+
+```{r}
+corPlot(dawtry_clean)
 ```
 
