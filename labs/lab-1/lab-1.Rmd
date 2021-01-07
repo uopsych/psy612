@@ -10,7 +10,7 @@ output:
 editor_options:
   chunk_output_type: console
 ---
-
+ Example edit
 # Purpose
 
 In today's lab, we will discuss how to use R to visualize correlations, calculate correlation coefficients, and assess statistical significance of correlations. You can download the Rmd file [here](lab-1.Rmd) to follow along.
