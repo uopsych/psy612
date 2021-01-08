@@ -10,10 +10,9 @@ output:
 editor_options:
   chunk_output_type: console
 ---
-
 # Purpose
 
-In today's lab, we will discuss how to use R to visualize correlations, calculate correlation coefficients, and assess statistical significance of correlations. You can download the Rmd file [here](lab-1.Rmd) to follow along. And [here](lab-1-instructor.Rmd) is the Rmd file for the instructor copy (so you can see inline code).
+In today's lab, we will discuss how to use R to visualize correlations, calculate correlation coefficients, and assess statistical significance of correlations. You can download the Rmd file [here](lab-1.Rmd) to follow along.
 
 For today's lab, you will need to load the following libraries. 
 
@@ -24,6 +23,7 @@ library(psych) # for covariance and correlation functions
 library(apaTables) # for correlation tables
 library(pwr) # for power calculations
 library(here) # for file paths
+library(corrplot) # for heat maps
 ```
 
 
@@ -35,14 +35,12 @@ It is very important to *always* visualize your data. There might be patterns in
 
 ## Scatter plots
 
-Scatter plots allow us to visualize the relationship between two variables. Here is the code for a scatter plot using `ggplot()`. Add a line of best fit by adding a `geom_smooth()` layer to the plot. 
+Scatter plots allow us to visualize the relationship between two variables. Here is the code for a scatter plot using `ggplot()`. You can add a line of best fit by adding a `geom_smooth()` layer to the plot. 
 
 ```{r, message = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point()+
-  geom_smooth(method = "lm")+
-  theme_classic()+
-  labs(title = "Relation between mpg and hp")
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 
@@ -57,10 +55,11 @@ pairs.panels(mtcars, lm = TRUE)
 
 ## Heat maps
 
-Heat maps are a great way to get a high-level visualization of a correlation matrix. They are particularly useful for visualizing the number of "clusters" in your data if that's something you're looking for. For example the `Thurstone` dataset, built into the `{psych}` package, is a correlation matrix of items that assess different aspects of cognitive ability. We can plot a heatmap of this correlation matrix using the `corPlot()` function:
+Heat maps are a great way to get a high-level visualization of a correlation matrix. They are particularly useful for visualizing the number of "clusters" in your data if that's something you're looking for. `Thurstone`, built into the `{psych}` package, is a correlation matrix of variables assessing different aspects of cognitive ability. We can plot a heatmap of this correlation matrix using the `corrplot()` function from the `{corrplot}` package. Note: make sure that you are feeding the function a correlation matrix (not the data set).
 
 ```{r}
-corPlot(Thurstone)
+corrplot(corr = Thurstone, method = "square")
+
 ```
 
 >**Question:** What do you notice about the structure of this data?
@@ -83,11 +82,11 @@ apa.cor.table(mtcars,
 
 ***
 
-# Covariances and correlation{#corcoeff}
+# Covariances and correlations{#corcoeff}
 
 ## Covariance
 
-Covariance captures how the variances of two variables are related, i.e., how they *co*-vary. If higher values of one variable tend to correspond with higher values of the other variable, and lower values of one variable tend to correspond with lower values of the other variable, then the covariance would be positive. However, if the two variables are inversely related (i.e., higher values on one variable correspond with lower values on another variable), then the covariance would be negative.  
+Covariance captures how the variances of two variables are related, i.e., how they *co*-vary. If higher values of one variable tend to correspond with higher values of the other variable, and lower values of one variable tend to correspond with lower values of the other variable, then the covariance would be positive. However, if the two variables are inversely related (i.e., higher values on one variable correspond with lower values on the other variable), then the covariance would be negative.  
 
 $$\large cov_{xy} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}$$
 
@@ -96,15 +95,14 @@ To calculate covariance, use the function `cov()` from the `{stats}` package. Th
 * Calculate the covariance between `mtcars$mpg` and `mtcars$hp`:
 
 ```{r}
-cov(mtcars$mpg, mtcars$hp)
-  
+#Your code here
 ```
 
 * Feeding `cov()` a data frame (of numeric variables) will generate a covariance matrix. Calculate a covariance matrix for the `mtcars` data frame. Round to two decimal places. 
 
 
 ```{r}
-cov(mtcars)
+# Your code here
 ```
 
 
@@ -120,14 +118,14 @@ $$\large r_{xy} = {\frac{cov(X,Y)}{\hat\sigma_{x}\hat\sigma_{y}}}$$
 * Calculate the correlation coefficient for `mtcars$mpg` and `mtcars$hp` using the `cor()` function (again, from the `{stats}` package).
 
 ```{r}
-cor(mtcars$mpg, mtcars$hp)
+# Your code here
 ```
 
 
 * As with covariances, we can generate a matrix of correlations by feeding a data frame to `cor()`. Calculate a correlation matrix for the variables in the `mtcars` data set. Round to two decimal places. 
 
 ```{r}
-cor(mtcars)
+# Your code here
 ```
 
 
@@ -166,8 +164,7 @@ head(health)
 ggplot(data = health, aes(x = consc, y = sr_health)) +
   geom_point() + 
   geom_smooth(method = "lm") +
-  labs(x = "Conscientiousness", y = "Self-reported health", title = "Relation between conscientiousness and self-reported health")+
-  theme_classic()
+  labs(x = "Conscientiousness", y = "Self-reported health", title = "Conscientiousness and self-reported health")
 ```
 
 ## Statistical hypotheses
@@ -184,7 +181,6 @@ You can run a correlation test using the `corr.test()` function from the `{psych
 (r_consc_health <- health %>% 
   select(consc, sr_health) %>% 
   corr.test())
-
 ```
 
 >**Question:** What can we conclude about the relationship between conscientiousness and health from this data? 
@@ -209,8 +205,7 @@ health %>%
   ggplot(aes(consc, sr_health, color = gender)) + 
   geom_point(size = 2) +
   geom_smooth(method = "lm") + 
-  labs(x = "Conscientiousness", y = "Self-reported Health") +
-  theme_classic()
+  labs(x = "Conscientiousness", y = "Self-reported Health")
 ```
 
 >**Question:** What can we conclude from this graph?
@@ -243,6 +238,7 @@ r.test(n = nrow(health_women), r12 = r_women, r34 = r_men)
 ```
 
 >**Question:** What does this test suggest about the correlation between conscientiousness and health across genders?
+
 
 
 
@@ -340,14 +336,30 @@ apa.cor.table(dawtry_clean,
               table.number = 1)
 ```
 
-b. Visualize the correlations using a SPLOM plot and/or a heat map.
+b. Visualize the correlation matrix using a SPLOM plot and/or a heat map.
 
 ```{r}
+#SPLOM plot
 pairs.panels(dawtry_clean, lm = TRUE)
 
 ```
 
 ```{r}
-corPlot(dawtry_clean)
+#heat map
+names(dawtry_clean) <- c("Household Income",
+                        "Social Circle Mean Income",
+                        "Population Mean Income",
+                        "Social Circle Inequality Gini Index",
+                        "Population Inequality Gini Index",
+                        "Fairness Satisfaction",
+                        "Support Redistribution",
+                        "Political Preference")
+
+corrplot(corr = cor(dawtry_clean, use = "pairwise"), 
+         method = "square",
+         tl.col = "black",
+         type = "upper",
+         title = "Correlation matrix")
+
 ```
 
