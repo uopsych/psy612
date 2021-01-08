@@ -306,7 +306,7 @@ upper_ci_z = z_r + (se*crit_t)
 
 #converting back from fisher's z to r
 lower_ci <- fisherz2r(lower_ci_z) %>% round(2)
-upper_ci = fisherz2r(upper_ci_z) %>% round(2)
+upper_ci <- fisherz2r(upper_ci_z) %>% round(2)
 
 (output <- paste0("95% CI [", lower_ci, ", ", upper_ci, "]"))
 ```
