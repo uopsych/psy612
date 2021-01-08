@@ -40,27 +40,7 @@ Scatter plots allow us to visualize the relationship between two variables. Here
 ```{r, message = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
   geom_point() +
-  geom_smooth(method = "lm", color = "gray", se = FALSE)+
-  labs(x = "marshmellows per grape", y = "harry potter")+
-  theme_classic()
-
-ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point(alpha=1, color="lightpink") +
-  geom_smooth(method = "lm", color ="lightblue", show.legend = TRUE, se = FALSE) +
-  labs(title    = "Scatterplot of MPG by Horse Power",
-       x        = "Miles Per Gallon",
-       y        = "Horse Power") +
-  # set theme
-  theme_dark()
-
-library(ggthemes) # Load
-
-ggplot(data = mtcars, aes(x = mpg, y = hp)) + # establish the background of the painting, data from mtcars, x-axis is mpg and y-axis is hp
-  geom_point(shape=13, size=4) + # add a layer of data points (mpg,hp)
-  geom_smooth(method = "lm", color="lightblue", se=FALSE) + # draw linear-model line
-  ggtitle("Horsepower Baby") +
-  theme_tufte()
-
+  geom_smooth(method = "lm")
 
 ```
 
@@ -199,9 +179,9 @@ $$\large H_{A}: \rho_{xy} \neq 0$$
 You can run a correlation test using the `corr.test()` function from the `{psych}` package.
 
 ```{r}
-health %>% 
+(r_consc_health <- health %>% 
   select(consc, sr_health) %>% 
-  corr.test()
+  corr.test())
 
 ```
 

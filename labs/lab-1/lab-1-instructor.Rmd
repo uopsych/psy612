@@ -40,7 +40,28 @@ Scatter plots allow us to visualize the relationship between two variables. Here
 ```{r, message = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
   geom_point() +
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm", color = "gray", se = FALSE)+
+  labs(x = "marshmellows per grape", y = "harry potter")+
+  theme_classic()
+
+ggplot(data = mtcars, aes(x = mpg, y = hp)) +
+  geom_point(alpha=1, color="lightpink") +
+  geom_smooth(method = "lm", color ="lightblue", show.legend = TRUE, se = FALSE) +
+  labs(title    = "Scatterplot of MPG by Horse Power",
+       x        = "Miles Per Gallon",
+       y        = "Horse Power") +
+  # set theme
+  theme_dark()
+
+library(ggthemes) # Load
+
+ggplot(data = mtcars, aes(x = mpg, y = hp)) + # establish the background of the painting, data from mtcars, x-axis is mpg and y-axis is hp
+  geom_point(shape=8, size=4) + # add a layer of data points (mpg,hp)
+  geom_smooth(method = "lm", color="lightblue", se=FALSE) + # draw linear-model line
+  ggtitle("Horsepower Baby") +
+  theme_tufte()
+
+
 ```
 
 
@@ -58,7 +79,10 @@ pairs.panels(mtcars, lm = TRUE)
 Heat maps are a great way to get a high-level visualization of a correlation matrix. They are particularly useful for visualizing the number of "clusters" in your data if that's something you're looking for. `Thurstone`, built into the `{psych}` package, is a correlation matrix of variables assessing different aspects of cognitive ability. We can plot a heatmap of this correlation matrix using the `corrplot()` function from the `{corrplot}` package. Note: make sure that you are feeding the function a correlation matrix (not the data set).
 
 ```{r}
-corrplot(corr = Thurstone, method = "square")
+corrplot(corr = Thurstone, 
+         method = "square",
+         type = "upper",
+         tl.col = "black")
 
 ```
 
@@ -95,14 +119,14 @@ To calculate covariance, use the function `cov()` from the `{stats}` package. Th
 * Calculate the covariance between `mtcars$mpg` and `mtcars$hp`:
 
 ```{r}
-#Your code here
+cov(x = mtcars$mpg, y = mtcars$hp)
 ```
 
 * Feeding `cov()` a data frame (of numeric variables) will generate a covariance matrix. Calculate a covariance matrix for the `mtcars` data frame. Round to two decimal places. 
 
 
 ```{r}
-# Your code here
+cov(mtcars)
 ```
 
 
@@ -118,14 +142,14 @@ $$\large r_{xy} = {\frac{cov(X,Y)}{\hat\sigma_{x}\hat\sigma_{y}}}$$
 * Calculate the correlation coefficient for `mtcars$mpg` and `mtcars$hp` using the `cor()` function (again, from the `{stats}` package).
 
 ```{r}
-# Your code here
+cor(mtcars$mpg, mtcars$hp)
 ```
 
 
 * As with covariances, we can generate a matrix of correlations by feeding a data frame to `cor()`. Calculate a correlation matrix for the variables in the `mtcars` data set. Round to two decimal places. 
 
 ```{r}
-# Your code here
+cor(mtcars)
 ```
 
 
@@ -181,6 +205,7 @@ You can run a correlation test using the `corr.test()` function from the `{psych
 (r_consc_health <- health %>% 
   select(consc, sr_health) %>% 
   corr.test())
+
 ```
 
 >**Question:** What can we conclude about the relationship between conscientiousness and health from this data? 
@@ -238,8 +263,6 @@ r.test(n = nrow(health_women), r12 = r_women, r34 = r_men)
 ```
 
 >**Question:** What does this test suggest about the correlation between conscientiousness and health across genders?
-
-
 
 
 ***
