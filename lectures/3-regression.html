@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Univariate regression</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -59,19 +60,20 @@ The output of regression includes both effect sizes and, if using frequentist or
 
 ### Regression
 
-- **Scientific** use: explaining the influence of one or more variables on some outcome. 
+- **Adjustment**: Statistically control for known effects
 
-  + Does this intervention affect reaction time?
-  + Does self-esteem predict relationship quality?
-  
-- **Prediction** use: We can develop models based on what's happened in the past to predict what will happen in the figure.
+  + If everyone had the same level of SES, would education still predict wealth?
+
+- **Prediction**: We can develop models based on what's happened in the past to predict what will happen in the figure.
 
   + Insurance premiums
   + Graduate school... success?
   
-- **Adjustment**: Statistically control for known effects
+- **Explanation**: explaining the influence of one or more variables on some outcome. 
 
-  + If everyone had the same level of SES, would abuse still be associated with criminal behavior?
+  + Does this intervention affect reaction time?
+  + Does self-esteem predict relationship quality?
+
 
 ---
 
@@ -82,9 +84,9 @@ What is a regression equation?
 - Functional relationship
 
   - Ideally like a physical law `\((E = MC^2)\)`
-  
-  - In practice, it's never as robust as that
-  
+  - In practice, it's never as robust as that. 
+  - Note: this equation may not represent the true causal process!
+
 How do we uncover the relationship?
 
 ---
@@ -101,15 +103,42 @@ How do we uncover the relationship?
 
 ## Regression Equation
 
-`$$\Large Y = b_{0} + b_{1}X +e$$`
+There are two ways to think about our regression equation. They're similar to each other, but they produce different outputs.
 
-`$$\Large \hat{Y} = b_{0} + b_{1}X$$`
+`$$\Large Y_i = b_{0} + b_{1}X_i +e_i$$`
+
+`$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$`
+
+
+The first is the equation that represents how each **observed outcome** `\((Y_i)\)` is calculated. This observed value is the sum of some constant `\((b_0)\)`, the weighted `\((b_1)\)` observed values of the predictors `\((X_i)\)` and error `\((e_i)\)` that cannot be covered by the observed data.
 
 ???
 
-`\(\hat{Y}\)` signifies the predicted score -- no error
+`\(\hat{Y}\)` signifies the fitted score -- no error
 
-The difference between the predicted and observed score is the residual ($e_i$)
+The difference between the fitted and observed score is the residual ($e_i$)
+
+There is a different e value for each observation in the dataset
+---
+
+## Regression Equation
+
+There are two ways to think about our regression equation. They're similar to each other, but they produce different outputs.
+
+`$$\Large Y_i = b_{0} + b_{1}X_i + e_i$$`
+
+`$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$`
+
+
+The second is the equation that represents our expected or **fitted value** of the outcome `\((\hat{Y_i})\)`, sometimes referred to as the "predicted value." This expected value is the sum of some constant `\((b_0)\)`, the weighted `\((b_1)\)` observed values of the predictors `\((X_i)\)`.
+
+Note that `\(Y_i - \hat{Y_i} = e\)`.
+
+???
+
+`\(\hat{Y}\)` signifies the fitted score -- no error
+
+The difference between the fitted and observed score is the residual ($e_i$)
 
 There is a different e value for each observation in the dataset
 ---
@@ -148,13 +177,21 @@ $$ min\sum(Y_{i}-\hat{Y})^{2} $$
 
 ---
 
+## compare to bad fit
+
+.pull-left[
 ![](3-regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 
-## compare to bad fit
----
-`$$\Large Y = b_{0} + b_{1}X +e$$`
+]
+.pull-right[
+![](3-regression_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+]
 
-`$$\Large \hat{Y} = b_{0} + b_{1}X$$`
+
+---
+`$$\Large Y_i = b_{0} + b_{1}X_i +e_i$$`
+
+`$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$`
 
 `$$\Large Y_i = \hat{Y_i} + e_i$$`
 
@@ -179,9 +216,14 @@ In order to find the OLS solution, you could try many different coefficients `\(
 
 `$$\large b_{1} = \frac{cov_{XY}}{s_{x}^{2}} = r_{xy} \frac{s_{y}}{s_{x}}$$`
 
-`$$\large r_{xy} = \frac{s_{xy}}{s_xs_y}$$`
+&lt;!-- `$$\large r_{xy} = \frac{s_{xy}}{s_xs_y}$$` --&gt;
 
-- The regression coefficient (slope) equals the estimated change in Y for a 1-unit change in X  
+
+What units is the regression coefficient in?
+
+--
+
+The regression coefficient (slope) equals the estimated change in Y for a 1-unit change in X  
 
 ---
 
@@ -196,7 +238,7 @@ If the variance of both X and Y is equal to 1:
 
 ## Standardized regression equation
 
-`$$\large Y = b_{yx}^*X+e$$`
+`$$\large Y_i = b_{yx}^*X_i+e_i$$`
 
 `$$\large b_{yx}^* = b_{yx}\frac{s_x}{s_y}$$`
 --
@@ -209,7 +251,7 @@ According to this regression equation, when `\(X = 0, Y = 0\)`. Our interpretati
 
 - intercept serves to adjust for differences in means between X and Y
 
-`$$\Large \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$`
+`$$\Large \hat{Y_i} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X_i-\bar{X})$$`
 - if standardized, intercept drops out  
 
 - otherwise, intercept is where regression line crosses the y-axis at X = 0  
@@ -225,109 +267,93 @@ According to this regression equation, when `\(X = 0, Y = 0\)`. Our interpretati
 
 ## Example
 
-
+[Data on lung cancer rates](https://data.world/nrippner/ols-regression-challenge#) in counties aggregated from American Community Survey, clinicaltrials.gov and cancer.gov.
 
 
 ```r
-galton.data &lt;- psychTools::galton
-head(galton.data)
+cancer_data = read_csv(here("data/cancer_reg.csv"))
+describe(cancer_data[,c("avgAnnCount", "medIncome")], fast = T)
 ```
 
 ```
-##   parent child
-## 1   70.5  61.7
-## 2   68.5  61.7
-## 3   65.5  61.7
-## 4   64.5  61.7
-## 5   64.0  61.7
-## 6   67.5  62.2
+##             vars    n     mean       sd   min    max  range     se
+## avgAnnCount    1 3047   606.34  1416.36     6  38150  38144  25.66
+## medIncome      2 3047 47063.28 12040.09 22640 125635 102995 218.12
 ```
 
 ```r
-describe(galton.data, fast = T)
+cor(cancer_data$medIncome, cancer_data$avgAnnCount)
 ```
 
 ```
-##        vars   n  mean   sd  min  max range   se
-## parent    1 928 68.31 1.79 64.0 73.0     9 0.06
-## child     2 928 68.09 2.52 61.7 73.7    12 0.08
-```
-
-```r
-cor(galton.data)
-```
-
-```
-##           parent     child
-## parent 1.0000000 0.4587624
-## child  0.4587624 1.0000000
+## [1] 0.2691447
 ```
 
 ---
 
-If we regress child height onto parents':
+If we regress cancer rates onto income:
 
 
 ```r
-r = cor(galton.data)[2,1]
-m_parent = mean(galton.data$parent)
-m_child = mean(galton.data$child)
-s_parent = sd(galton.data$parent)
-s_child = sd(galton.data$child)
+r = cor(cancer_data$medIncome, cancer_data$avgAnnCount)
+m_income = mean(cancer_data$medIncome)
+m_cancer = mean(cancer_data$avgAnnCount)
+s_income = sd(cancer_data$medIncome)
+s_cancer = sd(cancer_data$avgAnnCount)
 
-(b1 = r*(s_child/s_parent))
+b1 = r*(s_cancer/s_income)
 ```
 
 ```
-## [1] 0.6462906
+## [1] 0.03166128
 ```
 
 ```r
-(b0 = m_child - b1*m_parent)
+b0 = m_cancer - b1*m_income
 ```
 
 ```
-## [1] 23.94153
+## [1] -883.7454
 ```
 
 
-How will this change if we regress parent height onto child height?
+How will this change if we regress income onto cancer rates?
 
 ---
 
 
 ```r
-(b1 = r*(s_child/s_parent))
+(b1 = r*(s_cancer/s_income))
 ```
 
 ```
-## [1] 0.6462906
-```
-
-```r
-(b0 = m_child - b1*m_parent)
-```
-
-```
-## [1] 23.94153
-```
-
-
-
-```r
-(b1 = r*(s_parent/s_child))
-```
-
-```
-## [1] 0.3256475
+## [1] 0.03166128
 ```
 
 ```r
-(b0 = m_parent - b1*m_child)
+(b0 = m_cancer - b1*m_income)
 ```
 
 ```
-## [1] 46.13535
+## [1] -883.7454
+```
+
+
+
+```r
+(b1 = r*(s_income/s_cancer))
+```
+
+```
+## [1] 2.287932
+```
+
+```r
+(b0 = m_income - b1*m_cancer)
+```
+
+```
+## [1] 45676.02
 ```
 
 ---
@@ -335,29 +361,29 @@ How will this change if we regress parent height onto child height?
 
 
 ```r
-fit.1 &lt;- lm(child ~ parent, data = galton.data)
+fit.1 &lt;- lm(avgAnnCount ~ medIncome, data = cancer_data)
 summary(fit.1)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = child ~ parent, data = galton.data)
+## lm(formula = avgAnnCount ~ medIncome, data = cancer_data)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -7.8050 -1.3661  0.0487  1.6339  5.9264 
+##    Min     1Q Median     3Q    Max 
+##  -3039   -479   -228     26  37271 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 23.94153    2.81088   8.517   &lt;2e-16 ***
-## parent       0.64629    0.04114  15.711   &lt;2e-16 ***
+##                Estimate  Std. Error t value            Pr(&gt;|t|)    
+## (Intercept) -883.745396   99.738832  -8.861 &lt;0.0000000000000002 ***
+## medIncome      0.031661    0.002053  15.421 &lt;0.0000000000000002 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 2.239 on 926 degrees of freedom
-## Multiple R-squared:  0.2105,	Adjusted R-squared:  0.2096 
-## F-statistic: 246.8 on 1 and 926 DF,  p-value: &lt; 2.2e-16
+## Residual standard error: 1364 on 3045 degrees of freedom
+## Multiple R-squared:  0.07244,	Adjusted R-squared:  0.07213 
+## F-statistic: 237.8 on 1 and 3045 DF,  p-value: &lt; 0.00000000000000022
 ```
 
 ???
@@ -370,11 +396,11 @@ summary(fit.1)
 ---
 
 
-![](3-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](3-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 
 ---
 
-### Data, predicted, and residuals
+### Data, fitted, and residuals
 
 
 ```r
@@ -384,43 +410,32 @@ head(model_info)
 ```
 
 ```
-## # A tibble: 6 x 9
-##   child parent .fitted .se.fit .resid    .hat .sigma .cooksd .std.resid
-##   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
-## 1  61.7   70.5    69.5  0.116   -7.81 0.00270   2.22 0.0165       -3.49
-## 2  61.7   68.5    68.2  0.0739  -6.51 0.00109   2.23 0.00462      -2.91
-## 3  61.7   65.5    66.3  0.137   -4.57 0.00374   2.23 0.00787      -2.05
-## 4  61.7   64.5    65.6  0.173   -3.93 0.00597   2.24 0.00931      -1.76
-## 5  61.7   64      65.3  0.192   -3.60 0.00735   2.24 0.00966      -1.62
-## 6  62.2   67.5    67.6  0.0807  -5.37 0.00130   2.23 0.00374      -2.40
+## # A tibble: 6 x 8
+##   avgAnnCount medIncome .fitted .resid .std.resid     .hat .sigma     .cooksd
+##         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
+## 1        1397     61898   1076.  321.      0.235  0.000827  1365. 0.0000229  
+## 2         173     48127    640. -467.     -0.342  0.000331  1365. 0.0000194  
+## 3         102     49348    679. -577.     -0.423  0.000340  1365. 0.0000304  
+## 4         427     44243    517.  -90.0    -0.0660 0.000346  1365. 0.000000755
+## 5          57     49955    698. -641.     -0.470  0.000347  1364. 0.0000383  
+## 6         428     52313    773. -345.     -0.253  0.000391  1365. 0.0000125
 ```
 
 
 ```r
-describe(model_info)
+describe(model_info, fast = T)
 ```
 
 ```
-##            vars   n  mean   sd median trimmed  mad   min   max range  skew
-## child         1 928 68.09 2.52  68.20   68.12 2.97 61.70 73.70 12.00 -0.09
-## parent        2 928 68.31 1.79  68.50   68.32 1.48 64.00 73.00  9.00 -0.04
-## .fitted       3 928 68.09 1.16  68.21   68.10 0.96 65.30 71.12  5.82 -0.04
-## .se.fit       4 928  0.10 0.03   0.09    0.09 0.02  0.07  0.21  0.13  1.53
-## .resid        5 928  0.00 2.24   0.05    0.06 2.26 -7.81  5.93 13.73 -0.24
-## .hat          6 928  0.00 0.00   0.00    0.00 0.00  0.00  0.01  0.01  1.99
-## .sigma        7 928  2.24 0.00   2.24    2.24 0.00  2.22  2.24  0.01 -2.39
-## .cooksd       8 928  0.00 0.00   0.00    0.00 0.00  0.00  0.02  0.02  3.44
-## .std.resid    9 928  0.00 1.00   0.02    0.03 1.01 -3.49  2.65  6.14 -0.24
-##            kurtosis   se
-## child         -0.35 0.08
-## parent         0.05 0.06
-## .fitted        0.05 0.04
-## .se.fit        1.50 0.00
-## .resid        -0.23 0.07
-## .hat           3.47 0.00
-## .sigma         8.62 0.00
-## .cooksd       17.34 0.00
-## .std.resid    -0.23 0.03
+##             vars    n     mean       sd      min       max     range     se
+## avgAnnCount    1 3047   606.34  1416.36     6.00  38150.00  38144.00  25.66
+## medIncome      2 3047 47063.28 12040.09 22640.00 125635.00 102995.00 218.12
+## .fitted        3 3047   606.34   381.20  -166.93   3094.02   3260.95   6.91
+## .resid         4 3047     0.00  1364.09 -3039.02  37270.66  40309.68  24.71
+## .std.resid     5 3047     0.00     1.00    -2.24     27.32     29.57   0.02
+## .hat           6 3047     0.00     0.00     0.00      0.01      0.01   0.00
+## .sigma         7 3047  1364.31     3.63  1185.50   1364.54    179.04   0.07
+## .cooksd        8 3047     0.00     0.00     0.00      0.19      0.19   0.00
 ```
 
 ???
@@ -429,68 +444,110 @@ Point out the average of the residuals is 0, just like average deviation from th
 
 ---
 
+### The relationship between `\(X_i\)` and `\(\hat{Y_i}\)`
+
 
 ```r
-model_info %&gt;% ggplot(aes(x = parent, y = .fitted)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste("X is related to ", hat(Y))))+
+model_info %&gt;% ggplot(aes(x = medIncome, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") +
   scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
 
-![](3-regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
----
-
-
-```r
-model_info %&gt;% ggplot(aes(x = parent, y = .resid)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle("X is always unrelated to e")+
-  scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
-```
-
 ![](3-regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
-
 ---
+
+### The relationship between `\(X_i\)` and `\(e_i\)`
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = child, y = .fitted)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste("Y can be related to ", hat(Y))))+
-  scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+model_info %&gt;% ggplot(aes(x = medIncome, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
 ```
 
 ![](3-regression_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 ---
 
+### The relationship between `\(Y_i\)` and `\(\hat{Y_i}\)`
+
 
 ```r
-model_info %&gt;% ggplot(aes(x = child, y = .resid)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle("Y is sometimes related to e")+
-  scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 25)
+model_info %&gt;% ggplot(aes(x = avgAnnCount, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
 
 ![](3-regression_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 ---
 
+### The relationship between `\(Y_i\)` and `\(e_i\)`
+
 
 ```r
-model_info %&gt;% ggplot(aes(x = .fitted, y = .resid)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste(hat(Y), " is always unrelated to e")))+
-  scale_y_continuous("e") + scale_x_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+model_info %&gt;% ggplot(aes(x = avgAnnCount, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 25)
 ```
 
 ![](3-regression_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
+### The relationship between `\(\hat{Y_i}\)` and `\(e_i\)`
+
 
 ```r
-model_info %&gt;% rename(y = child, x = parent) %&gt;% select(x,y,.fitted,.resid) %&gt;% gather("key", "value") %&gt;%
-  ggplot(aes(value, fill = key)) + geom_histogram(bins = 25) + guides(fill = F)+
-  facet_wrap(~key, scales = "free") + theme_bw(base_size = 20)
+model_info %&gt;% ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_y_continuous("e") + scale_x_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
 
 ![](3-regression_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+
+---
+
+## Regression to the mean
+
+An observation about heights was part of the motivation to develop the regression equation: If you selected a parent who was exceptionally tall (or short), their child was almost always not as tall (or as short).
+
+![](3-regression_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+
+
+---
+
+## Regression to the mean
+
+This phenomenon is known as **regression to the mean.** This describes the phenomenon in which an random variable produces an extreme score on a first measurement, but a lower score on a second measurement. 
+
+.pull-left[
+We can see this in the standardized regression equation:
+
+`$$\hat{Y_i} = r_{xy}(X_i) + e_i$$`
+In that the slope coefficient can never be greater than 1. 
+
+]
+
+.pull-right[
+![](images/quincunx.png)
+]
+
+---
+
+## Regression to the mean
+
+This can be a threat to internal validity if interventions are applied based on first measurement scores. 
+
+.pull-left[
+![](3-regression_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+--
+
+.pull-right[
+![](3-regression_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+]
 
 ---
 
@@ -546,6 +603,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -563,17 +646,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {

@@ -12,9 +12,14 @@ output:
 ---
 
 ```{r, echo = F, warning = F, message = F, results = 'hide'}
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+
+options(scipen=999) #don't use scientific notation
+
 library(psych)
 library(tidyverse)
 library(broom)
+library(here)
 ```
 
 
@@ -57,19 +62,20 @@ The output of regression includes both effect sizes and, if using frequentist or
 
 ### Regression
 
-- **Scientific** use: explaining the influence of one or more variables on some outcome. 
+- **Adjustment**: Statistically control for known effects
 
-  + Does this intervention affect reaction time?
-  + Does self-esteem predict relationship quality?
-  
-- **Prediction** use: We can develop models based on what's happened in the past to predict what will happen in the figure.
+  + If everyone had the same level of SES, would education still predict wealth?
+
+- **Prediction**: We can develop models based on what's happened in the past to predict what will happen in the figure.
 
   + Insurance premiums
   + Graduate school... success?
   
-- **Adjustment**: Statistically control for known effects
+- **Explanation**: explaining the influence of one or more variables on some outcome. 
 
-  + If everyone had the same level of SES, would abuse still be associated with criminal behavior?
+  + Does this intervention affect reaction time?
+  + Does self-esteem predict relationship quality?
+
 
 ---
 
@@ -80,9 +86,9 @@ What is a regression equation?
 - Functional relationship
 
   - Ideally like a physical law $(E = MC^2)$
-  
-  - In practice, it's never as robust as that
-  
+  - In practice, it's never as robust as that. 
+  - Note: this equation may not represent the true causal process!
+
 How do we uncover the relationship?
 
 ---
@@ -99,15 +105,42 @@ How do we uncover the relationship?
 
 ## Regression Equation
 
-$$\Large Y = b_{0} + b_{1}X +e$$
+There are two ways to think about our regression equation. They're similar to each other, but they produce different outputs.
 
-$$\Large \hat{Y} = b_{0} + b_{1}X$$
+$$\Large Y_i = b_{0} + b_{1}X_i +e_i$$
+
+$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$
+
+
+The first is the equation that represents how each **observed outcome** $(Y_i)$ is calculated. This observed value is the sum of some constant $(b_0)$, the weighted $(b_1)$ observed values of the predictors $(X_i)$ and error $(e_i)$ that cannot be covered by the observed data.
 
 ???
 
-$\hat{Y}$ signifies the predicted score -- no error
+$\hat{Y}$ signifies the fitted score -- no error
 
-The difference between the predicted and observed score is the residual ($e_i$)
+The difference between the fitted and observed score is the residual ($e_i$)
+
+There is a different e value for each observation in the dataset
+---
+
+## Regression Equation
+
+There are two ways to think about our regression equation. They're similar to each other, but they produce different outputs.
+
+$$\Large Y_i = b_{0} + b_{1}X_i + e_i$$
+
+$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$
+
+
+The second is the equation that represents our expected or **fitted value** of the outcome $(\hat{Y_i})$, sometimes referred to as the "predicted value." This expected value is the sum of some constant $(b_0)$, the weighted $(b_1)$ observed values of the predictors $(X_i)$.
+
+Note that $Y_i - \hat{Y_i} = e$.
+
+???
+
+$\hat{Y}$ signifies the fitted score -- no error
+
+The difference between the fitted and observed score is the residual ($e_i$)
 
 There is a different e value for each observation in the dataset
 ---
@@ -124,7 +157,7 @@ $$ min\sum(Y_{i}-\hat{Y})^{2} $$
 ---
 
  
-```{r,echo=FALSE, message=FALSE, cache=TRUE, warning = F}
+```{r,echo=FALSE, message=FALSE, cache=TRUE, warning = F, message = F}
 set.seed(123)
 x.1 <- rnorm(10, 0, 1)
 e.1 <- rnorm(10, 0, 2)
@@ -165,7 +198,7 @@ ggplot(d1.f , aes(x=x.1, y=y.1)) +
 
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message = F}
 ggplot(d1.f , aes(x=x.1, y=y.1)) +
     geom_point(size = 2) +
   geom_smooth(method = lm, se = FALSE) +
@@ -177,7 +210,21 @@ ggplot(d1.f , aes(x=x.1, y=y.1)) +
 
 ---
 
-```{r, echo = F}
+## compare to bad fit
+
+.pull-left[
+```{r, echo=FALSE, message = F}
+ggplot(d1.f , aes(x=x.1, y=y.1)) +
+    geom_point(size = 2) +
+  geom_smooth(method = lm, se = FALSE) +
+  geom_point(aes(y = .fitted), shape = 1, size = 2) +
+  geom_segment(aes( xend = x.1, yend = .fitted))+
+  theme_bw(base_size = 20)
+```
+
+]
+.pull-right[
+```{r, echo = F, message = F}
 new.i = 1.1
 new.slope = -0.7
 d1.f$new.fitted = 1.1 -0.7*d1.f$x.1
@@ -189,12 +236,13 @@ ggplot(d1.f , aes(x=x.1, y=y.1)) +
   geom_segment(aes( xend = x.1, yend = new.fitted))+
   theme_bw(base_size = 20)
 ```
+]
 
-## compare to bad fit
+
 ---
-$$\Large Y = b_{0} + b_{1}X +e$$
+$$\Large Y_i = b_{0} + b_{1}X_i +e_i$$
 
-$$\Large \hat{Y} = b_{0} + b_{1}X$$
+$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$
 
 $$\Large Y_i = \hat{Y_i} + e_i$$
 
@@ -219,9 +267,14 @@ In order to find the OLS solution, you could try many different coefficients $(b
 
 $$\large b_{1} = \frac{cov_{XY}}{s_{x}^{2}} = r_{xy} \frac{s_{y}}{s_{x}}$$
 
-$$\large r_{xy} = \frac{s_{xy}}{s_xs_y}$$
+<!-- $$\large r_{xy} = \frac{s_{xy}}{s_xs_y}$$ -->
 
-- The regression coefficient (slope) equals the estimated change in Y for a 1-unit change in X  
+
+What units is the regression coefficient in?
+
+--
+
+The regression coefficient (slope) equals the estimated change in Y for a 1-unit change in X  
 
 ---
 
@@ -236,7 +289,7 @@ $$\large b_1 = \frac{s_{xy}}{s_xs_y} = \frac{s_{xy}}{s_x^2}=\frac{r_{xy}}{1^2} =
 
 ## Standardized regression equation
 
-$$\large Y = b_{yx}^*X+e$$
+$$\large Y_i = b_{yx}^*X_i+e_i$$
 
 $$\large b_{yx}^* = b_{yx}\frac{s_x}{s_y}$$
 --
@@ -249,7 +302,7 @@ According to this regression equation, when $X = 0, Y = 0$. Our interpretation o
 
 - intercept serves to adjust for differences in means between X and Y
 
-$$\Large \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$
+$$\Large \hat{Y_i} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X_i-\bar{X})$$
 - if standardized, intercept drops out  
 
 - otherwise, intercept is where regression line crosses the y-axis at X = 0  
@@ -265,51 +318,52 @@ $$\Large b_0 = \bar{Y} - b_1\bar{X}$$
 
 ## Example
 
+[Data on lung cancer rates](https://data.world/nrippner/ols-regression-challenge#) in counties aggregated from American Community Survey, clinicaltrials.gov and cancer.gov.
 
-
-```{r}
-galton.data <- psychTools::galton
-head(galton.data)
-describe(galton.data, fast = T)
-cor(galton.data)
+```{r, message = F, warning = F}
+cancer_data = read_csv(here("data/cancer_reg.csv"))
+describe(cancer_data[,c("avgAnnCount", "medIncome")], fast = T)
+cor(cancer_data$medIncome, cancer_data$avgAnnCount)
 ```
 
 ---
 
-If we regress child height onto parents':
+If we regress cancer rates onto income:
 
-```{r}
-r = cor(galton.data)[2,1]
-m_parent = mean(galton.data$parent)
-m_child = mean(galton.data$child)
-s_parent = sd(galton.data$parent)
-s_child = sd(galton.data$child)
+```{r, echo = c(1:7, 9)}
+r = cor(cancer_data$medIncome, cancer_data$avgAnnCount)
+m_income = mean(cancer_data$medIncome)
+m_cancer = mean(cancer_data$avgAnnCount)
+s_income = sd(cancer_data$medIncome)
+s_cancer = sd(cancer_data$avgAnnCount)
 
-(b1 = r*(s_child/s_parent))
-(b0 = m_child - b1*m_parent)
+b1 = r*(s_cancer/s_income)
+b1
+b0 = m_cancer - b1*m_income
+b0
 ```
 
 
-How will this change if we regress parent height onto child height?
+How will this change if we regress income onto cancer rates?
 
 ---
 
 ```{r}
-(b1 = r*(s_child/s_parent))
-(b0 = m_child - b1*m_parent)
+(b1 = r*(s_cancer/s_income))
+(b0 = m_cancer - b1*m_income)
 ```
 
 
 ```{r}
-(b1 = r*(s_parent/s_child))
-(b0 = m_parent - b1*m_child)
+(b1 = r*(s_income/s_cancer))
+(b0 = m_income - b1*m_cancer)
 ```
 
 ---
 ## In `R`
 
 ```{r}
-fit.1 <- lm(child ~ parent, data = galton.data)
+fit.1 <- lm(avgAnnCount ~ medIncome, data = cancer_data)
 summary(fit.1)
 ```
 
@@ -323,8 +377,8 @@ summary(fit.1)
 ---
 
 
-```{r, echo=FALSE, cache=TRUE}
-ggplot(galton.data, aes(x=parent, y=child)) +
+```{r, echo=FALSE, cache=TRUE, message = F}
+ggplot(cancer_data, aes(x=medIncome, y=avgAnnCount)) +
     geom_point() +    
     geom_smooth(method=lm,   # Add linear regression line
                 se=FALSE) +
@@ -333,7 +387,7 @@ ggplot(galton.data, aes(x=parent, y=child)) +
 
 ---
 
-### Data, predicted, and residuals
+### Data, fitted, and residuals
 
 ```{r}
 library(broom)
@@ -342,7 +396,7 @@ head(model_info)
 ```
 
 ```{r}
-describe(model_info)
+describe(model_info, fast = T)
 ```
 
 ???
@@ -351,50 +405,133 @@ Point out the average of the residuals is 0, just like average deviation from th
 
 ---
 
-```{r}
-model_info %>% ggplot(aes(x = parent, y = .fitted)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste("X is related to ", hat(Y))))+
+### The relationship between $X_i$ and $\hat{Y_i}$
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = medIncome, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") +
   scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
 ---
 
-```{r}
-model_info %>% ggplot(aes(x = parent, y = .resid)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle("X is always unrelated to e")+
+### The relationship between $X_i$ and $e_i$
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = medIncome, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
 ```
 
 ---
 
-```{r}
-model_info %>% ggplot(aes(x = child, y = .fitted)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste("Y can be related to ", hat(Y))))+
+### The relationship between $Y_i$ and $\hat{Y_i}$
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = avgAnnCount, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
 
 ---
 
-```{r}
-model_info %>% ggplot(aes(x = child, y = .resid)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle("Y is sometimes related to e")+
+### The relationship between $Y_i$ and $e_i$
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = avgAnnCount, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 25)
 ```
 
 ---
 
-```{r}
+### The relationship between $\hat{Y_i}$ and $e_i$
+
+```{r, fig.width=8, fig.height = 6}
 model_info %>% ggplot(aes(x = .fitted, y = .resid)) +
-  geom_point() + geom_smooth(se = F, method = "lm") + ggtitle(expression(paste(hat(Y), " is always unrelated to e")))+
+  geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_y_continuous("e") + scale_x_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
 
 ---
 
-```{r}
-model_info %>% rename(y = child, x = parent) %>% select(x,y,.fitted,.resid) %>% gather("key", "value") %>%
-  ggplot(aes(value, fill = key)) + geom_histogram(bins = 25) + guides(fill = F)+
-  facet_wrap(~key, scales = "free") + theme_bw(base_size = 20)
+## Regression to the mean
+
+An observation about heights was part of the motivation to develop the regression equation: If you selected a parent who was exceptionally tall (or short), their child was almost always not as tall (or as short).
+
+```{r, echo = F, warning = F, message = F, fig.height = 4}
+library(psychTools)
+library(tidyverse)
+heights = psychTools::galton
+mod = lm(child~parent, data = heights)
+point = 902
+heights = broom::augment(mod)
+
+
+heights %>%
+  ggplot(aes(x = parent, y = child)) +
+  geom_jitter(alpha = .3) +
+  geom_hline(aes(yintercept = 72), color = "red") +
+  geom_vline(aes(xintercept = 72), color = "red") +
+  theme_bw(base_size = 20)
 ```
+
+
+---
+
+## Regression to the mean
+
+This phenomenon is known as **regression to the mean.** This describes the phenomenon in which an random variable produces an extreme score on a first measurement, but a lower score on a second measurement. 
+
+.pull-left[
+We can see this in the standardized regression equation:
+
+$$\hat{Y_i} = r_{xy}(X_i) + e_i$$
+In that the slope coefficient can never be greater than 1. 
+
+]
+
+.pull-right[
+![](images/quincunx.png)
+]
+
+---
+
+## Regression to the mean
+
+This can be a threat to internal validity if interventions are applied based on first measurement scores. 
+
+.pull-left[
+```{r, echo = F, message = F, warning =F}
+set.seed(011620)
+true_score = rnorm(m = 75, sd = 7, n = 35)
+midterm = true_score + rnorm(sd = 4, n = 35)
+final = true_score + rnorm(sd = 4, n = 35)
+grades = data.frame(midterm = midterm, final = final, 
+                    tutor = ifelse(midterm < 70, "yes", "no")) 
+
+grades$change = final-midterm
+library(ggpubr)
+ggpubr::ggerrorplot(data = grades, 
+                    x = "tutor", 
+                    y = "change", 
+                    desc_stat = "mean_ci", 
+                    color = "tutor", 
+                    ylab = "Change in grade between final and midterm", size = 2) + 
+  theme_minimal(base_size = 20)
+```
+]
+--
+
+.pull-right[
+```{r, echo = F}
+ggpubr::ggscatter(data = grades, 
+                  x = "midterm", 
+                  y = "final", 
+                  color = "tutor",
+                  size = 3) + theme_minimal(base_size = 20)
+```
+
+]
 
 ---
 
