@@ -9,7 +9,7 @@ navbar:
       menu:
       - text: "1 - Correlations"
         href: "lectures/1-correlation.html"
-      - text: "2 - Correlations"
+      - text: "2 - Correlation (matrices and reliability)"
         href: "lectures/2-correlation.html"
       - text: "3 - Univariate Regression"
         href: "lectures/3-regression.html"

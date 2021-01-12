@@ -682,15 +682,6 @@ pnorm(abs(zstat), lower.tail = F)*2
 
 
 ---
-## Questions to ask yourself:
-- What is your N?
-- What is the typical effect size in the field?
-- Study design?
-- What is your DV?
-- Importance?
-- Same method as IV (method variance)?
-
----
 class: inverse
 
 ## Next time... 
