@@ -18,6 +18,8 @@ Hill (2019) ["Meet xaringan."](https://arm.rbind.io/slides/xaringan.html#1) -- T
 
 Bryan (2019) ["Happy Git with R."](https://happygitwithr.com) -- Interested in using GitHub for version control? Jenny Bryan will guide you through the process and metaphorically hand you a tissue when you're screaming with frustration.
 
+Anderson (2021) ["Social Data Science with R"](https://www.sds.pub/index.html) -- This book is currently being developed for the data science sequence at the University of Oregon, taught in the education department by Daniel Anderson. It is a helpful resource for foundational coding skills and data visualization in R. 
+
 ## On creating useful graphics
 
 Patil (2020) ["ggstatsplot"](https://indrajeetpatil.github.io/ggstatsplot/index.html) -- A very useful R package for creating visuals to display some basic univariate and bivariate descriptives. 
