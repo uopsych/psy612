@@ -289,9 +289,9 @@ $$\large b_1 = \frac{s_{xy}}{s_xs_y} = \frac{s_{xy}}{s_x^2}=\frac{r_{xy}}{1^2} =
 
 ## Standardized regression equation
 
-$$\large Y_i = b_{yx}^*X_i+e_i$$
+$$\large Z_{y_i} = b_{yx}^*Z_{x_i}+e_i$$
 
-$$\large b_{yx}^* = b_{yx}\frac{s_x}{s_y}$$
+$$\large b_{yx}^* = b_{yx}\frac{s_x}{s_y} = r_{xy}$$
 --
 
 According to this regression equation, when $X = 0, Y = 0$. Our interpretation of the coefficient is that a one-standard deviation increase in X is associated with a $b_{yx}^*$ standard deviation increase in Y. Our regression coefficient is equivalent to the correlation coefficient *when we have only one predictor in our model.*
@@ -312,6 +312,11 @@ $$\Large \hat{Y_i} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X_i-\bar{X})$$
 - Also, notice that when $X = \bar{X}$ the regression line goes through  $\bar{Y}$
 
 ???
+$$\Large b_0 = \bar{Y} - b_1\bar{X}$$
+---
+
+The intercept adjusts the location of the regression line to ensure that it runs through the point $(\bar{X}, \bar{Y}).$  We can calculate this value using the equation:
+
 $$\Large b_0 = \bar{Y} - b_1\bar{X}$$
 
 ---

@@ -11,20 +11,22 @@ final-project.html
 
 1-correlation.html
 - use t or z for statistical test?
-
 - useful to read (skim) chapter before (send email week before)
 
 2-correlation.html
+- move scatterplots to before correlation matrices
+- add slides about MAR/MCAR/MNAR 
 
 1-lab.html
 
   * maybe add missingness (but included in class already) -- minihack?
+  * change Dawtry example to something else
   
 3-regression.html
 
-  * add the squares
-  * move regression to the mean here
+4-regression.html
 
+  * add the squares
   * add this! https://joshualoftus.com/post/2020-11-23-least-squares-as-springs/least-squares-as-springs/ 
   
 3-lab.html
