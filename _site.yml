@@ -11,8 +11,10 @@ navbar:
         href: "lectures/1-correlation.html"
       - text: "2 - Correlation (matrices and reliability)"
         href: "lectures/2-correlation.html"
-      - text: "3 - Univariate Regression"
+      - text: "3 - Univariate Regression (Equation)"
         href: "lectures/3-regression.html"
+      - text: "4 - Univariate Regression (Inferential tests)"
+        href: "lectures/4-regression.html"
     - text: Labs
       menu:
       - text: "1 - Correlations"

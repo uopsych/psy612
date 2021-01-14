@@ -12,6 +12,8 @@ output:
 ---
 
 ```{r, echo = F, message = F, warning=F}
+options(scipen = 999)
+knitr::opts_chunk$set(message = FALSE) # suppress messages
 library(tidyverse)
 library(broom)
 ```
@@ -29,11 +31,9 @@ library(broom)
 
 ### Today...
 
-Regression to the mean
-
 Statistical inferences with regression
 
-- Partitioning the variance
+- Partitioning variance
 
 - Testing $b_{xy}$
 
@@ -47,14 +47,16 @@ Statistical inferences with regression
 
 --
 
-To assess how well our model fits the data, we simply take all the variability in our outcome and partition it into different categories. For now, we will partition it into two categories: the variability that is predicted by (explained by) our model, and variability that is not.
+To assess how well our model fits the data, we will examine the proportion of variance in our outcome variable that can be "explained" by our model.
+
+To do so, we need to partition the variance into different categories. For now, we will partition it into two categories: the variability that is captured by (explained by) our model, and variability that is not.
 
 ---
 
 ## Partitioning variation 
 
-- We formally test how well we are doing with our guesses by partitioning variation
-
+We can expand the formula defining the relationship between observed $Y$ and fitted $\hat{Y}$ to represent variability, or sums of squares.
+ 
 $$Y = \hat{Y} + e$$
 
 $$Y = \hat{Y} + (Y - \hat{Y})$$
@@ -115,7 +117,7 @@ d1.f<- augment(m.1)
 ```
 
 .pull-left[
-```{r, echo = F}
+```{r, echo = F, message = F}
 d1.f %>%
   ggplot(aes(x = x.1, y = y.1)) +
   geom_smooth(se = F, method = "lm")+
@@ -128,7 +130,7 @@ d1.f %>%
 --
 
 .pull-right[
-```{r, echo = F}
+```{r, echo = F, message = F}
 d1.f %>%
   ggplot(aes(x = y.1, y = .fitted)) +
   geom_smooth(se = F, method = "lm")+
@@ -231,41 +233,13 @@ psych::describe(galton.data.1$.resid)
 sd(galton.data$child)
 ```
 
----
 
-
-```{r, echo = F}
-set.seed(20200116)
-x.1 = rnorm(1000,0,1)
-e = seq(4, .01, by = -.1)
-r2 = numeric(length = length(e))
-rsd= numeric(length = length(e))
-for(i in 1:length(e)){
-  e.1 <- rnorm(1000, 0, e[i])
-  y.1 <- .5 + .55 * x.1 + e.1
-  d.1 <- data.frame(x.1,y.1)
-  m.1 <- lm(y.1 ~ x.1, data = d.1)
-  r2[i] = summary(m.1)$r.squared
-  rsd[i] = summary(m.1)$sigma
-}
-
-data.frame(r2 = r2, rsd = rsd) %>%
-  ggplot(aes(x = r2, y = rsd)) + 
-  geom_line() +
-  scale_x_continuous(expression(paste(R^2))) + 
-  scale_y_continuous(expression(hat(sigma[e])))  +
-  theme_bw(base_size = 20)
-```
 ---
 ## $R^2$ and residual standard deviation
 
 - two sides of same coin
 
-- one in original units, the other standardized 
-
-- $R^2$ can be tricky because the numerator and denominator can be changed in different ways. 
-
-- for example if variance in Y is changed but with the same model and residual standard error $R^2$ could decline or increase
+- one in original units (residual standard deviation), the other standardized $(R^2)$
 
 ---
 ## Inferential tests
@@ -284,15 +258,23 @@ In regression, there are several inferential tests being conducted at once. The 
 
 ### Omnibus test
 
-$$\Large H_{0}: \rho_{XY}^2= 0$$
+<!-- $$\Large H_{0}: \rho_{Y\hat{Y}}^2= 0$$ -->
 
-$$\Large H_{0}: \rho_{XY}^2 \neq 0$$
+<!-- $$\Large H_{0}: \rho_{Y\hat{Y}}^2 \neq 0$$ -->
 
-It is possible to calculate the significance of your regression with a correlation test. In fact, it would seem quite practical and logical to do so. 
+
+Historically we use **the _F_ distribution** to estimate the significance of our model, because it works with our ability to partition variance.
+
+What is our null hypothesis?
+
+**The model does not account for variance in $Y$.**
 
 --
 
-However, historically we use a different probability distribution -- **the _F_ distribution** to estimate the significance of our model. It's important to know that these methods are mathematically equivalent. But the _F_ distribution is useful here, because it works with our ability to partition variance.
+But you can also think of the null hypothesis as
+
+$$\Large H_{0}: \rho_{Y\hat{Y}}^2= 0$$
+
 
 ---
 
@@ -336,7 +318,7 @@ As a result, _F_ has two degrees of freedom, $\nu_1$ and $\nu_2$
 
 Recall that when using a _z_ or _t_ distribution, we were interested in whether one mean was equal to another mean -- sometimes the second mean was calculated from another sample or hypothesized (i.e., the value of the null). In this comparison, we compared the _difference of two means_ to 0 (or whatever our null hypothesis dictates), and if the difference was not 0, we concluded significance. 
 
-_F_ statistics are not testing the likelihood of differences; they test the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. 
+_F_ statistics are not testing the likelihood of differences; they likelihood the size of a _ratio_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. 
 
 Which variance?
 
