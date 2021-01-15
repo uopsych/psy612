@@ -73,7 +73,7 @@ Conducting regressions in R is actually pretty simple. We use the `lm()` functio
 
 
 Let's perform a linear regression analysis. First we'll import the same data that we used last week:
-```{r}
+```{r, eval = FALSE}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
 
 head(health)
@@ -81,7 +81,7 @@ head(health)
 
 
 Say we're interested in whether self-reported health scores are related to self-reported conscientiousness scores. Here's a quick reminder of the visualization you looked at last week:
-```{r}
+```{r, eval = FALSE}
 ggplot(data = health, aes(x = consc, y = sr_health)) +
   geom_point() + 
   geom_smooth(method = "lm") +
@@ -92,13 +92,13 @@ ggplot(data = health, aes(x = consc, y = sr_health)) +
 * Regress conscientiousness on self-report health scores using the `lm()` function below. 
 * Store the results of `lm()` in an object called model.
 
-```{r}
+```{r, eval = FALSE}
 
 ```
 
 
 Let's see what the output looks like using `print()`.
-```{r}
+```{r, eval = FALSE}
 print(model)
 ```
 
@@ -108,7 +108,7 @@ The output provides us with the following:
 
 
 We can get even more information using `summary()`.
-```{r}
+```{r, eval = FALSE}
 summary(model)
 ```
 
@@ -138,7 +138,7 @@ First, we need to get the predicted values of Y.
 
 Our regression model object, called `model`, is actually a `list` that contains a lot of useful information that we don't see in the output above. Let's take a look at all the information stored in this object using the `str()` function:
 
-```{r}
+```{r, eval = FALSE}
 str(model)
 ```
 
@@ -148,13 +148,13 @@ We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMEN
 
 The fitted values of Y are stored in `model` in the element called fitted.values. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called fitted_Y. Print the fitted Y values.
 
-```{r}
+```{r, eval = FALSE}
 
 ```
 
 
 Next, calculate the difference between the actual values of Y and the fitted values of Y. Store the output in an object called residuals and print them.
-```{r}
+```{r, eval = FALSE}
 
 ```
 
@@ -163,13 +163,13 @@ Next, calculate the difference between the actual values of Y and the fitted val
 ### Extracting Residuals
 OK, so I made you do extra work. You can actually grab the residuals directly from the `model` object using model$residuals.
 
-```{r}
+```{r, eval = FALSE}
 model$residuals
 ```
 
 
 Let's check to see that our calculation of the residuals matches what we grabbed directly from the model output. 
-```{r}
+```{r, eval = FALSE}
 round(residuals, 8) == round(model$residuals, 8)
 ```
 
@@ -180,14 +180,14 @@ With this information, we could calculate the sum of squared residuals, which is
 
 $$\Sigma(Y_i - \hat{Y_i})^2$$
 Calculate the sum of squared residuals and store the output in an object called sum_sq_residuals.
-```{r}
+```{r, eval = FALSE}
 
 ```
 
 
 Finally, now that we have pulled the necessary components, calculate the residual standard error using the formula above. Store the results of the calculation to an object called residual_standard_error. 
 
-```{r}
+```{r, eval = FALSE}
 
 ```
 
@@ -195,7 +195,7 @@ Finally, now that we have pulled the necessary components, calculate the residua
 ### Extracting Residual Standard Error with summary
 We can also get the standard error more directly. However, it is not stored in the model object that we stored the output of the `lm()` function to. It is stored in the output of the `summary()` function. Let's assign the output of this function to an object called model_summary, and then inspect its structure:
 
-```{r}
+```{r, eval = FALSE}
 model_summary <- summary(model)
 str(model_summary)
 ```
@@ -203,7 +203,7 @@ str(model_summary)
 
 Can you find what the residual standard error is called? Once you find it, extract it from the model_summary.
 
-```{r}
+```{r, eval = FALSE}
 
 ```
 
@@ -211,7 +211,7 @@ Can you find what the residual standard error is called? Once you find it, extra
 #### Check Equivalency
 And see that it is equivalent to what we calculated above:
 
-```{r}
+```{r, eval = FALSE}
 
 ```
 
@@ -231,7 +231,7 @@ Calculate the following:
 * SS_Model
 * SS_Y
 * r_squared
-```{r}
+```{r, eval = FALSE}
 
 
 ```
@@ -242,12 +242,12 @@ Calculate the following:
 
 Another way we can evaluate our regression model is by extracting the coefficient of determination, $R^2$. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
 
-```{r}
+```{r, eval = FALSE}
 model_summary$r.squared
 ```
 
 ### Check Equivalency
-```{r}
+```{r, eval = FALSE}
 round(r_squared, 8) == round(model_summary$r.squared, 8)
 ```
 
@@ -271,7 +271,7 @@ Remember that variance (aka mean square) is the sum of squares divided by the de
 
 Let's get MS_Model, which is the SS_Model divided by df_Model.
 * We already calculated SS_Model above, so we just need to divide it by df_Model, which is equal to k (the number of predictors).
-```{r}
+```{r, eval = FALSE}
 MS_Model <- SS_Model/1
 ```
 
@@ -284,20 +284,20 @@ Either rearrange the above equation to solve for SS_Residual, or calculate it fr
 $$SS_{Residual} = \Sigma(Y_i - \hat{Y_i}^2)$$
 
 Use one of these methods to calculate SS_Residual below.
-```{r}
+```{r, eval = FALSE}
 
 
 ```
 
 
 Divide the SS_Residual by the df_Residual, which are n - k - 1.
-```{r}
+```{r, eval = FALSE}
 
 ```
 
 
 We can finally calculate the F-statistic. Store it in an object called F_stat.
-```{r}
+```{r, eval = FALSE}
 
 
 ```
@@ -307,7 +307,7 @@ We can finally calculate the F-statistic. Store it in an object called F_stat.
 ### F-Statistic 
 The value of the F-statistic is also stored in the summary of our model:
 
-```{r}
+```{r, eval = FALSE}
 summary(model)$fstatistic
 ```
 
@@ -319,7 +319,7 @@ Does it match what we got when we calculated from scratch?
 
 And we can use these numbers to look up its p value:
 
-```{r}
+```{r, eval = FALSE}
 pf(summary(model)$fstatistic[1], # the F-statistic
    summary(model)$fstatistic[2], # numerator df
    summary(model)$fstatistic[3], # denominator df
@@ -340,7 +340,7 @@ We can calculate these from scratch using the following formulas.
 For obtaining b1:
 $$b_1 = r(\frac{s_y}{s_x})$$
 Calculate b1 using the equation above. Store the value in an object called b1.
-```{r}
+```{r, eval = FALSE}
 
 ```
 
@@ -348,7 +348,7 @@ And for obtaining b0:
 $$b0 = M_y - b_1M_x$$
 
 Calculate b0 using the equation above. Store the value in an object called b0.
-```{r}
+```{r, eval = FALSE}
 
 
 ```
@@ -357,7 +357,7 @@ Calculate b0 using the equation above. Store the value in an object called b0.
 
 ### Extracting Estimates of the Regression Coefficients
 We can also grab these estimates from the model output. They are stored in the element called coefficients.
-```{r}
+```{r, eval = FALSE}
 model$coefficients
 ```
 
@@ -381,7 +381,7 @@ You probably recall that these are called the *unstandardized* coefficients. We 
 Standardized regression coefficients, often notated as $\beta$, are just the regression coefficients after the variables have been *standardized* or *Z-scored*. To obtain them, we need to z-score our data with `scale()` before we run the `lm()` function. One really cool thing is that we can do it in the `lm()` call:
 
 
-```{r}
+```{r, eval = FALSE}
 std_model <- lm(scale(sr_health) ~ scale(consc), data = health)
 
 coefficients(std_model) %>% 
@@ -411,7 +411,7 @@ This *t* is distributed with $df = n - 2$.
 
 We can get these from the summary of our model object, by extracting the coefficients *from the summary*.
 
-```{r}
+```{r, eval = FALSE}
 summary(model)$coefficients
 ```
 
@@ -433,7 +433,7 @@ Thankfully, there is. This requires the {broom} library, which might be new. It 
 ## broom::tidy()
 Let's see what happens when we tidy our model:
 
-```{r}
+```{r, eval = FALSE}
 tidy(model)
 ```
 
@@ -443,14 +443,14 @@ You can see it produces a dataframe containing the model coefficients and their 
 
 {broom} also has a function called `glance()` that provides some of the omnibus model information we might want:
 
-```{r}
+```{r, eval = FALSE}
 glance(model)
 ```
 
 ## broom::augment()
 `augment` provides more information from our model:
 
-```{r}
+```{r, eval = FALSE}
 augment(model)
 ```
 
@@ -463,7 +463,7 @@ So with broom, just remember:
 
 The payoff for these functions comes when you want to do something *with* some of your regression results. As an example, you could use `tidy()` to make it easier to make a plot of your regression coefficients:
 
-```{r}
+```{r, eval = FALSE}
 tidy(model) %>% 
   ggplot(aes(x = term, y = estimate)) +
   geom_point()+
@@ -479,7 +479,7 @@ The last thing we'll cover today is how to report the results of your regression
 
 ### 'by hand' using broom and kable
 Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable` function from {knitr}. 
-```{r}
+```{r, eval = FALSE}
 tidy(model) %>% # first run tidy on the model.
                 # Then pipe it to knitr's kable function
   knitr::kable(digits = c(NA, 2, 2, 2, 3), # set digits; everything rounded to 
@@ -489,7 +489,7 @@ tidy(model) %>% # first run tidy on the model.
 
 We could clean things up a bit more by changing the names and re-formatting that pesky p value column:
 
-```{r}
+```{r, eval = FALSE}
 tidy(model) %>% # we'll still run tidy on the model first
   # but we'll pass it to rename (part of the tidyverse/dplyr)
   # and rename some of the columns to be more similar to how
@@ -527,7 +527,7 @@ stargazer(model, type = "html", out = "./tbl/reg_tbl_sg.html")
 ### `sjPlot`
 A third option is to use `tab_model()` from the {sjPlot} library. This one does not work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
 
-```{r}
+```{r, eval = FALSE}
 sjPlot::tab_model(model, file = "./tbl/reg_tbl_sjp.doc")
 ```
     
@@ -542,7 +542,7 @@ It contains a number of variables, but we'll focus on Extraversion and Happiness
 
 Calculate the bi-variate correlation between Extraversion and Happiness. Then, conduct a univariate regression, regressing Happiness on Extraversion and obtain the standardized estimate for the slope. Finally, conduct a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
 
-```{r}
+```{r, eval = FALSE}
 # code here
 ```
 
@@ -552,20 +552,20 @@ For this minihack, you'll calculate fitted scores 'by hand' using the regression
 
 a.) Run the regression model. Extract the coefficients, calculate the fitted scores **using the extracted coefficients** (HINT: think about the regression equation).
 
-```{r}
+```{r, eval = FALSE}
 # code here
 ```
 
 
 b.) Demonstrate that the fitted scores are the same as the values from `fitted.values`.
 
-```{r}
+```{r, eval = FALSE}
 # code here
 ```
 
 c.) Use those fitted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
 
-```{r}
+```{r, eval = FALSE}
 # code here
 ```
 
@@ -573,10 +573,10 @@ c.) Use those fitted scores to calculate $R^2$. Demonstrate its equivalence to t
 
 Create two tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on Exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on Extraversion).
 
-```{r}
+```{r, eval = FALSE}
 # Code here
 ```
 
-```{r}
+```{r, eval = FALSE}
 # code here
 ```
