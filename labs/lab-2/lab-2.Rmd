@@ -216,7 +216,7 @@ And see that it is equivalent to what we calculated above:
 ```
 
 #### Q1:
->**Question:** What does a standard error of the estimate of `r round(model_summary$sigma, 2)` mean? Is that good?
+>**Question:** What does this residual standard error (aka standard error of the estimate) omean? 
 
 
 
@@ -240,7 +240,7 @@ Calculate the following:
 
 ### Extracting the coefficient of determination, $R^2$
 
-Another way we can evaluate our regression model is by extracting the coefficient of determination, $R^2$. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
+Another way we can evaluate our regression model is by extracting the coefficient of determination, $R^2$, which is stored in the element called r.squared. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
 
 ```{r, eval = FALSE}
 model_summary$r.squared
@@ -253,7 +253,7 @@ round(r_squared, 8) == round(model_summary$r.squared, 8)
 
 
 #### Q2:
->**Question:** What does an $R^2$ of `r round(summary(model)$r.squared, 2)` mean (in plain english)?
+>**Question:** What does this r-squared value mean (in plain english)?
 
 
 
@@ -520,7 +520,7 @@ However, it has a downside in that it is hard to get this into picture perfect A
 
 Now this gets us most of the way to an APA formmated table, but not quite all the way. We can get APA formatted tables with even less code by using the {stargazer} library.
 
-```{r results = "asis"}
+```{r results = "asis", eval = FALSE}
 stargazer(model, type = "html", out = "./tbl/reg_tbl_sg.html")
 ```
 
