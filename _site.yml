@@ -19,6 +19,8 @@ navbar:
       menu:
       - text: "1 - Correlations"
         href: "labs/lab-1/lab-1.html"
+      - text: "2 - Univariate Linear Regression"
+        href: "labs/lab-2/lab-2.html"
     - text: Homework
       href: homework.html
     - text: Final Project
