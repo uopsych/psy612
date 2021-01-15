@@ -11,7 +11,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-You will need the Rmd file for today's lab - can download it [here](https://github.com/uopsych/psy612/blob/master/labs/lab-2/lab-2.Rmd).
+You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-2/lab-2.Rmd).
 
 # Purpose
 
