@@ -7,6 +7,8 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Purpose
@@ -76,19 +78,12 @@ health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/l
 
 Next we run the model, using `lm()`, setting the formula and data arguments. We want to see to what extent self-reported conscientiousness relates to self-reported health.
 
-```{r lab-2-3}
-model <- lm(formula = sr_health ~ consc, # remember, outcome ~ predictors
+```{r lab-2-4}
+model <- lm(sr_health ~ consc, # remember, outcome ~ predictors
             data = health) # enter the dataframe
 ```
 
-More typically, people omit the `formula =`:
-
-```{r lab-2-4}
-model <- lm(sr_health ~ consc, # remember, outcome ~ predictors
-            data = health)
-```
-
-Now our regression model objct, called `model` above, is a `list` object with various useful information. Let's take a look with the `str()` function:
+Now our regression model object, called `model` above, is a `list` object with various useful information. Let's take a look with the `str()` function:
 
 ####  {.tabset .tabset-fade .tabset-pills}
 
@@ -99,6 +94,7 @@ str(model)
 
 ##### Output
 ```{r lab-2-5b, echo=FALSE, ref.label='lab-2-5'}
+str(model)
 ```
 
 And we can extract elements from this list like any other list in R, by using `LIST$ELEMENT` or `LIST[["ELEMENT"]]`. There are also specific functions for extracting those elements. Let's start by getting the predicted values of Y.
@@ -120,36 +116,9 @@ model$fitted.values
 model$fitted.values
 ```
 
-#### List subsetting II
-We can also use double-brackets:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-7, eval = FALSE}
-model[["fitted.values"]]
-```
-###### Output
-```{r lab-2-7b, echo = FALSE, ref.label="lab-2-7"}
-model[["fitted.values"]]
-```
-
-#### `fitted.values()` function
-Or the `fitted.values` function:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-8, eval = FALSE}
-fitted.values(model)
-```
-###### Output
-```{r lab-2-8b, echo = FALSE, ref.label="lab-2-8"}
-fitted.values(model)
-```
 
 ### Extracting Residuals
-We can also extract our residuals or the deviation of each predicted score $\hat{Y_i}$ from the observed scores $Y_i$. That too can be done using list subetting:
+We can also extract our residuals or the deviation of each predicted score $\hat{Y_i}$ from the observed scores $Y_i$. That too can be done using list subsetting:
 
 #### With List Subsetting
 
@@ -165,21 +134,7 @@ model$residuals
 model$residuals
 ```
 
-#### With `residuals()` function
 
-Or we could use the `residuals()` function:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-10, eval = FALSE}
-residuals(model)
-```
-
-###### Output
-```{r lab-2-10b, echo = FALSE, ref.label="lab-2-10"}
-residuals(model)
-```
 
 #### Residuals by hand
 
@@ -197,6 +152,7 @@ health$sr_health - fitted.values(model)
 health$sr_health - fitted.values(model)
 ```
 
+
 #### Checking our calculations
 
 Let's make sure those are all the same:
@@ -212,6 +168,7 @@ round(health$sr_health - fitted.values(model), 8) == round(residuals(model), 8)
 ```{r lab-2-12b, echo = FALSE, ref.label="lab-2-12"}
 round(health$sr_health - fitted.values(model), 8) == round(residuals(model), 8)
 ```
+
 
 #### Sum of Squared Residuals
 With this information, we could calculate the sum of squared residuals:
@@ -229,6 +186,7 @@ sum((health$sr_health - fitted.values(model))^2)
 ```{r lab-2-13b, echo = FALSE, ref.label="lab-2-13"}
 sum((health$sr_health - fitted.values(model))^2)
 ```
+
 
 #### Standard Error of the Estimate
 This of course is one of the building blocks for estimating the **standard error of the estimate**:
@@ -249,23 +207,37 @@ sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2))
 sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2))
 ```
 
+
 ### Extracting Standard Error with summary
-We can also get the standard error more directly. However, it is not stored in the model list. We have to use the `summary()` function, which gives us some additional useful information about our model. Let's take a look at the structure of it:
+We can also get the standard error more directly. However, it is not stored in the model list. We have to use the `summary()` function, which gives us some additional useful information about our model. Let's take a look at it:
 
 #####  {.tabset .tabset-fade .tabset-pills}
 
 ###### Code
 ```{r lab-2-15, eval = FALSE}
-str(summary(model))
+summary(model)
 ```
 
 ###### Output
 ```{r lab-2-15b, echo=FALSE, ref.label="lab-2-15"}
+summary(model)
+```
+
+
+In the output, the standard error is called "Residual standard error." Let's look at the structure of the output of the summary function and see where this value is stored so we can extract it.
+###### Code
+```{r lab 2-15c, eval = FALSE}
 str(summary(model))
 ```
 
+###### Output
+```{r lab-2-15d, echo=FALSE, ref.label="lab-2-15"}
+str(summary(model))
+```
+
+
 #### Extracting sigma
-Remember, R calls the standard error of the estimate `sigma`, so we can get it out of the new summary object using list subsetting:
+From looking at the structure and finding our standard error value, we can see R calls the standard error of the estimate `sigma`. We can extract this value using list subsetting:
 
 #####  {.tabset .tabset-fade .tabset-pills}
 
@@ -278,6 +250,7 @@ summary(model)$sigma
 ```{r lab-2-16b, echo = FALSE, ref.label="lab-2-16"}
 summary(model)$sigma
 ```
+
 
 #### Check Equivalency
 And we can see that it is equivalent to what we calculated above:
@@ -317,6 +290,7 @@ summary(model)$r.squared
 #### Q2:
 >**Question:** What does an $R^2$ of `r round(summary(model)$r.squared, 2)` mean (in plain english)?
 
+
 ### Extracting Regression Coefficients
 Recall that we also get estimates for the individual regression coefficients, $b_0$ and $b_1$ in the case of univariate regression. Like many of the other components we've covered, you can extract the coefficients with list subsetting:
 
@@ -332,21 +306,6 @@ model$coefficients
 model$coefficients
 ```
 
-#### `coefficients()` function
-
-Or we could get the same information with the `coefficients()` function:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-20, eval = FALSE}
-coefficients(model)
-```
-
-###### Output
-```{r lab-2-20b, echo = FALSE, ref.label="lab-2-20"}
-coefficients(model)
-```
    
 #### Q3:
 >**Question:** What does the intercept mean?
@@ -387,6 +346,7 @@ coefficients(std_model) %>%
 
 >**Question:** Why is the intercept zero?
 
+
 # NHST in Regression
 
 So far, we've been covering how to estimate the various regression components in R and how to extract those components from our model object. However, within the NHST tradition, we also typically want significance tests. With regression, we have several significance tests simultaneously.
@@ -413,6 +373,7 @@ summary(model)$fstatistic
 summary(model)$fstatistic
 ```
 
+
 ### Getting p value
 
 And we can use these numbers to look up its p value:
@@ -435,6 +396,7 @@ pf(summary(model)$fstatistic[1],
    lower.tail = FALSE)
 ```
 
+
 ### Getting p value II
 
 Alternatively, we can pass our model to the `anova()` function, which gives us an F table or ANOVA table for our regression model:
@@ -454,7 +416,8 @@ anova(model)
 #### Q6:
 >**Question:** Is the F significant? What does this mean?
 
-## coefficient tests
+
+## Coefficient tests
 
 In addition to the omnibus test, we get a significance test for each of our model's coefficients.
 
@@ -471,6 +434,7 @@ se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}
 This *t* is distributed with $df = n - 2$.
 
 We can get these from the summary of our model object, by extracting the coefficients *from the summary*.
+
 
 ####  {.tabset .tabset-fade .tabset-pills}
 
@@ -491,6 +455,7 @@ summary(model)$coefficients
 
 Also, recall that in the case of simple univariate regression, the omnibus F is equivalent to the *t* for the slope squared:
 
+
 ####  {.tabset .tabset-fade .tabset-pills}
 
 ##### Code
@@ -506,11 +471,12 @@ summary(model)$coefficients[2,3]^2
 ```
 
 ### `Summary()` on its own
-Finally, all of this information is displayed in when we just run `summary()`:
+Again, all of this information is displayed in when we just run `summary()`:
 
 ```{r lab-2-27}
 summary(model)
 ```
+
 
 # A Tidier way to Extract Information from Regression Models
 

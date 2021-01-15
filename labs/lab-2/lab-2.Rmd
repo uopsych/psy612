@@ -1,5 +1,5 @@
 ---
-title: "Lab 2: Univariate Regression"
+title: "Lab 2: Univariate Linear Regression"
 output: 
   html_document: 
     fig_caption: yes
@@ -7,29 +7,26 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
 ---
+
+You will need the Rmd file for today's lab - can download it [here](https://github.com/uopsych/psy612/blob/master/labs/lab-2/lab-2.Rmd).
 
 # Purpose
 
-Today we'll be going over the basics of univariate regression in R, including reporting regression results in Tables. 
+Today we'll be going over the basics of univariate linear regression in R, including reporting regression results in Tables. 
 
 To review.
 
-+ Regression is a general approach for data analysis.
-+ It can handle a variety of independent variables.
-+ It includes everything we might want:
-  + Statistical tests (often several).
-  + Effect sizes (often several).
-  + It can include many independent or non-independent effects.
++ Regression is a general approach for data analysis in which a best-fitting linear model (aka, a line) is used to model the relationship between two variables for which data has been collected: the predictor variable, X, and an outcome variable, Y.
++ Regression can handle a variety of types of predictor variables (for example, predictors can be continuous or categorical).
++ The results of a linear regression analysis include everything we might want:
+  + Statistical tests 
+  + Effect sizes 
 
-Today, we'll just be focusing on univariate regression with a single continuous predictor, but over the weeks we will build up into much more complicated regression equations.
+Today, we'll just be focusing on univariate linear regression with a single continuous predictor, but over the weeks we will build up into much more complicated regression equations.
 
-To quickly navigate to the desired section, click one of the following links:
-
-1. [Estimating Regression Models](#estimating_regression_models)
-2. [NHST in Regression](#nhst_in_regression)
-3. [A Tidier Way to Extract Information from Regression Models](#a_tidier_way_to_extract_information_from_regression_models)
-4. [Reporting Regressions](Reporting_Regression)
 
 ```{r lab-2-1, warning = FALSE, message=FALSE}
 library(tidyverse) # for plotting and data wrangling
@@ -42,316 +39,334 @@ library(stargazer)
 library(sjPlot)
 ```
 
-***
+
 # Estimating Regression Models
 
-Even in simple univariate regression, we simultaneously estimate several values at once. Remember, one of our primary goals is estimate $Y$ values with our regression model:
+A univariate linear regression model is made up of two parameters: a y-intercept (β0) and a slope (β1). If we had population-level data, we could assess what the true values each of these model terms.  
+
+$$Y_i = \beta_0 + \beta_1X_i + \epsilon_i$$
+
+However, because we typically are working with sample data, we most often have to *estimate* these values in the univariate linear regression model:
 
 $$Y_i = b_0 + b_1X_i + e_i$$
 
-Alternatively:
+We determine the values of these estimates by finding the best-fitting linear model for a set of collected data and determining the slope and y-intercept of this model. Once we have determined our best estimates of the slope and y-intercept of our linear model, we can use these values to calculate fitted values of Y ($\hat{Y_i}$) given a particular value on our predictor variable, X. 
 
 $$\hat{Y_i} = b_0 + b_1X_i$$
 
-And sometimes we use greek letters for the model parameters when we're referring to the (generally hypothetical) population parameters:
+>**Question:** Using Ordinary Least Squares regression method, what criteria do we use to determine what is the best-fitting linear model?
 
-$$Y_i = \beta_0 + \beta_1X_i + \epsilon_i$$
-As Sara mentioned, it is common to use *b* for *unstandardized* slopes and $\beta$ for *standardized slopes* within psychology.
+
+
 
 Without further ado, let's go ahead and estimate a regression equation in R.
 
 ### Estimating Regressions in R
 
-Conducting regressions in R is actually pretty simple. We use the `lm()` function which is part of the pre-loaded {stats} library. There are basically two ingredients we pass to the `lm()` function
+Conducting regressions in R is actually pretty simple. We use the `lm()` function which is part of the pre-loaded {stats} library. The `lm()` function takes two arguments:
 
 1. **The formula:** Specify your regression formula in the general form `y ~ x`.
 
 2. **The data:** the dataframe that contains the variables in the formula. This is technically optional.
 
-Let's take a look. First we'll import the same data that we used last week:
+*Example:* model <- lm(y ~ x, data = df)
 
-```{r lab-2-2}
+
+Let's perform a linear regression analysis. First we'll import the same data that we used last week:
+```{r}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
+
+head(health)
 ```
 
-Next we run the model, using `lm()`, setting the formula and data arguments. We want to see to what extent self-reported conscientiousness relates to self-reported health.
 
-```{r lab-2-3}
-model <- lm(formula = sr_health ~ consc, # remember, outcome ~ predictors
-            data = health) # enter the dataframe
+Say we're interested in whether self-reported health scores are related to self-reported conscientiousness scores. Here's a quick reminder of the visualization you looked at last week:
+```{r}
+ggplot(data = health, aes(x = consc, y = sr_health)) +
+  geom_point() + 
+  geom_smooth(method = "lm") +
+  labs(x = "Conscientiousness", y = "Self-reported health", title = "Conscientiousness and self-reported health")
 ```
 
-More typically, people omit the `formula =`:
 
-```{r lab-2-4}
-model <- lm(sr_health ~ consc, # remember, outcome ~ predictors
-            data = health)
+* Regress conscientiousness on self-report health scores using the `lm()` function below. 
+* Store the results of `lm()` in an object called model.
+
+```{r}
+
 ```
 
-Now our regression model objct, called `model` above, is a `list` object with various useful information. Let's take a look with the `str()` function:
 
-####  {.tabset .tabset-fade .tabset-pills}
+Let's see what the output looks like using `print()`.
+```{r}
+print(model)
+```
 
-##### Code
-```{r lab-2-5, eval = FALSE}
+The output provides us with the following:
+* The formula we used for the linear model.
+* The estimates of the model coefficients, b0 (Intercept) and b1 (the slope corresponding to the predictor variable)
+
+
+We can get even more information using `summary()`.
+```{r}
+summary(model)
+```
+
+This output provides us with the following:
+
+* The formula we used for the linear model.
+* A description of how the residuals are distributed (useful for checking whether normality assumption has been met - you want a median of approximately 0, and you also want the first quartile, 1Q, to be approximately equal to the third quartile, 3Q).
+* The estimates of the model coefficients (b0 and b1), the standard error for each model coefficient estimate, the t-statistic testing the significance of each model coefficient (compared to zero), and the p-value for each t-statistic
+* The residual standard error (aka the residual standard deviation aka the standard error of estimate)
+* R-squared (aka the coefficient of determination)
+* Adjusted R-squared 
+* F-statistic testing the significance of the overall model, along with the p-value corresponding to the F-statistic
+
+
+### Unpacking the Output
+
+Let's unpack some of that output. First, let's start with understanding how the two measures of overall model fit, *residual standard error* and *r-squared*, are being derived.
+
+
+#### Residual Standard Error
+The **residual standard error**, also called the **standard error of the estimate**, measures the average deviation between observed and fitted values of Y. It is in the original units of the outcome variable, Y. See the formula below.   
+
+$$\sqrt{\frac{\Sigma(Y_i - \hat{Y_i})^2}{N-2}}$$
+Let's calculate the residual standard error from scratch, and then I will show you how to pull this value directly from the output. 
+
+First, we need to get the predicted values of Y.
+
+Our regression model object, called `model`, is actually a `list` that contains a lot of useful information that we don't see in the output above. Let's take a look at all the information stored in this object using the `str()` function:
+
+```{r}
 str(model)
 ```
 
-##### Output
-```{r lab-2-5b, echo=FALSE, ref.label='lab-2-5'}
-```
-
-And we can extract elements from this list like any other list in R, by using `LIST$ELEMENT` or `LIST[["ELEMENT"]]`. There are also specific functions for extracting those elements. Let's start by getting the predicted values of Y.
+We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMENT"]]`.
 
 ### Extracting Predicted Y values
 
-We can get predicted values from `model` by subsetting our list with `$`:
+The fitted values of Y are stored in `model` in the element called fitted.values. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called fitted_Y. Print the fitted Y values.
 
-#### List Subsetting
-#####  {.tabset .tabset-fade .tabset-pills}
+```{r}
 
-###### Code
-```{r lab-2-6, eval = FALSE}
-model$fitted.values
 ```
 
-###### Output
-```{r lab-2-6b, echo = FALSE, ref.label = "lab-2-6"}
-model$fitted.values
+
+Next, calculate the difference between the actual values of Y and the fitted values of Y. Store the output in an object called residuals and print them.
+```{r}
+
 ```
 
-#### List subsetting II
-We can also use double-brackets:
 
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-7, eval = FALSE}
-model[["fitted.values"]]
-```
-###### Output
-```{r lab-2-7b, echo = FALSE, ref.label="lab-2-7"}
-model[["fitted.values"]]
-```
-
-#### `fitted.values()` function
-Or the `fitted.values` function:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-8, eval = FALSE}
-fitted.values(model)
-```
-###### Output
-```{r lab-2-8b, echo = FALSE, ref.label="lab-2-8"}
-fitted.values(model)
-```
 
 ### Extracting Residuals
-We can also extract our residuals or the deviation of each predicted score $\hat{Y_i}$ from the observed scores $Y_i$. That too can be done using list subetting:
+OK, so I made you do extra work. You can actually grab the residuals directly from the `model` object using model$residuals.
 
-#### With List Subsetting
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-9, eval = FALSE}
+```{r}
 model$residuals
 ```
 
-###### Output
-```{r lab-2-9b, echo = FALSE, ref.label="lab-2-9"}
-model$residuals
+
+Let's check to see that our calculation of the residuals matches what we grabbed directly from the model output. 
+```{r}
+round(residuals, 8) == round(model$residuals, 8)
 ```
 
-#### With `residuals()` function
 
-Or we could use the `residuals()` function:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-10, eval = FALSE}
-residuals(model)
-```
-
-###### Output
-```{r lab-2-10b, echo = FALSE, ref.label="lab-2-10"}
-residuals(model)
-```
-
-#### Residuals by hand
-
-And, we could reproduce those values ourselves by subtracting the predicted values we just obtained from the observed Y values from our data 
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-11, eval = FALSE}
-health$sr_health - fitted.values(model)
-```
-
-###### Output
-```{r lab-2-11b, echo = FALSE, ref.label="lab-2-11"}
-health$sr_health - fitted.values(model)
-```
-
-#### Checking our calculations
-
-Let's make sure those are all the same:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-12, eval = FALSE}
-round(health$sr_health - fitted.values(model), 8) == round(residuals(model), 8)
-```
-
-###### Output
-```{r lab-2-12b, echo = FALSE, ref.label="lab-2-12"}
-round(health$sr_health - fitted.values(model), 8) == round(residuals(model), 8)
-```
 
 #### Sum of Squared Residuals
-With this information, we could calculate the sum of squared residuals:
+With this information, we could calculate the sum of squared residuals, which is the numerator of the residual standard error equation:
 
 $$\Sigma(Y_i - \hat{Y_i})^2$$
+Calculate the sum of squared residuals and store the output in an object called sum_sq_residuals.
+```{r}
 
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-13, eval = FALSE}
-sum((health$sr_health - fitted.values(model))^2)
 ```
 
-###### Output
-```{r lab-2-13b, echo = FALSE, ref.label="lab-2-13"}
-sum((health$sr_health - fitted.values(model))^2)
+
+Finally, now that we have pulled the necessary components, calculate the residual standard error using the formula above. Store the results of the calculation to an object called residual_standard_error. 
+
+```{r}
+
 ```
 
-#### Standard Error of the Estimate
-This of course is one of the building blocks for estimating the **standard error of the estimate**:
 
-$$\sqrt{\frac{\Sigma(Y_i - \hat{Y_i})^2}{N-2}}$$
+### Extracting Residual Standard Error with summary
+We can also get the standard error more directly. However, it is not stored in the model object that we stored the output of the `lm()` function to. It is stored in the output of the `summary()` function. Let's assign the output of this function to an object called model_summary, and then inspect its structure:
 
-Let's go ahead and calculate that too:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-14, eval = FALSE}
-sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2))
+```{r}
+model_summary <- summary(model)
+str(model_summary)
 ```
 
-###### Output
-```{r lab-2-14b, echo = FALSE, ref.label="lab-2-14"}
-sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2))
+
+Can you find what the residual standard error is called? Once you find it, extract it from the model_summary.
+
+```{r}
+
 ```
 
-### Extracting Standard Error with summary
-We can also get the standard error more directly. However, it is not stored in the model list. We have to use the `summary()` function, which gives us some additional useful information about our model. Let's take a look at the structure of it:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-15, eval = FALSE}
-str(summary(model))
-```
-
-###### Output
-```{r lab-2-15b, echo=FALSE, ref.label="lab-2-15"}
-str(summary(model))
-```
-
-#### Extracting sigma
-Remember, R calls the standard error of the estimate `sigma`, so we can get it out of the new summary object using list subsetting:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-16, eval = FALSE}
-summary(model)$sigma
-```
-
-###### Output
-```{r lab-2-16b, echo = FALSE, ref.label="lab-2-16"}
-summary(model)$sigma
-```
 
 #### Check Equivalency
-And we can see that it is equivalent to what we calculated above:
+And see that it is equivalent to what we calculated above:
 
-#####  {.tabset .tabset-fade .tabset-pills}
+```{r}
 
-###### Code
-```{r lab-2-17, eval = FALSE}
-sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2)) == summary(model)$sigma
-```
-
-###### Output
-```{r lab-2-17b, echo = FALSE, ref.label="lab-2-17"}
-sqrt(sum((health$sr_health - fitted.values(model))^2)/(nrow(health)-2)) == summary(model)$sigma
 ```
 
 #### Q1:
->**Question:** What does a standard error of the estimate of `r round(summary(model)$sigma, 2)` mean? Is that good?
+>**Question:** What does a standard error of the estimate of `r round(model_summary$sigma, 2)` mean? Is that good?
+
+
+
+
+### The Coefficient of Determination, $R^2$
+Another measure of how well our linear model is capturing variation in the outcome variable is R^2. 
+
+Let's calculate R^2 by hand first. Here is the formula:
+$$R^2 = \frac{SS_{Model}}{SS_Y} = \frac{\Sigma(\hat{Y_i} - \bar{Y})^2}{\Sigma(Y_i - \bar{Y})^2}$$
+
+Calculate the following:
+* SS_Model
+* SS_Y
+* r_squared
+```{r}
+
+
+```
+
 
 
 ### Extracting the coefficient of determination, $R^2$
 
-Recall that another way we can evaluate our regression model is by extracting the coefficient of determination, $R^2$. This represents the proportion of variance explained by the model. Like the standard error of the estimate, we need to use the summary function to get it:
+Another way we can evaluate our regression model is by extracting the coefficient of determination, $R^2$. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-```{r lab-2-18, eval = FALSE}
-summary(model)$r.squared
+```{r}
+model_summary$r.squared
 ```
 
-##### Output
-```{r lab-2-18b, echo = FALSE, ref.label="lab-2-18"}
-summary(model)$r.squared
+### Check Equivalency
+```{r}
+round(r_squared, 8) == round(model_summary$r.squared, 8)
 ```
+
 
 #### Q2:
 >**Question:** What does an $R^2$ of `r round(summary(model)$r.squared, 2)` mean (in plain english)?
 
-### Extracting Regression Coefficients
-Recall that we also get estimates for the individual regression coefficients, $b_0$ and $b_1$ in the case of univariate regression. Like many of the other components we've covered, you can extract the coefficients with list subsetting:
 
-#####  {.tabset .tabset-fade .tabset-pills}
 
-###### Code
-```{r lab-2-19, eval = FALSE}
+### Checking Significance of Overall Model
+
+## Omnibus test
+
+We can perform an omnibus test to see, overall, whether the amount of variation accounted for by the model is significantly different from what would be expected if the null hypothesis were true. The omnibus test is typically tested using an F-statistic that compares the variance accounted for by the model divided by the residual variance:
+
+$$F = \frac{MS_{model}}{MS_{residual}}$$
+
+### Getting F from scratch
+
+Remember that variance (aka mean square) is the sum of squares divided by the degrees of freedom for each respective term in the equation above. 
+
+Let's get MS_Model, which is the SS_Model divided by df_Model.
+* We already calculated SS_Model above, so we just need to divide it by df_Model, which is equal to k (the number of predictors).
+```{r}
+MS_Model <- SS_Model/1
+```
+
+Now get MS_Residual. We could get SS_Residual to calculate this a couple of ways:
+
+$$SS_Y = SS_{Model} + SS_{Residual}$$
+
+Either rearrange the above equation to solve for SS_Residual, or calculate it from the raw and fitted values using the equation below:
+
+$$SS_{Residual} = \Sigma(Y_i - \hat{Y_i}^2)$$
+
+Use one of these methods to calculate SS_Residual below.
+```{r}
+
+
+```
+
+
+Divide the SS_Residual by the df_Residual, which are n - k - 1.
+```{r}
+
+```
+
+
+We can finally calculate the F-statistic. Store it in an object called F_stat.
+```{r}
+
+
+```
+
+
+
+### F-Statistic 
+The value of the F-statistic is also stored in the summary of our model:
+
+```{r}
+summary(model)$fstatistic
+```
+
+Does it match what we got when we calculated from scratch?
+
+
+
+### Getting p value
+
+And we can use these numbers to look up its p value:
+
+```{r}
+pf(summary(model)$fstatistic[1], # the F-statistic
+   summary(model)$fstatistic[2], # numerator df
+   summary(model)$fstatistic[3], # denominator df
+   lower.tail = FALSE) # we want the probability of obtaining an F-statistic more extreme than ours
+```
+
+
+#### Q6:
+>**Question:** Is the F significant? What does this mean?
+
+
+
+### Calculating the Estimates of the Regression Coefficients
+Recall that we also get estimates for the individual regression coefficients, $b_0$ and $b_1$ in the case of univariate regression. 
+
+We can calculate these from scratch using the following formulas.
+
+For obtaining b1:
+$$b_1 = r(\frac{s_y}{s_x})$$
+Calculate b1 using the equation above. Store the value in an object called b1.
+```{r}
+
+```
+
+And for obtaining b0:
+$$b0 = M_y - b_1M_x$$
+
+Calculate b0 using the equation above. Store the value in an object called b0.
+```{r}
+
+
+```
+
+
+
+### Extracting Estimates of the Regression Coefficients
+We can also grab these estimates from the model output. They are stored in the element called coefficients.
+```{r}
 model$coefficients
 ```
 
-###### Output
-```{r lab-2-19b, echo = FALSE, ref.label="lab-2-19"}
-model$coefficients
-```
 
-#### `coefficients()` function
-
-Or we could get the same information with the `coefficients()` function:
-
-#####  {.tabset .tabset-fade .tabset-pills}
-
-###### Code
-```{r lab-2-20, eval = FALSE}
-coefficients(model)
-```
-
-###### Output
-```{r lab-2-20b, echo = FALSE, ref.label="lab-2-20"}
-coefficients(model)
-```
-   
 #### Q3:
 >**Question:** What does the intercept mean?
 
 >**Question:** What about the slope for conscientiousness?
+
 
 
 You probably recall that these are called the *unstandardized* coefficients. We can also get the standardized coefficients, but that is a little trickier. Before I show you how to do that:
@@ -360,157 +375,54 @@ You probably recall that these are called the *unstandardized* coefficients. We 
 >**Question:** How does a standardized coefficient differ from an unstandardized coefficient?
 
 
+
 #### Getting standardized coefficients
 
 Standardized regression coefficients, often notated as $\beta$, are just the regression coefficients after the variables have been *standardized* or *Z-scored*. To obtain them, we need to z-score our data with `scale()` before we run the `lm()` function. One really cool thing is that we can do it in the `lm()` call:
 
-####  {.tabset .tabset-fade .tabset-pills}
 
-##### Code
-```{r lab-2-21, eval = FALSE}
+```{r}
 std_model <- lm(scale(sr_health) ~ scale(consc), data = health)
 
 coefficients(std_model) %>% 
   round(3)
 ```
 
-##### Output
-```{r lab-2-21b, echo = FALSE, ref.label="lab-2-21"}
-std_model <- lm(scale(sr_health) ~ scale(consc), data = health)
-
-coefficients(std_model) %>% 
-  round(3)
-```
 
 #### Q5:
 >**Question:** What does the standardized slope for conscientiousness mean?
 
 >**Question:** Why is the intercept zero?
 
-# NHST in Regression
 
-So far, we've been covering how to estimate the various regression components in R and how to extract those components from our model object. However, within the NHST tradition, we also typically want significance tests. With regression, we have several significance tests simultaneously.
 
-## Omnibus test
+## Coefficient tests
 
-First, we have the omnibus test, which tests whether or not the regression model significantly outperforms the NULL model. This is typically done with an *F* ratio:
-
-$$F = \frac{MS_{model}}{MS_{residual}}$$
-
-### Getting F
-
-That is also stored in the summary of our model:
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-```{r lab-2-22, eval = FALSE}
-summary(model)$fstatistic
-```
-
-##### Output
-```{r lab-2-22b, echo = FALSE, ref.label="lab-2-22"}
-summary(model)$fstatistic
-```
-
-### Getting p value
-
-And we can use these numbers to look up its p value:
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-```{r lab-2-23, eval = FALSE}
-pf(summary(model)$fstatistic[1], 
-   summary(model)$fstatistic[2], 
-   summary(model)$fstatistic[3], 
-   lower.tail = FALSE)
-```
-
-##### Output
-```{r lab-2-23b, echo = FALSE, ref.label="lab-2-23"}
-pf(summary(model)$fstatistic[1], 
-   summary(model)$fstatistic[2], 
-   summary(model)$fstatistic[3], 
-   lower.tail = FALSE)
-```
-
-### Getting p value II
-
-Alternatively, we can pass our model to the `anova()` function, which gives us an F table or ANOVA table for our regression model:
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-```{r lab-2-24, eval = FALSE}
-anova(model)
-```
-
-##### Output
-```{r lab-2-24b, echo = FALSE, ref.label="lab-2-24"}
-anova(model)
-```
-
-#### Q6:
->**Question:** Is the F significant? What does this mean?
-
-## coefficient tests
-
-In addition to the omnibus test, we get a significance test for each of our model's coefficients.
+In addition to the omnibus test, we can also test the significance of each of the regression coefficient estimates.
 
 Recall that for each coefficient, we get a *t* test from the formula:
 
-\begin{align}
-t = \frac{b_1}{se_b}\\
-\\   
-\\   
-\\   
-se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}
-\end{align}
+$$t = \frac{b_1}{se_b}$$
+
+Where the standard error is:
+$$se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}$$
 
 This *t* is distributed with $df = n - 2$.
 
 We can get these from the summary of our model object, by extracting the coefficients *from the summary*.
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-```{r lab-2-25, eval = FALSE}
+```{r}
 summary(model)$coefficients
 ```
 
-##### Output
-```{r lab-2-25b, echo = FALSE, ref.label="lab-2-25"}
-summary(model)$coefficients
-```
 
 #### Q7:
 >**Question:** Is the test of the intercept significant? What does this mean?
 
 >**Question:** Is the test of the slope significant? What does this mean?
 
-Also, recall that in the case of simple univariate regression, the omnibus F is equivalent to the *t* for the slope squared:
 
-####  {.tabset .tabset-fade .tabset-pills}
 
-##### Code
-```{r lab-2-26, eval = FALSE}
-summary(model)$fstatistic[[1]]
-summary(model)$coefficients[2,3]^2
-```
-
-##### Output
-```{r lab-2-26b, echo=FALSE, ref.label="lab-2-26"}
-summary(model)$fstatistic[[1]]
-summary(model)$coefficients[2,3]^2
-```
-
-### `Summary()` on its own
-Finally, all of this information is displayed in when we just run `summary()`:
-
-```{r lab-2-27}
-summary(model)
-```
 
 # A Tidier way to Extract Information from Regression Models
 
@@ -521,7 +433,7 @@ Thankfully, there is. This requires the {broom} library, which might be new. It 
 ## broom::tidy()
 Let's see what happens when we tidy our model:
 
-```{r lab-2-28}
+```{r}
 tidy(model)
 ```
 
@@ -531,14 +443,14 @@ You can see it produces a dataframe containing the model coefficients and their 
 
 {broom} also has a function called `glance()` that provides some of the omnibus model information we might want:
 
-```{r lab-2-29}
+```{r}
 glance(model)
 ```
 
 ## broom::augment()
 `augment` provides more information from our model:
 
-```{r lab-2-30}
+```{r}
 augment(model)
 ```
 
@@ -551,7 +463,7 @@ So with broom, just remember:
 
 The payoff for these functions comes when you want to do something *with* some of your regression results. As an example, you could use `tidy()` to make it easier to make a plot of your regression coefficients:
 
-```{r lab-2-31}
+```{r}
 tidy(model) %>% 
   ggplot(aes(x = term, y = estimate)) +
   geom_point()+
@@ -559,13 +471,15 @@ tidy(model) %>%
                  ymax = estimate + std.error))
 ```
 
+
+
 # Reporting Regressions
 
-The last thing we'll cover today is how to report the results of your regression in Tables. We'll cover three different methods, which each have their pro's and con's.
+The last thing we'll cover today is how to report the results of your regression in Tables. 
 
 ### 'by hand' using broom and kable
 Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable` function from {knitr}. 
-```{r lab-2-32}
+```{r}
 tidy(model) %>% # first run tidy on the model.
                 # Then pipe it to knitr's kable function
   knitr::kable(digits = c(NA, 2, 2, 2, 3), # set digits; everything rounded to 
@@ -575,7 +489,7 @@ tidy(model) %>% # first run tidy on the model.
 
 We could clean things up a bit more by changing the names and re-formatting that pesky p value column:
 
-```{r lab-2-33}
+```{r}
 tidy(model) %>% # we'll still run tidy on the model first
   # but we'll pass it to rename (part of the tidyverse/dplyr)
   # and rename some of the columns to be more similar to how
@@ -604,26 +518,19 @@ However, it has a downside in that it is hard to get this into picture perfect A
 
 ### Stargazer
 
-The {stargazer} library can be used to pretty easily get APA formatted tables from many kinds of results or model object. It's super easy to use:
+Now this gets us most of the way to an APA formmated table, but not quite all the way. We can get APA formatted tables with even less code by using the {stargazer} library.
 
-```{r lab-2-34, results = "asis"}
-stargazer(model, # give it the model
-          type = "html", # tell it the format type.
-                        #I'm using html since this is an html doc
-          out = "./tbl/reg_tbl_sg.html") # you can give it a path to save
+```{r results = "asis"}
+stargazer(model, type = "html", out = "./tbl/reg_tbl_sg.html")
 ```
-   
-    
-This is nice in that it is super easy, and puts it into APA format for you. It's downsides are that it is less flexible and stargazer may not have a method for your results objct if you're using more advanced or cutting edge tools.
 
 ### `sjPlot`
-A third option is to use `tab_model()` from the {sjPlot} library. This one does not always work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
+A third option is to use `tab_model()` from the {sjPlot} library. This one does not work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
 
-```{r lab-2-35}
+```{r}
 sjPlot::tab_model(model, file = "./tbl/reg_tbl_sjp.doc")
 ```
     
-This has similar cons to stargazer, and additionally doesn't always play nicely with rmarkdown. However, it's super easy to use and even easier than stargazer for exporting tables to MS word.
 
 # Minihack 1
 
@@ -635,30 +542,30 @@ It contains a number of variables, but we'll focus on Extraversion and Happiness
 
 Calculate the bi-variate correlation between Extraversion and Happiness. Then, conduct a univariate regression, regressing Happiness on Extraversion and obtain the standardized estimate for the slope. Finally, conduct a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
 
-```{r lab-2-36}
+```{r}
 # code here
 ```
 
 # Minihack 2
 
-For this minihack, you'll calculate predicted scores 'by hand' using the regression equation, compare them to the predicted scores stored in the model, and finally use the predicted scores you calculate to estimate $R^2$. We'll work with the same dataset, but this time you'll regress social support (SocSup) on Extraversion.
+For this minihack, you'll calculate fitted scores 'by hand' using the regression equation, compare them to the fitted scores stored in the model, and finally use the fitted scores you calculate to estimate $R^2$. We'll work with the same dataset, but this time you'll regress social support (SocSup) on Extraversion.
 
-a.) Run the regression model. Extract the coefficients, calculate the predicted scores **using the extracted coefficients** (HINT: think about the regression equation).
+a.) Run the regression model. Extract the coefficients, calculate the fitted scores **using the extracted coefficients** (HINT: think about the regression equation).
 
-```{r lab-2-37}
+```{r}
 # code here
 ```
 
 
-b.) Demonstrate that the predicted scores are the same as the values from `fitted.values`.
+b.) Demonstrate that the fitted scores are the same as the values from `fitted.values`.
 
-```{r lab-2-38}
+```{r}
 # code here
 ```
 
-c.) Use those predicted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
+c.) Use those fitted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
 
-```{r lab-2-39}
+```{r}
 # code here
 ```
 
@@ -666,10 +573,10 @@ c.) Use those predicted scores to calculate $R^2$. Demonstrate its equivalence t
 
 Create two tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on Exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on Extraversion).
 
-```{r lab-2-40}
+```{r}
 # Code here
 ```
 
-```{r lab-2-41}
+```{r}
 # code here
 ```
