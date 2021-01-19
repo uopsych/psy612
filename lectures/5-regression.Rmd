@@ -372,6 +372,41 @@ pred
 
 ## Matrix algebra
 
+Matrix algebra serves several uses here. First, it can help us to visualize our regression equation in terms of data:
+
+$$\small \left[\begin{array}
+{r}
+y_1   \\
+y_2   \\
+\dots \\
+y_n   
+\end{array}\right]
+=
+\left[\begin{array}
+{rrr}
+b_{0} & b_{1}
+\end{array}\right] 
+\times 
+\left[\begin{array}
+{r}
+x_1   \\
+x_2   \\
+\dots \\
+x_n   
+\end{array}\right]
++
+\left[\begin{array}
+{r}
+e_1   \\
+e_2   \\
+\dots \\
+e_n   
+\end{array}\right]$$
+
+---
+
+## Matrix algebra
+
 Recall that $Y$ is a vector of values, which can be represented as an $n\times1$ matrix, $\mathbf{y}$. Similarly, X can be represented as an $n\times1$ matrix, $\mathbf{X}$.
 
 Consider now our regression equation:
@@ -389,9 +424,10 @@ $$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
 ???
 One property of the residuals is that the the average residual is 0, so we can remove this from the equation as well.
 
+
 ---
 
-### A "simple"     example
+### A "simple" example
 
 .pull-left[
 | X | 6 | 7 | 8 | 9 | 7 |
