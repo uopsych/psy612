@@ -11,41 +11,14 @@ output:
       countIncrementalSlides: false
 ---
 ```{r, echo = F, warning = F, message = F}
+options(scipen = 999)
+knitr::opts_chunk$set(message = FALSE) # suppress messages
 library(tidyverse)
+library(broom)
 ```
-## Last week -- Inferential tests
 
-.pull-left[
-**Omnibus test**
 
-- Does the model fit the data?
-
-- *F*-test (ratio of variances)
-
-    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
-    
-* Effect size: Model fit can be measured in terms of $\large R^2$ or $\large s_{Y|X}$
-  ]
-  
---
-
-.pull-right[
-**Coefficient test**
-
-- Does X explain Y?
-    - Is the slope of the regression line flat?
-
-- *t*-test (is this slope bigger than 0?)
-    - In a univariate regression model, the test of the slope is equivalent to the omnibus test
-
-* Effect size: the size of the coefficient $(b)$ 
-    
-  ]
-  
-    
----
-
-## Last time
+## Last week
 
 .pull-left[
 
@@ -82,6 +55,23 @@ $$b^*_1 = r_{xy}$$
 
     
 ---
+
+## Last week -- Inferential tests
+
+.pull-left[
+**Omnibus test**
+
+- Does the model fit the data?
+
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
+    
+* Effect size: Model fit can be measured in terms of $\large R^2$ or $\large s_{Y|X}$
+  ]
+  
+
+---
 ## Terminology
 
 - $R^2$
@@ -94,7 +84,7 @@ $$b^*_1 = r_{xy}$$
 
 --
   - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model.(Compare this to the original standard deviation. 
+  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation.)
   
 - $MSE$
 
@@ -102,7 +92,9 @@ $$b^*_1 = r_{xy}$$
   - **mean square error** or unbiased estimate of error variance
   - measure of discrepancy between model and data
   - variance around fitted regression line
+
 ---
+
 ## Example
  
 *Overclaiming* occurs when people claim that they know something that is impossible to know; are experts susceptible to overclaiming?
@@ -127,24 +119,69 @@ cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion")])
 ---
 
 ```{r}
-fit.1 = lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
-summary(fit.1)
-```
-
----
-
-```{r}
+fit.1 = lm(overclaiming_proportion ~ self_perceived_knowledge, 
+           data = expertise)
 anova(fit.1)
 ```
 
 ---
 
+```{r}
+summary(fit.1)
+```
+
+---
+.pull-left[
 ```{r, results = 'hide', message = F, warning = F}
 library(sjPlot)
 set_theme(base = theme_bw())
-plot_model(fit.1, type = "pred", show.data = T, jitter = T) 
+plot_model(fit.1, 
+           type = "pred", 
+           show.data = T) 
 ```
+]
 
+.pull-right[
+```{r, results = 'hide', message = F, warning = F}
+plot_model(fit.1, 
+           type = "pred", 
+           show.data = T, 
+           jitter = T) 
+```
+]
+
+---
+
+## regression coefficient
+
+$$\Large H_{0}: \beta_{1}= 0$$
+$$\Large H_{1}: \beta_{1} \neq 0$$
+
+---
+
+## What does the regression coefficient test?
+
+- Does X provide any predictive information? 
+
+- Does X provide any explanatory power regarding the variability of Y? 
+
+- Is the the average value the best guess (i.e., is Y bar equal to the predicted value of Y?)
+
+- Is the regression line flat? 
+
+- Are X and Y correlated?  
+
+---
+
+## Regression coefficient
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
+$$\Large t(n-2) = \frac{b_{1}}{se_{b}}$$
+
+---
+
+```{r, highlight.output = c(13)}
+summary(fit.1)
+```
 
 ---
 
@@ -159,11 +196,17 @@ plot_model(fit.1, type = "pred", show.data = T, jitter = T)
 - much like previously we can take our estimate (b) and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
 
 ---
+## Intercept
 
-```{r, highlight.output = c(12,13)}
+- more complex standard error calculation as the calculation depends on how far the X value (here zero) is away from the mean of X
+
+    - farther from the mean, less information, thus more uncertainty 
+    
+---
+
+```{r, highlight.output = c(12)}
 summary(fit.1)
 ```
-
 
 ---
 ## Confidence interval for coefficients
@@ -189,11 +232,13 @@ $$s_{\hat{Y}_X} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}
 ---
 
 ```{r, highlight.output = 5}
-model_info = broom::augment(fit.1)
+library(broom)
+model_info = augment(fit.1, se_fit = T)
 psych::describe(model_info, fast=T)
 ```
+
 ```{r}
-head(model_info[,c("overclaiming_proportion", ".fitted", ".se.fit")])
+head(model_info[,c(".fitted", ".se.fit")])
 ```
 
 
@@ -268,7 +313,7 @@ plot_grid(p1, p2, ncol=2, labels = c("N = 1000", "N = 100"))
 ---
 Compare mean estimate for self-perceived knowledge based on regression vs binning
 
-```{r, echo=FALSE, fig.width = 10}
+```{r, echo=FALSE, fig.width = 10, warning= F, message = F}
 p1 = ggplot(expertise, aes(x=self_perceived_knowledge, y=overclaiming_proportion)) +
       geom_point() +   
   geom_smooth(method=lm,   # Add linear regression line
@@ -299,15 +344,15 @@ $$\Large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^
 ---
 ## Prediction bands
 
-- very similar to confidence bands around regressions line
+$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
 
-- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new $Y_i$ given x, rather than $\bar{Y}$ given x)
+- predicting and individual $i's$ score, not the $\hat{Y}$ for a particular level of X. (A new $Y_i$ given x, rather than $\bar{Y}$ given x)
 
 - Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is greater
 
-- Combines unknown variability in 1) the estimated mean $(\text{as reflected in }SE_b)$ 2) peoples scores around  mean $(\text{residual standard error }, s_{Y|X}) $
+- Combines unknown variability of the estimated mean $(\text{as reflected in }SE_b)$ with peoples' scores around mean $(\text{residual standard error }, s_{Y|X})$
 
-$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+
 ---
 
 ```{r, warning=FALSE, echo = F, fig.width = 10}
@@ -337,9 +382,7 @@ If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the f
 
 $$\mathbf{y} = \mathbf{b}\mathbf{X}$$
 
-Where $\mathbf{b}$ is a $1 \times 2$ matrix containing our estimates of the intercept and slope. 
-
-If we solve for b, we find that
+Where $\mathbf{b}$ is a $1 \times 2$ matrix containing our estimates of the intercept and slope. If we solve for b, we find that
 
 $$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
 
@@ -348,7 +391,7 @@ One property of the residuals is that the the average residual is 0, so we can r
 
 ---
 
-### A simple example
+### A "simple"     example
 
 .pull-left[
 | X | 6 | 7 | 8 | 9 | 7 |
@@ -415,7 +458,7 @@ solve(m)
 ```
 
 
-$$\mathbf{X'X}^{-1} = 
+$$(\mathbf{X'X})^{-1} = 
 \left(\begin{array}
 {rr}
 10.73 & -1.42  \\
@@ -500,9 +543,11 @@ summary(lm(y ~ x))
 
 ## Matrix algebra
 
-In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. 
+In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. (See [here](https://www.stat.purdue.edu/~boli/stat512/lectures/topic3.pdf) for formulas showing how they're the same.)
 
-However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit. 
+However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit.
+
+Matrix algebra can [explain *why* our formulas](https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/13/lecture-13.pdf) for the intercept and slope generate the regression line with the smallest squared error.
 
 
 ---
@@ -510,14 +555,16 @@ However, when we expand into multiple regression (next week), the matrix algebra
 
 - The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
 
-- Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
+- Every test of an omnibus model is implicitly a model comparisons, typically of your fitted model with the nil model (no slopes). This framework allows you to be more flexible and explicit.   
 
 ---
 
 ```{r}
-fit.1 <- lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
+fit.1 <- lm(overclaiming_proportion ~ self_perceived_knowledge, 
+            data = expertise)
 
-fit.0 <- lm(overclaiming_proportion ~ 1, data = expertise)
+fit.0 <- lm(overclaiming_proportion ~ 1,
+            data = expertise)
 ```
 
 

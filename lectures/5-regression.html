@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Univariate regression III</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -17,39 +18,9 @@ class: center, middle, inverse, title-slide
 ---
 
 
-## Last week -- Inferential tests
 
-.pull-left[
-**Omnibus test**
 
-- Does the model fit the data?
-
-- *F*-test (ratio of variances)
-
-    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
-    
-* Effect size: Model fit can be measured in terms of `\(\large R^2\)` or `\(\large s_{Y|X}\)`
-  ]
-  
---
-
-.pull-right[
-**Coefficient test**
-
-- Does X explain Y?
-    - Is the slope of the regression line flat?
-
-- *t*-test (is this slope bigger than 0?)
-    - In a univariate regression model, the test of the slope is equivalent to the omnibus test
-
-* Effect size: the size of the coefficient `\((b)\)` 
-    
-  ]
-  
-    
----
-
-## Last time
+## Last week
 
 .pull-left[
 
@@ -86,6 +57,23 @@ class: center, middle, inverse, title-slide
 
     
 ---
+
+## Last week -- Inferential tests
+
+.pull-left[
+**Omnibus test**
+
+- Does the model fit the data?
+
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
+    
+* Effect size: Model fit can be measured in terms of `\(\large R^2\)` or `\(\large s_{Y|X}\)`
+  ]
+  
+
+---
 ## Terminology
 
 - `\(R^2\)`
@@ -98,7 +86,7 @@ class: center, middle, inverse, title-slide
 
 --
   - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model.(Compare this to the original standard deviation. 
+  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation.)
   
 - `\(MSE\)`
 
@@ -106,7 +94,9 @@ class: center, middle, inverse, title-slide
   - **mean square error** or unbiased estimate of error variance
   - measure of discrepancy between model and data
   - variance around fitted regression line
+
 ---
+
 ## Example
  
 *Overclaiming* occurs when people claim that they know something that is impossible to know; are experts susceptible to overclaiming?
@@ -157,7 +147,26 @@ cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion")])
 
 
 ```r
-fit.1 = lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
+fit.1 = lm(overclaiming_proportion ~ self_perceived_knowledge, 
+           data = expertise)
+anova(fit.1)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: overclaiming_proportion
+##                           Df Sum Sq Mean Sq F value             Pr(&gt;F)    
+## self_perceived_knowledge   1 2.5095 2.50948  60.249 0.0000000000004225 ***
+## Residuals                200 8.3303 0.04165                               
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
 summary(fit.1)
 ```
 
@@ -172,46 +181,98 @@ summary(fit.1)
 ## -0.50551 -0.15610  0.00662  0.12167  0.54215 
 ## 
 ## Coefficients:
-##                          Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)              -0.11406    0.05624  -2.028   0.0439 *  
-## self_perceived_knowledge  0.09532    0.01228   7.762 4.22e-13 ***
+##                          Estimate Std. Error t value          Pr(&gt;|t|)    
+## (Intercept)              -0.11406    0.05624  -2.028            0.0439 *  
+## self_perceived_knowledge  0.09532    0.01228   7.762 0.000000000000422 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 0.2041 on 200 degrees of freedom
 ## Multiple R-squared:  0.2315,	Adjusted R-squared:  0.2277 
-## F-statistic: 60.25 on 1 and 200 DF,  p-value: 4.225e-13
+## F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225
 ```
 
 ---
-
-
-```r
-anova(fit.1)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Response: overclaiming_proportion
-##                           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
-## self_perceived_knowledge   1 2.5095 2.50948  60.249 4.225e-13 ***
-## Residuals                200 8.3303 0.04165                      
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
----
-
+.pull-left[
 
 ```r
 library(sjPlot)
 set_theme(base = theme_bw())
-plot_model(fit.1, type = "pred", show.data = T, jitter = T) 
+plot_model(fit.1, 
+           type = "pred", 
+           show.data = T) 
 ```
 
 ![](5-regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+]
 
+.pull-right[
+
+```r
+plot_model(fit.1, 
+           type = "pred", 
+           show.data = T, 
+           jitter = T) 
+```
+
+![](5-regression_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## regression coefficient
+
+`$$\Large H_{0}: \beta_{1}= 0$$`
+`$$\Large H_{1}: \beta_{1} \neq 0$$`
+
+---
+
+## What does the regression coefficient test?
+
+- Does X provide any predictive information? 
+
+- Does X provide any explanatory power regarding the variability of Y? 
+
+- Is the the average value the best guess (i.e., is Y bar equal to the predicted value of Y?)
+
+- Is the regression line flat? 
+
+- Are X and Y correlated?  
+
+---
+
+## Regression coefficient
+`$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$`
+`$$\Large t(n-2) = \frac{b_{1}}{se_{b}}$$`
+
+---
+
+
+```r
+summary(fit.1)
+```
+
+```
+## 
+## Call:
+## lm(formula = overclaiming_proportion ~ self_perceived_knowledge, 
+##     data = expertise)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.50551 -0.15610  0.00662  0.12167  0.54215 
+## 
+## Coefficients:
+##                          Estimate Std. Error t value          Pr(&gt;|t|)    
+## (Intercept)              -0.11406    0.05624  -2.028            0.0439 *  
+*## self_perceived_knowledge  0.09532    0.01228   7.762 0.000000000000422 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.2041 on 200 degrees of freedom
+## Multiple R-squared:  0.2315,	Adjusted R-squared:  0.2277 
+## F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225
+```
 
 ---
 
@@ -226,6 +287,13 @@ plot_model(fit.1, type = "pred", show.data = T, jitter = T)
 - much like previously we can take our estimate (b) and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
 
 ---
+## Intercept
+
+- more complex standard error calculation as the calculation depends on how far the X value (here zero) is away from the mean of X
+
+    - farther from the mean, less information, thus more uncertainty 
+    
+---
 
 
 ```r
@@ -243,17 +311,16 @@ summary(fit.1)
 ## -0.50551 -0.15610  0.00662  0.12167  0.54215 
 ## 
 ## Coefficients:
-##                          Estimate Std. Error t value Pr(&gt;|t|)    
-*## (Intercept)              -0.11406    0.05624  -2.028   0.0439 *  
-*## self_perceived_knowledge  0.09532    0.01228   7.762 4.22e-13 ***
+##                          Estimate Std. Error t value          Pr(&gt;|t|)    
+*## (Intercept)              -0.11406    0.05624  -2.028            0.0439 *  
+## self_perceived_knowledge  0.09532    0.01228   7.762 0.000000000000422 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 0.2041 on 200 degrees of freedom
 ## Multiple R-squared:  0.2315,	Adjusted R-squared:  0.2277 
-## F-statistic: 60.25 on 1 and 200 DF,  p-value: 4.225e-13
+## F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225
 ```
-
 
 ---
 ## Confidence interval for coefficients
@@ -280,7 +347,8 @@ The formula to estimate the standard error of any particular `\(\hat{Y_i}\)` is
 
 
 ```r
-model_info = broom::augment(fit.1)
+library(broom)
+model_info = augment(fit.1, se_fit = T)
 psych::describe(model_info, fast=T)
 ```
 
@@ -291,26 +359,27 @@ psych::describe(model_info, fast=T)
 ## .fitted                     3 202 0.31 0.11 -0.02 0.55  0.57 0.01
 *## .se.fit                     4 202 0.02 0.01  0.01 0.04  0.03 0.00
 ## .resid                      5 202 0.00 0.20 -0.51 0.54  1.05 0.01
-## .hat                        6 202 0.01 0.01  0.00 0.05  0.04 0.00
-## .sigma                      7 202 0.20 0.00  0.20 0.20  0.00 0.00
-## .cooksd                     8 202 0.01 0.01  0.00 0.09  0.09 0.00
-## .std.resid                  9 202 0.00 1.00 -2.50 2.68  5.18 0.07
+## .std.resid                  6 202 0.00 1.00 -2.50 2.68  5.18 0.07
+## .hat                        7 202 0.01 0.01  0.00 0.05  0.04 0.00
+## .sigma                      8 202 0.20 0.00  0.20 0.20  0.00 0.00
+## .cooksd                     9 202 0.01 0.01  0.00 0.09  0.09 0.00
 ```
+
 
 ```r
-head(model_info[,c("overclaiming_proportion", ".fitted", ".se.fit")])
+head(model_info[,c(".fitted", ".se.fit")])
 ```
 
 ```
-## # A tibble: 6 x 3
-##   overclaiming_proportion .fitted .se.fit
-##                     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-## 1                   0.444   0.410  0.0195
-## 2                   0.556   0.315  0.0144
-## 3                   0.167   0.220  0.0183
-## 4                   0.722   0.458  0.0241
-## 5                   0.389   0.124  0.0277
-## 6                   0.944   0.553  0.0347
+## # A tibble: 6 x 2
+##   .fitted .se.fit
+##     &lt;dbl&gt;   &lt;dbl&gt;
+## 1   0.410  0.0195
+## 2   0.315  0.0144
+## 3   0.220  0.0183
+## 4   0.458  0.0241
+## 5   0.124  0.0277
+## 6   0.553  0.0347
 ```
 
 
@@ -318,7 +387,7 @@ We can string these together in a figure and create **confidence bands**.
 
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -335,15 +404,15 @@ confint(fit.1)
 
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 
 ---
 ## Confidence Bands for regression line
-![](5-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ---
 Compare mean estimate for self-perceived knowledge based on regression vs binning
 
-![](5-regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 ---
 ## Confidence Bands
 
@@ -353,18 +422,18 @@ Compare mean estimate for self-perceived knowledge based on regression vs binnin
 ---
 ## Prediction bands
 
-- very similar to confidence bands around regressions line
+`$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$`
 
-- differences is that we are predicting and individual i's score, not the Y hat for a particular level of X. (A new `\(Y_i\)` given x, rather than `\(\bar{Y}\)` given x)
+- predicting and individual `\(i's\)` score, not the `\(\hat{Y}\)` for a particular level of X. (A new `\(Y_i\)` given x, rather than `\(\bar{Y}\)` given x)
 
 - Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is greater
 
-- Combines unknown variability in 1) the estimated mean `\((\text{as reflected in }SE_b)\)` 2) peoples scores around  mean $(\text{residual standard error }, s_{Y|X}) $
+- Combines unknown variability of the estimated mean `\((\text{as reflected in }SE_b)\)` with peoples' scores around mean `\((\text{residual standard error }, s_{Y|X})\)`
 
-`$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$`
+
 ---
 
-![](5-regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+![](5-regression_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -380,9 +449,7 @@ If we augment the matrix `\(\mathbf{X}\)` to be an `\(n\times2\)` matrix, in whi
 
 `$$\mathbf{y} = \mathbf{b}\mathbf{X}$$`
 
-Where `\(\mathbf{b}\)` is a `\(1 \times 2\)` matrix containing our estimates of the intercept and slope. 
-
-If we solve for b, we find that
+Where `\(\mathbf{b}\)` is a `\(1 \times 2\)` matrix containing our estimates of the intercept and slope. If we solve for b, we find that
 
 `$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$`
 
@@ -391,7 +458,7 @@ One property of the residuals is that the the average residual is 0, so we can r
 
 ---
 
-### A simple example
+### A "simple"     example
 
 .pull-left[
 | X | 6 | 7 | 8 | 9 | 7 |
@@ -465,7 +532,7 @@ solve(m)
 ```
 
 
-`$$\mathbf{X'X}^{-1} = 
+`$$(\mathbf{X'X})^{-1} = 
 \left(\begin{array}
 {rr}
 10.73 &amp; -1.42  \\
@@ -570,9 +637,11 @@ summary(lm(y ~ x))
 
 ## Matrix algebra
 
-In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. 
+In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. (See [here](https://www.stat.purdue.edu/~boli/stat512/lectures/topic3.pdf) for formulas showing how they're the same.)
 
-However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit. 
+However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit.
+
+Matrix algebra can [explain *why* our formulas](https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/13/lecture-13.pdf) for the intercept and slope generate the regression line with the smallest squared error.
 
 
 ---
@@ -580,15 +649,17 @@ However, when we expand into multiple regression (next week), the matrix algebra
 
 - The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
 
-- Every model test you do implicitly implies you favoring that over an alternative model, typically the null. This framework allows you to be more flexible and explicit.   
+- Every test of an omnibus model is implicitly a model comparisons, typically of your fitted model with the nil model (no slopes). This framework allows you to be more flexible and explicit.   
 
 ---
 
 
 ```r
-fit.1 &lt;- lm(overclaiming_proportion ~ self_perceived_knowledge, data = expertise)
+fit.1 &lt;- lm(overclaiming_proportion ~ self_perceived_knowledge, 
+            data = expertise)
 
-fit.0 &lt;- lm(overclaiming_proportion ~ 1, data = expertise)
+fit.0 &lt;- lm(overclaiming_proportion ~ 1,
+            data = expertise)
 ```
 
 
@@ -609,8 +680,8 @@ summary(fit.0)
 ## -0.30803 -0.19692 -0.03025  0.13641  0.69197 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  0.30803    0.01634   18.85   &lt;2e-16 ***
+##             Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)  0.30803    0.01634   18.85 &lt;0.0000000000000002 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -634,15 +705,15 @@ summary(fit.1)
 ## -0.50551 -0.15610  0.00662  0.12167  0.54215 
 ## 
 ## Coefficients:
-##                          Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)              -0.11406    0.05624  -2.028   0.0439 *  
-## self_perceived_knowledge  0.09532    0.01228   7.762 4.22e-13 ***
+##                          Estimate Std. Error t value          Pr(&gt;|t|)    
+## (Intercept)              -0.11406    0.05624  -2.028            0.0439 *  
+## self_perceived_knowledge  0.09532    0.01228   7.762 0.000000000000422 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 0.2041 on 200 degrees of freedom
 ## Multiple R-squared:  0.2315,	Adjusted R-squared:  0.2277 
-## F-statistic: 60.25 on 1 and 200 DF,  p-value: 4.225e-13
+## F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225
 ```
 
 
@@ -670,9 +741,9 @@ anova(fit.1)
 ## Analysis of Variance Table
 ## 
 ## Response: overclaiming_proportion
-##                           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
-## self_perceived_knowledge   1 2.5095 2.50948  60.249 4.225e-13 ***
-## Residuals                200 8.3303 0.04165                      
+##                           Df Sum Sq Mean Sq F value             Pr(&gt;F)    
+## self_perceived_knowledge   1 2.5095 2.50948  60.249 0.0000000000004225 ***
+## Residuals                200 8.3303 0.04165                               
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -689,9 +760,9 @@ anova(fit.1, fit.0)
 ## 
 ## Model 1: overclaiming_proportion ~ self_perceived_knowledge
 ## Model 2: overclaiming_proportion ~ 1
-##   Res.Df     RSS Df Sum of Sq      F    Pr(&gt;F)    
-## 1    200  8.3303                                  
-## 2    201 10.8398 -1   -2.5095 60.249 4.225e-13 ***
+##   Res.Df     RSS Df Sum of Sq      F             Pr(&gt;F)    
+## 1    200  8.3303                                           
+## 2    201 10.8398 -1   -2.5095 60.249 0.0000000000004225 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -759,6 +830,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -776,17 +873,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {

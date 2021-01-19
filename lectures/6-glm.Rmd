@@ -102,7 +102,7 @@ This model (equation) can be very simple as in a treatment/control experiment. I
 
 The majority of our models fall under the umbrella of a general(ized) linear model
 
-  + The **general linear model** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. 
+  + The **general linear model** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your residuals* are normally distributed. 
     
   + This is a subset of the **generalized linear model** which allows for non-linear associations and non-normally distributed outcomes. 
 

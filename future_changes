@@ -14,6 +14,7 @@ final-project.html
 - useful to read (skim) chapter before (send email week before)
 
 2-correlation.html
+
 - move scatterplots to before correlation matrices
 - add slides about MAR/MCAR/MNAR 
 
@@ -23,11 +24,21 @@ final-project.html
   * change Dawtry example to something else
   
 3-regression.html
+  
+  * go back and add i's 
+  * double check z for standardized regression equation
+  * remove sxy etc from slide 19
+  * positive feedback on discussion of eugenics
 
 4-regression.html
-
+  
+  * check z's for standardized regression equation
   * add the squares
   * add this! https://joshualoftus.com/post/2020-11-23-least-squares-as-springs/least-squares-as-springs/ 
+  
+2-lab.html
+
+* more interactive labs are good! This one is already interactive, so good template for future labs.
   
 3-lab.html
 
