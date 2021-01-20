@@ -388,11 +388,11 @@ b_{0} & b_{1}
 \end{array}\right] 
 \times 
 \left[\begin{array}
-{r}
-x_1   \\
-x_2   \\
+{rr}
+1 & x_1   \\
+1 & x_2   \\
 \dots \\
-x_n   
+1 & x_n   
 \end{array}\right]
 +
 \left[\begin{array}

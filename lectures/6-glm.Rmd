@@ -14,6 +14,7 @@ output:
 ```{r, echo = F, results='hide',warning=FALSE,message=FALSE}
 library(tidyverse)
 library(knitr)
+library(ggpubr)
 # function to display only part of the output
 hook_output <- knit_hooks$get("output")
 knit_hooks$set(output = function(x, options) {
@@ -388,6 +389,58 @@ $$Y_{i}  - \hat{Y}_{i} = e$$
 ```{r}
 traffic[3, ]
 ```
+
+
+---
+```{r}
+mod.1
+
+new.df = data.frame(
+  tx = c(0,1)
+)
+```
+
+.pull-left[
+```{r}
+predict(mod.1, 
+        newdata = new.df, 
+        interval = "confidence")
+```
+]
+
+.pull-right[
+```{r}
+predict(mod.1, 
+        newdata = new.df, 
+        interval = "prediction")
+```
+]
+---
+
+```{r, echo = F, fig.width = 8, fig.height=5, message = F}
+ci_est = predict(mod.1, 
+        newdata = new.df, 
+        interval = "confidence") %>%
+  as.data.frame() %>%
+  mutate(tx = c(0,1),
+         interval = "confidence")
+
+pred_est = predict(mod.1, 
+        newdata = new.df, 
+        interval = "prediction") %>%
+  as.data.frame() %>%
+  mutate(tx = c(0,1),
+         interval = "prediction")
+
+full_join(ci_est, pred_est) %>%
+  ggplot(aes(x = tx, y = fit)) +
+  geom_errorbar(aes(ymin = lwr, ymax = upr, color = interval)) +
+  geom_point() +
+  scale_x_continuous("tx", breaks = c(0,1)) +
+  scale_y_continuous(expression(hat(Y))) +
+  theme_pubr()
+```
+
 
 ---
 
