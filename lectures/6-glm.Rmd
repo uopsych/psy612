@@ -16,26 +16,23 @@ library(tidyverse)
 library(knitr)
 library(ggpubr)
 # function to display only part of the output
-hook_output <- knit_hooks$get("output")
+# the default output hook
+hook_output <- knit_hooks$get('output')
 knit_hooks$set(output = function(x, options) {
-  lines <- options$output.lines
-  if (is.null(lines)) {
-    return(hook_output(x, options))  # pass to default hook
+  if (!is.null(n <- options$out.lines)) {
+    n <- as.numeric(n)
+    x <- unlist(stringr::str_split(x, "\n"))
+    nx <- length(x) 
+    x <- x[pmin(n,nx)]
+    if(min(n) > 1)  
+      x <- c(paste(options$comment, "[...]"), x)
+    if(max(n) < nx) 
+      x <- c(x, paste(options$comment, "[...]"))
+    x <- paste(c(x, "\n"), collapse = "\n")
   }
-  x <- unlist(strsplit(x, "\n"))
-  more <- "..."
-  if (length(lines)==1) {        # first n lines
-    if (length(x) > lines) {
-      # truncate the output, but add ....
-      x <- c(head(x, lines), more)
-    }
-  } else {
-    x <- c(more, x[lines], more)
-  }
-  # paste these lines together
-  x <- paste(c(x, ""), collapse = "\n")
   hook_output(x, options)
-})
+    }
+  )
 ```
 
 
@@ -67,8 +64,7 @@ General linear model
 
 - We hypothesize it has some relationship with your IV(s) (Xs)  
 
-$$Y = X + E$$
-
+$$Y_i = b_0  + b_1X_i + e_i$$
 ---
 
 
@@ -76,7 +72,8 @@ $$Y = X + E$$
 ### Independent samples t-test
 ```{r, eval=FALSE}
 
-t.1 <- t.test(y ~ x, data = d) 
+t.1 <- t.test(y ~ x, 
+              data = d) 
 
 ```
 
@@ -88,7 +85,8 @@ t.1 <- t.test(y ~ x, data = d)
 ### Univariate regression
 ```{r, eval=FALSE}
 
-r.1 <- lm(y ~ x, data = d) 
+r.1 <- lm(y ~ x, 
+          data = d) 
 ```
 
 - Y is continuous 
@@ -118,46 +116,68 @@ traffic = read.csv(here("data/traffic.csv"))
 ```
 
 ```{r}
+glimpse(traffic)
 psych::describe(traffic, fast = T)
 ```
 
 ---
 
-```{r, warning=FALSE}
-ggplot(traffic) +
+```{r, warning=FALSE, fig.width = 10}
+traffic %>%
+  ggplot() +
   aes(x = as.factor(tx), y = traffic.risk) +
-  geom_violin() + geom_boxplot() + geom_jitter() +
+  geom_boxplot() + geom_jitter() +
   theme_bw(base_size = 20)
 ```
 
 ---
 ## example
-```{r}
+```{r fit_t, eval = F, echo = c(1)}
 t.1 <- t.test(traffic.risk ~ tx, data = traffic, var.equal = TRUE) 
 t.1
-
 ```
 
 ---
 ## example
-```{r}
+```{r, ref.label="fit_t", echo = c(1)}
+```
+
+---
+## example
+```{r fit_r, eval = F, echo = c(1)}
 r.1 <- cor.test(~ traffic.risk + tx, data = traffic) 
 r.1
 ```
 
 ---
 ## example
+```{r, ref.label="fit_r", echo = c(1)}
+```
 
-```{r, eval = T}
+---
+## example
+
+```{r fit_aov, echo = c(1), eval = F}
 a.1 <- aov(traffic.risk ~ tx, data = traffic)
 summary(a.1)
 ```
 
 ---
+## example
+
+```{r ref.label = "fit_aov", echo = c(1)}
+```
+
+---
 ## example cont
-```{r}
+```{r fit_lm, eval = F}
 mod.1 <- lm(traffic.risk ~ tx, data = traffic)
-anova(mod.1)
+summary(mod.1)
+```
+
+---
+## example cont
+```{r ref.label = "fit_lm"}
 ```
 
 ---
@@ -167,7 +187,7 @@ Same p-values for each test; same SS; same test!
 
 - correlation gives you an effect size $(r)$ and $df$
 
-- *t*-test gives you a *t* & *df* (output may give you group *M* and *s*)    
+- *t*-test gives you a $t$ & $df$ (output may give you group $M$ and $s$)    
 
 - ANOVA gives you an $F$ (and $SS$s)  
 
@@ -178,23 +198,25 @@ Same p-values for each test; same SS; same test!
 
 $$Y_i = b_{0} + b_{1}X_i + e_i$$
 
-$$T.risk_i = b_{0} + b_{1}TX_i + e_i$$
+$$\text{traffic risk}_i = b_{0} + b_{1}\text{tx}_i + e_i$$
 
-- Each individual has a unique Y value an X value and a residual/error term  
+- Each individual (intersection) has a unique Y value, X value, and residual
 
-- The model only has a single $b_{0}$ and $b_{1}$ term. These are the regression parameters. $b_{0}$ is the intercept and $b_{1}$ quantifies the relationship between your model of the world and the DV. 
+- The model only has a single $b_{0}$ and $b_{1}$ term. 
+    
+    - $b_{0}$ is the intercept
+    - $b_{1}$ quantifies the relationship between IV and the DV. 
 
 ---
 
 ## What do the estimates tell us? 
 
-```{r, echo = FALSE, highlight.output = c(11:12)}
+```{r, out.lines = 9:12}
 summary(mod.1)
 ```
-```{r, echo = F}
-traffic %>% 
-  group_by(tx) %>% 
-  summarise(M = mean(traffic.risk, na.rm=TRUE))
+```{r}
+psych::describeBy(traffic$traffic.risk, 
+                  group = traffic$tx)
 ```
 
 ---
@@ -208,15 +230,23 @@ traffic %>%
 ```{r, warning=FALSE, echo = FALSE}
 ggplot(traffic %>% filter(!is.na(tx))) +
   aes(x = as.factor(tx), y = traffic.risk) +
-  geom_violin() + geom_boxplot() + geom_jitter() + theme_bw(base_size = 20)
+  stat_summary(geom="bar", fun=mean, aes(fill = as.factor(tx))) + 
+  geom_point(alpha = .2) + 
+  stat_summary(geom="errorbar", fun.data=mean_cl_normal, 
+                 fun.args=list(conf.int=0.95), width = .5)+
+  ylim(0,5)+
+  guides(fill = F) +
+  theme_bw(base_size = 20)
 ```
 
 ---
 
-```{r, echo=FALSE, cache=TRUE, warning= FALSE}
+```{r, echo=FALSE, warning= FALSE, message = F}
 ggplot(traffic, aes(x=tx, y=traffic.risk)) +
     geom_point() +    
-    geom_smooth(method=lm)  +  # Don't add shaded confidence region 
+    geom_smooth(method=lm)  +  
+  xlim(-.5, 1.5)+
+  ylim(0,5)+
 theme_bw(base_size = 20)
     
 ```
@@ -229,7 +259,7 @@ theme_bw(base_size = 20)
 
 - Regression $(b_1)$ signifies the difference for a one unit change in your X
 
-- as with last semester you have estimates (like $\bar{x}$) and standard errors, which you can then ask whether they are likely assuming a null or create a CI
+- as with last semester you have estimates (like $\bar{X}$) and standard errors, which you can then ask whether they are likely assuming a null or create a CI
 ---
 
 ## *t*-test as regression
@@ -313,6 +343,8 @@ Regression omnibus test are the same as *t*- or *r*-tests, even the same as ANOV
 
 - If you have b's and have X's you can create a prediction
 
+---
+
 $\large \hat{Y}_{i} = 2.6506410 + -0.4811057X_{i}$
 
 ```{r, output.lines = c(10:13)}
@@ -323,9 +355,10 @@ summary(mod.1)
 
 ---
 ## Predictions
-- We want our predictions to be close to our actual data for each person $(Y_{i})$
 
-- The difference between the actual data and our our prediction $(Y_{i}  - \hat{Y}_{i} = e)$ is the residual, how far we are "off". This tells us how good our fit is. 
+- Unless you've collected a new dataset, you can't really assess the accuracy of preditions. Instead, we evaluate our $\hat{Y}_i$'s instead. We want $\hat{Y}_i$ to be close to our actual data for each person $(Y_{i})$
+
+- The difference between the actual data and our guess $(Y_{i}  - \hat{Y}_{i} = e)$ is the residual, how far we are "off". This tells us how good our fit is. 
 
 - You can have the same estimates for two models but completely different fit. 
 
@@ -362,11 +395,11 @@ lm2 <- augment(twogroup_fun2())
 
 plot1<- ggplot(lm1) +
   aes(x = group, y = traffic) +
-  geom_violin() + geom_boxplot() + geom_jitter() + ylim(-1, 11)+ theme_bw(base_size = 20)
+  geom_boxplot() + geom_jitter() + ylim(-1, 11)+ theme_bw(base_size = 20)
 
 plot2<- ggplot(lm2) +
   aes(x = group, y = traffic) +
-  geom_violin() + geom_boxplot() + geom_jitter() + ylim(-1, 11)+ theme_bw(base_size = 20)
+  geom_boxplot() + geom_jitter() + ylim(-1, 11)+ theme_bw(base_size = 20)
 
 
 library(gridExtra)
@@ -376,7 +409,7 @@ library(gridExtra)
 
 
 ---
-## Calculating predicted values
+## Calculating fitted and predicted values
 
 $$\hat{Y}_{i} = b_{0} + b_{1}X_{i}$$
 
@@ -384,21 +417,44 @@ $$Y_{i} = b_{0} + b_{1}X_{i} +e_{i}$$
 
 $$Y_{i}  - \hat{Y}_{i} = e$$
 
-- can you plug in numbers and calculate city 3's predicted and residual scores without explicitly asking for lm object residuals and fitted values?
+- can you plug in numbers and calculate County 3's fitted and residual scores without explicitly asking for `lm` object residuals and fitted values?
 
 ```{r}
 traffic[3, ]
 ```
+$\large \hat{Y}_{i} = 2.65 + -0.48X_{i}$
 
 
 ---
+## Predicting with new data
+
 ```{r}
 mod.1
 
 new.df = data.frame(
   tx = c(0,1)
 )
+
+predict(mod.1, newdata = new.df)
 ```
+
+---
+
+## A tangent about "predict"
+
+"Predict" can refer to multiple things in a regression analyses.
+
+- Fitted values of data used to estimate model $(\hat{Y}_i)$
+- Fitted values of new data (machine learning)
+- The range of possible/expected $Y$'s for any given X (prediction interval)
+
+Some people are *really* picky about when you can and cannot use this term. 
+   - I am not one of those people.
+   - Pick a definition, explain it, and be consistent.
+
+---
+
+## A tangent about "predict"
 
 .pull-left[
 ```{r}
@@ -444,8 +500,9 @@ full_join(ci_est, pred_est) %>%
 
 ---
 
-## Statistical Inference
-- In making predictions, we have to compare our prediction to some alternative prediction to see if we are doing well or not. 
+## Back to statistical inference
+
+- To evaluate our model, we have to compare our guesses to some alternative guesses to see if we are doing well or not. 
 
 - What is our best guess (i.e., prediction) if we didn't collect any data? 
 
@@ -453,7 +510,7 @@ $$\hat{Y} = \bar{Y}$$
 
 - Regression can be thought of as: is $E(Y|X)$ better than $E(Y)$?
 
-- To the extent that we can generate different predicted values of Y based on the values of the predictors, our model is doing well. Said differently, the closer our model is to the "actual" data generating model, our guesses $(\hat{Y})$ will be closer to our actual data $(Y)$  
+- To the extent that we can generate different guesses  of Y based on the values of the IVs, our model is doing well. Said differently, the closer our model is to the "actual" data generating model, our guesses $(\hat{Y})$ will be closer to our actual data $(Y)$  
 
 ---
 
@@ -483,7 +540,7 @@ The general linear model is a way of mathematically building a theoretical model
 
 - *t*-tests, ANOVAs, even $\chi^2$ tests are special cases of the general linear model. The benefit to looking at these tests through the perspective of a linear model is that it provides us with all the information of those tests and more! Plus it provides a more systematic way at 1) building and testing your theoretical model and 2) comparing between alternative theoretical models
 
-You can get 1) estimates and 2) fit statistics from the model. Both are important. 
+You can get estimates and fit statistics from the model. Both are important. 
 
 ---
 

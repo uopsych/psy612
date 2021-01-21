@@ -49,8 +49,7 @@ General linear model
 
 - We hypothesize it has some relationship with your IV(s) (Xs)  
 
-`$$Y = X + E$$`
-
+`$$Y_i = b_0  + b_1X_i + e_i$$`
 ---
 
 
@@ -58,7 +57,8 @@ General linear model
 ### Independent samples t-test
 
 ```r
-t.1 &lt;- t.test(y ~ x, data = d) 
+t.1 &lt;- t.test(y ~ x, 
+              data = d) 
 ```
 
 - Y is continuous 
@@ -69,7 +69,8 @@ t.1 &lt;- t.test(y ~ x, data = d)
 ### Univariate regression
 
 ```r
-r.1 &lt;- lm(y ~ x, data = d) 
+r.1 &lt;- lm(y ~ x, 
+          data = d) 
 ```
 
 - Y is continuous 
@@ -97,6 +98,18 @@ All models imply our theory about how the data are generated (i.e., how the worl
 
 
 ```r
+glimpse(traffic)
+```
+
+```
+## Rows: 280
+## Columns: 3
+## $ id           &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1…
+## $ tx           &lt;int&gt; 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ traffic.risk &lt;dbl&gt; 1.857143, 1.000000, 3.285714, 2.000000, 2.428571, 3.2857…
+```
+
+```r
 psych::describe(traffic, fast = T)
 ```
 
@@ -111,9 +124,10 @@ psych::describe(traffic, fast = T)
 
 
 ```r
-ggplot(traffic) +
+traffic %&gt;%
+  ggplot() +
   aes(x = as.factor(tx), y = traffic.risk) +
-  geom_violin() + geom_boxplot() + geom_jitter() +
+  geom_boxplot() + geom_jitter() +
   theme_bw(base_size = 20)
 ```
 
@@ -124,7 +138,13 @@ ggplot(traffic) +
 
 ```r
 t.1 &lt;- t.test(traffic.risk ~ tx, data = traffic, var.equal = TRUE) 
-t.1
+```
+
+---
+## example
+
+```r
+t.1 &lt;- t.test(traffic.risk ~ tx, data = traffic, var.equal = TRUE) 
 ```
 
 ```
@@ -146,7 +166,13 @@ t.1
 
 ```r
 r.1 &lt;- cor.test(~ traffic.risk + tx, data = traffic) 
-r.1
+```
+
+---
+## example
+
+```r
+r.1 &lt;- cor.test(~ traffic.risk + tx, data = traffic) 
 ```
 
 ```
@@ -169,7 +195,14 @@ r.1
 
 ```r
 a.1 &lt;- aov(traffic.risk ~ tx, data = traffic)
-summary(a.1)
+```
+
+---
+## example
+
+
+```r
+a.1 &lt;- aov(traffic.risk ~ tx, data = traffic)
 ```
 
 ```
@@ -186,48 +219,16 @@ summary(a.1)
 
 ```r
 mod.1 &lt;- lm(traffic.risk ~ tx, data = traffic)
-anova(mod.1)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Response: traffic.risk
-##            Df Sum Sq Mean Sq F value    Pr(&gt;F)    
-## tx          1  14.80 14.7999  24.398 1.381e-06 ***
-## Residuals 268 162.57  0.6066                      
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+summary(mod.1)
 ```
 
 ---
-## example summary
+## example cont
 
-Same p-values for each test; same SS; same test!  
-
-- correlation gives you an effect size `\((r)\)` and `\(df\)`
-
-- *t*-test gives you a *t* &amp; *df* (output may give you group *M* and *s*)    
-
-- ANOVA gives you an `\(F\)` (and `\(SS\)`s)  
-
-- linear model (regression) gives you an equation in addition to `\(F\)` and `\(SS\)`  
-
----
-## *t*-test as regression
-
-`$$Y_i = b_{0} + b_{1}X_i + e_i$$`
-
-`$$T.risk_i = b_{0} + b_{1}TX_i + e_i$$`
-
-- Each individual has a unique Y value an X value and a residual/error term  
-
-- The model only has a single `\(b_{0}\)` and `\(b_{1}\)` term. These are the regression parameters. `\(b_{0}\)` is the intercept and `\(b_{1}\)` quantifies the relationship between your model of the world and the DV. 
-
----
-
-## What do the estimates tell us? 
-
+```r
+mod.1 &lt;- lm(traffic.risk ~ tx, data = traffic)
+summary(mod.1)
+```
 
 ```
 ## 
@@ -240,8 +241,8 @@ Same p-values for each test; same SS; same test!
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-*## (Intercept)  2.65064    0.07637  34.707  &lt; 2e-16 ***
-*## tx          -0.48111    0.09740  -4.939 1.38e-06 ***
+## (Intercept)  2.65064    0.07637  34.707  &lt; 2e-16 ***
+## tx          -0.48111    0.09740  -4.939 1.38e-06 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -251,17 +252,67 @@ Same p-values for each test; same SS; same test!
 ## F-statistic:  24.4 on 1 and 268 DF,  p-value: 1.381e-06
 ```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
+---
+## example summary
+
+Same p-values for each test; same SS; same test!  
+
+- correlation gives you an effect size `\((r)\)` and `\(df\)`
+
+- *t*-test gives you a `\(t\)` &amp; `\(df\)` (output may give you group `\(M\)` and `\(s\)`)    
+
+- ANOVA gives you an `\(F\)` (and `\(SS\)`s)  
+
+- linear model (regression) gives you an equation in addition to `\(F\)` and `\(SS\)`  
+
+---
+## *t*-test as regression
+
+`$$Y_i = b_{0} + b_{1}X_i + e_i$$`
+
+`$$\text{traffic risk}_i = b_{0} + b_{1}\text{tx}_i + e_i$$`
+
+- Each individual (intersection) has a unique Y value, X value, and residual
+
+- The model only has a single `\(b_{0}\)` and `\(b_{1}\)` term. 
+    
+    - `\(b_{0}\)` is the intercept
+    - `\(b_{1}\)` quantifies the relationship between IV and the DV. 
+
+---
+
+## What do the estimates tell us? 
+
+
+```r
+summary(mod.1)
 ```
 
 ```
-## # A tibble: 3 x 2
-##      tx     M
-##   &lt;int&gt; &lt;dbl&gt;
-## 1     0  2.65
-## 2     1  2.17
-## 3    NA  2.29
+## [...]
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  2.65064    0.07637  34.707  &lt; 2e-16 ***
+## tx          -0.48111    0.09740  -4.939 1.38e-06 ***
+## [...]
+
+```
+
+```r
+psych::describeBy(traffic$traffic.risk, 
+                  group = traffic$tx)
+```
+
+```
+## 
+##  Descriptive statistics by group 
+## group: 0
+##    vars   n mean   sd median trimmed  mad min  max range  skew kurtosis   se
+## X1    1 104 2.65 0.79   2.71    2.67 0.95   1 4.14  3.14 -0.22    -0.96 0.08
+## ------------------------------------------------------------ 
+## group: 1
+##    vars   n mean   sd median trimmed  mad min  max range skew kurtosis   se
+## X1    1 166 2.17 0.77   2.07    2.12 0.74   1 4.71  3.71 0.67     0.06 0.06
 ```
 
 ---
@@ -276,11 +327,6 @@ Same p-values for each test; same SS; same test!
 
 ---
 
-
-```
-## `geom_smooth()` using formula 'y ~ x'
-```
-
 ![](6-glm_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 
 ---
@@ -291,7 +337,7 @@ Same p-values for each test; same SS; same test!
 
 - Regression `\((b_1)\)` signifies the difference for a one unit change in your X
 
-- as with last semester you have estimates (like `\(\bar{x}\)`) and standard errors, which you can then ask whether they are likely assuming a null or create a CI
+- as with last semester you have estimates (like `\(\bar{X}\)`) and standard errors, which you can then ask whether they are likely assuming a null or create a CI
 ---
 
 ## *t*-test as regression
@@ -476,6 +522,8 @@ Regression omnibus test are the same as *t*- or *r*-tests, even the same as ANOV
 
 - If you have b's and have X's you can create a prediction
 
+---
+
 `\(\large \hat{Y}_{i} = 2.6506410 + -0.4811057X_{i}\)`
 
 
@@ -485,20 +533,34 @@ summary(mod.1)
 ```
 
 ```
-...
+## 
+## Call:
+## lm(formula = traffic.risk ~ tx, data = traffic)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.65064 -0.59811 -0.02668  0.54475  2.54475 
+## 
+## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
 ## (Intercept)  2.65064    0.07637  34.707  &lt; 2e-16 ***
 ## tx          -0.48111    0.09740  -4.939 1.38e-06 ***
 ## ---
-...
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7789 on 268 degrees of freedom
+##   (10 observations deleted due to missingness)
+## Multiple R-squared:  0.08344,	Adjusted R-squared:  0.08002 
+## F-statistic:  24.4 on 1 and 268 DF,  p-value: 1.381e-06
 ```
 
 
 ---
 ## Predictions
-- We want our predictions to be close to our actual data for each person `\((Y_{i})\)`
 
-- The difference between the actual data and our our prediction `\((Y_{i}  - \hat{Y}_{i} = e)\)` is the residual, how far we are "off". This tells us how good our fit is. 
+- Unless you've collected a new dataset, you can't really assess the accuracy of preditions. Instead, we evaluate our `\(\hat{Y}_i\)`'s instead. We want `\(\hat{Y}_i\)` to be close to our actual data for each person `\((Y_{i})\)`
+
+- The difference between the actual data and our guess `\((Y_{i}  - \hat{Y}_{i} = e)\)` is the residual, how far we are "off". This tells us how good our fit is. 
 
 - You can have the same estimates for two models but completely different fit. 
 
@@ -511,7 +573,7 @@ summary(mod.1)
 
 
 ---
-## Calculating predicted values
+## Calculating fitted and predicted values
 
 `$$\hat{Y}_{i} = b_{0} + b_{1}X_{i}$$`
 
@@ -519,7 +581,7 @@ summary(mod.1)
 
 `$$Y_{i}  - \hat{Y}_{i} = e$$`
 
-- can you plug in numbers and calculate city 3's predicted and residual scores without explicitly asking for lm object residuals and fitted values?
+- can you plug in numbers and calculate County 3's fitted and residual scores without explicitly asking for `lm` object residuals and fitted values?
 
 
 ```r
@@ -530,9 +592,12 @@ traffic[3, ]
 ##   id tx traffic.risk
 ## 3  3  1     3.285714
 ```
+`\(\large \hat{Y}_{i} = 2.65 + -0.48X_{i}\)`
 
 
 ---
+## Predicting with new data
+
 
 ```r
 mod.1
@@ -552,7 +617,32 @@ mod.1
 new.df = data.frame(
   tx = c(0,1)
 )
+
+predict(mod.1, newdata = new.df)
 ```
+
+```
+##        1        2 
+## 2.650641 2.169535
+```
+
+---
+
+## A tangent about "predict"
+
+"Predict" can refer to multiple things in a regression analyses.
+
+- Fitted values of data used to estimate model `\((\hat{Y}_i)\)`
+- Fitted values of new data (machine learning)
+- The range of possible/expected `\(Y\)`'s for any given X (prediction interval)
+
+Some people are *really* picky about when you can and cannot use this term. 
+   - I am not one of those people.
+   - Pick a definition, explain it, and be consistent.
+
+---
+
+## A tangent about "predict"
 
 .pull-left[
 
@@ -590,8 +680,9 @@ predict(mod.1,
 
 ---
 
-## Statistical Inference
-- In making predictions, we have to compare our prediction to some alternative prediction to see if we are doing well or not. 
+## Back to statistical inference
+
+- To evaluate our model, we have to compare our guesses to some alternative guesses to see if we are doing well or not. 
 
 - What is our best guess (i.e., prediction) if we didn't collect any data? 
 
@@ -599,7 +690,7 @@ predict(mod.1,
 
 - Regression can be thought of as: is `\(E(Y|X)\)` better than `\(E(Y)\)`?
 
-- To the extent that we can generate different predicted values of Y based on the values of the predictors, our model is doing well. Said differently, the closer our model is to the "actual" data generating model, our guesses `\((\hat{Y})\)` will be closer to our actual data `\((Y)\)`  
+- To the extent that we can generate different guesses  of Y based on the values of the IVs, our model is doing well. Said differently, the closer our model is to the "actual" data generating model, our guesses `\((\hat{Y})\)` will be closer to our actual data `\((Y)\)`  
 
 ---
 
@@ -637,7 +728,7 @@ The general linear model is a way of mathematically building a theoretical model
 
 - *t*-tests, ANOVAs, even `\(\chi^2\)` tests are special cases of the general linear model. The benefit to looking at these tests through the perspective of a linear model is that it provides us with all the information of those tests and more! Plus it provides a more systematic way at 1) building and testing your theoretical model and 2) comparing between alternative theoretical models
 
-You can get 1) estimates and 2) fit statistics from the model. Both are important. 
+You can get estimates and fit statistics from the model. Both are important. 
 
 ---
 
