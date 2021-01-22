@@ -1,0 +1,112 @@
+---
+title: 'PSY 612 Homework #2'
+author: "YOUR NAME HERE"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+```{r setup, include=FALSE}
+key = TRUE
+knitr::opts_chunk$set(echo = key, eval = key)
+library(tidyverse)
+```
+
+# Instructions
+
+Please complete this assignment using the RMarkdown file provided [Link to Rmarkdown file here]. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-2.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+
+To receive full credit on this homework assignment, you must earn **15 points**. You may notice that the total number of points available to earn on this assignment is 34 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 15 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
+
+1. Points are all-or-nothing, meaning you cannot receive partial credit if you correctly answer only some of the bullet points for a question. All must be answered correctly.
+
+2. After the homework has been graded, you may retry questions to earn full credit, but you may only retry the questions you attempted on the first round. 
+
+3. The first time you complete this assignment, it must be turned in by 9am on the due date (February 5). Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+
+4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
+
+**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find five variables: 
+
+  - id - numeric, refers to participant ID
+  - Anxiety - participant's average levels of anxiety over a week
+  - Stress -- the participant's average level of stress over a week
+  - Support -- the participant's perceived social support over a week
+  - group -- categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week. 
+
+# 3-point questions
+
+### Question 1
+
+Use the `homework-anxiety` data. Fit a model with Stress as the outcome and Anxiety as the predictor. Use it to answer the following questions:
+
+* Write the estimated regression equation that links Anxiety to Stress. 
+
+* Interpret each of the coefficients. Be sure to include both an explanation of what each number means -- e.g., "the intercept is equal to 10, which refers to the expected...." -- and an interpretation of the significance test.
+
+* How much of the variance in Stress can be explained by this model?
+
+### Question 2
+
+* Use the `homework-anxiety` data. Run a regression with Social Support (X) predicting Anxiety (Y). Then run a regression with Anxiety predicting Social Support. What is similar and different between these analyses?
+
+* For the rest of the problems, use just the model with Anxiety as the outcome. Using the anova function for the model output, calculate $R^2$ "by hand" using numbers in the anova table.
+
+### Question 3
+
+Use the `homework-anxiety` data. You'll need the functions `pcor.test` and `spcor.test` in the `ppcor` package. 
+
+* Calculate the zero-order correlation between Stress and Anxiety. Interpret this correlation and its statistical significance.
+
+* Calculate the semi-partial correlation of Stress and Anxiety controlling for Support. Treat Stress as the outcome. (Note that the spcor function removes partials variance from the second variable in the function, labeled `y`. You're being asked to remove variance from your predictor, Anxiety). Interpret this correlation and its significance. What do you learn when you compare this correlation to the zero-order correlation?
+
+* Calculate the partial correlation of Stress and Anxiety controlling for support. Treat Stress as the outcome. Interpret this correlation and its significance. What do you learn when you compare this correlation to the semi-partial correlation?
+
+# 5-point questions
+
+### Question 1
+
+Use the `homework-anxiety` data. Fit a model with Stress as the outcome and Support as the predictor. Use it to answer the following questions:
+
+* What is the confidence interval for the estimate of the slope? In your own words, what does this confidence interval tell you?
+
+* You meet a new person on the street and they, sensing your background in Psychology and assuming you're compassionate, tell you that they have a Support score of 4. Would you be surprised if they also said their Stress score was a 6? Why or why not?
+
+* Plot your regression line. Be sure to include (1) the raw data points and (2) the 95% confidence band, and (3) the 95% prediction band.
+
+## Question 2
+
+*t*-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0's and 1's. 0's correspond to a reference group and 1's correspond to the other group. 
+
+* Using the `homework-anxiety`, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?
+
+* Create your own variable inside the `homework-anxiety` data frame of 1's and 0's that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?
+
+* Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?
+
+* Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).
+
+# 15-point questions
+
+### Question 1
+
+In PSY 611 we discussed the problem of p-hacking, which can arise in quite a number of ways. While we have not spent much time talking about p-hacking this term, regression models are just as susceptible to p-hacking. In fact, there are be additional tools researchers can exploit to generate significant p-values. 
+
+Imagine that you have access to a dataset $(N = 50)$ that has an outcome you're interested in studying (Y) and a variable that you believe causes that outcome (X), as well as 30 other variables that may or may not be related to your research question. You create a model regressing Y on X and test the significance of the slope coefficient of X. If this is significant, then great! You stop analyzing the data. But if this is not significant, you try adding different covariates to your model until the slope of X is significant or you run out of covariates, whichever comes first. You're concerned about overfitting, so you only include one covariate in your model at a time.
+
+Simulate this scenario 10,000 times. Set a seed (using `set.seed` at the beginning so I can reproduce your results). For each simulated study, each variable should be randomly drawn from a normal distribution. In other words, the data will be consistent with the null hypothesis. For each study, tally whether the null hypothesis is rejected, the number of regression models that are built, the final unstandardized regression coefficient associated with X, and the final p-value associated with the slope of X. The proportion of rejections over the 10,000 studies is the empirical Type I error rate. We are interested in whether this matches closely the significance level chosen for the t-test (i.e., .05). The average effect size across the 10,000 studies should be close to 0. We're also interested in the distribution of p-values across this simulation. 
+
+One strategy would be to use an outer loop to index the 10,000 scenarios and an inner loop to index the changing of the regression model within a study. Some conditionals will be needed to decide if an interim slope test is significant. You will also need a way to stop a given scenarios and move on to the next one if the test of the slope is significant. 
+
+* First, determine the empirical Type I error rate for the scenario described above. How does it compare to the significance level of .05 set for the inferential test of the slope?
+
+* Determine the average effect size for this repeated testing scenario. How does it compare to the expected value given that the null hypothesis is true in this simulation?
+
+* Construct a histogram that shows the distribution of final p-values for the 10,000 studies. Comment on anything you notice as being odd about the shape of this distribution.
+
+* Construct a histogram that shows the distribution of final p-values for the 10,000 studies, but limit this figure to only p-value smaller than .10. Can you make any conclusion about the likelihood of specific p-values when the null hypothesis is true and the researcher is p-hacking?
+
+* Repeat the scenario above, but without the addition of any covariates. Construct a histogram that shows the distribution of final p-values for the 10,000 studies. What do you conclude about the distribution of p-values when the null hypothesis is true and the researcher is not p-hacking?
+
+* Finally, repeat the scenario above (no p-hacking), but using an X and a Y that are associated with each other. (Hint: A regression equation may be especially helpful here.) Construct a histogram that shows the distribution of final p-values for the 10,000 studies. 
