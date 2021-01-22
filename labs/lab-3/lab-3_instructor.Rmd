@@ -8,6 +8,8 @@ output:
     toc_depth: 3
     toc_float: TRUE
     df_print: paged
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -17,23 +19,18 @@ knitr::opts_chunk$set(echo = TRUE, rows.print = 10)
 options(scipen = 999)
 ```
 
+You can download the Rmd file [here](lab-3.Rmd) to follow along.
 
 # Purpose
 
-Today we will briefly review univariate regression and then will discuss how to summarize and visualize uncertainty in regression models using a variety of plotting methods. We will then touch on how to estimate regression coefficients using matrix algebra. Lastly, we will introduce the General Linear Model and demonstrate how GLM can be used to understand all of the statistical tests we have learned so far (*t*-tests, ANOVA, correlations, regressions) within one unifying framework. 
+Today we will review univariate regression, discuss how to summarize and visualize uncertainty in regression models, and discuss how to estimate regression coefficients using matrix algebra. At the end, we will introduce the General Linear Model and demonstrate how GLM can be used to understand all of the statistical tests we have learned so far (*t*-tests, ANOVA, correlations, regressions) within one unifying framework. 
 
-To quickly navigate to the desired section, click one of the following links:
+For today's lab, you will need to load the following libraries:
 
-1. [Visualizing uncertainty](#uncertainty)
-1. [Regression with matrix algebra](#matrix)
-1. [The General Linear Model](#glm)
-
-You will need to load the following libraries to follow along with today's lab. If you don't have any of these packages installed, please do so now. 
-
-```{r lab-3-1, message=FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
-library(broom) # for cleaning up output
+library(broom) # for cleaning
 library(sjPlot) # for plotting
 library(ggpubr) # for plotting
 library(carData) # for Guyer dataset
@@ -41,142 +38,75 @@ library(carData) # for Guyer dataset
 
 ***
 
-# Visualizing uncertainty{#uncertainty}
+# Visualizing uncertainty
 
-* We're going to use the same dataset [from previous labs](https://uopsych.github.io/psy612/labs/lab-1/lab-1.html#hypothesis_testing_with_correlations){target="_blank"} about the relationship between conscientiousness and self-rated health. 
+For today's lab, we are going to continue using the same dataset from previous labs that contains variables measuring gender, self-reported conscientiousness (from the BFI), and self-reported physical health.
 
 ## Data and review
 
-* Load in the data
+First, let's load in the data.
 
-```{r lab-3-2}
+```{r}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-3/data/consc_health.csv")
 ```
-<br>
 
-* Recall how we wrote out our model
-
-$$Y_i = b_0 + b_1X_i + e_i$$
+Our model can be described with the following regression equation:
 
 $$health_i = b_0 + b_1consc_i + e_i$$
-<br>
 
-* Here's how we specified the model in R
+We can run the model in R using the `lm()` function.
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r eval=FALSE, lab-3-3}
+```{r}
 model <- lm(sr_health ~ consc, data = health)
 summary(model)
 ```
 
-##### Output
-
-```{r echo=FALSE, ref.label='lab-3-3'}
-```
-
-####
-<br>
-
-* Here are our coefficients...
-
-```{r lab-3-4, echo=FALSE}
-tidy(model) %>% #
-  rename(coefficient = term,
-        b = estimate,
-        SE = std.error,
-        t = statistic,
-        p = p.value) %>%
-  mutate(p = ifelse(p > .001, round(p, 3), "< .001")) %>% 
-  knitr::kable(digits = c(NA, 2, 2, 2, 3), 
-               caption = "Results of Regressing Self-Reported Health on Conscientiousness") 
-```
-<br>
-
-> **Question:** What do the intercept and slope mean? What do the *t*-values tell us? 
-
-> **Answer:** Intercept = the expected value for self-rated health when conscientiousness is 0. Slope = the magnitude of the relationship between conscientiousness and self-rated health: for every 1-unit increase in conscientiousness, we expect a 0.49-unit increase in self-rated health. *t*-values are from a one-sample t-test assessing whether the slope and intercept are significantly different from 0; the *t* values represent the ratio of signal to noise (i.e. each b divided by its standard error).
+> **Question:** What do the intercept and slope mean? What do the *p*-values tell us? 
 
 ## Confidence intervals
 
-* Our `b's` (intercept and slope) are *estimates* from our sample of true population parameters ($\beta$'s). Remember that whenever we calculate an estimate of something, we should also determine how precise our estimate is. This is where standard errors and confidence intervals come in. 
+Our `b's` (intercept and slope) are *estimates* from our sample of true population parameters ($\beta$'s). Whenever we calculate an estimate, we should also determine how precise our estimate is. 
 
-* Recall the formula for calculating confidence intervals:
+Recall the formula for calculating confidence intervals:
 
 $$CI_b = b \pm CV(SE_b)$$
 
-* In [Minihack 2](#minihack2) you will get some practice using this formula to calculate confidence intervals around regression coefficients. For now, we will use a much easier method: `stats::confint()`. This function takes in a fitted model object as the first argument. By default it will give you 95% CI's. 
+We can calculate the confidence interval around the estimates in R with the function `stats::confint()`. This function takes the model object as the first argument. By default it will give you 95% CI's. 
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-5, eval=FALSE}
+```{r}
 confint(model)
 ```
 
-##### Output
-
-```{r lab-3-6, echo=FALSE, ref.label='lab-3-5'}
-```
-
-####
-<br>
 
 >**Question:** What does these 95% CI for the slope of conscientiousness mean in plain English? 
 
->**Answer:** If we were to repeat this experiment over and over again, sampling from the same population, 95% of the time the slope we calculate would be between 0.25 and 0.73 (i.e. in 19 out of every 20 experiments we'd get a slope in this interval). MORE GENERALLY it means that if we carried out random sampling from the population a large number of times, and calculated the 95% CI each time around our coefficients (intercept and slope), then 95% of those intervals can be expected to contain the population parameters. In other words, we have good reason to believe the true population parameters ($\beta_0$ and $\beta_1$) fall in this interval because 95% of the time such intervals contain the true population parameters.
 
 ## Confidence bands
 
-* In addition to estimating precision around the our coefficients, we can also estimate our precision around each predicted value, $\hat{Y_i}$. These standard errors are generated by `broom::augment()` (and are labeled `.se.fit`).
+In addition to estimating precision around the our coefficients, we can also estimate our precision around each fitted value, $\hat{Y_i}$. These standard errors are generated by `broom::augment()` (and are labeled `.se.fit`).
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-7, eval=FALSE}
-model %>% # start with our model object
-  augment() %>% # from broom package; gives us fitted values, residuals, etc.
-  select(sr_health, .fitted, .se.fit) # select relevant variables
+```{r}
+model %>% 
+  augment(se_fit = TRUE) %>% 
+  select(sr_health, .fitted, .se.fit) %>% 
+  head() 
 ```
 
-##### Output
+If we were to string all of this information together, it would generate a confidence **band** around our regression line. As we've already seen, you can get this confidence band when creating a scatter plot by adding `geom_smooth(method = "lm")`. 
 
-```{r lab-3-8, echo=FALSE, ref.label='lab-3-7'}
-```
-
-####
-<br>
-
-* If we were to string all of this information together, it would generate a confidence **band** around our regression line. As we've seen already with previous examples, it's really easy to get this confidence band when creating a scatter plot by adding `geom_smooth(method = "lm")`. 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-9, eval=FALSE}
+```{r, message = FALSE}
 health %>%
   ggplot(aes(x = consc, y = sr_health)) + 
-  geom_point(alpha = 0.3) + 
+  geom_point() + 
   geom_smooth(method = "lm") + # adds a layer that includes the regression line & 95% confidence band
   labs(x = "Conscientiousness", y = "Self-rated health") +
   theme_minimal()
 ```
 
-##### Output
 
-```{r lab-3-10, echo=FALSE, ref.label='lab-3-9'}
-```
+The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
 
-####
-<br>
-
-* The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
-
-```{r echo=FALSE}
+```{r echo=FALSE, warning = FALSE, message = FALSE}
 library(ungeviz)
 library(gganimate)
 library(transformr)
@@ -201,202 +131,61 @@ p <- health %>%
 animate(p, fps = 3)
 
 ```
-<br>
-
-## Prediction
-
-* A regression line, by definition, corresponds to the line that gives the *mean* value of `Y` corresponding to each possible value of `X`, i.e. `E(Y|X)`. 
-
-* In addition, we can also predict an individual's score ($Y_i$) for any value of `X`. From our regression model, we have the following equation that mathematically represents the relationship between conscientiousness and self-rated health: 
-
-$$\hat{health}_{i} = 1.6569733 + 0.4904059 * consc_{i}$$
-<br> 
-
-* For example, if we know someone's conscientiousness score is `3.5`, we can easily predict their score for self-rated health according to our model: 
-
-$$\hat{health} = 1.6569733 + 0.4904059*3.5 = 3.374$$
 
 
-* The `predict()` function gives us an easy way to get the predicted `Y` values from all the `X` values in our dataset.  
+## Prediction bands
 
-####  {.tabset .tabset-fade .tabset-pills}
+The `predict()` function allows us to get the fitted `Y` values from all 60 conscientiousness values in our dataset.  Note: you can also get the fitted `Y` values with the `broom::augment()` function like we did earlier in the lab.
 
-##### Code
 
-```{r lab-3-11, eval=FALSE}
+```{r}
 predict(model)
 ```
 
-##### Output
+We can use this information to create "prediction bands". First we will generate our fitted values along with a "prediction interval" (lower and upper bound) for each of these values. 
 
-```{r lab-3-12, echo=FALSE, ref.label='lab-3-11'}
+```{r, warning = FALSE}
+fitted_interval <- predict(model, interval = "prediction")
+head(fitted_interval)
 ```
 
-####
-<br>
+Next we'll bind these fitted values (and their intervals) to our original dataset. 
 
-* This should look familiar, as we already have gotten this information from `broom::augment()`. 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-13, eval=FALSE}
-augment(model)$.fitted
+```{r}
+new_df <- cbind(health, fitted_interval)
+head(new_df)
 ```
 
-##### Output
+And finally, we'll plot a prediction band on top of the data by adding a `geom_ribbon()` layer.
 
-```{r lab-3-14, echo=FALSE, ref.label='lab-3-13'}
-```
-
-####
-<br>
-
-
-### Prediction bands
-
-* We can use this information to create "prediction bands". First we will generate our predicted values (i.e. fitted values) along with a "prediction interval" (lower and upper bound) for each of these values. 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-15, eval=FALSE, message=FALSE}
-predicted <- predict(model, interval = "prediction")
-predicted
-```
-
-##### Output
-
-```{r lab-3-16, echo=FALSE, ref.label='lab-3-15'}
-```
-
-####
-<br>
-
-* Next we'll bind these predicted values (and their prediction intervals) to our original dataset. 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-17, eval=FALSE}
-new_df <- cbind(health, predicted)
-new_df
-```
-
-##### Output
-
-```{r lab-3-18, echo=FALSE, ref.label='lab-3-17'}
-```
-
-####
-<br>
-
-
-* And finally, we'll plot a prediction band on top of the data by adding a `geom_ribbon()`. This prediction band gives us, for every value of `X`, the interval that represents the range of values that is likely to contain the value of a single new individual observation. Unlike confidence intervals, prediction intervals predict the spread for individual observations rather than the mean.
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-19, eval=FALSE}
+```{r, message = FALSE}
 new_df %>% 
   ggplot(aes(x = consc, y = sr_health)) +
   geom_point() +
-  geom_smooth(method=lm,se=TRUE) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.1) + # prediction band
+  geom_smooth(method = lm, se = TRUE) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.1) + 
   labs(x = "Conscientiousness", y = "Self-rated health") +
   theme_minimal()
 ```
 
-##### Output
+>**Question:** What does the prediction band represent? How does it differ from the confidence band? 
 
-```{r lab-3-20, echo=FALSE, ref.label='lab-3-19'}
-```
-
-####
-<br>
-
->**Question:** Why is the prediction band wider than the confidence band around our regression line?
-
->**Answer:** Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is wider
-
-### Out-of-sample prediction
-
-* Remember, we can plug *any* `X` value (i.e. conscientiousness score) into our regression equation and predict the corresponding `Y` value (i.e. self-rated health score). And when I say *any* `X` value, I mean that it doesn't have to be an actual observation from our sample. We can also predict out-of-sample! 
-
-* To illustrate this, we'll use a data frame that has new `X` values (conscientiousness scores). Let's pretend that we collected this data from a completely new sample of people.
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-21, eval=FALSE}
-# read in new data
-consc_data_new <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-3/data/consc_new.csv")
-
-# let's view it
-consc_data_new
-```
-
-##### Output
-
-```{r lab-3-22, echo=FALSE, ref.label='lab-3-21'}
-```
-
-####
-<br>
-
-* Now we can predict `Y` values for these out-of-sample `X` values based on the coefficients from our regression model. We just have to tell the `predict()` function what our `newdata` is. 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-23, eval=FALSE}
-predict(model, newdata = consc_data_new)
-```
-
-##### Output
-
-```{r lab-3-24, echo=FALSE, ref.label='lab-3-23'}
-```
-
-####
-<br>
 
 ## Other visualization tools
 
-* `sjPlot::plot_model()`
+sjPlot::plot_model()`
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-25, eval=FALSE}
+```{r, eval=FALSE}
 plot_model(model = model,    # name of model object
            type = "pred",    # show predicted values (i.e. regression line)
            show.data = TRUE, # include data points on plot
            jitter = TRUE)    # add small amount of random variation to  to prevent overlap
 ```
 
-##### Output
 
-```{r lab-3-26, echo=FALSE, ref.label='lab-3-25'}
-```
+`ggpubr::ggscatter()`
 
-####
-<br>
-
-* `ggpubr::ggscatter()`
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-27, eval=FALSE}
+```{r, message = FALSE}
 ggscatter(data = health,              # name of data.frame
           x = "consc",                # IV (must be quoted)
           y = "sr_health",            # DV (must be quoted)
@@ -407,292 +196,127 @@ ggscatter(data = health,              # name of data.frame
           cor.coef = TRUE)            # display correlation coefficient and p-value
 ```
 
-##### Output
-
-```{r lab-3-28, echo=FALSE, ref.label='lab-3-27'}
-```
-
-####
-<br>
-
 ***
 
-# Regression with matrix algebra{#matrix}
+# Regression with matrix algebra
 
-## Review
-
-* Consider our regression equation:
-
-$$\mathbf{y} = b_0 + b_1\mathbf{x} + e$$
-
-* Recall that `y` is a vector of values, which can be represented as an $n\times1$ matrix, $\mathbf{Y}$. Similarly, `x` can be represented as an $n\times1$ matrix, $\mathbf{X}$.
-
-* If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the first column is filled with `1`'s, we can simplify our regression equation (one property of the residuals is that the the average residual is 0, so we can remove `e` from the equation as well): 
+Consider the following matrix algebra equation:
 
 $$\mathbf{Y} = \mathbf{XB}$$
+In this equation:
+1. `Y` is a nx1 matrix of outcome variable values from the dataset (e.g., health scores) <br>
+2. `X` is a nx2 matrix. The first column is filled with `1`s and the second column is the predictor variable values from the dataset (e.g., consciousness scores) <br>
+3. `B` is a 2x1 matrix containing our estimates of the intercept and slope. <br> 
+Using this equation, we can plug in our data and solve for the intercept and slope estimates.
 
-* Note: $\mathbf{B}$ is a $2 \times 1$ matrix containing our estimates of the intercept and slope. 
+## Example 
 
-## Example
+1. Create the `X` matrix (first column 1s, second column consciousness scores)
 
-* Let's illustrate how this works by running our regression analysis (self-rated health ~ conscientiousness) using matrix algebra. 
-
-* Create the **`X`** matrix 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-29, eval=FALSE}
+```{r}
 x_mat <- health %>% # start with the original data frame
   mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
   select(ones, consc) %>% # select only the column of 1's and X variable
   as.matrix() %>%  # coerce to a matrix
   unname() # get rid of dimnames 
 
-print(x_mat)
+head(x_mat)
 ```
 
-##### Output
+2. Create the **`Y`** matrix (self-reported health scores)
 
-```{r lab-3-30, echo=FALSE, ref.label='lab-3-29'}
-```
 
-####
-<br>
-
-* Create the **`Y`** matrix 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-31, eval=FALSE}
+```{r}
 y_mat <- health %>% # start with the original data frame
   select(sr_health) %>% # select just the Y variable
   as.matrix() %>% # coerce to a matrix
   unname() # get rid of dimnames 
 
-print(y_mat)
+head(y_mat)
 ```
 
-##### Output
 
-```{r lab-3-32, echo=FALSE, ref.label='lab-3-31'}
-```
-
-####
-<br>
-
-* Apply the matrix algebra formula to solve for the **`b`** matrix
+In matrix algebra, you can't divide by a matrix, so you will need to do some more complicated arithmetic to solve for B (the vector of slope and intercept estimates). You can calculate B with the following formula: 
 
 $$\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
-####  {.tabset .tabset-fade .tabset-pills}
 
-##### Code
-
-```{r lab-3-33, eval=FALSE}
+```{r}
 solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
 ```
 
-##### Output
+Let's check our work:
 
-```{r lab-3-34, echo=FALSE, ref.label='lab-3-33'}
-```
-
-####
-<br>
-
-* The `b`'s we just solved for using matrix algebra match the coefficients we get from `lm()`! 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-35, eval=FALSE}
+```{r}
 model$coefficients
 ```
 
-##### Output
-
-```{r lab-3-36, echo=FALSE, ref.label='lab-3-35'}
-```
-
-####
-<br>
-
 ***
 
-# The General Linear Model{#glm}
+# The General Linear Model
 
-* We just saw that regression works "under the hood" by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara mentioned in class, this matrix algebra equation works for *any* type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models...
+We just saw that regression works "under the hood" by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara mentioned in class, this matrix algebra equation works for *any* type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models...
 
-* The **general linear model (GLM)** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as: 
+The **general linear model (GLM)** is a family of models that assume the relationship between your DV and IV(s) is additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as: 
 
 $$Data = Model + Error $$ 
 
-* This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: *t*-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math at the end of the day.
+This provides a unifying framework for all of the statistical tests we have learned (or at least touched on) so far: *t*-tests, correlations, ANOVA, and linear regression. All of these tests are really doing the same math at the end of the day.
 
-* To illustrate this, we'll turn back to an [example from 611](https://uopsych.github.io/psy611/labs/lab-8.html#the_data){target=_"blank"}. The data are from Fox and Guyer’s (1978) anonymity and cooperation study. The data are included in the `{carData}` package, and you can see information about the data set using `?Guyer`. Twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
+To illustrate this, let's look at the relationship between gender and self-reported health from the `health` data set.
 
-* You can load in the data with the following code:
 
-```{r lab-3-37}
-guyer <- carData::Guyer
+```{r}
+head(health)
+str(health)
 ```
 
-* Let's look at the first few rows...
+Let's covert the `gender` variable to `0's` and `1's`. We will talk more about dummy coding in a future lab. 
 
-####  {.tabset .tabset-fade .tabset-pills}
 
-##### Code
-
-```{r lab-3-38, eval=FALSE}
-head(guyer)
+```{r}
+health <-  health %>% 
+  mutate(gender = case_when(gender == "male" ~ 0,
+                               gender == "female" ~ 1))
+head(health)
 ```
-
-##### Output
-
-```{r lab-3-39, echo=FALSE, ref.label='lab-3-38'}
-```
-
-####
-<br>
-
-* ...and the structure of the data 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-40, eval=FALSE}
-str(guyer)
-```
-
-##### Output
-
-```{r lab-3-41, echo=FALSE, ref.label='lab-3-40'}
-```
-
-####
-<br>
-
-* Covert the `condition` variable to `0's` and `1's`. We will talk more about dummy coding in a future lab. 
-
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-42, eval=FALSE}
-guyer <-  guyer %>% 
-  mutate(condition = case_when(condition == "public" ~ 0,
-                               condition == "anonymous" ~ 1))
-
-guyer
-```
-
-##### Output
-
-```{r lab-3-43, echo=FALSE, ref.label='lab-3-42'}
-```
-
-####
-<br>
 
 ## *t*-test
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-44, eval=FALSE}
-t_test <- t.test(formula = cooperation ~ condition, data = guyer, var.equal = TRUE)
+```{r}
+t_test <- t.test(formula = sr_health ~ gender, data = health, var.equal = TRUE)
 t_test
 ```
 
-##### Output
-
-```{r lab-3-45, echo=FALSE, ref.label='lab-3-44'}
-```
-
-####
-<br>
-
->**Question:** What is the 95% CI around? 
-
->**Answer:** The difference in mean cooperation scores for the public vs. anonymous conditions. 
-
-
 ## Correlation 
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-46, eval=FALSE}
-cor_test <- cor.test(formula = ~ cooperation + condition, data = guyer) # note the one-sided formula
+```{r}
+cor_test <- cor.test(formula = ~ sr_health + gender, data = health)
 cor_test
 ```
 
-##### Output
-
-```{r lab-3-47, echo=FALSE, ref.label='lab-3-46'}
-```
-
-####
-<br>
-
->**Question:** What is the 95% CI around this time? 
-
->**Answer:** The correlation coefficient between cooperation and condition. 
-
-
 ## ANOVA
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-48, eval=FALSE}
-anova_test <- aov(formula = cooperation ~ condition, data = guyer)
+```{r}
+anova_test <- aov(formula = sr_health ~ gender, data = health)
 summary(anova_test)
+
 ```
-
-##### Output
-
-```{r lab-3-49, echo=FALSE, ref.label='lab-3-48'}
-```
-
-####
-<br>
-
->**Question:** What is the relationship between the *F* statistic from this ANOVA and the *t* statistic from our previous two tests?
-
->**Answer:** t is the square root of F
-
 
 ## Regression
 
-####  {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-3-50, eval=FALSE}
-regression <- lm(formula = cooperation ~ condition, data = guyer)
+```{r}
+regression <- lm(formula = sr_health ~ gender, data = health)
 summary(regression)
 ```
 
-##### Output
+## Comparison
 
-```{r lab-3-51, echo=FALSE, ref.label='lab-3-50'}
+```{r}
+t_test$p.value
+cor_test$p.value
+anova(anova_test)
+summary(regression)
 ```
-
-####
-<br>
-
->**Question:** What does the intercept represent? The slope? 
-
->**Answer:** Intercept = the mean cooperation score for the condition that was coded as 0 (i.e. public); slope = difference in means between the two conditions 
 
 ***
 
@@ -700,143 +324,158 @@ summary(regression)
 
 ## Minihack 1: Matrix algebra
 
-* Continuing with the `guyer` dataset example, use matrix algebra to manually calculate the intercept and slope for the regression equation (`cooperation` ~ `condition`). 
+Load the following data from Fox and Guyer’s (1978) anonymity and cooperation study. In the study, twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
 
-* Hint: To find the inverse of a matrix, use the `solve()` function. Refer back to the [lab on matrix algebra](https://uopsych.github.io/psy611/labs/lab-3.html){target="_blank"} from 611 for a refresher on other matrix operations if needed. 
-
-1. Create the Matrix $\mathbf{X}$ & Vector $\mathbf{Y}$
-
-```{r lab-3-52, echo=FALSE}
+```{r}
 guyer <- carData::Guyer
+```
 
+Use matrix algebra to manually calculate the intercept and slope for the regression equation:
+
+$$cooperation_i = b_0 + b_1condition_i + e_i$$
+1. Dummy code the condition (public = 0 and anonymous = 1).
+
+```{r}
 guyer <-  guyer %>% 
   mutate(condition = case_when(condition == "public" ~ 0,
                                condition == "anonymous" ~ 1))
-
 ```
 
+2. Create the `X` matrix.
 
-```{r lab-3-53}
-x <- guyer %>% 
+```{r}
+x_mat <- guyer %>% 
   mutate(ones = rep(1, nrow(.))) %>% 
   select(ones, condition) %>% 
+  as.matrix() %>%  
+  unname() 
+
+head(x_mat)
+```
+
+3. Create the `Y` matrix.
+
+```{r}
+y_mat <- guyer %>% 
+  select(cooperation) %>% 
   as.matrix() %>% 
-  unname()
+  unname() 
 
-y <- guyer %>% 
-  select(cooperation) %>%
-  as.matrix() %>% 
-  unname()
+head(y_mat)
 ```
 
-2. Produce $\mathbf{X'}$ (also called $\mathbf{X^T}$ or the transpose of $\mathbf{X}$)
+4. Solve for the `B` matrix.
 
-```{r lab-3-54}
-x_t <- t(x)
+```{r}
+solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
 ```
 
-3. Produce $\mathbf{X'X}^{-1}$ (inverse of $\mathbf{X'X}$)
 
-```{r lab-3-55}
-xtx_inv <- solve(x_t %*% x)
-xtx_inv
-```
+5. Confirm your results using the `lm()` function.
 
-4. Produce $\mathbf{X'Y}$
-
-```{r lab-3-56}
-xt_y <- x_t %*% y
-xt_y
-```
-
-5. Produce $\mathbf{B = (X'X)}^{-1}\mathbf{X'Y}$
-
-```{r lab-3-57}
-b <- xtx_inv %*% xt_y
-b
-```
-
-6. Confirm your results using the `lm()` function in R.
-
-```{r lab-3-58}
-regression <- lm(formula = cooperation ~ condition, data = guyer)
-regression$coefficients
+```{r}
+model <- lm(cooperation ~ condition, data = guyer)
+model$coefficients 
 ```
 
 ***
 
-## Minihack 2: Confidence intervals{#minihack2}
+## Minihack 2: Prediction and confidence bands
 
-* For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients. Your job is start with the model output, stored as a list object (see below), and extract the relevant pieces of information to calculate the 95% CI around the intercept and slope. 
+Using the `mtcars` dataset, create a scatterplot of cyl (x-axis) and mpg (y-axis) that includes both a prediction band and a confidence band.
 
-```{r lab-3-59, eval=FALSE}
-model <- lm(sr_health ~ consc, data = health)
+1. Run a regression model.
+
+```{r}
+model <- lm(mpg ~ cyl, data = mtcars)
+summary(model)
 ```
 
-1. Calculate confidence intervals "by hand". 
+2. Generate fitted values and their prediction interval using the `predict()` function.
+```{r}
+fitted_interval <- predict(model, interval = "prediction")
+head(fitted_interval)
 
-```{r lab-3-60}
+```
+
+3. Bind the fitted values and the prediction intervals to the original dataset. 
+
+```{r}
+mtcars_n <- cbind(mtcars, fitted_interval)
+head(mtcars_n)
+
+```
+
+4. Using ggplot(), create a scatterplot that includes both a prediction band and a confidence band.
+
+```{r}
+mtcars_n %>% 
+  ggplot(aes(x = cyl, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.1) + 
+  labs(x = "cyl", y = "mpg") +
+  theme_minimal()
+```
+
+***
+
+## Minihack 3: Confidence intervals
+
+For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients. Your job is start with the model output, stored as a list object (see below), and extract the relevant pieces of information to calculate the 95% CI around the intercept and slope.
+
+Note: the formula for a confidence interval is estimate +- cv*se
+
+```{r}
 model <- lm(sr_health ~ consc, data = health)
-model_summary <- summary(model)
+summary_model <- summary(model)
+```
 
-# extract coefficients
-int <- model_summary$coefficients[[1,1]]
-slope <- model_summary$coefficients[[2,1]]
+1. Extract the estimates from the model object.
 
-# extract standard errors of coefficients
-int_se <- model_summary$coefficients[[1,2]]
-slope_se <- model_summary$coefficients[[2,2]]
+```{r}
+int <- summary_model$coefficients[[1,1]]
+slope <- summary_model$coefficients[[2,1]]
+```
 
-# df for t-distribution (will be denominator df from F statistic)
-df <- model_summary$fstatistic[["dendf"]]
+2. Extract standard errors from the model object. Hint: use summary_model$coefficients.
 
+```{r}
+int_se <- summary_model$coefficients[[1,2]]
+slope_se <- summary_model$coefficients[[2,2]]
+```
+
+3. Extract the df (It will be the denominator df from F statistic)).
+
+```{r}
+df <- summary_model$fstatistic[["dendf"]]
+
+```
+
+4. Calculate the critical value.
+```{r}
+cv <- qt(.975, df = df)
+```
+
+5. Calculate a 95% CI for both estimates.
+
+```{r}
 # intercept 95% CI 
-int_ci_l <- int - qt(.975, df = df)*int_se
-int_ci_u <- int + qt(.975, df = df)*int_se
+int_ci_l <- int - cv*int_se  
+int_ci_u <- int + cv*int_se 
+paste0("[", round(int_ci_l,2), ",", round(int_ci_u,2), "]")
 
 # slope 95% CI 
-slope_ci_l <- slope - qt(.975, df = df)*slope_se
-slope_ci_u <- slope + qt(.975, df = df)*slope_se
+slope_ci_l <- slope - cv*slope_se
+slope_ci_u <- slope + cv*slope_se
+paste0("[", round(slope_ci_l,2), ",", round(slope_ci_u,2), "]")
+
 ```
 
-2. Verify that your answer corresponds to the result from `confint()`. 
 
-```{r lab-3-61}
+6. Verify that your answer corresponds to the result from `confint()`. 
+
+```{r}
 ci <- confint(model)
 ci
 ```
-
-3. Create a scatter plot representing the relationship between conscientiousness and self-rated health with a regression line and 95% confidence band. 
-
-```{r lab-3-62}
-p1 <- health %>%
-  ggplot(aes(x = consc, y = sr_health)) + 
-  geom_point(size = 0.5, color = "darkgrey", alpha = 0.7) + 
-  geom_point(alpha = 0.3) + 
-  geom_smooth(method = "lm") +
-  labs(x = "Conscientiousness", y = "Self-rated health") + 
-  theme_minimal()
-
-p1
-```
-
-3a. Add a line whose intercept is the lower bound of the 95% CI for the model intercept and whose slope is the upper bound of the 95% CI for the model slope. Hint: see `?geom_abline()`
-
-```{r lab-3-63}
-p2 <- p1 + 
-  geom_abline(aes(intercept = ci[1,1], slope = ci[2,2]))
-
-p2
-```
-
-
-3b. Now add another line whose intercept is the upper bound of the 95% CI for the model intercept and whose slope is the lower bound of the 95% CI for the model slope. 
-
-```{r lab-3-64}
-p3 <- p2 + 
-  geom_abline(aes(intercept = ci[1,2], slope = ci[2,1]))
-
-p3
-```
-
-3d. What does this show you about the relationship between the 95% CI's around the model coefficients and the 95% CI band around the regression line? 
