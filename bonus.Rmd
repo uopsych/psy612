@@ -10,6 +10,41 @@ output:
 
 This page contains links to journal articles, blog posts, webpages, etc., that we (the instructors) believe may be useful to you, or at the very least interesting. **Bold** articles are ones that we consider **must-reads** but don't have enough time to actually assign. And to be clear, must-read means that people will probably assume you've read this and know the basic points.  
 
+## [Cohen, Cohen, West, & Aiken (2003)](https://psycnet.apa.org/record/2002-18109-000)
+
+For additional review of correlation and regression beyond the assigned textbook, here are chapters from another popular textbook (edition 3).
+
+[Chapter 1. **Introduction.**](readings/CCWA_ch1.pdf) 
+  - Multiple regression/correlation as a general data-analytic system
+  - A comparisons of multiple regression/correlation and analysis of variance approaches
+  - Multiple regression/correlation and the complexity of behavioral sciences
+  - Orientation of the book
+  - Computation, the computer, and numerical results
+  - The spectrum of behavioral sciences
+  
+[Chapter 2. **Bivariate Correlation and Regression.**](readings/CCWA_ch2.pdf) 
+  - Tabular and graphic representations of relationships
+  - The index of linear correlation between two variables
+  - The Pearson Product-Moment Correlation Coefficient
+  - Alternative formulas
+  - Regression coefficients
+  - Regression toward the mean
+  - The standard error of the estimate and measures of the strength of association
+  - Statistical inference
+  - Precision and power
+  - Factors affecting the size of _r_
+  
+[Chapter 3. **Multiple Regression/Correlation with Two or More Independent Variables**](readings/CCWA_ch3.pdf) 
+  - Causal models
+  - Regression with two independent variables
+  - Measures of association 
+  - Patterns of association
+  - Multiple regression/correlation with _k_ independent variables
+  - Statistical inference
+  - Precision and power
+  - Equations and predition
+  
+
 ## On coding and data science
 
 Peters (2004) ["The Zen of Python."](https://www.python.org/dev/peps/pep-0020/) -- A list of 19 principles for writing better Python code; the principles also apply to writing better R code. 
