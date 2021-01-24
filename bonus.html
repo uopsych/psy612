@@ -13,6 +13,7 @@
 
 <title>Helpful and/or interesting material</title>
 
+<script src="site_libs/header-attrs-2.4/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -25,8 +26,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -37,7 +36,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-    </style>
+      </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -452,6 +451,13 @@ div.tocify {
 
 
 <p>This page contains links to journal articles, blog posts, webpages, etc., that we (the instructors) believe may be useful to you, or at the very least interesting. <strong>Bold</strong> articles are ones that we consider <strong>must-reads</strong> but don’t have enough time to actually assign. And to be clear, must-read means that people will probably assume you’ve read this and know the basic points.</p>
+<div id="cohen-cohen-west-aiken-2003" class="section level2">
+<h2><a href="https://psycnet.apa.org/record/2002-18109-000">Cohen, Cohen, West, &amp; Aiken (2003)</a></h2>
+<p>For additional review of correlation and regression beyond the assigned textbook, here are chapters from another popular textbook (edition 3).</p>
+<p><a href="readings/CCWA_ch1.pdf">Chapter 1. <strong>Introduction.</strong></a> - Multiple regression/correlation as a general data-analytic system - A comparisons of multiple regression/correlation and analysis of variance approaches - Multiple regression/correlation and the complexity of behavioral sciences - Orientation of the book - Computation, the computer, and numerical results - The spectrum of behavioral sciences</p>
+<p><a href="readings/CCWA_ch2.pdf">Chapter 2. <strong>Bivariate Correlation and Regression.</strong></a> - Tabular and graphic representations of relationships - The index of linear correlation between two variables - The Pearson Product-Moment Correlation Coefficient - Alternative formulas - Regression coefficients - Regression toward the mean - The standard error of the estimate and measures of the strength of association - Statistical inference - Precision and power - Factors affecting the size of <em>r</em></p>
+<p><a href="readings/CCWA_ch3.pdf">Chapter 3. <strong>Multiple Regression/Correlation with Two or More Independent Variables</strong></a> - Causal models - Regression with two independent variables - Measures of association - Patterns of association - Multiple regression/correlation with <em>k</em> independent variables - Statistical inference - Precision and power - Equations and predition</p>
+</div>
 <div id="on-coding-and-data-science" class="section level2">
 <h2>On coding and data science</h2>
 <p>Peters (2004) <a href="https://www.python.org/dev/peps/pep-0020/">“The Zen of Python.”</a> – A list of 19 principles for writing better Python code; the principles also apply to writing better R code.</p>
@@ -486,7 +492,7 @@ div.tocify {
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
