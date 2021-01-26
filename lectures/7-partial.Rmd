@@ -230,37 +230,56 @@ The partial correlations most often used when some third variable, Z, is a plaus
 
 ## Example
 
-Recall the expertise dataset, which measures a person's perception of their knowledge of personal finance (`self_perceived_knowledge`) and their performance on an objective measures of knowledge (`overclaiming_perception`). 
-
-Participants also completed a test called the FINRA, which is an actual financial literacy test. 
-
+We'll use a dataset containing three variables: happiness, extraversion, and social support. There's some evidence that individuals high in extraversion experience more happiness. Is this because they receive more social support? If so, then the correlation between extraversion and happiness will be close to zero after accounting for social support.
 ```{r,  message = F}
 library(here)
-expertise = read.csv(here("data/expertise.csv"))
+data = read.csv(here("data/happy.csv"))
 ```
 
 ---
 
 ```{r, message = F}
-round(cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")]),2)
+round(cor(data[,c("Extraversion", "Happiness", "SocSup")]),2)
 library(ppcor)
-
-spcor.test(expertise$overclaiming_proportion,  # Y
-           expertise$self_perceived_knowledge, # X1
-           expertise$FINRA_score)              # X2
 ```
 
+The zero-order correlation between Happiness and Extraversion is `r round(cor(data$Happiness, data$Extraversion),3)`
+
+```{r, message = F}
+spcor.test(data$Happiness,    # Y
+           data$Extraversion, # X1
+           data$SocSup)       # X2
+```
+
+```{r, echo = F}
+sp = spcor.test(data$Happiness,    # Y
+           data$Extraversion, # X1
+           data$SocSup)       # X2
+```
+
+The semi-partial correlation between Happiness and Extraversion is `r round(sp$estimate ,3)`
 ---
 
-```{r}
-round(cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")]),2)
+```{r, message = F}
+round(cor(data[,c("Extraversion", "Happiness", "SocSup")]),2)
 library(ppcor)
-
-pcor.test( expertise$overclaiming_proportion,  # Y
-           expertise$self_perceived_knowledge, # X1
-           expertise$FINRA_score)              # X2
 ```
 
+The zero-order correlation between Happiness and Extraversion is `r round(cor(data$Happiness, data$Extraversion),3)`
+
+```{r, message = F}
+ pcor.test(data$Happiness,    # Y
+           data$Extraversion, # X1
+           data$SocSup)       # X2
+```
+
+```{r, echo = F}
+pp =  pcor.test(data$Happiness,    # Y
+           data$Extraversion, # X1
+           data$SocSup)       # X2
+```
+
+The partial correlation between Happiness and Extraversion is `r round(pp$estimate ,3)`
 
 ---
 
@@ -295,19 +314,21 @@ $$\Large r_{e_{X_1},e_{Y}} = r_{Y1.2}$$
 ### Example
 
 ```{r}
-# create measure of overclaiming independent of FINRA score
-mod.over = lm(overclaiming_proportion ~ FINRA_score, data = expertise)
-expertise.over = broom::augment(mod.over)
+# create measure of happiness independent of social support
+mod.hap = lm(Happiness ~ SocSup, data = data)
+data.hap = broom::augment(mod.hap)
 
-# create measure of perceived knowledge independent of FINRA score
-mod.know = lm(self_perceived_knowledge ~ FINRA_score, data = expertise)
-expertise.know = broom::augment(mod.know)
+# create measure of extraversion independent of social support
+mod.ext = lm(Extraversion ~ SocSup, data = data)
+data.ext = broom::augment(mod.ext)
 
 
 #semi-partial
-cor(expertise.over$.resid, expertise$self_perceived_knowledge)
+cor(data.ext$.resid, # residual of extraversion (X)
+    data$Happiness)  # original Happiness (Y)
 #partial
-cor(expertise.over$.resid, expertise.know$.resid)
+cor(data.ext$.resid, # residual of extraversion (X)
+    data.hap$.resid) # residual of Happiness (Y)
 ```
 
 ---
