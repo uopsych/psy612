@@ -1,3 +1,6 @@
+lectures overall
+* add 60 second break in the middle 
+
 course website:
 * include in required materials: LaTex
 * Add link to this: https://statmodeling.stat.columbia.edu/wp-content/uploads/2020/07/raos_tips.pdf
@@ -38,13 +41,32 @@ final-project.html
   
 2-lab.html
 
-* more interactive labs are good! This one is already interactive, so good template for future labs.
+  * more interactive labs are good! This one is already interactive, so good template for future labs.
+
+5-regression.html
+
+  * move gganimate from lab 3 to here 
+
+6-glm.html
+
+  * possible terms to use for model comparison 
+    * compact model (simpler)
+    * augmented model (more complex, wanted to test)
+    * proportional reduction in R^2
+  * why is GLM taught before ANOVA?
   
 3-lab.html
 
-  * it was particularly helpful to draw out the matrices on the board during the matrix algebra section (i.e. draw the Y vector and the X matrix with column of 1’s) and to keep track of matrix dimensions, etc. while explaining the B vector.
-  
+  * labs feeling repetitive
+    * could this be a pandemic-specific thing?
+    * options
+      * move papaja lab here?
+      * more applied lab? 
+        * here's a question -- how would you test it?
+    
+
 7-partial.html
+
   * when to use each: only care about X and Y and controlling for variable; comparions between diff x's and incremental validity; network analysis
   
 9-m_regression.html

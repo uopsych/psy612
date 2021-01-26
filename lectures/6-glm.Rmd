@@ -200,7 +200,7 @@ $$Y_i = b_{0} + b_{1}X_i + e_i$$
 
 $$\text{traffic risk}_i = b_{0} + b_{1}\text{tx}_i + e_i$$
 
-- Each individual (intersection) has a unique Y value, X value, and residual
+- Each individual (county) has a unique Y value, X value, and residual
 
 - The model only has a single $b_{0}$ and $b_{1}$ term. 
     

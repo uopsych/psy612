@@ -11,10 +11,13 @@ output:
       countIncrementalSlides: false
 ---
 
-## Homework
+## Business
 
-Homework assignment #1 has been posted!
-Due Friday, February 7 at 9 am. 
+Homework assignment #2 has been posted. It's due next Friday. 
+
+Thursday: HW breakout groups
+
+Supplemental reading [posted](https://uopsych.github.io/psy612/bonus.html) (Cohen et al).
 
 ---
 ## Today
@@ -28,14 +31,14 @@ Due Friday, February 7 at 9 am.
 
 Does parent socioeconomic status *cause* better grades?
 
-  * $r_{GPA,SES} = .33, b = .41$
+  * $r_{\text{GPA},\text{SES}} = .33$
   
 --
 
 Potential confound: Peer relationships
 
-   - $r_{SES, peer} = .29$
-   - $r_{GPA, peer} = .37$
+   - $r_{\text{SES}, \text{peer}} = .29$
+   - $r_{\text{GPA}, \text{peer}} = .37$
 
 ???
 
@@ -152,6 +155,14 @@ $$\large sr_1 = r_{Y(1.2)} = \frac{r_{Y1}-r_{Y2}r_{12}}{\sqrt{1-r^2_{12}}}$$
 
 $$\large sr_1^2 = R^2_{Y.12}-r^2_{Y2}$$
 
+**Terms**
+
+$R_{Y.12}$ -- The correlation of Y with the (best) linear combination of X1 and X2.
+
+$r_{Y(1.2)}$ -- the semi-partial correlation of Y with X1 controlling for X2
+
+
+
 ---
 
 ### Types of correlations
@@ -178,6 +189,14 @@ Partial correlation
 ### Partial correlations
 
 $$\large pr_1=r_{Y1.2} = \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}} = \frac{r_{Y(1.2)}}{\sqrt{1-r^2_{Y2}}}$$
+
+**Terms**
+
+$R_{Y.12}$ -- The correlation of Y with the (best) linear combination of X1 and X2.
+
+$r_{Y(1.2)}$ -- the semi-partial correlation of Y with X1 controlling for X2
+
+$r_{Y1.2}$ -- the partial correlation of Y with X1 controlling for X2
 ---
 
 ### What happens if X1 and X2 are uncorrelated?
@@ -222,10 +241,13 @@ expertise = read.csv(here("data/expertise.csv"))
 
 ---
 
-```{r}
+```{r, message = F}
 round(cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")]),2)
 library(ppcor)
-round(spcor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")])$estimate,2)
+
+spcor.test(expertise$overclaiming_proportion,  # Y
+           expertise$self_perceived_knowledge, # X1
+           expertise$FINRA_score)              # X2
 ```
 
 ---
@@ -233,7 +255,10 @@ round(spcor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", 
 ```{r}
 round(cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")]),2)
 library(ppcor)
-round(pcor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")])$estimate,2)
+
+pcor.test( expertise$overclaiming_proportion,  # Y
+           expertise$self_perceived_knowledge, # X1
+           expertise$FINRA_score)              # X2
 ```
 
 
@@ -270,18 +295,19 @@ $$\Large r_{e_{X_1},e_{Y}} = r_{Y1.2}$$
 ### Example
 
 ```{r}
-# create measure of perceived knowledge independent of FINRA score
-mod.know = lm(self_perceived_knowledge ~ FINRA_score, data = expertise)
-expertise.know = broom::augment(mod.know)
-
 # create measure of overclaiming independent of FINRA score
 mod.over = lm(overclaiming_proportion ~ FINRA_score, data = expertise)
 expertise.over = broom::augment(mod.over)
 
-#semi-parital
-cor(expertise.know$.resid, expertise$overclaiming_proportion)
-#parital
-cor(expertise.know$.resid, expertise.over$.resid)
+# create measure of perceived knowledge independent of FINRA score
+mod.know = lm(self_perceived_knowledge ~ FINRA_score, data = expertise)
+expertise.know = broom::augment(mod.know)
+
+
+#semi-partial
+cor(expertise.over$.resid, expertise$self_perceived_knowledge)
+#partial
+cor(expertise.over$.resid, expertise.know$.resid)
 ```
 
 ---

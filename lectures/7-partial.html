@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Partial correlations</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -17,10 +18,13 @@ class: center, middle, inverse, title-slide
 ---
 
 
-## Homework
+## Business
 
-Homework assignment #1 has been posted!
-Due Friday, February 7 at 9 am. 
+Homework assignment #2 has been posted. It's due next Friday. 
+
+Thursday: HW breakout groups
+
+Supplemental reading [posted](https://uopsych.github.io/psy612/bonus.html) (Cohen et al).
 
 ---
 ## Today
@@ -34,14 +38,14 @@ Due Friday, February 7 at 9 am.
 
 Does parent socioeconomic status *cause* better grades?
 
-  * `\(r_{GPA,SES} = .33, b = .41\)`
+  * `\(r_{\text{GPA},\text{SES}} = .33\)`
   
 --
 
 Potential confound: Peer relationships
 
-   - `\(r_{SES, peer} = .29\)`
-   - `\(r_{GPA, peer} = .37\)`
+   - `\(r_{\text{SES}, \text{peer}} = .29\)`
+   - `\(r_{\text{GPA}, \text{peer}} = .37\)`
 
 ???
 
@@ -158,6 +162,14 @@ the semi-partial correlation between parent SES and GPA controlling for peer rel
 
 `$$\large sr_1^2 = R^2_{Y.12}-r^2_{Y2}$$`
 
+**Terms**
+
+`\(R_{Y.12}\)` -- The correlation of Y with the (best) linear combination of X1 and X2.
+
+`\(r_{Y(1.2)}\)` -- the semi-partial correlation of Y with X1 controlling for X2
+
+
+
 ---
 
 ### Types of correlations
@@ -183,7 +195,15 @@ Partial correlation
 ---
 ### Partial correlations
 
-`$$\large pr_1=r_{Y1.2} = \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}} = \frac{r_{Y(1.2)}}{\sqrt{1-r^2_{Y_2}}}$$`
+`$$\large pr_1=r_{Y1.2} = \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}} = \frac{r_{Y(1.2)}}{\sqrt{1-r^2_{Y2}}}$$`
+
+**Terms**
+
+`\(R_{Y.12}\)` -- The correlation of Y with the (best) linear combination of X1 and X2.
+
+`\(r_{Y(1.2)}\)` -- the semi-partial correlation of Y with X1 controlling for X2
+
+`\(r_{Y1.2}\)` -- the partial correlation of Y with X1 controlling for X2
 ---
 
 ### What happens if X1 and X2 are uncorrelated?
@@ -247,25 +267,15 @@ round(cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "F
 
 ```r
 library(ppcor)
+
+spcor.test(expertise$overclaiming_proportion,  # Y
+           expertise$self_perceived_knowledge, # X1
+           expertise$FINRA_score)              # X2
 ```
 
 ```
-## Loading required package: MASS
-```
-
-```r
-round(spcor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")])$estimate,2)
-```
-
-```
-##                          self_perceived_knowledge overclaiming_proportion
-## self_perceived_knowledge                     1.00                    0.49
-## overclaiming_proportion                      0.52                    1.00
-## FINRA_score                                  0.38                   -0.22
-##                          FINRA_score
-## self_perceived_knowledge        0.34
-## overclaiming_proportion        -0.20
-## FINRA_score                     1.00
+##    estimate     p.value statistic   n gp  Method
+## 1 0.5201425 2.50243e-15  8.591136 202  1 pearson
 ```
 
 ---
@@ -288,18 +298,15 @@ round(cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "F
 
 ```r
 library(ppcor)
-round(pcor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion", "FINRA_score")])$estimate,2)
+
+pcor.test( expertise$overclaiming_proportion,  # Y
+           expertise$self_perceived_knowledge, # X1
+           expertise$FINRA_score)              # X2
 ```
 
 ```
-##                          self_perceived_knowledge overclaiming_proportion
-## self_perceived_knowledge                     1.00                    0.52
-## overclaiming_proportion                      0.52                    1.00
-## FINRA_score                                  0.38                   -0.23
-##                          FINRA_score
-## self_perceived_knowledge        0.38
-## overclaiming_proportion        -0.23
-## FINRA_score                     1.00
+##    estimate      p.value statistic   n gp  Method
+## 1 0.5205143 2.372099e-15  8.599559 202  1 pearson
 ```
 
 
@@ -337,25 +344,26 @@ Or we can calculate a measure of Y that is also independent of `\(X_2\)` and cor
 
 
 ```r
-# create measure of perceived knowledge independent of FINRA score
-mod.know = lm(self_perceived_knowledge ~ FINRA_score, data = expertise)
-expertise.know = broom::augment(mod.know)
-
 # create measure of overclaiming independent of FINRA score
 mod.over = lm(overclaiming_proportion ~ FINRA_score, data = expertise)
 expertise.over = broom::augment(mod.over)
 
-#semi-parital
-cor(expertise.know$.resid, expertise$overclaiming_proportion)
+# create measure of perceived knowledge independent of FINRA score
+mod.know = lm(self_perceived_knowledge ~ FINRA_score, data = expertise)
+expertise.know = broom::augment(mod.know)
+
+
+#semi-partial
+cor(expertise.over$.resid, expertise$self_perceived_knowledge)
 ```
 
 ```
-## [1] 0.5201425
+## [1] 0.4935161
 ```
 
 ```r
-#parital
-cor(expertise.know$.resid, expertise.over$.resid)
+#partial
+cor(expertise.over$.resid, expertise.know$.resid)
 ```
 
 ```
@@ -416,6 +424,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -433,17 +467,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {
