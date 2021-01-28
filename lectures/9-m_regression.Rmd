@@ -52,31 +52,6 @@ Review here:
 * Resid standard error
 * Coefficient estimates
 
-
----
-## Standard error of regression coefficient
-
-In the case of univariate regression:
-
-$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
-
-In the case of multiple regression:
-
-$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
-
-- As N increases... 
-- As variance explained increases... 
-
----
-## Tolerance
-$$se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
-
-- what cannot be explained in $X_i$ by other predictors  
-
-- Large tolerance (little overlap) means standard error will be small.   
-
-- what does this mean for including a lot of variables in your model? 
-
 ---
 
 ## Which variables to include

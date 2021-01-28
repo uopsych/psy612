@@ -14,7 +14,7 @@
 
 <title>Psy 612: Data Analysis II</title>
 
-<script src="site_libs/header-attrs-2.4/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -37,7 +37,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -83,6 +83,7 @@ h6 {
   text-align: left;
 }
 </style>
+
 
 
 
@@ -391,6 +392,9 @@ div.tocify {
     <li>
       <a href="lectures/7-partial.html">7 - Partial and Semipartial correlations</a>
     </li>
+    <li>
+      <a href="lectures/8-m_regression.html">8 - Multiple regression</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -436,7 +440,7 @@ div.tocify {
 </li>
 <li>
   <a href="https://github.com/uopsych/psy612">
-    <span class="fa fa-github"></span>
+    <span class="fas fa-github"></span>
      
   </a>
 </li>
@@ -533,7 +537,7 @@ div.tocify {
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

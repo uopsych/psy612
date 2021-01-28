@@ -12,6 +12,7 @@ output:
 ---
 
 ```{r, echo = F, results='hide',warning=FALSE,message=FALSE}
+options(scipen = 999)
 library(tidyverse)
 library(knitr)
 # function to display only part of the output
@@ -35,6 +36,8 @@ knit_hooks$set(output = function(x, options) {
   x <- paste(c(x, ""), collapse = "\n")
   hook_output(x, options)
 })
+
+knitr::opts_chunk$set(message = FALSE) # suppress messages
 ```
 
 ## Last time
@@ -62,9 +65,10 @@ $$\large \hat{Y} = b_0 + b_1X_1 + b_2X_2 + \dots+b_kX_k$$
 ## example
 ```{r, message=FALSE}
 library(here)
-stress.data = read.csv(here("data/stress.csv"))
+stress.data = read.csv(here("data/stress.csv")) %>% select(-group)
 library(psych)
-describe(stress.data$Stress)
+describe(stress.data, fast = T)
+round(cor(stress.data),2)
 ```
 
 ---
@@ -129,7 +133,7 @@ Note, however, that the calculations differ between the three effect sizes. Thes
 
   - if predictors are not correlated, $r$,  sr $(r_{Y(1.2)})$ and b* are equal 
 
-.small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and usually they're a sign that you have some problems in the model. ]
+.small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and [usually indicative of some multicollinearity](http://www.statmodel.com/download/Joreskog.pdf).]
 ---
 
 ** Standardized multiple regression coefficient** $b^*$
@@ -146,17 +150,10 @@ $$\large \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}}$$
 ---
 
 ```{r}
-z_score = function(x){
-  m = mean(x, na.rm=T)
-  s = sd(x, na.rm=T)
-  z = (x-m)/s
-  return(z)
-}
-
 stress.data = stress.data %>%
-  mutate(z_anxiety = z_score(Anxiety),
-         z_support = z_score(Support),
-         z_stress = z_score(Stress))
+  mutate(z_anxiety = scale(Anxiety),
+         z_support = scale(Support),
+         z_stress = scale(Stress))
 
 mod0 = lm(z_stress ~ z_anxiety + z_support, 
           data = stress.data)
@@ -167,8 +164,8 @@ round(coef(mod0),3)
 .pull-left[
 ```{r, message=F, warning = F, echo = 2:4}
 library(ppcor)
-spcor.test(x = stress.data$Anxiety, 
-           y = stress.data$Stress, 
+spcor.test(x = stress.data$Stress, 
+           y = stress.data$Anxiety, 
            z = stress.data$Support)$estimate
 ```
 ]
@@ -176,8 +173,8 @@ spcor.test(x = stress.data$Anxiety,
 .pull-right[
 
 ```{r, message=F, warning = F}
-pcor.test(x = stress.data$Anxiety, 
-          y = stress.data$Stress, 
+pcor.test(x = stress.data$Stress, 
+          y = stress.data$Anxiety, 
           z = stress.data$Support)$estimate
 ```
 
@@ -206,6 +203,14 @@ summary(mr.model)
 mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
 summary(mr.model)
 ```
+
+---
+
+## "Controlling for"
+
+![](images/control.gif)
+
+Taken from [@nickchk](https://twitter.com/nickchk)
 
 ---
 
@@ -252,14 +257,6 @@ coef(mr.model)
 
 ---
 
-### "Controlling for"
-
-![](images/control.gif)
-
-Taken from [@nickchk](https://twitter.com/nickchk)
-
----
-
 ## Estimating model fit
 
 ```{r, highlight.output = 18}
@@ -270,11 +267,12 @@ summary(mr.model)
 ---
 
 ```{r}
-library(broom)
+library(broom); library(scales)
 stress.data1 = augment(mr.model)
 stress.data1 %>%
-  ggplot(aes(x = Stress, y = .fitted)) + geom_point() + geom_smooth(method = "lm") + scale_x_continuous("Y (Stress)") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
+  ggplot(aes(x = Stress, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(Stress), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (Stress)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
 ```
+
 
 ---
 ## Multiple correlation, R
@@ -315,7 +313,7 @@ $$\Large {SS_{residual}} = (1- R^2){SS_{Y}}$$
 
 - $R^2$ (omnibus)  
 - Regression Coefficients  
-- Increments to R2  
+- Increments to $R^2$  
     
 ---
 
@@ -324,14 +322,16 @@ $$\Large {SS_{residual}} = (1- R^2){SS_{Y}}$$
 
 - Same interpretation as before  
 
-- Adding predictors into your model will increase $R^2$ – regardless of whether or not the predictor is significantly correlated with Y.    
+- Adding predictors into your model will increase $R^2$ – regardless of whether or not the predictor is significantly correlated with Y.
+
+  - Think back to sampling error. If the population correlation, $\rho$, is 0, will your sample estimate always be 0? 
 
 - Adjusted/Shrunken $R^2$ takes into account the number of predictors in your model  
 
 
 ---
 
-## Adjusted R-squared, $\text{Adj} R^2$
+## Adjusted R-squared, $\text{Adj } R^2$
 
 $$\large R_{A}^2 = 1 - (1 -R^2)\frac{n-1}{n-p-1}$$
 
@@ -356,11 +356,13 @@ summary(mr.model)
 
 ## ANOVA
 
+The omnibus test uses all SS associated with predictors.
+
 ```{r, highlight.output = 5:6}
 anova(mr.model)
 ```
 
-
+Note that the _p_-values in this table do NOT match the _p_-values in the regression summary table. For the time being, just know that, in a multiple regression framework, you should use the `summary()` output to interpret the unique contribution of predictors, not the `anova()` output. We'll return to these calculations later in the term and discuss them in more detail. 
 ---
 
 ```{r, highlight.output = 12:13}
@@ -388,3 +390,40 @@ $$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \s
 
 - As N increases... 
 - As variance explained increases... 
+
+---
+
+$$se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
+
+## Tolerance
+
+$$1-R_{i.jkl...p}^2$$
+
+- Proportion of $X_i$ that does not overlap with other predictors.
+    - Bounded by 0 and 1
+
+- Large tolerance (little overlap) means standard error will be small.   
+
+- what does this mean for including a lot of variables in your model? 
+
+---
+
+## Tolerance in `R`
+
+```{r}
+library(olsrr)
+
+ols_vif_tol(mr.model)
+```
+
+Why are tolerance values identical here?
+
+---
+
+class: inverse
+
+## Next time...
+
+Model comparisons
+
+Categorical predictors

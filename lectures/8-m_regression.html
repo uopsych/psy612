@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Multiple Regression</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -45,14 +46,29 @@ class: center, middle, inverse, title-slide
 
 ```r
 library(here)
-stress.data = read.csv(here("data/stress.csv"))
+stress.data = read.csv(here("data/stress.csv")) %&gt;% select(-group)
 library(psych)
-describe(stress.data$Stress)
+describe(stress.data, fast = T)
 ```
 
 ```
-##    vars   n mean   sd median trimmed  mad  min   max range skew kurtosis   se
-## X1    1 118 5.18 1.88   5.27    5.17 1.65 0.62 10.32  9.71 0.08     0.22 0.17
+##         vars   n   mean     sd  min    max  range    se
+## id         1 118 488.65 295.95 2.00 986.00 984.00 27.24
+## Anxiety    2 118   7.61   2.49 0.70  14.64  13.94  0.23
+## Stress     3 118   5.18   1.88 0.62  10.32   9.71  0.17
+## Support    4 118   8.73   3.28 0.02  17.34  17.32  0.30
+```
+
+```r
+round(cor(stress.data),2)
+```
+
+```
+##            id Anxiety Stress Support
+## id       1.00    0.07  -0.05   -0.03
+## Anxiety  0.07    1.00  -0.05   -0.55
+## Stress  -0.05   -0.05   1.00    0.52
+## Support -0.03   -0.55   0.52    1.00
 ```
 
 ---
@@ -68,16 +84,16 @@ summary(mr.model)
 ```
 ...
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-## Support      0.40618    0.05115   7.941 1.49e-12 ***
-## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+## Anxiety      0.25609    0.06740   3.799         0.000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 1.519 on 115 degrees of freedom
 ## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ...
 ```
 
@@ -136,7 +152,7 @@ Note, however, that the calculations differ between the three effect sizes. Thes
 
   - if predictors are not correlated, `\(r\)`,  sr `\((r_{Y(1.2)})\)` and b* are equal 
 
-.small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and usually they're a sign that you have some problems in the model. ]
+.small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and [usually indicative of some multicollinearity](http://www.statmodel.com/download/Joreskog.pdf).]
 ---
 
 ** Standardized multiple regression coefficient** `\(b^*\)`
@@ -154,17 +170,10 @@ Note, however, that the calculations differ between the three effect sizes. Thes
 
 
 ```r
-z_score = function(x){
-  m = mean(x, na.rm=T)
-  s = sd(x, na.rm=T)
-  z = (x-m)/s
-  return(z)
-}
-
 stress.data = stress.data %&gt;%
-  mutate(z_anxiety = z_score(Anxiety),
-         z_support = z_score(Support),
-         z_stress = z_score(Stress))
+  mutate(z_anxiety = scale(Anxiety),
+         z_support = scale(Support),
+         z_stress = scale(Stress))
 
 mod0 = lm(z_stress ~ z_anxiety + z_support, 
           data = stress.data)
@@ -180,13 +189,13 @@ round(coef(mod0),3)
 .pull-left[
 
 ```r
-spcor.test(x = stress.data$Anxiety, 
-           y = stress.data$Stress, 
+spcor.test(x = stress.data$Stress, 
+           y = stress.data$Anxiety, 
            z = stress.data$Support)$estimate
 ```
 
 ```
-## [1] 0.2797712
+## [1] 0.2844005
 ```
 ]
 
@@ -194,8 +203,8 @@ spcor.test(x = stress.data$Anxiety,
 
 
 ```r
-pcor.test(x = stress.data$Anxiety, 
-          y = stress.data$Stress, 
+pcor.test(x = stress.data$Stress, 
+          y = stress.data$Anxiety, 
           z = stress.data$Support)$estimate
 ```
 
@@ -233,16 +242,16 @@ summary(mr.model)
 ## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-*## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-## Support      0.40618    0.05115   7.941 1.49e-12 ***
-## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+*## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+## Anxiety      0.25609    0.06740   3.799         0.000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 1.519 on 115 degrees of freedom
 ## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ```
 
 ---
@@ -263,17 +272,25 @@ summary(mr.model)
 ## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-*## Support      0.40618    0.05115   7.941 1.49e-12 ***
-*## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+*## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+*## Anxiety      0.25609    0.06740   3.799         0.000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 1.519 on 115 degrees of freedom
 ## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ```
+
+---
+
+## "Controlling for"
+
+![](images/control.gif)
+
+Taken from [@nickchk](https://twitter.com/nickchk)
 
 ---
 
@@ -335,14 +352,6 @@ coef(mr.model)
 
 ---
 
-### "Controlling for"
-
-![](images/control.gif)
-
-Taken from [@nickchk](https://twitter.com/nickchk)
-
----
-
 ## Estimating model fit
 
 
@@ -361,29 +370,30 @@ summary(mr.model)
 ## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-## Support      0.40618    0.05115   7.941 1.49e-12 ***
-## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+## Anxiety      0.25609    0.06740   3.799         0.000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 1.519 on 115 degrees of freedom
 *## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ```
 
 ---
 
 
 ```r
-library(broom)
+library(broom); library(scales)
 stress.data1 = augment(mr.model)
 stress.data1 %&gt;%
-  ggplot(aes(x = Stress, y = .fitted)) + geom_point() + geom_smooth(method = "lm") + scale_x_continuous("Y (Stress)") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
+  ggplot(aes(x = Stress, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(Stress), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (Stress)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
 ```
 
 ![](8-m_regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
 
 ---
 ## Multiple correlation, R
@@ -424,7 +434,7 @@ We haven't changed our method of decomposing variance from the univariate model
 
 - `\(R^2\)` (omnibus)  
 - Regression Coefficients  
-- Increments to R2  
+- Increments to `\(R^2\)`  
     
 ---
 
@@ -433,14 +443,16 @@ We haven't changed our method of decomposing variance from the univariate model
 
 - Same interpretation as before  
 
-- Adding predictors into your model will increase `\(R^2\)` – regardless of whether or not the predictor is significantly correlated with Y.    
+- Adding predictors into your model will increase `\(R^2\)` – regardless of whether or not the predictor is significantly correlated with Y.
+
+  - Think back to sampling error. If the population correlation, `\(\rho\)`, is 0, will your sample estimate always be 0? 
 
 - Adjusted/Shrunken `\(R^2\)` takes into account the number of predictors in your model  
 
 
 ---
 
-## Adjusted R-squared, `\(\text{Adj} R^2\)`
+## Adjusted R-squared, `\(\text{Adj } R^2\)`
 
 `$$\large R_{A}^2 = 1 - (1 -R^2)\frac{n-1}{n-p-1}$$`
 
@@ -473,20 +485,22 @@ summary(mr.model)
 ## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-## Support      0.40618    0.05115   7.941 1.49e-12 ***
-## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+## Anxiety      0.25609    0.06740   3.799         0.000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 1.519 on 115 degrees of freedom
 ## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-*## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+*## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ```
 ---
 
 ## ANOVA
+
+The omnibus test uses all SS associated with predictors.
 
 
 ```r
@@ -497,15 +511,15 @@ anova(mr.model)
 ## Analysis of Variance Table
 ## 
 ## Response: Stress
-##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-*## Support     1 113.151 113.151  49.028 1.807e-10 ***
-*## Anxiety     1  33.314  33.314  14.435 0.0002336 ***
-## Residuals 115 265.407   2.308                      
+##            Df  Sum Sq Mean Sq F value          Pr(&gt;F)    
+*## Support     1 113.151 113.151  49.028 0.0000000001807 ***
+*## Anxiety     1  33.314  33.314  14.435       0.0002336 ***
+## Residuals 115 265.407   2.308                            
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-
+Note that the _p_-values in this table do NOT match the _p_-values in the regression summary table. For the time being, just know that, in a multiple regression framework, you should use the `summary()` output to interpret the unique contribution of predictors, not the `anova()` output. We'll return to these calculations later in the term and discuss them in more detail. 
 ---
 
 
@@ -523,16 +537,16 @@ summary(mr.model)
 ## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-*## Support      0.40618    0.05115   7.941 1.49e-12 ***
-*## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+*## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+*## Anxiety      0.25609    0.06740   3.799         0.000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 1.519 on 115 degrees of freedom
 ## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ```
 
 ---
@@ -555,7 +569,51 @@ In the case of multiple regression:
 `$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$`
 
 - As N increases... 
-- As variance explained increases...
+- As variance explained increases... 
+
+---
+
+`$$se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$`
+
+## Tolerance
+
+`$$1-R_{i.jkl...p}^2$$`
+
+- Proportion of `\(X_i\)` that does not overlap with other predictors.
+    - Bounded by 0 and 1
+
+- Large tolerance (little overlap) means standard error will be small.   
+
+- what does this mean for including a lot of variables in your model? 
+
+---
+
+## Tolerance in `R`
+
+
+```r
+library(olsrr)
+
+ols_vif_tol(mr.model)
+```
+
+```
+##   Variables Tolerance      VIF
+## 1   Support  0.701857 1.424792
+## 2   Anxiety  0.701857 1.424792
+```
+
+Why are tolerance values identical here?
+
+---
+
+class: inverse
+
+## Next time...
+
+Model comparisons
+
+Categorical predictors
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -603,6 +661,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -620,17 +704,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {
