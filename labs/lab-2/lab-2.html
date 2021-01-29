@@ -1612,7 +1612,7 @@ library(sjPlot)</code></pre>
 <p>We determine the values of these estimates by finding the best-fitting linear model for a set of collected data and determining the slope and y-intercept of this model. Once we have determined our best estimates of the slope and y-intercept of our linear model, we can use these values to calculate fitted values of Y (<span class="math inline">\(\hat{Y_i}\)</span>) given a particular value on our predictor variable, X.</p>
 <p><span class="math display">\[\hat{Y_i} = b_0 + b_1X_i\]</span></p>
 <blockquote>
-<p><strong>Question:</strong> Using Ordinary Least Squares regression method, what criteria do we use to determine what is the best-fitting linear model?</p>
+<p><strong>Question:</strong> Using Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?</p>
 </blockquote>
 <p>Without further ado, let’s go ahead and estimate a regression equation in R.</p>
 <div id="estimating-regressions-in-r" class="section level3">
@@ -1736,7 +1736,7 @@ str(model_summary)</code></pre>
 <p>Now get MS_Residual. We could get SS_Residual to calculate this a couple of ways:</p>
 <p><span class="math display">\[SS_Y = SS_{Model} + SS_{Residual}\]</span></p>
 <p>Either rearrange the above equation to solve for SS_Residual, or calculate it from the raw and fitted values using the equation below:</p>
-<p><span class="math display">\[SS_{Residual} = \Sigma(Y_i - \hat{Y_i}^2)\]</span></p>
+<p><span class="math display">\[SS_{Residual} = \Sigma(Y_i - \hat{Y_i})^2\]</span></p>
 <p>Use one of these methods to calculate SS_Residual below.</p>
 <p>Divide the SS_Residual by the df_Residual, which are n - k - 1.</p>
 <p>We can finally calculate the F-statistic. Store it in an object called F_stat.</p>

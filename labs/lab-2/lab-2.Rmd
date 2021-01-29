@@ -54,7 +54,7 @@ We determine the values of these estimates by finding the best-fitting linear mo
 
 $$\hat{Y_i} = b_0 + b_1X_i$$
 
->**Question:** Using Ordinary Least Squares regression method, what criteria do we use to determine what is the best-fitting linear model?
+>**Question:** Using Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
 
 
 
@@ -281,7 +281,7 @@ $$SS_Y = SS_{Model} + SS_{Residual}$$
 
 Either rearrange the above equation to solve for SS_Residual, or calculate it from the raw and fitted values using the equation below:
 
-$$SS_{Residual} = \Sigma(Y_i - \hat{Y_i}^2)$$
+$$SS_{Residual} = \Sigma(Y_i - \hat{Y_i})^2$$
 
 Use one of these methods to calculate SS_Residual below.
 ```{r, eval = FALSE}
