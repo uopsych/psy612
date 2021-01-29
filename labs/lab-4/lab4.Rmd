@@ -1,0 +1,454 @@
+---
+title: "Multiple Regression"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Before we begin, load the following libraries. Install any of the packages you have not yet installed on your computers.
+
+```{r}
+library(rio) # for importing data
+library(pwr) # for power calculation
+library(broom) # for cleaning up output
+library(sjPlot) # for tables
+library(tidyverse) # for plotting and data wrangling
+library(psych)
+library(ppcor) # for partial and semi-partial correlations; may need to install
+library(janitor) # for cleaning up data names
+library(scatterplot3d) # This library will allow us to draw 3d plots
+library(htmltools)
+library(rlang)
+library(rgl)
+library(car)
+
+options(scipen = 99) # Turning off scientific notation
+```
+
+
+
+Import the data set and inspect it. What variables do we have in our data set? What measurement scale is each variable on?
+```{r}
+data <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-4/data_htwtage.csv")
+```
+
+
+
+# Univariate Regression
+
+Let's start with inspecting the relationship between age and weight. 
+
+
+Visualize the relationship between age and weight. Let's also label the data points with the name of the participant that data point came from.
+```{r}
+ggplot(data = data, aes(x = scale(Age), y = scale(Weight))) +
+  geom_point() + 
+  geom_text(aes(label = Name, hjust=0, vjust=0)) + # Label the data points using the names from the Name column of the dataset
+  geom_smooth(method = "lm") +
+  labs(x = "Standardized Age", y = "Standardized Weight", title = "Weight Regressed On Age") +
+  theme(plot.title = element_text(hjust = 0.5)) # Center the title
+```
+
+
+
+Regress weight on age (Y = Weight, X1 = Age). Standardize the variables in the model. 
+```{r}
+
+
+```
+
+> **Question** What is the relationship between the standardized regression coefficient in a univariate regression model to the zero-order correlation between the predictor and outcome variable?
+
+
+
+
+
+It looks on our scatterplot like, for instance, Philip is much heavier than expected for their age, and Joyce is much lighter than expected for their age. 
+
+> **Question** What's another variable that could help explain these errors? In other words, what's another variable that could explain variation in weight that is not explained by age? 
+
+
+
+
+# Multiple Regression
+
+Now, let's use both age and height to predict weight.
+
+
+Visualize the relationship between weight, age, and height.
+
+Non-interactive version of a 3D scatterplot.
+```{r 3D Plots using scatterplot3d}
+s3d <- scatterplot3d(scale(data$Age), scale(data$Height), scale(data$Weight), xlab = "Age", ylab = "Height", zlab = "Weight")
+model2 <- lm(scale(Weight) ~ scale(Age) + scale(Height), data = data)
+s3d$plane3d(model2, lty.box = "solid", col = "blue")
+```
+
+Interactive version of a 3D scatterplot.
+```{r}
+scatter3d(scale(Weight) ~ scale(Age) + scale(Height), data = data, xlab = "Age", ylab = "Weight", zlab = "Height")
+```
+
+
+
+Regress weight on age and height (Y = Weight, X1 = Age, X2 = Height). Standardize the variables in the model.
+```{r}
+
+
+```
+
+
+
+
+The results provide us with the following model:
+$$Model 2: Weight-hat_i = 0 + .08(ZAge)_i + .81(ZHeight)_i + \epsilon_i$$
+
+
+
+> **Question** How does the regression coefficient corresponding to Age differ in model2 compared to in model1? 
+
+> **Question** How does the regression coefficient corresponding to Age in model2 compare to the zero-order correlation between Age and Weight?
+
+
+
+
+
+
+# Partial Regression Coefficients
+
+The regression coefficients corresponding to the predictors in a multiple regression model are called *partial regression coefficients*. Let's break down what this term means.
+
+A new concept that gets introduced when we have multiple predictors in the regression model is *redundancy*, which occurs when the predictors in a multiple regression model are correlated (which they often are) and there is overlap in the variability each can account for in the outcome variable. In other words, some of the variability X1 can account for in Y is *redundant* with the variaibility X2 can account for in Y.
+
+![](https://raw.githubusercontent.com/saralieber/R_Coding/master/venn_diagram_wthtage.PNG)
+
+
+The *partial regression coefficients* that we obtain in the "Estimate" column from the summary output of our multiple regression model account for this issue of redundancy. A partial regression coefficient is the relationship between a predictor variable (X1) and outcome variable (Y) when the relationship between X1 and the other predictor variable(s) in the model has been removed. 
+
+Let's walk through the logic of a partial regression coefficient by re-creating the partial regression coefficient corresponding to Age (b1 = 0.0838) from our multiple regression model above.
+
+
+# Re-creating the partial regression coefficient for Age
+1. Regress Age on Height. Standardize the variables.
+```{r}
+
+```
+
+2. Store the part of Age unrelated to Height in a new variable called age_residuals.
+```{r}
+
+```
+
+3. Regress Weight on the part of Age unrelated to Height (age_residuals). Don't forget to standardize Weight to stay consistent with how we ran the multiple regression model earlier.
+```{r}
+
+```
+
+4. Examine the final results using the summary() function.
+```{r}
+
+```
+
+> **Question** How does the regression coefficient corresponding to the part of Age unrelated to Height in the univariate model predicting Weight compare to the regression coefficient corresponding to Age in the multiple regression model?
+
+
+> **Question** Which type of correlation is the partial regression coefficient conceptually most similar to?
+
+
+
+
+
+# Short Detour: The Relationship Between the Standardized Regression Coefficient and Semi-Partial Correlations
+
+If we were to calculate the correlation between Weight and the part of Age unrelated to Height, it would produce the *semi-partial correlation*.
+
+```{r}
+cor(data$Weight, age_residuals)
+```
+
+Let's see that this correlation is equal to the semi-partial correlation by calculating it below. 
+
+# Semi-Partial Correlations
+
+Given x1, x2, and Y, the semi-partial correlation between x1 and y (controlling for x2) is the correlation between the part of x1 that is not related to x2 and y:
+
+$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2} }{\sqrt{1-r_{X1X2}^2}}$$
+Y = Weight
+X1 = Age
+X2 = Height
+
+rYX1 = correlation btw Weight and Age
+rYX2 = correlation btw Weight and Height
+rX1X2 = correlation btw Age and Height
+
+```{r}
+rYX1 <- cor(data$Weight, data$Age)
+rYX2 <- cor(data$Weight, data$Height)
+rX1X2 <- cor(data$Age, data$Height)
+
+semi_partial <- (rYX1 - (rYX2*rX1X2))/(sqrt(1 - (rX1X2^2)))
+semi_partial
+```
+
+
+Notice the similarity between the formula for the semi-partial correlation and the formula for the standardized regression coefficient.
+
+## Standardized Regression Coefficient
+
+The equation for calculating the standardized regression coefficient is: 
+$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2} }{{1-r_{X1X2}^2}}$$
+
+
+```{r}
+std_regr_coeff <- (rYX1 - (rYX2*rX1X2))/((1 - (rX1X2^2)))
+std_regr_coeff
+```
+
+
+
+
+# Semi-Partial and Partial Correlations
+
+You can also use functions in the ppcor package to calculate semi-partial and partial correlations more quickly.
+
+## Semi-partial Correlation
+```{r}
+semi_partial_corr <- spcor.test(
+  x = data$Weight, # X1 (var of interest 1)
+  y = data$Age, # Y (var of interest 2 - the one you want residualized)
+  z = data$Height # X2 (control variable)
+)
+
+semi_partial_corr
+```
+
+## Partial Correlation
+```{r}
+partial_corr <- pcor.test(
+  x = data$Weight, # X1 (var of interest 1)
+  y = data$Age, # Y (var of interest 2)
+  z = data$Height # X2 (control variable)
+)
+
+partial_corr
+```
+
+> **Question** What's the difference conceptually in how we should understand the partial correlation between weight and age versus the semi-partial correlation between weight and age, controlling for height?
+
+
+
+
+
+# Significance Testing: The Model Comparison Approach
+
+## Testing the Significance of the Overall Model 
+
+A helpful way of framing the null hypothesis we want to test is using the model comparison approach. In this approach, you construct two models: one which specifies what you expect if the null hypothesis is true, and one that represents the alternative hypothesis. The model representing the alternative hypothesis includes the predictor(s) you want to test the significance of. The model representing the null hypothesis does not include these predictor(s). These predictors should be the *only* thing that differs between the two models.
+
+Testing the significance of the overall model (aka, the omnibus test), means examining whether, as a set, both age and height, account for a significance amount of variation in scores on weight. 
+
+We can test this by comparing two different models:
+
+$$Model 1: Weight_i = \beta_0 + \epsilon_i$$
+
+
+$$Model 2: Weight_i = \beta_0 + \beta_1Age_i + \beta_2Height_i + \epsilon_i$$
+Where the null hypothesis states:
+
+$$H0: \beta_1 = \beta_2 = 0$$
+
+And the alternative hypothesis states:
+
+H1: At least one beta is not equal to zero.
+
+
+
+The key to the *model comparison approach* is comparing the amount of unaccounted for error remaining when Model 1 is used compared to when Model 2 is used. Then, we can test whether the difference in the amount of unaccounted for error remaining between the two models is significant. 
+
+
+Let's visualize Model 1.
+```{r}
+ggplot(data = data, aes(x = Name, y = Weight)) +
+  geom_point() +
+  geom_hline(yintercept = mean(data$Weight), color="red")
+```
+
+
+Now, let's run Model 1 and see how much error is left unaccounted for. 
+```{r}
+Model_1 <- lm(Weight ~ 1, data = data)
+```
+
+
+Let me introduce a new way of looking at the output of a regression analysis, the anova() function. This function gives us the SSE (the amount of unaccounted for error remaining using Model 1).
+```{r}
+anova_model1 <- anova(Model_1)
+anova_model1
+```
+
+The Sum of Squares on the *residuals* row corresponds to the SSE. That is, if you were to calculate the distance between each person's actual weight and the weight predicted by Model 1 (the mean), square those distances, and sum them, you would get 9,335.7. 
+
+
+
+Now, let's run Model 2 and see how much error is left unaccounted for.
+```{r}
+Model_2 <- lm(Weight ~ Age + Height, data = data)
+anova_model2 <- anova(Model_2)
+anova_model2
+```
+
+Look at the residuals row again to get the SSE. The amount of unaccounted for error remaining when we use model 2 is 2,120.1. An improvement from Model 1!
+
+
+
+How much was SSE reduced by using Model 2 instead of Model 1?
+```{r}
+SSE_Model1 <- anova_model1$`Sum Sq`[1]
+SSE_Model2 <- anova_model2$`Sum Sq`[3]
+
+SSR <- SSE_Model1 - SSE_Model2 # SSR means Sum of Squares Reduced
+SSR
+```
+
+
+
+## Model Comparison in a Single Step Using the anova() function
+
+We can give both models as arguments to the anova() function to make the model comparison in a single step and test whether the reduction in SSE is significant.
+```{r}
+model_comparison <- anova(Model_1, Model_2) # List the model with fewer predictors first
+model_comparison
+```
+
+
+
+Let's also calculate how much we reduced the amount of unaccounted for error using Model 2 compared to Model 1 as a proportion of the total amount of unaccounted for error we started with in Model 1.
+```{r}
+proportional_reduction_error <- (SSE_Model1 - SSE_Model2)/SSE_Model1
+proportional_reduction_error
+
+
+# We could also grab these values from the ANOVA model comparison table.
+proportional_reduction_error <- (model_comparison$`Sum of Sq`[2])/model_comparison$RSS[1]
+proportional_reduction_error
+```
+
+> **Question** What does this proportional reduction in error mean?
+
+> **Question** What is the more familiar term for this value?
+
+
+
+
+Look again at our summary output if we run our multiple regression model (Model 2) and see how our results map on.
+```{r}
+Model_2 <- lm(Weight ~ Age + Height, data = data)
+summary(Model_2)
+```
+
+
+The statistics given at the bottom of the summary output correspond to a test of the significance of the *overall model* i.e., the *omnibus test*.
+
+
+
+
+
+# Significance Testing: The Model Comparison Approach
+
+## Testing the Significance of Specific Predictor(s)
+
+We can also construct a model comparison to represent the null hypothesis we want to test to see if a specific predictor in the model is significant. Let's do an example testing the significance of Height in our multiple regression model. 
+
+$$Model 1: Weight_i = \beta_0 + \beta_1Age_i + \epsilon_i$$
+
+
+$$Model 2: Weight_i = \beta_0 + \beta_1Age_i + \beta_2Height_i + \epsilon_i$$
+Where the null hypothesis states:
+
+$$H0: \beta_2 = 0$$
+
+And the alternative hypothesis states:
+
+$$H1: \beta_2 \not= 0$$
+
+Construct model 1 and model 2.
+```{r}
+model1b <- lm(Weight ~ Age, data = data)
+model2b <- lm(Weight ~ Age + Height, data = data)
+```
+
+Compare the models using anova() function.
+```{r}
+model_comparison_2 <- anova(model1b, model2b)
+model_comparison_2
+```
+
+Compute R-squared.
+```{r}
+r_squared <- model_comparison_2$`Sum of Sq`[2]/model_comparison_2$RSS[1]
+r_squared
+```
+
+Look at summary output from Model 2 again.
+```{r}
+summary(Model_2)
+```
+
+
+There's equivalence between what we've done using the model comparison approach and the t-test approach that's used to test the significance of the specific predictors in the model in the summary output. Notice what we get if we take the square root of the F-statistic from the model comparison output.
+
+```{r}
+sqrt(model_comparison_2$F[2])
+```
+
+And also notice the correspondence in the p-values.
+```{r}
+model_comparison_2$`Pr(>F)`[2]
+```
+
+
+Finally, we may also want confidence intervals around our regression coefficients.
+```{r}
+confint(Model_2)
+```
+
+
+
+# Minihacks
+
+Use the following data set for these minihacks.
+
+```{r}
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>% janitor::clean_names() # to get things into snake_case
+
+head(df)
+```
+
+
+# Minihack 1 
+
+Say a researcher is interested in whether there is a relationship between social support and happiness when controlling for positive expressivity. Calculate the semi-partial and partial correlations for this scenario. Explain the difference in what the semi-partial versus the partial correlation means.
+
+
+# Minihack 2 
+
+Run a multiple regression predicting happiness from social support and positive expressivity. Interpret the meaning of the regression coefficients in your output.
+
+
+
+# Minihack 3 
+
+Treat the model you ran in minihack 2 as model 1. Make a new model, Model 2, that includes all the predictors in Model 1 plus exercise and optimism. 
+
+Perform a model comparison to test whether the variation in happiness accounted for by exercise and optimism is significant above and beyond the variation already accounted for by social support and positive expressivity.
+
+Report the change in SSE between Model 1 and Model 2, the F-statistic with its degrees of freedom, the p-value, and also calculate R-squared.
+
+
+
+
+
