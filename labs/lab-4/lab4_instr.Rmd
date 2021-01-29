@@ -9,6 +9,8 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-4/lab4.Rmd).
+
 Before we begin, load the following libraries. Install any of the packages you have not yet installed on your computers.
 
 ```{r}
