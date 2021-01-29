@@ -201,7 +201,7 @@ Notice the similarity between the formula for the semi-partial correlation and t
 ## Standardized Regression Coefficient
 
 The equation for calculating the standardized regression coefficient is: 
-$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{{1-r_{X1X2}^2}}$$
+$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{1-r_{X1X2}^2}$$
 
 
 ```{r}
