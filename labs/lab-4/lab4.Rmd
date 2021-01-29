@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Before we begin, load the following libraries. Install any of the packages you have not yet installed on your computers.
 
-```{r}
+```{r, include = FALSE}
 library(rio) # for importing data
 library(pwr) # for power calculation
 library(broom) # for cleaning up output
@@ -129,6 +129,8 @@ A new concept that gets introduced when we have multiple predictors in the regre
 
 The *partial regression coefficients* that we obtain in the "Estimate" column from the summary output of our multiple regression model account for this issue of redundancy. A partial regression coefficient is the relationship between a predictor variable (X1) and outcome variable (Y) when the relationship between X1 and the other predictor variable(s) in the model has been removed. 
 
+![](https://raw.githubusercontent.com/saralieber/R_Coding/master/partial_regr_coeff_weight_age.PNG)
+
 Let's walk through the logic of a partial regression coefficient by re-creating the partial regression coefficient corresponding to Age (b1 = 0.0838) from our multiple regression model above.
 
 
@@ -167,7 +169,7 @@ Let's walk through the logic of a partial regression coefficient by re-creating 
 If we were to calculate the correlation between Weight and the part of Age unrelated to Height, it would produce the *semi-partial correlation*.
 
 ```{r}
-cor(data$Weight, age_residuals)
+
 ```
 
 Let's see that this correlation is equal to the semi-partial correlation by calculating it below. 
