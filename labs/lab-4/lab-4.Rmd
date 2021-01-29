@@ -180,7 +180,7 @@ Let's see that this correlation is equal to the semi-partial correlation by calc
 
 Given x1, x2, and Y, the semi-partial correlation between x1 and y (controlling for x2) is the correlation between the part of x1 that is not related to x2 and y:
 
-$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2} }{\sqrt{1-r_{X1X2}^2}}$$
+$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{\sqrt{1-r_{X1X2}^2}}$$
 Y = Weight
 X1 = Age
 X2 = Height

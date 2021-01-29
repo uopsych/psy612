@@ -491,7 +491,7 @@ s3d$plane3d(model2, lty.box = &quot;solid&quot;, col = &quot;blue&quot;)</code><
 <div id="semi-partial-correlations" class="section level1">
 <h1>Semi-Partial Correlations</h1>
 <p>Given x1, x2, and Y, the semi-partial correlation between x1 and y (controlling for x2) is the correlation between the part of x1 that is not related to x2 and y:</p>
-<p><span class="math display">\[\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2} }{\sqrt{1-r_{X1X2}^2}}\]</span> Y = Weight X1 = Age X2 = Height</p>
+<p><span class="math display">\[\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{\sqrt{1-r_{X1X2}^2}}\]</span> Y = Weight X1 = Age X2 = Height</p>
 <p>rYX1 = correlation btw Weight and Age rYX2 = correlation btw Weight and Height rX1X2 = correlation btw Age and Height</p>
 <pre class="r"><code>rYX1 &lt;- cor(data$Weight, data$Age)
 rYX2 &lt;- cor(data$Weight, data$Height)
@@ -503,7 +503,7 @@ semi_partial</code></pre>
 <p>Notice the similarity between the formula for the semi-partial correlation and the formula for the standardized regression coefficient.</p>
 <div id="standardized-regression-coefficient" class="section level2">
 <h2>Standardized Regression Coefficient</h2>
-<p>The equation for calculating the standardized regression coefficient is: <span class="math display">\[\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2} }{{1-r_{X1X2}^2}}\]</span></p>
+<p>The equation for calculating the standardized regression coefficient is: <span class="math display">\[\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{{1-r_{X1X2}^2}}\]</span></p>
 <pre class="r"><code>std_regr_coeff &lt;- (rYX1 - (rYX2*rX1X2))/((1 - (rX1X2^2)))
 std_regr_coeff</code></pre>
 <pre><code>## [1] 0.08378969</code></pre>
