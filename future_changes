@@ -67,7 +67,17 @@ final-project.html
 
 7-partial.html
 
+  * arrow from parent ses to peer relations
   * when to use each: only care about X and Y and controlling for variable; comparions between diff x's and incremental validity; network analysis
+  
+8-m_regression.html
+  
+  * remove ID variable from dataset
+  * no matter where you cut the plane, the angle is the same
+  * walk through GIF -- break this up into steps and different slides. May require building my own figures
+  
+lab-4.html
+
   
 9-m_regression.html
 
@@ -87,6 +97,7 @@ final-project.html
 * add something about weighted least squares (homoscedasticity)
 
 homework-1.html
+* there's an updated homework in the private repo. Use that!
 
 Question 10.1
 * last bullet point should not say "#5 and #6" but should refer to specific models. Suggestions have been made in Markdown files. 

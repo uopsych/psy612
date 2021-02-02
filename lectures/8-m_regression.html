@@ -3,7 +3,7 @@
   <head>
     <title>Multiple Regression</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -604,6 +604,17 @@ ols_vif_tol(mr.model)
 ```
 
 Why are tolerance values identical here?
+
+---
+
+## Which variables to include
+
+- You goal should be to match the population model (theoretically)
+
+- Including many variables will not bias parameter estimates but will potentially increase degrees of freedom and standard errors; in other words, putting too many variables in your model may make it _more difficult_ to find a statistically significant result 
+
+- But that's only the case if you add variables unrelated to Y or X; there are some cases in which adding the wrong variables can lead to spurious results. [Stay tuned for the lecture on causal models.]
+
 
 ---
 

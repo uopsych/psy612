@@ -23,6 +23,8 @@ navbar:
         href: "lectures/7-partial.html"
       - text: "8 - Multiple regression"
         href: "lectures/8-m_regression.html"
+      - text: "9 - Multiple regression (categorical predictors)"
+        href: "lectures/9-m_regression.html"
     - text: Labs
       menu:
       - text: "1 - Correlations"
