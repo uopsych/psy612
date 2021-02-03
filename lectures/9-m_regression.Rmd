@@ -33,14 +33,17 @@ library(tidyverse)
 ---
 
 ```{r, message=FALSE}
-library(here)
-stress.data = read.csv(here("data/stress.csv"))
+library(tidyverse)
+happy_d <- read_csv('http://static.lib.virginia.edu/statlab/materials/data/hierarchicalRegressionData.csv')
+happy_d$gender = ifelse(happy_d$gender == "Female", 1, 0)
 library(psych)
-describe(stress.data$Stress)
+describe(happy_d, fast = T)
 ```
 
+---
+
 ```{r, output.lines = c(9:19)}
-mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model <- lm(happiness ~ age + gender + friends + pets, data = happy_d)
 summary(mr.model)
 ```
 
@@ -104,44 +107,32 @@ $$F(p.new, N - 1 - p.all) = \frac {R_{m.2}^2- R_{m.1}^2} {1-R_{m.2}^2} (\frac {N
 ---
 ## Model comparisons
 ```{r}
+m.1 <- lm(happiness ~ age + gender, data = happy_d)
+m.2 <- lm(happiness ~ age + gender + pets, data = happy_d)
 
-m.1 <- lm(Stress ~ Support, data = stress.data)
-m.2 <- lm(Stress ~ Support + Anxiety, data = stress.data)
-anova(m.1, m.2)
+anova(m.1, m.2, mr.model)
 ```
 
 ---
-## model comparisons
+### change in $R^2$
 ```{r}
-anova(m.1)
-```
-
-
----
-## model comparisons
-```{r}
-anova(m.2)
+summary(m.1)
 ```
 ---
-## model comparisons
+### change in $R^2$
 ```{r, echo = FALSE}
 summary(m.2)
 ```
 ---
-## model comparisons
+### change in $R^2$
 ```{r, echo = FALSE}
-summary(m.1)
+summary(mr.model)
 ```
+
 ---
-## model comparisons
-
 ```{r}
-m.0 <- lm(Stress ~ 1, data = stress.data)
-m.1 <- lm(Stress ~ Support, data = stress.data)
-anova(m.0, m.1)
+anova(m.1, mr.model)
 ```
-
-
 ---
 ## partitioning the variance
 - It doesn't make sense to ask how much variance a variable explains (unless you qualify the association)

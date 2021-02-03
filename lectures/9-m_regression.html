@@ -28,11 +28,12 @@ class: center, middle, inverse, title-slide
 * Interpreting coefficient estimates
 * Estimating model fit
 * Significance tests (omnibus and coefficients)
+* Tolerance
 
 ---
 ## Today
 
-* Tolerance
+
 * Hierarchical regression/model comparison
 * Categorical predictors
 
@@ -40,43 +41,52 @@ class: center, middle, inverse, title-slide
 
 
 ```r
-library(here)
-stress.data = read.csv(here("data/stress.csv"))
+library(tidyverse)
+happy_d &lt;- read_csv('http://static.lib.virginia.edu/statlab/materials/data/hierarchicalRegressionData.csv')
+happy_d$gender = ifelse(happy_d$gender == "Female", 1, 0)
 library(psych)
-describe(stress.data$Stress)
+describe(happy_d, fast = T)
 ```
 
 ```
-##    vars   n mean   sd median trimmed  mad  min   max range skew kurtosis   se
-## X1    1 118 5.18 1.88   5.27    5.17 1.65 0.62 10.32  9.71 0.08     0.22 0.17
+##           vars   n  mean   sd min max range   se
+## happiness    1 100  4.46 1.56   1   9     8 0.16
+## age          2 100 25.37 1.97  20  30    10 0.20
+## gender       3 100  0.39 0.49   0   1     1 0.05
+## friends      4 100  6.94 2.63   1  14    13 0.26
+## pets         5 100  1.10 1.18   0   5     5 0.12
 ```
+
+---
 
 
 ```r
-mr.model &lt;- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model &lt;- lm(happiness ~ age + gender + friends + pets, data = happy_d)
 summary(mr.model)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
+## lm(formula = happiness ~ age + gender + friends + pets, data = happy_d)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+## -3.0556 -1.0183 -0.1109  0.8832  3.5911 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-## Support      0.40618    0.05115   7.941 1.49e-12 ***
-## Anxiety      0.25609    0.06740   3.799 0.000234 ***
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  5.64273    1.93194   2.921  0.00436 **
+## age         -0.11146    0.07309  -1.525  0.13057   
+## gender       0.14267    0.31157   0.458  0.64806   
+## friends      0.17134    0.05491   3.120  0.00239 **
+## pets         0.36391    0.13044   2.790  0.00637 **
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
+## Residual standard error: 1.427 on 95 degrees of freedom
+## Multiple R-squared:  0.1969,	Adjusted R-squared:  0.1631 
+## F-statistic: 5.822 on 4 and 95 DF,  p-value: 0.0003105
 ```
 
 ???
@@ -88,15 +98,8 @@ Review here:
 * Resid standard error
 * Coefficient estimates
 
----
 
-## Which variables to include
 
-- You goal should be to match the population model (theoretically)
-
-- Including many variables will not bias parameter estimates but will potentially increase degrees of freedom and standard errors; in other words, putting too many variables in your model may make it _more difficult_ to find a statistically significant result 
-
-- But that's only the case if you add variables unrelated to Y or X; there are some cases in which adding the wrong variables can lead to spurious results. [Stay tuned for the lecture on causal models.]
 
 ---
 
@@ -147,130 +150,123 @@ If we're comparing nested models by incrementally adding or subtracting variable
 ## Model comparisons
 
 ```r
-m.1 &lt;- lm(Stress ~ Support, data = stress.data)
-m.2 &lt;- lm(Stress ~ Support + Anxiety, data = stress.data)
-anova(m.1, m.2)
+m.1 &lt;- lm(happiness ~ age + gender, data = happy_d)
+m.2 &lt;- lm(happiness ~ age + gender + pets, data = happy_d)
+
+anova(m.1, m.2, mr.model)
 ```
 
 ```
 ## Analysis of Variance Table
 ## 
-## Model 1: Stress ~ Support
-## Model 2: Stress ~ Support + Anxiety
+## Model 1: happiness ~ age + gender
+## Model 2: happiness ~ age + gender + pets
+## Model 3: happiness ~ age + gender + friends + pets
+##   Res.Df    RSS Df Sum of Sq       F   Pr(&gt;F)   
+## 1     97 233.97                                 
+## 2     96 213.25  1    20.721 10.1769 0.001927 **
+## 3     95 193.42  1    19.821  9.7352 0.002394 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+### change in `\(R^2\)`
+
+```r
+summary(m.1)
+```
+
+```
+## 
+## Call:
+## lm(formula = happiness ~ age + gender, data = happy_d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.6688 -1.0094 -0.1472  0.8273  4.2973 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  7.83209    2.03275   3.853  0.00021 ***
+## age         -0.13039    0.07936  -1.643  0.10361    
+## gender      -0.16430    0.31938  -0.514  0.60811    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.553 on 97 degrees of freedom
+## Multiple R-squared:  0.02855,	Adjusted R-squared:  0.008515 
+## F-statistic: 1.425 on 2 and 97 DF,  p-value: 0.2455
+```
+---
+### change in `\(R^2\)`
+
+```
+## 
+## Call:
+## lm(formula = happiness ~ age + gender + pets, data = happy_d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.3803 -1.0514 -0.0370  0.9762  4.0770 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  6.84820    1.97716   3.464 0.000798 ***
+## age         -0.11464    0.07633  -1.502 0.136412    
+## gender       0.16879    0.32532   0.519 0.605058    
+## pets         0.41309    0.13525   3.054 0.002921 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.49 on 96 degrees of freedom
+## Multiple R-squared:  0.1146,	Adjusted R-squared:  0.08691 
+## F-statistic: 4.141 on 3 and 96 DF,  p-value: 0.00832
+```
+---
+### change in `\(R^2\)`
+
+```
+## 
+## Call:
+## lm(formula = happiness ~ age + gender + friends + pets, data = happy_d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.0556 -1.0183 -0.1109  0.8832  3.5911 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  5.64273    1.93194   2.921  0.00436 **
+## age         -0.11146    0.07309  -1.525  0.13057   
+## gender       0.14267    0.31157   0.458  0.64806   
+## friends      0.17134    0.05491   3.120  0.00239 **
+## pets         0.36391    0.13044   2.790  0.00637 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.427 on 95 degrees of freedom
+## Multiple R-squared:  0.1969,	Adjusted R-squared:  0.1631 
+## F-statistic: 5.822 on 4 and 95 DF,  p-value: 0.0003105
+```
+
+---
+
+```r
+anova(m.1, mr.model)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: happiness ~ age + gender
+## Model 2: happiness ~ age + gender + friends + pets
 ##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
-## 1    116 298.72                                  
-## 2    115 265.41  1    33.314 14.435 0.0002336 ***
+## 1     97 233.97                                  
+## 2     95 193.42  2    40.542 9.9561 0.0001187 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
-
----
-## model comparisons
-
-```r
-anova(m.1)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Response: Stress
-##            Df Sum Sq Mean Sq F value   Pr(&gt;F)    
-## Support     1 113.15 113.151  43.939 1.12e-09 ***
-## Residuals 116 298.72   2.575                     
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-
----
-## model comparisons
-
-```r
-anova(m.2)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Response: Stress
-##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-## Support     1 113.151 113.151  49.028 1.807e-10 ***
-## Anxiety     1  33.314  33.314  14.435 0.0002336 ***
-## Residuals 115 265.407   2.308                      
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
----
-## model comparisons
-
-```
-## 
-## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369 0.712792    
-## Support      0.40618    0.05115   7.941 1.49e-12 ***
-## Anxiety      0.25609    0.06740   3.799 0.000234 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 1.062e-11
-```
----
-## model comparisons
-
-```
-## 
-## Call:
-## lm(formula = Stress ~ Support, data = stress.data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.8215 -1.2145 -0.1796  1.0806  3.4326 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  2.56046    0.42189   6.069 1.66e-08 ***
-## Support      0.30006    0.04527   6.629 1.12e-09 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.605 on 116 degrees of freedom
-## Multiple R-squared:  0.2747,	Adjusted R-squared:  0.2685 
-## F-statistic: 43.94 on 1 and 116 DF,  p-value: 1.12e-09
-```
----
-## model comparisons
-
-
-```r
-m.0 &lt;- lm(Stress ~ 1, data = stress.data)
-m.1 &lt;- lm(Stress ~ Support, data = stress.data)
-anova(m.0, m.1)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Model 1: Stress ~ 1
-## Model 2: Stress ~ Support
-##   Res.Df    RSS Df Sum of Sq      F   Pr(&gt;F)    
-## 1    117 411.87                                 
-## 2    116 298.72  1    113.15 43.939 1.12e-09 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-
 ---
 ## partitioning the variance
 - It doesn't make sense to ask how much variance a variable explains (unless you qualify the association)
