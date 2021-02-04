@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Multiple Regression III</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="my-theme.css" type="text/css" />
   </head>
   <body>
@@ -20,168 +22,22 @@ class: center, middle, inverse, title-slide
 
 
 
-## Last time...
-
-* Model comparison
-* Categorical predictors/dummy coding
-
---
 
 ### Today...
 
 *ANOVA (the 611 version)
 
-It's important to note that by covering dummy coding a categorical variable, we have already covered ANOVA -- there is nothing more you can learn from this technique that the omnibus test of that model will not tell you. 
+Why two versions?
+
+Mathematically, regression with dummy codes and ANOVA are identical. But the way information is presented is different. Different frameworks are useful for different research designs and questions.
+
+* If you only have unordered, categorical variables, ANOVA may be easier to interpret.
+
+* If you have a mix of categorical and continuous variables, regression may be easier. 
+* You don't really need to choose... 
 
 ---
 
-## Example
-
-Participants performed an eye-hand coordination task while subjected to periodic 3-second bursts of 85 dB white noise played over earphones. The task required participants to keep a mouse pointer on a red dot that moved in a circular motion at a rate of 1 revolution per second. Participants performed the task until they allowed the pointer to stray from the rotating dot 10 times.  The time (in seconds) at the 10th failure was recorded and is the outcome measure.
-
-![](images/dot.jpg)
----
-
-### Example
-
-The participants were randomly assigned to one of four noise conditions:
-
-* controllable and predictable noise
-* uncontrollable but predictable noise
-* controllable but unpredictable noise
-* uncontrollable and unpredictable noise.
-
-When noise was predictable, the 3-second bursts of noise would occur regularly every 20 seconds. 
-
-When noise was unpredictable, the 3-second bursts would occur randomly (although every 20 seconds on average).  
-
----
-When noise was uncontrollable, participants could do nothing to prevent the noise from occurring. 
-
-When noise was  controllable, participants were shown a button that would prevent the noise, but they were told, "the button is a safety measure, for your protection, but we would prefer that you not use it unless absolutely necessary." No participants actually used the button.  
-
-Why is it important that the button was never used?
-
-Why is random assignment important in this design?
-
----
-
-
-```r
-library(here)
-rotate = read.csv(here("data/pursuit_rotor.csv"))
-head(rotate)
-```
-
-```
-##   ID Predict Control Group Time
-## 1  1       0       1     3  504
-## 2  2       0       0     1  443
-## 3  3       1       1     4  292
-## 4  4       0       1     3  398
-## 5  5       1       1     4  119
-## 6  6       0       0     1  545
-```
-
-```r
-class(rotate$Group)
-```
-
-```
-## [1] "integer"
-```
-
-```r
-rotate$Group_lab = factor(rotate$Group, 
-                          labels = c("Controllable\nPredictable", 
-                                     "Uncontrollable\nPredictable",
-                                     "Controllable\nUnpredictable",
-                                     "Uncontrollable\nUnpredictable"))
-```
-
----
-
-
-```r
-library(ggpubr)
-ggboxplot(data = rotate, x = "Group_lab", y = "Time", xlab = F)
-```
-
-![](10-m_regression_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
---
-The pattern of means indicates that performance degrades with either uncontrollable noise or unpredictable noise. Noise that is both uncontrollable and unpredictable appears to be particularly disruptive.
-
----
-
-
-```r
-ggbarplot(data = rotate, x = "Group_lab", y = "Time", xlab = F, add = c("mean_ci"), fill = "purple")
-```
-
-![](10-m_regression_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
-
-Addition of the confidence intervals indicates that the two extreme conditions are likely different from all of the other conditions.
-
----
-
-
-```r
-library(knitr)
-library(kableExtra)
-rotate %&gt;%
-  group_by(Group_lab) %&gt;%
-  summarize(N = n(),
-            Mean = mean(Time, na.rm = T),
-            SD = sd(Time, na.rm = T)) %&gt;%
-  kable(., digits = 2) %&gt;% kable_styling()
-```
-
-&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt; Group_lab &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; N &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Mean &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; SD &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Controllable
-Predictable &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 47 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 542.04 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 57.11 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Uncontrollable
-Predictable &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 352.85 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 67.98 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Controllable
-Unpredictable &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 379.04 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 71.85 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Uncontrollable
-Unpredictable &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 265.98 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 68.68 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-The groups differ in their sample sizes, which can easily occur with free random assignment.  There are advantages to equal sample sizes, so researchers often restrict random assignment to insure equal sample sizes across conditions.
-
-Hard to tell if the variability in the four groups is homogeneous. 
-
----
 ### Hypothesis
 
 Unlike regression, the ANOVA framework has a single hypothesis test. This is equivalent to the omnibus test of a multiple regression model.
@@ -316,9 +172,157 @@ As the treatment effect gets larger, the `\(F\)` statistic departs from 1.00. If
 
 ---
 
-![](10-m_regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+![](10-anova_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
 For 3 and 196 degrees of freedom, an `\(F\)` statistic of 2.65 or greater will indicate between-groups variability relative to within-group variability that is unusual if the null hypothesis is true.
 
+
+---
+
+## Example
+
+Participants performed an eye-hand coordination task while subjected to periodic 3-second bursts of 85 dB white noise played over earphones. The task required participants to keep a mouse pointer on a red dot that moved in a circular motion at a rate of 1 revolution per second. Participants performed the task until they allowed the pointer to stray from the rotating dot 10 times.  The time (in seconds) at the 10th failure was recorded and is the outcome measure.
+
+![](images/dot.jpg)
+---
+
+### Example
+
+The participants were randomly assigned to one of four noise conditions:
+
+* controllable and predictable noise
+* uncontrollable but predictable noise
+* controllable but unpredictable noise
+* uncontrollable and unpredictable noise.
+
+When noise was predictable, the 3-second bursts of noise would occur regularly every 20 seconds. 
+
+When noise was unpredictable, the 3-second bursts would occur randomly (although every 20 seconds on average).  
+
+---
+When noise was uncontrollable, participants could do nothing to prevent the noise from occurring. 
+
+When noise was  controllable, participants were shown a button that would prevent the noise, but they were told, "the button is a safety measure, for your protection, but we would prefer that you not use it unless absolutely necessary." No participants actually used the button.  
+
+Why is it important that the button was never used?
+
+Why is random assignment important in this design?
+
+---
+
+
+```r
+library(here)
+rotate = read.csv(here("data/pursuit_rotor.csv"))
+head(rotate)
+```
+
+```
+##   ID Predict Control Group Time
+## 1  1       0       1     3  504
+## 2  2       0       0     1  443
+## 3  3       1       1     4  292
+## 4  4       0       1     3  398
+## 5  5       1       1     4  119
+## 6  6       0       0     1  545
+```
+
+```r
+class(rotate$Group)
+```
+
+```
+## [1] "integer"
+```
+
+```r
+rotate$Group_lab = factor(rotate$Group, 
+                          labels = c("Control\nPredict", 
+                                     "No control\nPredict",
+                                     "Control\nUnpredict",
+                                     "No control\nUnpredict"))
+```
+
+---
+
+
+```r
+library(ggpubr)
+ggboxplot(data = rotate, x = "Group_lab", y = "Time", xlab = F)
+```
+
+![](10-anova_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+--
+The pattern of means indicates that performance degrades with either uncontrollable noise or unpredictable noise. Noise that is both uncontrollable and unpredictable appears to be particularly disruptive.
+
+---
+
+
+```r
+ggbarplot(data = rotate, x = "Group_lab", y = "Time", xlab = F, add = c("mean_ci"), fill = "purple")
+```
+
+![](10-anova_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+Addition of the confidence intervals indicates that the two extreme conditions are likely different from all of the other conditions.
+
+---
+
+
+```r
+library(knitr)
+library(kableExtra)
+rotate %&gt;%
+  group_by(Group_lab) %&gt;%
+  summarize(N = n(),
+            Mean = mean(Time, na.rm = T),
+            SD = sd(Time, na.rm = T)) %&gt;%
+  kable(., digits = 2) %&gt;% kable_styling()
+```
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Group_lab &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; N &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Mean &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SD &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control
+Predict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 47 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No control
+Predict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 352.85 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 67.98 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control
+Unpredict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 379.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 71.85 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No control
+Unpredict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 265.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 68.68 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+The groups differ in their sample sizes, which can easily occur with free random assignment.  There are advantages to equal sample sizes, so researchers often restrict random assignment to insure equal sample sizes across conditions.
+
+Hard to tell if the variability in the four groups is homogeneous. 
 
 ---
 
@@ -331,9 +335,9 @@ summary(fit_1)
 ```
 
 ```
-##              Df  Sum Sq Mean Sq F value Pr(&gt;F)    
-## Group_lab     3 2000252  666751   149.8 &lt;2e-16 ***
-## Residuals   196  872288    4450                   
+##              Df  Sum Sq Mean Sq F value              Pr(&gt;F)    
+## Group_lab     3 2000252  666751   149.8 &lt;0.0000000000000002 ***
+## Residuals   196  872288    4450                                
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -344,14 +348,17 @@ Note: how does the output above compare to this output? What is the difference b
 
 
 ```r
-fit_1.1 = aov(Time ~ Group, data = rotate)
-summary(fit_1.1)
+fit_1.1 = lm(Time ~ Group, data = rotate)
+anova(fit_1.1)
 ```
 
 ```
-##              Df  Sum Sq Mean Sq F value Pr(&gt;F)    
-## Group         1 1613798 1613798   253.9 &lt;2e-16 ***
-## Residuals   198 1258741    6357                   
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group       1 1613798 1613798  253.85 &lt; 0.00000000000000022 ***
+## Residuals 198 1258741    6357                                  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -360,14 +367,17 @@ summary(fit_1.1)
 ---
 
 ```r
-fit_1 = aov(Time ~ Group_lab, data = rotate)
-summary(fit_1)
+fit_1 = lm(Time ~ Group_lab, data = rotate)
+anova(fit_1)
 ```
 
 ```
-##              Df  Sum Sq Mean Sq F value Pr(&gt;F)    
-## Group_lab     3 2000252  666751   149.8 &lt;2e-16 ***
-## Residuals   196  872288    4450                   
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
+## Residuals 196  872288    4450                                  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -382,7 +392,7 @@ These pairwise comparisons can quickly grow in number as the number of condition
 As the number of groups in the ANOVA grows, the number of possible pairwise comparisons increases dramatically. 
 
 
-![](10-m_regression_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](10-anova_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -405,7 +415,7 @@ As the number of comparisons grows, the inflation of the Type I error rate can b
 
 The Type I error inflation that accompanies multiple comparisons motivates the large number of "correction" procedures that have been developed.
 
-![](10-m_regression_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](10-anova_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -436,10 +446,10 @@ pc_1
 ## 
 ## data:  rotate$Time and rotate$Group 
 ## 
-##   1       2       3      
-## 2 &lt; 2e-16 -       -      
-## 3 &lt; 2e-16 0.055   -      
-## 4 &lt; 2e-16 1.5e-10 5.9e-15
+##   1                    2                  3                 
+## 2 &lt; 0.0000000000000002 -                  -                 
+## 3 &lt; 0.0000000000000002 0.055              -                 
+## 4 &lt; 0.0000000000000002 0.0000000001533058 0.0000000000000059
 ## 
 ## P value adjustment method: none
 ```
@@ -457,10 +467,10 @@ pc_2
 ## 
 ## data:  rotate$Time and rotate$Group 
 ## 
-##   1       2       3      
-## 2 &lt; 2e-16 -       -      
-## 3 &lt; 2e-16 0.33    -      
-## 4 &lt; 2e-16 9.2e-10 3.6e-14
+##   1                    2                 3                
+## 2 &lt; 0.0000000000000002 -                 -                
+## 3 &lt; 0.0000000000000002 0.33              -                
+## 4 &lt; 0.0000000000000002 0.000000000919835 0.000000000000036
 ## 
 ## P value adjustment method: bonferroni
 ```
@@ -536,20 +546,32 @@ Performing the test using the `lm()` function means that some of the possible pa
 
 
 ```r
-rotate$Group = as.factor(rotate$Group)
-coef(summary(lm(Time~Group, data = rotate)))
+summary(fit_1)
 ```
 
 ```
-##              Estimate Std. Error   t value      Pr(&gt;|t|)
-## (Intercept)  542.0426   9.730897  55.70325 4.073456e-122
-## Group2      -189.1964  13.426685 -14.09107  1.331759e-31
-## Group3      -162.9981  13.913633 -11.71499  2.267662e-24
-## Group4      -276.0604  13.197069 -20.91831  7.933911e-52
+...
+## Coefficients:
+##                                Estimate Std. Error t value            Pr(&gt;|t|)
+## (Intercept)                     542.043      9.731   55.70 &lt;0.0000000000000002
+## Group_labNo control\nPredict   -189.196     13.427  -14.09 &lt;0.0000000000000002
+## Group_labControl\nUnpredict    -162.998     13.914  -11.71 &lt;0.0000000000000002
+## Group_labNo control\nUnpredict -276.060     13.197  -20.92 &lt;0.0000000000000002
+##                                   
+## (Intercept)                    ***
+## Group_labNo control\nPredict   ***
+## Group_labControl\nUnpredict    ***
+## Group_labNo control\nUnpredict ***
+...
 ```
+
+---
+
+Performing the test using the `lm()` function means that some of the possible pairwise comparisons are built in:
+
 
 ```r
-pairwise.t.test(x = rotate$Time, g = rotate$Group, 
+pairwise.t.test(x = rotate$Time, g = rotate$Group_lab, 
                        p.adjust.method = "holm")
 ```
 
@@ -557,12 +579,16 @@ pairwise.t.test(x = rotate$Time, g = rotate$Group,
 ## 
 ## 	Pairwise comparisons using t tests with pooled SD 
 ## 
-## data:  rotate$Time and rotate$Group 
+## data:  rotate$Time and rotate$Group_lab 
 ## 
-##   1       2       3      
-## 2 &lt; 2e-16 -       -      
-## 3 &lt; 2e-16 0.055   -      
-## 4 &lt; 2e-16 3.1e-10 1.8e-14
+##                       Control\nPredict     No control\nPredict
+## No control\nPredict   &lt; 0.0000000000000002 -                  
+## Control\nUnpredict    &lt; 0.0000000000000002 0.055              
+## No control\nUnpredict &lt; 0.0000000000000002 0.000000000306612  
+##                       Control\nUnpredict
+## No control\nPredict   -                 
+## Control\nUnpredict    -                 
+## No control\nUnpredict 0.000000000000018 
 ## 
 ## P value adjustment method: holm
 ```
@@ -639,6 +665,7 @@ Assumptions and diagnostics
 &lt;!-- mod2 = aov(Time ~ Group + gender, data = rotate) --&gt;
 &lt;!-- anova(mod2) --&gt;
 &lt;!-- ``` --&gt;
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -686,6 +713,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -703,17 +756,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {
