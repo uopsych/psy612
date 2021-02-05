@@ -1,0 +1,97 @@
+---
+title: 'PSY 612 Homework #3'
+author: "YOUR NAME HERE"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+# Instructions
+
+Please complete this assignment using the RMarkdown file provided [Link to Rmarkdown file here]. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-3.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+
+To receive full credit on this homework assignment, you must earn **15 points**. You may notice that the total number of points available to earn on this assignment is 34 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 15 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
+
+1. Points are all-or-nothing, meaning you cannot receive partial credit if you correctly answer only some of the bullet points for a question. All must be answered correctly.
+
+2. After the homework has been graded, you may retry questions to earn full credit, but you may only retry the questions you attempted on the first round. 
+
+3. The first time you complete this assignment, it must be turned in by 9am on the [due date](https://uopsych.github.io/psy612/schedule.html). Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+
+4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
+
+**Data:**  
+
+-`homework-happy`: The dataset looks at happiness in college as a relationship with school success, friendship quality, socioeconomic status, and an intervention group (1 = control, 2 = study skills training, 3 = social skills training). (Note that the variable names have spaces in them, which may make it tricky to work with. You might consider renaming the variables.)
+
+-`homework-world`: Remember this? These data from the World Happiness Survey, which we used in PSY 611. As a reminder, for each country we have the average response to the *happiness* ladder, the log of the *gross domestic product* per capita, the proportion of participants who believed they had friends and family they could count on, average *life* expectancy at birth, the proportion of participants satisfied with their *freedom*, the average amount donated to charity (*generosity*, residual, adjusting for GDP), the average response to two *corruption* items, and the country development status (first *world*, second world, third world, or other). 
+
+# 3-point questions
+
+## Question 1
+
+Using the data `homework-happy_d`, create a regression model predicting happiness from friendship quality, SES, and school success. Interpret each regression coefficient. 
+
+## Question 2 
+
+Calculate the standardized regression coefficients (b*) for the model above. You can use whatever method you would like.
+
+## Question 3
+
+You are testing the efficacy of multiple intervention programs on school success. Your research design includes three groups: a control group, a tutoring program, and a study group program. You analyze your data and report the results:
+
+```{r, message = F}
+library(tidyverse)
+library(janitor)
+happy_d = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/homework/homework-happy.csv")
+happy_d = clean_names(happy_d)
+mod2.3 = lm(school_success ~ intervention_group, data = happy_d)
+anova(mod2.3)
+```
+
+You show these results to your adviser, who hasn't had any coffee yet today. They glance briefly at your Markdown output and say, "You did this wrong. Do it again." Before they can explain how to fix the code, their dog starts barking. They mutter something under their breath, say, "Gotta deal with the dog. I'll see you next week," and end the Zoom meeting. 
+
+Fix the code above to generate the correct analysis for this research question.
+
+# 5-point questions
+
+## Question 1
+
+Using the dataset `homework-happy_d`, create a regression model predicting happiness from friendship quality, ses, and school success; be sure to save the output to an object.
+
+Load the `sjPlot` package and run through the following code. Interpret each figure along the way. (As a general hint: you'll want to open the help page for this function or use Google to find tutorials online.)
+
+* Enter your model object into the function `plot_model` and set the argument `type = "est"`. What does this plot represent?
+
+* Enter your model object into the function `plot_model` and set the argument `type = "std"`. What does this plot represent?
+
+* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = "school_success"` (or whatever the name of your school success variable is). What does this plot represent?
+
+* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = c("school_success", "ses[meansd]"` (or whatever the name of your school success and SES variables are). What does this plot represent? (Hint, think about the regression plane....)
+
+* Enter your model object into the function `plot_model` and set the argument `type = "slope"`. What does this plot represent? 
+
+## Question 2
+
+Using the dataset `homework-happy_d`, run a three-predictor regression predicting happiness by friendship quality, SES, and school success. 
+
+Check each of the six assumptions discussed in class. List each assumption and state how you examined (or would examine) that assumption. Note that not every aassumption can be directly examined, but all should be addressed. Include plots where applicable and be sure to _interpret your output_. 
+
+# 10-point questions
+
+## Question 1
+
+**Earn 5 additional points:** For those looking to stretch your `R` skills a bit, you can earn additional points by completing this problem using iteration. Here's what that means: you'll see this problem asks you to run multiple ANOVA tests. Instead of hard coding these or writing each test out by hand, write code that applies a single function or set of code to each outcome variable. To accomplish this, you might look into the various apply functions (`apply`, `sapply`, and `lapply`), but I would recommend diving into the world of `purrr`. These analyses can be completed elegantly with the use of `gather` and `map`. [This tutorial](https://emoriebeck.github.io/R-tutorials/purrr/) is a nice starting place, but you should expect to do a bit of independent learning. To earn these bonus points, you'll need to use iteration on all parts of this problem except for the pairwise comparisons. (Unless you want to try that too!)
+
+Use the `homework-world` dataset for this question. This dataset contains 7 variables of interest: happiness, gross domestic product, support, life expectancy, freedom, generosity, and corruption. 
+
+* Conduct an analysis of variance (use the `aov()` function) for each of the measures, using country development status (`world`) as the grouping variable. In a table, report the degrees of freedom, _F_-statistic, and _p_-value for each analysis (one row for each analysis). Make sure this table is formatted nicely, i.e., not just R output. I recommend `kable` from the `knitr` package, but there are many good options available.
+
+* If the _F_-test is significant for an analysis, conduct follow-up pairwise comparisons using a Holm correction. Report these in a table (one table per analysis).  Make sure these tables are formatted nicely.
+
+* Recall that the ANOVA model has the same homogeneity of variance assumption as the independent samples _t_-test. Assess the homogeneity of variance assumption for each of the outcome measures (use the `leveneTest()` function). Report these results in a single table and comment on whether this assumption is satisfied for each measure.
+
+* If we cannot assume homogeneity of variance when using a (Student's) independent samples _t_-test, we run a Welch's _t_-test, which doesn't have this assumption (but has lower power). There is an analogous test in the ANOVA framework, called the Welch's one-way test. Re-run the analyses of variance, but now use the Welch one-way test (use the `oneway.test() function`). Report these results in a single table.  Make sure this table is formatted nicely. Comment on whether any conclusions about group differences change compared to the original ANOVAs.
+
