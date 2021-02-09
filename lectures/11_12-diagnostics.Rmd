@@ -80,7 +80,7 @@ Consistent: as N increases, standard error decreases
 
 ---
 
-```{r, messages = FALSE, warning= FALSE, results='hide'}
+```{r, messages = FALSE, warning= FALSE}
 library(here)
 a_data <- read.csv(here("data/anxiety.csv"))
 library(broom)
@@ -657,26 +657,6 @@ Like distance, there are several metrics by which you might assess any case's le
 ---
 
 ## Outliers
-### Influence
-
-**Cook’s Distance** is calculated by removing the ith data point from the model and recalculating the regression. It summarizes how much all the values in the regression model change when the ith observation is removed.
-
-$$CD_i = \frac{\sum_{j=1}^n(\hat{Y}_j-\hat{Y}_{j(1)})^2}{(p+1)MSE}$$
-
----
-### Cook's Distance
-
-```{r, echo = FALSE}
-aug_1$ID = 1:nrow(aug_1)
-ggplot(aug_1, aes(x = ID, y = .cooksd)) +
-geom_point() +
-geom_text(aes(label = rownames(aug_1)), vjust = -1) +
-  theme_bw(base_size = 20)
-```
-
----
-
-## Outliers
 
 ### Influence
 
@@ -688,6 +668,24 @@ geom_text(aes(label = rownames(aug_1)), vjust = -1) +
 head(dffits(model.2))
 head(dfbeta(model.2))
 ```
+
+---
+
+.pull-left[
+
+```{r}
+olsrr::ols_plot_dffits(model.2)
+```
+
+]
+
+.pull-right[
+
+```{r}
+olsrr::ols_plot_dfbetas(model.2)
+```
+
+]
 
 ---
 

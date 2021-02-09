@@ -70,6 +70,23 @@ aug_1&lt;- augment(model.1)
 aug_1
 ```
 
+```
+## # A tibble: 118 x 8
+##    Anxiety Support .fitted  .resid .std.resid    .hat .sigma    .cooksd
+##      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+##  1   10.2     6.16    8.68  1.51       0.725  0.0137    2.10 0.00366   
+##  2    5.59    8.91    7.54 -1.95      -0.937  0.00850   2.09 0.00376   
+##  3    6.58   10.5     6.86 -0.278     -0.134  0.0111    2.10 0.000100  
+##  4    8.95   11.5     6.48  2.47       1.19   0.0144    2.09 0.0103    
+##  5    7.60    5.55    8.93 -1.33      -0.642  0.0165    2.10 0.00346   
+##  6    8.16    7.51    8.12  0.0368     0.0177 0.00966   2.10 0.00000153
+##  7    9.08    8.56    7.69  1.39       0.669  0.00850   2.10 0.00192   
+##  8    3.41    4.1     9.53 -6.12      -2.96   0.0255    2.02 0.115     
+##  9    8.66    5.39    9.00 -0.340     -0.164  0.0173    2.10 0.000237  
+## 10    4.85   13.9     5.47 -0.620     -0.301  0.0299    2.10 0.00139   
+## # … with 108 more rows
+```
+
 ---
 
 ## Residuals
@@ -661,20 +678,6 @@ Like distance, there are several metrics by which you might assess any case's le
 ---
 
 ## Outliers
-### Influence
-
-**Cook’s Distance** is calculated by removing the ith data point from the model and recalculating the regression. It summarizes how much all the values in the regression model change when the ith observation is removed.
-
-`$$CD_i = \frac{\sum_{j=1}^n(\hat{Y}_j-\hat{Y}_{j(1)})^2}{(p+1)MSE}$$`
-
----
-### Cook's Distance
-
-![](11_12-diagnostics_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
-
----
-
-## Outliers
 
 ### Influence
 
@@ -705,6 +708,30 @@ head(dfbeta(model.2))
 ## 5 -0.039420102  0.0065137198 -0.0063488839
 ## 6 -0.001418211  0.0001272720 -0.0001032229
 ```
+
+---
+
+.pull-left[
+
+
+```r
+olsrr::ols_plot_dffits(model.2)
+```
+
+![](11_12-diagnostics_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+]
+
+.pull-right[
+
+
+```r
+olsrr::ols_plot_dfbetas(model.2)
+```
+
+![](11_12-diagnostics_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+]
 
 ---
 
