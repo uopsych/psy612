@@ -288,8 +288,8 @@ Hard to tell if the variability in the four groups is homogeneous.
 ANOVA for the sample data:
 
 ```{r}
-fit_1 = aov(Time ~ Group_lab, data = rotate)
-summary(fit_1)
+fit_1 = lm(Time ~ Group_lab, data = rotate)
+anova(fit_1)
 ```
 
 The $F$ statistic is highly unusual in the $F$ distribution, assuming the null hypothesis is true.  We reject the null hypothesis.
@@ -399,9 +399,22 @@ The Holm procedure does not make a constant adjustment to each per-test $\alpha$
 
 1. Rank order the p-values from largest to smallest.
 2. Start with the smallest p-value. Multiply it by its rank.
-3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the previous step, keep it. Otherwise replace with the previous step adjusted p-value.
+3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the adjusted p-value of next smallest rank, keep it. Otherwise replace with the previous step adjusted p-value.
 4.  Repeat Step 3 for the remaining p-values.
 5. Judge significance of each new p-value against $\alpha = .05$.
+
+---
+
+```{r,echo = F, results = 'asis'}
+
+data.frame(or = c(.0023, .0012, .0450, .0470, .0530, .2100),
+           rank = c(6:1)) %>%
+  mutate(rankp = " ",
+         holm = " ") %>%
+  kable(., 
+        col.names = c("Original p value", "Rank", 
+                      "Rank x p", "Holm")) %>% kable_styling()
+```
 
 ---
 
@@ -426,26 +439,17 @@ Performing the test using the `lm()` function means that some of the possible pa
 summary(fit_1)
 ```
 
----
-
-Performing the test using the `lm()` function means that some of the possible pairwise comparisons are built in:
-
-```{r}
-pairwise.t.test(x = rotate$Time, g = rotate$Group_lab, 
-                       p.adjust.method = "holm")
-```
-
-
-
 
 
 ---
 
 class: inverse
 
+## Next time...
+
 Assumptions and diagnostics
 
-## Next time...
+
 
 <!-- ## Contrasts  -->
 

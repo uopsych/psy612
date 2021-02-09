@@ -330,14 +330,17 @@ ANOVA for the sample data:
 
 
 ```r
-fit_1 = aov(Time ~ Group_lab, data = rotate)
-summary(fit_1)
+fit_1 = lm(Time ~ Group_lab, data = rotate)
+anova(fit_1)
 ```
 
 ```
-##              Df  Sum Sq Mean Sq F value              Pr(&gt;F)    
-## Group_lab     3 2000252  666751   149.8 &lt;0.0000000000000002 ***
-## Residuals   196  872288    4450                                
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
+## Residuals 196  872288    4450                                  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -483,9 +486,60 @@ The Holm procedure does not make a constant adjustment to each per-test `\(\alph
 
 1. Rank order the p-values from largest to smallest.
 2. Start with the smallest p-value. Multiply it by its rank.
-3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the previous step, keep it. Otherwise replace with the previous step adjusted p-value.
+3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the adjusted p-value of next smallest rank, keep it. Otherwise replace with the previous step adjusted p-value.
 4.  Repeat Step 3 for the remaining p-values.
 5. Judge significance of each new p-value against `\(\alpha = .05\)`.
+
+---
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; Original p value &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Rank &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Rank x p &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Holm &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0023 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0012 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0450 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0470 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0530 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 ---
 
@@ -565,45 +619,17 @@ summary(fit_1)
 ...
 ```
 
----
-
-Performing the test using the `lm()` function means that some of the possible pairwise comparisons are built in:
-
-
-```r
-pairwise.t.test(x = rotate$Time, g = rotate$Group_lab, 
-                       p.adjust.method = "holm")
-```
-
-```
-## 
-## 	Pairwise comparisons using t tests with pooled SD 
-## 
-## data:  rotate$Time and rotate$Group_lab 
-## 
-##                       Control\nPredict     No control\nPredict
-## No control\nPredict   &lt; 0.0000000000000002 -                  
-## Control\nUnpredict    &lt; 0.0000000000000002 0.055              
-## No control\nUnpredict &lt; 0.0000000000000002 0.000000000306612  
-##                       Control\nUnpredict
-## No control\nPredict   -                 
-## Control\nUnpredict    -                 
-## No control\nUnpredict 0.000000000000018 
-## 
-## P value adjustment method: holm
-```
-
-
-
 
 
 ---
 
 class: inverse
 
+## Next time...
+
 Assumptions and diagnostics
 
-## Next time...
+
 
 &lt;!-- ## Contrasts  --&gt;
 

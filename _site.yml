@@ -27,7 +27,8 @@ navbar:
         href: "lectures/9-m_regression.html"
       - text: "10 - ANOVA"
         href: "lectures/10-anova.html"
-
+      - text: "11/12 - Assumptions, Diagnostics, Outliers"
+        href: "lectures/11_12-diagnostics.html"
     - text: Labs
       menu:
       - text: "1 - Correlations"
