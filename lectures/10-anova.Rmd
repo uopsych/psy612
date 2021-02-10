@@ -198,11 +198,11 @@ data.frame(F = c(0,8)) %>%
   stat_function(fun = function(x) df(x, df1 = 3, df2 = 196), 
                 geom = "area", xlim = c(2.65, 8), fill = "purple") +
   geom_vline(aes(xintercept = 2.65), color = "purple")+
-  scale_y_continuous("Density") + scale_x_continuous("F statistic") +
+  scale_y_continuous("Density") + scale_x_continuous("F statistic", breaks = NULL) +
   theme_bw(base_size = 20)
 ```
-For 3 and 196 degrees of freedom, an $F$ statistic of 2.65 or greater will indicate between-groups variability relative to within-group variability that is unusual if the null hypothesis is true.
 
+$F$-distributions are one-tailed tests. Recall that we're interested in how far away our test statistic from the null $(F = 1).$
 
 ---
 
