@@ -29,8 +29,8 @@ navbar:
         href: "lectures/10-anova.html"
       - text: "11/12 - Assumptions, Diagnostics, Outliers"
         href: "lectures/11_12-diagnostics.html"
-      - text: "11/12 - Assumptions, Diagnostics, Outliers"
-        href: "lectures/11_12-diagnostics.html"
+      - text: "13 - DAG models"
+        href: "lectures/13-dag.html"
     - text: Labs
       menu:
       - text: "1 - Correlations"
