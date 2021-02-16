@@ -1,5 +1,6 @@
 lectures overall
 * add 60 second break in the middle 
+* email students -- share FYP for class?
 
 course website:
 * include in required materials: LaTex
@@ -78,33 +79,34 @@ final-project.html
   
 lab-4.html
 
-  
+  * no changes needed
+
+lab-5.html
+
+  * no changes needed
+
 9-m_regression.html
 
-  * better clarification for adding multiple predictors
-  * add slides to walk through predicting Y from dummy codes
-  * how was wisdom measured in the psych science article?
-  * if time, show how factor variable is doing the same as dummy codes (how?)
-  
+  * I already updated the example 
+
 10-m_regression.html
 
-  * demonstrate that degrees of freedom are the same (ANOVA table and F-test of omnibus)
-  * Make F-distribution plot number-free (don't give numbers that don't correspond to example)
-  * reiterate example before diving back into R code
-  * remind students to do reading?
+  * don't use factorial design for example
+  * liked interpreting coefficents when controlling for variables
   
-11-diagnostics.html
-* add something about weighted least squares (homoscedasticity)
+11/12-diagnostics.html
 
-homework-1.html
-* there's an updated homework in the private repo. Use that!
+  * better example for homoscedasticity (it wasn't very clear)
+  * add code for multicollinearity
+  * explain independence plots more -- give strong examples of each end (dependence, independence)
 
-Question 10.1
-* last bullet point should not say "#5 and #6" but should refer to specific models. Suggestions have been made in Markdown files. 
+lab-6.html
+
+  * this is a boring lab. How can we spice it up?
+    * murder mystery mini-hacks (something's wrong with this model)
 
 13-dag.html
-* add something before about dag models are pre-data collection tools
-* add paper by Grosz, Rohrer, & Thoemmes (2020) "The taboo against explicit causal inference in non experimental psychology." As optional reading. Describe during class? 
+* add paper by Grosz, Rohrer, & Thoemmes (2020) "The taboo against explicit causal inference in non experimental psychology." As optional reading. Describe during class?
 * include covariates that reduce noise (two different things that should be included in models: confounds and noise)
 
 homework-2.html
