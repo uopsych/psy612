@@ -186,8 +186,8 @@ anova(mod2)
 ```
 
 
-$$\large \eta^2_{Study} = \frac{69.561}{69.561+21.882+19.055} = .6295 = 63\%$$
-$$\large \eta^2_{Tutor} = \frac{21.882}{69.561+21.882+19.055} = .1980 = 20\%$$
+$$\large \eta^2_{Study} = \frac{7.8362}{7.8362+22.6845+6.3168} = .2127 = 21.3\%$$
+$$\large \eta^2_{Tutor} = \frac{22.6845}{7.8362+22.6845+6.3168} = .6158 = 61.6\%$$
 
 ---
 
@@ -368,10 +368,10 @@ y1 = -2 + .9*x
 y2 = 1.6 - .2*x
 
 
-data.frame(x = rep(x, 2), y = c(y1,y2), group = rep(c(5, 3),each = 10)) %>%
+data.frame(x = rep(x, 2), y = c(y1,y2), group = rep(c("Group 1", "Group 2"),each = 10)) %>%
   ggplot(aes(x,y,color = as.factor(group))) +
   geom_line(size = 2) +
-  labs(x = "X", y = "Y", color = "Z") +
+  labs(x = "X", y = "Y", color = "") +
   scale_x_continuous(labels = NULL) +
   scale_y_continuous(labels = NULL, limit = c(-5, 10)) + cowplot::theme_cowplot(font_size = 20)
 ```
@@ -387,10 +387,10 @@ x = 1:10
 y1 = .7 + .9*x
 y3 = .5 - .4*x
 
-data.frame(x = rep(x, 2), y = c(y1,y3), group = rep(c(0,1),each = 10)) %>%
+data.frame(x = rep(x, 2), y = c(y1,y3), group = rep(c("Group 1", "Group 2"),each = 10)) %>%
   ggplot(aes(x,y,color = as.factor(group))) +
   geom_line(size = 2) +
-  labs(x = "X", y = "Y", color = "D") +
+  labs(x = "X", y = "Y", color = "") +
   scale_x_continuous(labels = NULL) +
   scale_y_continuous(labels = NULL, limit = c(-5, 15)) + cowplot::theme_cowplot(font_size = 20)
 ```
@@ -405,10 +405,10 @@ x = 1:10
 y1 = .7 + 0*x
 y3 = .3 + .03*x
 
-data.frame(x = rep(x, 2), y = c(y1,y3), group = rep(c(0,1),each = 10)) %>%
+data.frame(x = rep(x, 2), y = c(y1,y3), group = rep(c("Group 1", "Group 2"),each = 10)) %>%
   ggplot(aes(x,y,color = as.factor(group))) +
   geom_line(size = 2) +
-  labs(x = "X", y = "Y", color = "D") +
+  labs(x = "X", y = "Y", color = "") +
   scale_x_continuous(labels = NULL) +
   scale_y_continuous(labels = NULL) + cowplot::theme_cowplot(font_size = 20)
 ```
