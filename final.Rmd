@@ -36,8 +36,14 @@ Your report should be written in Rmarkdown. It is strongly recommended that you 
 Be sure to interpret any information -- statistical tests, figures, and tables -- that you provide. Please note -- this should not be a full manuscript (no introduction and discussion needed!), and you will certainly provide more information in this report regarding the analyses than you would in a traditional research article. 
 
 ## I don't have data
+
+You have a couple options! 
+
+1. Use data collected by someone else in your lab. Perhaps a more senior graduate student would be willing to share their FYP data?
+2. Find an open dataset. There are lots of repositories, but a good place to start is looking at the journal _Psychological Science_. To start, go to [this link](https://journals-sagepub-com.libproxy.uoregon.edu/) and sign in with your DuckID (this will give you access off campus). Then select the Social Sciences & Humanities discipline, and navigate to _Psychological Science_ in the list. Once you've found the journal page, check the tables of contents for research articles that look interesting. The PDF version of the table of contents for a journal will include a badge indicating if the article has open data. 
+3. If you have a good idea of what variables will be in your FYP, their range and possible values, and how they may be associated, we can simulate a fake version of your dataset to work with. 
   
-If you will have data of your own to analyze in time for this assignment, please come see me (Sara) by the end of Week 8 (February 26) to discuss options.
+If you need any help, like finding or simulating a dataset, come talk to me (Sara W) by the end of Week 8 (February 26) to discuss options.
 
 [^1]: This model may contain additional predictors, categorical or continuous, but that is not necessary.
 [^2]: This cannot be the same as the model with two continuous predictors. You must have two different inferential models. This model may contain additional predictors, categorical or continuous, but that is not necessary.
