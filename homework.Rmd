@@ -28,3 +28,9 @@ Homework assignments will appear here. You'll be able to access the assignment, 
 **Due February 19, 9am**
 
 - [Download all files here.](homework/homework-3.zip)
+
+### [**Homework 4**](homework/homework-4.html)
+
+**Due March 5, 9am**
+
+- [Download all files here.](homework/homework-4.zip)
