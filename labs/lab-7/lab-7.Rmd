@@ -62,10 +62,26 @@ data <- data %>% mutate(condition = factor(condition,
 #Your code here
 ```
 
+# Simple regression
+
+## Model A
+
+$$\hat{Claimed_i} = \beta_0 + \beta_1Honesty $$
+Run this model using `lm()`.
+
+```{r}
+# Your code here
+```
+
+Graph in `ggplot()`.
+```{r}
+# Your code here
+```
+
 # Multiple regression
 
 
-## Model A 
+## Model B
 
 $$\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition $$
 
@@ -101,12 +117,21 @@ Claimed = 7.16 - .45Honesty
 > Question: now calculate the "simple slopes" when honesty = 0, honesty = 2, and honesty = 3
 
 
+
+
+## Plotting
+
+```{r}
+# Your text here
+```
+
+
 What model do you run if you think that the honesty slope is going to be different under different conditions?
 
 # Categorical x continuous interactions
 
 
-## Model B
+## Model C
 
 
 $$\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition + \beta_3(Honesty*Condition)$$
@@ -147,39 +172,39 @@ Claimed = 6.09 -.08Honesty
 
 ## Visualizing simple slopes
 
-```{r}
-#sj plot
-#plot_model(model, type = "pred", terms = c("honesty", "condition"))
-```
-
+In `ggplot`:
 
 ```{r}
-#in ggplot
-#data %>% 
-#ggplot(aes(x = honesty, y = claimed_solved, color = condition)) +
-#  geom_smooth(method = "lm")
+# Your code here
 ```
+
+In `sjPlot`
+
+```{r}
+#plot_model(model_c, type = "pred", terms = c("honesty", "condition"))
+```
+
 
 ## Testing simple slopes
 
 For this section, uncomment and run this code. Take some time to look at these results and try to figure out what tests we are running and what you can conclude from them.
 
 ```{r}
-#emtrends(model, ~condition, var = "honesty")
+#emtrends(model_c, ~condition, var = "honesty")
 ```
 
 > Question: What is this testing? What can you conclude?
 
 
 ```{r}
-#emtrends(model, pairwise~condition, var = "honesty")
+#emtrends(model_c, pairwise~condition, var = "honesty")
 ```
 
 > Question: What is this testing? What can you conclude?
 
 ```{r}
 #mylist <- list(honesty=c(1,2,3,4,5), condition=c("Non-shredder","Shredder"))
-#combinations <- emmeans(model, ~ honesty*condition, at=mylist)
+#combinations <- emmeans(model_c, ~ honesty*condition, at=mylist)
 
 #contrast(combinations, "pairwise", by = "honesty")
 ```
@@ -200,8 +225,8 @@ One thing you may have noticed while interpreting output is that we sometimes sa
 
 Now, we can re-run our model...
 ```{r}
-# model <- lm(data = data, claimed_solved ~ honesty_c*condition)
-# summary(model)
+# model_d <- lm(data = data, claimed_solved ~ honesty_c*condition)
+# summary(model_d)
 
 ```
 
@@ -209,8 +234,7 @@ Now, we can re-run our model...
 
 Let's compare that to our model where the predictor was not centered...
 ```{r}
-# model <- lm(data = data, claimed_solved ~ honesty*condition)
-# summary(model)
+# summary(model_c)
 ```
 
 > Question: what changed from the first model to the model with centered honesty?

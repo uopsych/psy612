@@ -2885,10 +2885,20 @@ data &lt;- data %&gt;% mutate(condition = factor(condition,
 <pre class="r"><code>#Your code here</code></pre>
 </div>
 </div>
-<div id="multiple-regression" class="section level1">
-<h1>Multiple regression</h1>
+<div id="simple-regression" class="section level1">
+<h1>Simple regression</h1>
 <div id="model-a" class="section level2">
 <h2>Model A</h2>
+<p><span class="math display">\[\hat{Claimed_i} = \beta_0 + \beta_1Honesty \]</span> Run this model using <code>lm()</code>.</p>
+<pre class="r"><code># Your code here</code></pre>
+<p>Graph in <code>ggplot()</code>.</p>
+<pre class="r"><code># Your code here</code></pre>
+</div>
+</div>
+<div id="multiple-regression" class="section level1">
+<h1>Multiple regression</h1>
+<div id="model-b" class="section level2">
+<h2>Model B</h2>
 <p><span class="math display">\[\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition \]</span></p>
 <p>So far in this course, we’ve worked only with <strong>additive effects</strong>, as shown here in this model. In this model, we are measuring the relation between honesty and how many matrices the person claimed to have solved while <em>holding condition constant</em>.</p>
 <p>Let’s run this model using <code>lm()</code>.</p>
@@ -2908,13 +2918,17 @@ data &lt;- data %&gt;% mutate(condition = factor(condition,
 <blockquote>
 <p>Question: now calculate the “simple slopes” when honesty = 0, honesty = 2, and honesty = 3</p>
 </blockquote>
+</div>
+<div id="plotting" class="section level2">
+<h2>Plotting</h2>
+<pre class="r"><code># Your text here</code></pre>
 <p>What model do you run if you think that the honesty slope is going to be different under different conditions?</p>
 </div>
 </div>
 <div id="categorical-x-continuous-interactions" class="section level1">
 <h1>Categorical x continuous interactions</h1>
-<div id="model-b" class="section level2">
-<h2>Model B</h2>
+<div id="model-c" class="section level2">
+<h2>Model C</h2>
 <p><span class="math display">\[\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition + \beta_3(Honesty*Condition)\]</span> When the <strong>interaction term</strong> is added to the model, you are allowing for the possibility that the slope of one predictor differs at different levels of the other predictor. In this example, we can now account for the possibility that the relationship between honesty and matrices solved can differ at different levels of the condition variable.</p>
 </div>
 <div id="running-an-interaction-model" class="section level2">
@@ -2938,26 +2952,24 @@ data &lt;- data %&gt;% mutate(condition = factor(condition,
 </div>
 <div id="visualizing-simple-slopes" class="section level2">
 <h2>Visualizing simple slopes</h2>
-<pre class="r"><code>#sj plot
-#plot_model(model, type = &quot;pred&quot;, terms = c(&quot;honesty&quot;, &quot;condition&quot;))</code></pre>
-<pre class="r"><code>#in ggplot
-#data %&gt;% 
-#ggplot(aes(x = honesty, y = claimed_solved, color = condition)) +
-#  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<p>In <code>ggplot</code>:</p>
+<pre class="r"><code># Your code here</code></pre>
+<p>In <code>sjPlot</code></p>
+<pre class="r"><code>#plot_model(model_c, type = &quot;pred&quot;, terms = c(&quot;honesty&quot;, &quot;condition&quot;))</code></pre>
 </div>
 <div id="testing-simple-slopes" class="section level2">
 <h2>Testing simple slopes</h2>
 <p>For this section, uncomment and run this code. Take some time to look at these results and try to figure out what tests we are running and what you can conclude from them.</p>
-<pre class="r"><code>#emtrends(model, ~condition, var = &quot;honesty&quot;)</code></pre>
+<pre class="r"><code>#emtrends(model_c, ~condition, var = &quot;honesty&quot;)</code></pre>
 <blockquote>
 <p>Question: What is this testing? What can you conclude?</p>
 </blockquote>
-<pre class="r"><code>#emtrends(model, pairwise~condition, var = &quot;honesty&quot;)</code></pre>
+<pre class="r"><code>#emtrends(model_c, pairwise~condition, var = &quot;honesty&quot;)</code></pre>
 <blockquote>
 <p>Question: What is this testing? What can you conclude?</p>
 </blockquote>
 <pre class="r"><code>#mylist &lt;- list(honesty=c(1,2,3,4,5), condition=c(&quot;Non-shredder&quot;,&quot;Shredder&quot;))
-#combinations &lt;- emmeans(model, ~ honesty*condition, at=mylist)
+#combinations &lt;- emmeans(model_c, ~ honesty*condition, at=mylist)
 
 #contrast(combinations, &quot;pairwise&quot;, by = &quot;honesty&quot;)</code></pre>
 <blockquote>
@@ -2973,14 +2985,13 @@ data &lt;- data %&gt;% mutate(condition = factor(condition,
 #          honesty_center = scale(honesty, scale = FALSE))
 # head(data)</code></pre>
 <p>Now, we can re-run our model…</p>
-<pre class="r"><code># model &lt;- lm(data = data, claimed_solved ~ honesty_c*condition)
-# summary(model)</code></pre>
+<pre class="r"><code># model_d &lt;- lm(data = data, claimed_solved ~ honesty_c*condition)
+# summary(model_d)</code></pre>
 <blockquote>
 <p>Question: now, how can we interpret the intercept?</p>
 </blockquote>
 <p>Let’s compare that to our model where the predictor was not centered…</p>
-<pre class="r"><code># model &lt;- lm(data = data, claimed_solved ~ honesty*condition)
-# summary(model)</code></pre>
+<pre class="r"><code># summary(model_c)</code></pre>
 <blockquote>
 <p>Question: what changed from the first model to the model with centered honesty?</p>
 </blockquote>
