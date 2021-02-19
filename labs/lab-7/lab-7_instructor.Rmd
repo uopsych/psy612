@@ -1,5 +1,5 @@
 ---
-title: "Lab 7: Continuous x Continuous Interactions"
+title: "Lab 7: Continuous x Categorical Interactions"
 output: 
   html_document: 
     fig_caption: yes
@@ -8,701 +8,318 @@ output:
     toc_depth: 3
     toc_float: TRUE
     df_print: paged
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
-# suppress scientific notation
+
+```{r, include = FALSE}
+#set scientific notification
 options(scipen = 999)
+
 ```
 
+You can download the Rmd file [here](lab-7.Rmd) to follow along.
 
 # Purpose
 
-Today we will review how to run models containing interactions between two continuous predictors. We will go over how to specify interaction terms in R, how to interpret the model output and how to visualize the results. 
+Today we will review how to run models containing interactions between a continuous and categorical predictor. We will go over how to specify interaction terms in R, how to interpret the model output, and how to visualize the results.
 
-1. [Research scenario](#scenario)
-2. [Centering](#centering)
-3. [Running interaction models](#run)
-4. [Simple slopes](#simpleslopes)
-5. [Significance tests of simple slopes](#sig)
-6. [Minihacks](#minihacks)
+Be sure to have the following packages loaded:
 
-
-Be sure to have the following packages installed and loaded:
-
-```{r lab-7-instructor-1, message=FALSE}
+```{r, message = FALSE, warning = FALSE}
+library(rio) # for importing
 library(tidyverse) # for plotting and data wrangling
-library(rio) # for importing data
-library(psych) # for descriptives
-library(olsrr) # for diagnostics
-library(broom) # for tidying model output
-library(reghelper) # for calculating simple slopes
-library(sjPlot) # for plotting simple slopes
+library(psych) # for calculating descriptives
+library(sjPlot) # for plotting interactions
+library(emmeans) # for simple slope tests
 ```
 
-***
-# Research scenario{#scenario}
+# Research scenario
 
-The tendency to suppress the expression of emotion when regulating one's emotions is associated with receiving less social support from friends (Srivastava et al., 2009). A graduate student is interested in examining how this relationship differs depending on the extent to which the emotion regulator holds individualistic as compared to collectivist values. To test this, participants complete the following measures:  
+Today's dataset was inspired by a recent study by [Markowitz & Levine (2021)](https://journals.sagepub.com/doi/pdf/10.1177/1948550619898976?casa_token=kum1VwoltKAAAAAA:jQngdX1FojAVb_8GQF5ZGBAnRvMoK2dFdzcvIqFyOPRWTbyhQ1p0fWvzz0zZHS7i2LpJIr-VTA) (the data you will be working with has been simulated). In the study, participants completed a matrix task under time pressure and then self-reported their scores. For each matrix problem that they got right, they could earn 25 cents, so it was tempting to cheat and self-report a higher score. Half of the participants shredded their worksheet before self-reporting and half of the participants handed the worksheet to the experimenter before self-reporting. Honesty scores were also self-reported from the HEXACO Personality Inventory (from 1 = extremely low honesty to 5 = extremely high honesty). The researchers hypothesized that personality and situation would interact to predict dishonest behavior.   
 
-*	**Social support received from friends** = `Y`
-    * 1 = receives no social support from friends
-    * 5 = receives an extreme amount of social support from friends
-    
-<br>
+## Import the data
+```{r}
+#import data
 
-* **Expressive Suppression** = `X`
-    * 1 = rarely uses suppression to regulate one's emotions 
-    * 5 = frequently uses suppression to regulate one's emotions
-    
-<br>
+data <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/cheating_data.csv")
 
-*	**Individualism/Collectivism** = `Z` (moderator)
-    * 1 = strongly endorses values related to collectivism
-    * 5 = strongly endorses values related to individualism
-    
-## The data
+data <- data %>% mutate(condition = factor(condition,
+                                  levels = c(0,1),
+                                  labels = c("Non-shredder", "Shredder")))
 
-* Import the data:
-
-```{r lab-7-instructor-2}
-social <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/social_support.csv")
 ```
 
-* Look at the structure
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-3, eval=FALSE}
-str(social)
-```
-
-##### Output
-
-```{r lab-7-instructor-4, echo=FALSE, ref.label='lab-7-instructor-3'}
-```
-
-####
-<br>
-
-* Check out the descriptives
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-5, eval=FALSE}
-describe(social)
-```
-
-##### Output
-
-```{r lab-7-instructor-6, echo=FALSE, ref.label='lab-7-instructor-5'}
-```
-
-####
-<br>
-
-## The model
-
-* Written generically...
-
-$$\hat{Y} = b_0 + b_1X + b_2Z +  b_3(XZ)$$  
-
-* With our variable names...
-
-$$\hat{SocSupport} = b_0 + b_1Suppression + b_2Individualism +  b_3(Suppression*Individualism)$$  
-<br>
-
->**Question:** What does b0 represent?
-
->**Answer:** the expected value of social support when all other variables in the model (suppression and individualism) are 0
-
->**Question:** What does b1 represent?
-
->**Answer:** the effect of X on Y specifically when Z = 0 (NOT "controlling for Z" or "when Z is held constant")
-
->**Question:** What does b2 represent?
-
->**Answer:** the effect of Z on Y specifically when X = 0 (NOT "controlling for X" or "when X is held constant")
-
->**Question:** What does b3 represent?
-
->**Answer:**  b3 represents the amount of change in b1 (the slope of suppression) for every one-unit increase in individualism (we'll get more into what that means soon). In other words, b3 represents the change in the slope of X as a function of Z.
-
-
-***
-
-# Centering{#centering}
-
-* Centering (or "mean centering") a variable refers to subtracting the mean of that variable from every individual value. When working with models that contain interaction terms, it is generally a good idea to center your predictor variables, because...
-  * centering addresses issues of multicollinearity 
-
-  * centering makes the model coefficients more interpretable 
-
-<br>
-
-* We'll talk about each of these ideas in more detail in a moment, but first let's discuss how to center a variable in R...
-
-<br>
-
-* To center our predictors, we'll use the `mutate()` and `scale()` functions. By default, `scale()` z-scores variables, but we can get it to just perform mean centering by setting the argument `scale = FALSE`. Remember, a z score is $\frac{X - \bar{X}}{\sigma_X}$, or a mean-centered score divided by the SD; by setting `scale = FALSE` we're telling R to center it but not scale it (i.e., don't divide by the SD). 
-
-<br>
-
-* The default settings for `scale()` are `scale(x, center = TRUE, scale = TRUE)`. To be very explicit, we'll set `center = TRUE` and `scale = FALSE`. 
-
-<br> 
-
-* Highly technical but important note: `scale()` actually changes the class of the resulting variable to be `matrix`, so we'll use `as.numeric()` to force the resulting centered variables to be of type `numeric`.
-
-```{r lab-7-instructor-7}
-social <- social %>% 
-  mutate(suppression_c = as.numeric(scale(suppression, center = TRUE, scale = FALSE)),
-         indiv_c = as.numeric(scale(indiv, center = TRUE, scale = FALSE)))
-```
-
-<br>
-
-* Let's peek at our new data frame. We now have both centered and un-centered versions of our predictor variables
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-8, eval=FALSE}
-head(social)
-```
-
-##### Output
-
-```{r lab-7-instructor-9, echo=FALSE, ref.label='lab-7-instructor-8'}
-```
-
-####
-<br>
-
-***
-
-# Running interaction models{#run}
-
-* Next we'll run the moderated multiple regression model. Note that in R, if we want to get the main effects and interactions we can just enter the interaction term, e.g., `lm(Y ~ X*Z)`, which tells R to include `X`, `Z`, and `XZ` (the interaction term). It is equivalent to running it spelled out, e.g., `lm(Y ~ X + Z + X:Z)`. If we wanted *just* the interaction, we would run a model with just the last term, e.g.,  `lm(Y ~ X:Z)`...but DON'T DO THIS! 
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-10, eval=FALSE}
-model_int <- lm(socsup ~ suppression_c*indiv_c, data = social)
-summary(model_int)
-```
-
-##### Output
-
-```{r lab-7-instructor-11, echo=FALSE, ref.label='lab-7-instructor-10'}
-```
-
-####
-<br>
-
->**Question:** What can we conclude? Is there an interaction between suppression and individualism predicting social support?
-
->**Answer:** Yes, there is a significant interaction between suppression and individualism. 
-
-## Interpret the coefficients
-
-* Remember that we first centered our predictor variables before running the model. With that in mind, let's interpret what the model coefficients mean. Here are the coefficients again...
-
-```{r echo=FALSE}
-summary(model_int)
-```
-
-
-<br> 
-
->**Question:** What does b0 represent?
-
->**Answer:** the expected value of social support when all other variables in the model (suppression and individualism) are at their MEAN. This is more meaningful to interpret than "when all other variables are 0" because none of our variables actually include 0! 
-
->**Question:** What does b1 represent?
-
->**Answer:** the effect of expressive suppression on social support at a mean level of individualism (because we centered our predictors); at the mean of individualism, we expect virtually no change in social support for a 1-unit increase in expressive suppression
-
->**Question:** What does b2 represent?
-
->**Answer:** the effect of individualism on social support at a mean level of expressive suppression; at the mean of suppression, we expect a 0.16-unit change in social support for a 1-unit increase in individualism
-
->**Question:** What does b3 represent?
-
->**Answer:** for a one-unit increase in individualism, we expect a -0.31-unit decrease in the slope of expressive suppression on social support. The value/interpretation of b3 DOES NOT CHANGE because of centering! 
-
-## A note about multicollinearity 
-
-* Let's assess the multicollinearity of the model we just ran...
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-12, eval=FALSE}
-ols_vif_tol(model_int)
-```
-
-##### Output
-
-```{r lab-7-instructor-13, echo=FALSE, ref.label='lab-7-instructor-12'}
-```
-
-####
-<br>
-
->**Question:** Do we have any multicollinearity issues?
-
->**Answer:** No!
-
-* And now let's see how these diagnostics look if we had *not* centered the predictors first...
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-14, eval=FALSE}
-# piping the uncentered model to the tolerance function
-lm(socsup ~ suppression*indiv, data = social) %>% 
-  ols_vif_tol()
-```
-
-##### Output
-
-```{r lab-7-instructor-15, echo=FALSE, ref.label='lab-7-instructor-14'}
-```
-
-####
-<br>
-
-* To think about why we have multicollinearity, let's look at the correlation matrix including our two predictor variables, `suppression` and `indiv`, and the interaction term (a linear combination of these two variables), that we'll call `suppression_x_indiv`...
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-16, eval=FALSE}
-social %>% 
-  mutate(suppression_x_indiv = suppression * indiv) %>% # create the interaction term
-  select(suppression,                    
-         indiv, 
-         suppression_x_indiv) %>% # select the 3 variables we want to correlate
-  cor() # generate a correlation matrix of these 3 variables
-```
-
-##### Output
-
-```{r lab-7-instructor-17, echo=FALSE, ref.label='lab-7-instructor-16'}
-```
-
-####
-<br>
-
->**Question:** Do you see a problem here? 
-
->**Answer:** Yes, both predictor variables are highly correlated with the interaction term, which is not surprising because the interaction term is a linear combination of the two predictor variables. 
-
-* Now let's look at the correlation matrix including our **centered** predictor variables. What do you notice? 
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-18, eval=FALSE}
-social %>% 
-  mutate(suppression_x_indiv_c = suppression_c * indiv_c) %>% # create the interaction term
-  select(suppression_c,                    
-         indiv_c, 
-         suppression_x_indiv_c) %>% # select the 3 variables we want to correlate
-  cor() # generate a correlation matrix of these 3 variables
-```
-
-##### Output
-
-```{r lab-7-instructor-19, echo=FALSE, ref.label='lab-7-instructor-18'}
-```
-
-####
-<br>
-
-***
-
-# Simple slopes{#simpleslopes}
-
-* Interpreting what the interaction between expressive suppression and individualism means from the model coefficients alone is rather difficult. It helps a LOT to plot the interaction instead of trying to interpret nuanced coefficients by themselves. What you end up plotting are "simple slopes" so we will discuss what this means first before diving into making plots. 
-
-<br> 
-
-* "Simple slope" refers to both 
-  * the equation for the effect of X on Y at different levels of Z (moderator) AND...
-  * just the coefficient for X in this equation
+## Explore the data
+
+  - Use `str()` to look at the structure of the data
+  - Use `head()` to look at the first few rows of the data
+  - Calculate descriptives for the variables `honesty` and `claimed_solved` 
+  - Calculate descriptives for the variables `honesty` and `claimed_solved`, grouped by `condition`
   
-<br> 
-
-* We'll review how to calculate simple slopes "by hand" (the hard way) and using a function (the easy way). 
-
-## Calculating simple slopes by hand
-
-* First we'll get the coefficients from our model (`model_int`) into a nicely formatted data frame using `broom::tidy()`...
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-20, eval=FALSE}
-model_int_coefs <- model_int %>% 
-  tidy()
-
-# view the data frame of coefficients
-model_int_coefs 
+```{r}
+#Your code here
 ```
 
-##### Output
+# Multiple regression
 
-```{r lab-7-instructor-21, echo=FALSE, ref.label='lab-7-instructor-20'}
+
+## Model A 
+
+$$\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition $$
+
+So far in this course, we've worked only with **additive effects**, as shown here in this model. In this model, we are measuring the relation between honesty and how many matrices the person claimed to have solved while *holding condition constant*. 
+
+
+Let's run this model using `lm()`.
+```{r}
+model_a <- lm(data = data, claimed_solved ~ honesty + condition)
+
+summary(model_a)
 ```
 
-####
-<br>
+$$\hat{Claimed} = 6.04  + 1.12Condition- .45Honesty $$
+> Question: interpret the model coefficients and R^2.
 
-* Now we'll pull out each individual coefficient using `{dplyr}` functions. 
+> Answers: 
 
-```{r lab-7-instructor-22}
-# b0 (the intercept)
-b0 <- model_int_coefs %>% 
-  filter(term == "(Intercept)") %>% 
-  select(estimate)  
+Intercept: the predicted number of matrices solved when condition = 0 (non-shredder) and honesty = 0 
+ 
+Honesty: holding condition constant, for every 1 point increase in honesty score, we expect a .45 decrease in number of matrices solved
 
-# b1 = the slope for supression
-b_supp <- model_int_coefs %>% 
-  filter(term == "suppression_c") %>% 
-  select(estimate) 
-  
-# b2 = the slope for individualism
-b_indiv <- model_int_coefs %>% 
-  filter(term == "indiv_c") %>% 
-  select(estimate)
+Condition: holding honesty constant, the difference in matrices solved between conditions
 
-# b3 = the coefficient for the interaction term
-b_supp_x_indiv <- model_int_coefs %>% 
-  filter(term == "suppression_c:indiv_c") %>% 
-  select(estimate)
+## Simple slopes
+
+To calculate *simple slopes*, you calculate the regression equation at specific levels of one of your variables. You probably wouldn't calculate a simple slope for a multiple regression. This is just so that we can compare it later to our interaction model simple slopes. 
+
+When condition = 0 (there isn't a shredder - you could get caught if you cheat)
+
+Claimed = 6.04  + 1.12Condition- .45Honesty
+Claimed = 6.04 + 1.12(0) - .45Honesty
+Claimed = 6.04 - .45Honesty
+
+When condition = 1 (there is a shredder - you can't get caught if you cheat)
+
+Claimed = 6.04  + 1.12Condition- .45Honesty
+Claimed = 6.04 + 1.12(1) - .45Honesty
+Claimed = 7.16 - .45Honesty
+
+When honesty = 0
+
+Claimed = 6.04  + 1.12Condition- .45Honesty
+Claimed = 6.04 + 1.12Condition - .45(0)
+Claimed = 6.04 + 1.12Condition
+
+When honesty = 1
+
+Claimed = 6.04  + 1.12Condition- .45Honesty
+Claimed = 6.04 + 1.12Condition - .45(1)
+Claimed = 5.59 + 1.12Condition
+
+When honesty = 2
+
+Claimed = 6.04  + 1.12Condition- .45Honesty
+Claimed = 6.04 + 1.12Condition - .45(5)
+Claimed = 5.14 + 1.12Condition
+
+
+What if you think that the honesty slope is going to be different under different conditions?
+
+# Categorical x continuous interaction
+
+
+## Model B
+
+
+$$\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition + \beta_3(Honesty*Condition)$$
+When the **interaction term** is added to the model, you are allowing for the possibility that the slope of one predictor differs at different levels of the other predictor. In this example, we can now account for the possibility that the relationship between honesty and matrices solved can differ at different levels of the condition variable.
+
+
+## Running an interaction model
+
+To run an interaction model with the function `lm()`, enter the predictor variables you are interacting separated by an asterisk on the right side of the equation, e.g., `lm(Y ~ X*Z)`. It is equivalent to running it spelled out, e.g., `lm(Y ~ X + Z + X:Z)`.
+
+
+```{r}
+model <- lm(data = data, claimed_solved ~ honesty*condition)
+summary(model)
 ```
 
-<br> 
+Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
 
-* Next let's calculate low (-1 SD), mid (mean), and high (+ 1 SD) values of individualism based on the mean and standard deviation of this variable
+> Question: interpret the model coefficients and R^2.
 
-```{r lab-7-instructor-23}
-# low = mean - 1 SD
-low_indiv <- mean(social$indiv_c, na.rm = TRUE) - sd(social$indiv_c, na.rm = TRUE) 
+> Answers: 
 
-# mid = mean
-mid_indiv <- mean(social$indiv_c, na.rm = TRUE)
+Intercept: the predicted number of matrices solved when all variables = 0 (so when honesty = 0 and there is no shredder)
 
-# high = mean + 1 SD
-high_indiv <- mean(social$indiv_c, na.rm = TRUE) + sd(social$indiv_c, na.rm = TRUE)
+condition: the difference of means between matrices solved in the shredder and non-shredder conditions when honesty = 0
+
+honesty: the slope of honesty when condition = 0 (non-shredder condition, so when you could get caught cheating)
+
+condition*honesty: the difference between slopes in the shredder vs. non-shredder condition 
+
+# Simple slopes
+
+## Calculating simple slopes
+
+Shredder = 0 (There isn't a shredder - you could get caught if you cheat)
+
+Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
+Claimed = 7.27 -.85Honesty -1.18(0) + .77Honesty*(0)
+Claimed = 7.27 -.85Honesty
+
+
+Shredder = 1 (There is a shredder - you can't get caught if you cheat)
+
+Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
+Claimed = 7.27 -.85Honesty -1.18(1) + .77Honesty*(1)
+Claimed = 6.09 -.08Honesty
+
+## Visualizing simple slopes
+
+```{r}
+#sj plot
+plot_model(model, type = "pred", terms = c("honesty", "condition"))
 ```
 
-<br> 
 
-* Calculate simple intercepts by plugging in low, mid and high values of Individualism. To review how this works algebraically, see [this slide](https://uopsych.github.io/psy612/lectures/14-interactions.html#18){target="_blank"} from class
-
-```{r lab-7-instructor-24}
-# calculate simple intercepts and bind them together into 3 rows
-simple_intercepts <- rbind(
-                    b0 + (b_indiv * low_indiv),
-                    b0 + (b_indiv * mid_indiv), 
-                    b0 + (b_indiv * high_indiv)
-                    )
-
-# We'll give it a column name which will help below
-colnames(simple_intercepts) <- "simple_intercepts"
+```{r}
+#in ggplot
+data %>% 
+ggplot(aes(x = honesty, y = claimed_solved, color = condition)) +
+  geom_smooth(method = "lm")
 ```
 
-<br> 
+## Simple slope tests
 
-* Calculate simple slopes, again by plugging in low, mid and high values of Individualism. 
+For this section, take some time to look at these results and try to figure out what tests we are running and what you can conclude from them.
 
-```{r lab-7-instructor-27}
-# Calculate simple slopes
-simple_slopes <-rbind(
-                b_supp + (b_supp_x_indiv * low_indiv),
-                b_supp + (b_supp_x_indiv * mid_indiv), 
-                b_supp + (b_supp_x_indiv * high_indiv)
-                )
-
-# Again, give it a column name
-colnames(simple_slopes) <- "simple_slopes"
+```{r}
+emtrends(model, ~condition, var = "honesty")
 ```
 
-<br> 
+> What is this testing? What can you conclude?
 
-* Now combine all this information into one data frame so we can more easily plot it
-
-```{r lab-7-instructor-30}
-# create labels for the different levels of individualism
-indiv_levels <- c("low","mid","high")
-
-# put them all together into a data frame
-int_plot_df <- data.frame(cbind(
-                         indiv_levels, # labels
-                         simple_intercepts, # simple intercepts 
-                         simple_slopes)) # simple slopes
+```{}
+emtrends(model, pairwise~condition, var = "honesty")
 ```
 
-<br> 
+> What is this testing? What can you conclude?
 
-* Let's look at our data frame of simple intercepts and simple slopes...
+```{r}
+mylist <- list(honesty=c(1,2,3,4,5), condition=c("Non-shredder","Shredder"))
+combinations <- emmeans(model, ~ honesty*condition, at=mylist)
 
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-31, eval=FALSE}
-int_plot_df
+#from emmeans
+contrast(combinations, "pairwise", by = "honesty")
 ```
 
-##### Output
+> What is this testing? What can you conclude?
 
-```{r lab-7-instructor-32, echo=FALSE, ref.label='lab-7-instructor-31'}
+
+# Centering
+
+One thing you may have noticed while interpreting output is that we sometimes said "when honesty = 0." However, for this example, honesty cannot be 0 since the scale goes from 1 to 5, making the interpretations less meaningful. Instead, we can mean center honesty. Here are two ways to center:
+
+```{r}
+data <- data %>%
+  mutate(honesty_c = honesty - mean(honesty),
+         honesty_center = scale(honesty, scale = FALSE))
+head(data)
 ```
 
-####
-<br>
+Now, we can re-run our model...
+```{r}
+model <- lm(data = data, claimed_solved ~ honesty_c*condition)
+summary(model)
 
-## Plotting simple slopes by hand
-
-* Finally, we'll make the plot using `ggplot` and a few different `geoms`, including `geom_point()` and `geom_abline()`
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-33, eval=FALSE}
-social %>% 
-  ggplot(aes(x = suppression_c, y = socsup)) + 
-  # add points for scatterplot and make them invisible
-   geom_point(alpha = 0) + 
-  # add line for low level of individualism
-  geom_abline(aes(intercept = int_plot_df$simple_intercepts[1], 
-                  slope = int_plot_df$simple_slopes[1], 
-                  color = "-1SD Individualism"), # This will  give it  a label
-              show.legend = TRUE) +
-  # add line for mid level of individualism
-  geom_abline(aes(intercept = int_plot_df$simple_intercepts[2], 
-                  slope = int_plot_df$simple_slopes[2], 
-                  color = "Mean Individualism"), 
-              show.legend = TRUE) + 
-  # add line for high level of individualism
-  geom_abline(aes(intercept = int_plot_df$simple_intercepts[3], 
-                  slope = int_plot_df$simple_slopes[3], 
-                  color = "+1SD Individualism"), 
-              show.legend = TRUE) +
-  # add a title and label the axes
-  labs(title = "Effect of expressive suppression on social support \nat low, mid, & high levels of individualism", 
-       x = "Expressive suppression (Centered)", y = "Social Support") +
-  # we need to set the colors of the lines manually, which requires scale_color_manual()
-  scale_color_manual("Individualism Level", 
-  # values() is where you specify the colors, in the form label = color_name
-                     values = c("-1SD Individualism" = "salmon", 
-                              "Mean Individualism" = "purple",
-                              "+1SD Individualism" = "cornflower blue")) + 
-  theme_minimal()
 ```
 
-##### Output
+> Question: now, how can we interpret the intercept?
 
-```{r lab-7-instructor-34, echo=FALSE, ref.label='lab-7-instructor-33'}
+```{r}
+
+model <- lm(data = data, claimed_solved ~ honesty*condition)
+summary(model)
 ```
 
-####
-<br>
+> Question: what changed from the first model to the model with centered honesty?
 
->**Question:** How would you interpret this plot?  
-
->**Answer:** At high levels of individualism there is a negative relationship between expressive suppression and social support. In other words, for people who are more individualistic, suppressing emotion expression corresponds to less social support. At low levels of individualism/high levels of collectivism, there is a positive relationship between expressive suppression and social support. In other words, for people who are highly collectivistic, suppressing emotion corresponds to more social support. 
-
-## `sjPlot::plot_model()`
-
-* Ok that was intense...Fortunately there is a much easier way to plot interactions! We can use the `plot_model()` function from `{sjPlot}`. This function takes in a fitted model object as the first argument (i.e. `model`). You can then specify the `type` of plot; in this case we will tell it to plot the simple slopes of our interaction model by specifying `type = "int"`. Lastly, we will specify which values of the moderator variable (in our case, Individualism) to plot as separate lines. 
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-35, eval=FALSE}
-plot_model(model = model_int, # model fit object
-           type = "int", # interaction 
-           mdrt.values = "meansd") # which values of the moderator variable should be used
-```
-
-##### Output
-
-```{r lab-7-instructor-36, echo=FALSE, ref.label='lab-7-instructor-35'}
-```
-
-####
-<br>
-
-* You can read more about using `sjPlot::plot_model()` to plot interactions [here](http://www.strengejacke.de/sjPlot/articles/plot_interactions.html){target="_blank"}
 
 ***
 
-# Significance tests of simple slopes{#sig}
+# Minihacks
 
-* Let's talk about how to run significance tests on simple slopes. For each simple slope we can test whether it is significantly different from 0. 
+You are interested in whether the time students spend studying (`study_time`) interacts with test anxiety (`anxiety`) to predict students' test performance (`perf`).
 
-<br>
+Import the data below:
 
-* We'll use the function `simple_slopes()` from the `{reghelper}` package (make sure you have this installed). This function takes in a model object and outputs a data frame with a row for each simple effect. 
-
-<br>
-
-* The first few columns identify the level at which each variable in your model was set for that test. A `sstest` value in a particular column indicates that the simple slope for this variable is being tested. The column labeled `Test Estimate` will give you the simple slopes (by default at -1 SD, mean, and + 1 SD), and the remaining columns have the information that pertains to the significance test. 
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-37, eval=FALSE}
-simple_slopes(model = model_int)
-```
-
-##### Output
-
-```{r lab-7-instructor-38, echo=FALSE, ref.label='lab-7-instructor-37'}
-```
-
-####
-<br>
-
-* In our case, we are only interested in the simple slopes of Suppression (at different levels of Individualism), so we can filter the resulting data frame from to only give us the relevant information
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-39, eval=FALSE}
-simple_slopes(model_int) %>% 
-  filter(suppression_c == "sstest")
-```
-
-##### Output
-
-```{r lab-7-instructor-40, echo=FALSE, ref.label='lab-7-instructor-39'}
-```
-
-####
-<br>
-
-* Lastly, let's prove to ourselves and our long and arduous way of calculating simple slopes by hand was correct!
-
-<br>
-
-* Here are the simple slopes calculated by `reghelper::simple_slopes()`...
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-41, eval=FALSE}
-simple_slopes(model_int) %>% 
-  filter(suppression_c == "sstest") %>% 
-  select(`Test Estimate`)
-```
-
-##### Output
-
-```{r lab-7-instructor-42, echo=FALSE, ref.label='lab-7-instructor-41'}
-```
-
-####
-<br>
-
-* Here are the simple slopes we calculated by hand...
-
-#### {.tabset .tabset-fade .tabset-pills}
-
-##### Code
-
-```{r lab-7-instructor-43, eval=FALSE}
-# we created this data frame earlier
-int_plot_df %>% 
-  select(simple_slopes)
-```
-
-##### Output
-
-```{r lab-7-instructor-44, echo=FALSE, ref.label='lab-7-instructor-43'}
-```
-
-####
-<br>
-
-***
-
-# Minihacks{#minihacks}
-
-## Research Scenario: 
-
-* For her masters project, a grad student wants to see whether the time students spend studying (`study_time`) interacts with test anxiety (`anxiety`) to predict students' test performance (`perf`).
-
-* Import the data below:
-
-```{r lab-7-instructor-45}
+```{r}
 test_perf <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-7/data/test_perf.csv")
 ```
 
+```{r}
+head(test_perf)
+str(test_perf)
+psych::describe(test_perf)
+
+```
+
+As you can see, anxiety is measured categorically ("low" or "high") and study time ranges from .9 hours to 6.30 hours.
 
 ## Minihack 1 
 
-* Run a model testing whether test anxiety moderates the relationship between time spent studying and test performance. Don't forget to first center your predictors. 
+Run a model testing whether test anxiety moderates the relationship between time spent studying and test performance. Center study time so that it is more meaningful. 
 
-```{r lab-7-instructor-46}
+```{r}
 test_perf <- test_perf %>% 
-  mutate(anxiety_c = as.numeric(scale(anxiety, scale = FALSE)),
-         study_time_c = as.numeric(scale(study_time, scale = FALSE)))
+  mutate(anxiety = factor(anxiety,
+                          levels= c("low", "high")),
+         study_time_c = scale(study_time, scale = FALSE))
+
+model <- lm(data= test_perf, perf ~ anxiety*study_time_c)
+summary(model)
+
+
 ```
 
+Interpret the model coefficients.  
 
-```{r lab-7-instructor-47}
-anx_x_time_model <- lm(perf ~  study_time_c * anxiety_c, data = test_perf)
-summary(anx_x_time_model)
-```
-
-* What do the model coefficients mean? Try explaining them to a friend. 
+The predicted exam score for those with average study time and low anxiety is 79.49. According to the model, people with low anxiety are expected to score about 6.24 points greater than people with low anxiety at average study time. For low anxiety people, for every 1 hour extra study time, they scored about 7.84 points higher on the exam. That slope was much less steep for high anxiety people (only 1.65). The interaction coefficient is the difference in those slopes (6.20).
 
 ***
 
 ## Minihack 2
 
-* Visualize the interaction. For an extra challenge, try doing this without using `{sjPlot}`.
+Visualize the interaction using `sjPlot` or `ggplot`.
 
-```{r lab-7-instructor-48}
-plot_model(model = anx_x_time_model, 
-           type = "int", 
-           mdrt.values = "meansd") 
+```{r}
+test_perf %>% 
+ggplot(aes(x= study_time, y = perf, color = anxiety)) + 
+  geom_smooth(method = "lm")
 ```
-
-* What can you infer from this plot? Again, try explaining it to a friend. 
 
 ***
 
 ## Minihack 3
 
-* Test whether each simple slope is significantly different from 0. 
+Test whether each simple slope is significantly different from 0. 
 
-```{r lab-7-instructor-49}
-simple_slopes(anx_x_time_model) %>% 
-  filter(study_time_c == "sstest")
+```{r}
+emtrends(model, ~anxiety, var = "study_time_c")
 ```
 
-* What do the results of these significance tests mean?
+Test whether the simple slopes for low anxiety and high anxiety are significantly different from each other.
+
+```{r}
+emtrends(model, pairwise~anxiety, var = "study_time_c")
+```
+
+What do the results of these significance tests mean?
+
+1. Since 0 isn't in the confidence intervals, both of these slopes are significantly greater than 0. This means that the relation between study time and performance is significant at both high and low anxiety.
+
+2. Since p < .001, the slope for the low anxiety condition is significantly greater than the slope for the high anxiety condition. 
