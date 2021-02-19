@@ -62,10 +62,33 @@ data <- data %>% mutate(condition = factor(condition,
 #Your code here
 ```
 
+# Simple regression
+
+## Model A
+
+$$\hat{Claimed_i} = \beta_0 + \beta_1Honesty $$
+Run this model using `lm()`.
+
+```{r}
+model_a <- lm(data = data, claimed_solved ~ honesty)
+summary(model_a)
+```
+
+Graph in `ggplot()`.
+```{r}
+data %>% 
+ggplot(aes(x = honesty, y = claimed_solved)) +
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  geom_label(x=2, y = 5.9, label = "all") +
+  theme_minimal()
+
+```
+
 # Multiple regression
 
 
-## Model A 
+## Model B 
 
 $$\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition $$
 
@@ -74,9 +97,9 @@ So far in this course, we've worked only with **additive effects**, as shown her
 
 Let's run this model using `lm()`.
 ```{r}
-model_a <- lm(data = data, claimed_solved ~ honesty + condition)
+model_b <- lm(data = data, claimed_solved ~ honesty + condition)
 
-summary(model_a)
+summary(model_b)
 ```
 
 $$\hat{Claimed} = 6.04  + 1.12Condition- .45Honesty $$
@@ -124,13 +147,28 @@ Claimed = 6.04  + 1.12Condition- .45Honesty
 Claimed = 6.04 + 1.12Condition - .45(5)
 Claimed = 5.14 + 1.12Condition
 
+## Plotting
+
+```{r}
+
+data %>% 
+ggplot(aes(x = honesty, y = claimed_solved)) +
+  geom_point() +
+  geom_abline(slope = -.45, intercept = 6.04, color = "red", size =1 ) +
+  geom_abline(slope = -.45, intercept = 7.16, color = "blue", size =1) +
+  geom_label(x = 1.5, y = 5.2, label = "shredder") +
+  geom_label(x = 1.5, y =6.5, label = "no shredder")+
+  theme_minimal()
+
+```
 
 What if you think that the honesty slope is going to be different under different conditions?
+
 
 # Categorical x continuous interaction
 
 
-## Model B
+## Model C
 
 
 $$\hat{Claimed_i} = \beta_0 + \beta_1Honesty + \beta_2Condition + \beta_3(Honesty*Condition)$$
@@ -143,8 +181,8 @@ To run an interaction model with the function `lm()`, enter the predictor variab
 
 
 ```{r}
-model <- lm(data = data, claimed_solved ~ honesty*condition)
-summary(model)
+model_c <- lm(data = data, claimed_solved ~ honesty*condition)
+summary(model_c)
 ```
 
 Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
@@ -180,38 +218,47 @@ Claimed = 6.09 -.08Honesty
 
 ## Visualizing simple slopes
 
-```{r}
-#sj plot
-plot_model(model, type = "pred", terms = c("honesty", "condition"))
-```
-
 
 ```{r}
 #in ggplot
 data %>% 
-ggplot(aes(x = honesty, y = claimed_solved, color = condition)) +
-  geom_smooth(method = "lm")
+ggplot(aes(x = honesty, y = claimed_solved)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, aes(color = condition)) +
+  scale_color_manual(values = c("red", "blue")) + 
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_label(x = 4.5, y = 6, label = "shredder") +
+  geom_label(x = 4.5, y = 3.6, label = "non-shredder")
 ```
+
+```{r}
+#sj plot
+plot_model(model_c, type = "pred", terms = c("honesty", "condition"))
+```
+
+
 
 ## Simple slope tests
 
 For this section, take some time to look at these results and try to figure out what tests we are running and what you can conclude from them.
 
 ```{r}
-emtrends(model, ~condition, var = "honesty")
+emtrends(model_c, ~condition, var = "honesty")
 ```
 
 > What is this testing? What can you conclude?
 
-```{}
-emtrends(model, pairwise~condition, var = "honesty")
+```{r}
+
+emtrends(model_c, pairwise~condition, var = "honesty")
 ```
 
 > What is this testing? What can you conclude?
 
 ```{r}
 mylist <- list(honesty=c(1,2,3,4,5), condition=c("Non-shredder","Shredder"))
-combinations <- emmeans(model, ~ honesty*condition, at=mylist)
+combinations <- emmeans(model_c, ~ honesty*condition, at=mylist)
 
 #from emmeans
 contrast(combinations, "pairwise", by = "honesty")
@@ -233,8 +280,8 @@ head(data)
 
 Now, we can re-run our model...
 ```{r}
-model <- lm(data = data, claimed_solved ~ honesty_c*condition)
-summary(model)
+model_d <- lm(data = data, claimed_solved ~ honesty_c*condition)
+summary(model_d)
 
 ```
 
@@ -242,8 +289,7 @@ summary(model)
 
 ```{r}
 
-model <- lm(data = data, claimed_solved ~ honesty*condition)
-summary(model)
+summary(model_c)
 ```
 
 > Question: what changed from the first model to the model with centered honesty?
