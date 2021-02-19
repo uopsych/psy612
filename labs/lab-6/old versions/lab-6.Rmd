@@ -1,0 +1,377 @@
+---
+title: "Lab 6: Regression Diagnostics"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+---
+
+# Purpose
+
+Today we'll be going over the assumptions of regression and how to check whether or not they are violated using common diagnostics.
+
+We'll be working with several versions of the happiness and extraversion data that we've worked with in previous labs.
+
+```{r}
+library(rio)
+library(tidyverse)
+library(broom)
+library(sjPlot)
+library(olsrr)
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>% janitor::clean_names() # to get things into snake_case
+
+df_het <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_het.csv")
+
+df_mc <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_mc.csv")
+
+df_nne <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_nne.csv")
+
+df_out <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/lab6_outliers.txt") %>% 
+  janitor::clean_names()
+```
+
+# Normality Assumption
+
+### Q1
+>**Question: What do we assume is normally distributed?**
+
+
+Let's start by fitting our regression model. We are going to regress happiness on Extraversion using two different datasets. The first will be the data we've worked with previously:
+
+```{r}
+model_1a <- lm(happiness ~ extraversion, data = df) 
+```
+
+Then we'll use one of our new datasets:
+
+```{r}
+model_1b <- lm(happiness ~ extraversion, data = df_nne)
+```
+
+We can examine the normality of our errors using a few different methods. First, we could examine a density plot of the residuals and compare that to a normal distribution.
+
+Remember, one way we can get our residual values in a dataframe is to use `broom::augment()`. Then we can plot the residuals using `geom_density()` and overlay a normal curve:
+
+```{r}
+model_1a %>% 
+  augment() %>% 
+  ggplot(aes(x= .resid)) + 
+  geom_density(fill = "purple") +
+  stat_function(linetype = 2, fun = dnorm, # add normal curve
+                args = list(mean = mean(augment(model_1a)$.resid), # define mean and sd
+                            sd = sd(augment(model_1a)$.resid)))+
+  theme_minimal()
+```
+
+### Q2
+>**Question: Are these errors normally distributed?**
+
+Now let's check our other model:
+
+```{r}
+model_1b %>% 
+  augment() %>% 
+  ggplot(aes(x= .resid)) + 
+  geom_density(fill = "purple") +
+  stat_function(linetype = 2, fun = dnorm, # add normal curve
+                args = list(mean = mean(augment(model_1b)$.resid), # define mean and sd
+                            sd = sd(augment(model_1b)$.resid))) 
+```
+
+### Q3
+>**Question: Are these errors normally distributed?**
+
+The other method we could use is to look at a q-q plot of the residuals, which shows expected vs. observed residual values. In it, we're looking for all of the points to more-or-less lay along the diagonal. 
+
+This is pretty easy to do in R using broom and ggplot. First, we `augment()` the model, then we call `ggplot()`, and then transform the data using `stat_qq()`. Then we add a `geom_abline()`, which will plot a diagonal line by default.
+
+Let's see it with our first model:
+```{r}
+model_1a %>% 
+  augment() %>% 
+  ggplot() +
+  stat_qq(aes(sample = .std.resid)) + # this is where it creates the qq plot data
+  geom_abline() + # diagonal line
+  theme_minimal()
+```
+
+And now with our second model:
+```{r}
+model_1b %>% 
+  augment() %>% 
+  ggplot() +
+  stat_qq(aes(sample = .std.resid)) + # this is where it creates the qq plot data
+  geom_abline() + # diagonal line
+  theme_minimal()
+```
+
+Note that the points are no longer laying along the diagonal, but instead show a distinctive pattern, where again the positive residuals are much higher than expected
+
+# Homoscedasticity / Heteroscedasticity
+
+Let's talk about the assumption of homoscedasticity and how to see if it's violated (i.e., how to see if there is heteroscedasticity).
+
+### Q4
+>**Question: What is the assumption of homoscedasticity?**
+
+
+### Q5
+>**Question: Does anyone remember what the anologous assumption in the case of a t test is usually called (from 611)?**
+
+For this, we'll regress happiness on extraversion using another dataframe, callled `df_het`
+```{r}
+model_1c <- lm(happiness ~ extraversion, data = df_het)
+```
+
+The main way we usually check heteroscedasticity is to examine a plot of the residuals by fitted values. We can do this using the data provided by running `augment()` on our model. Let's do it for our first model:
+
+```{r}
+model_1a %>% 
+  augment() %>% 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  theme_minimal() +
+  geom_hline(yintercept = 0, color = "red")
+```
+
+### Q6
+>**Question: Do these data look lik they meet the assumption of homoscedasticity?**
+
+Now let's check the residuals from model_1c that we fit above:
+
+```{r}
+model_1c %>% 
+  augment() %>% 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  theme_minimal() +
+  geom_hline(yintercept = 0, color = "red")
+```
+
+### Q7
+>**Question: Do these data look lik they meet the assumption of homoscedasticity?**
+
+# Multicollinearity
+
+Recall that multicollinearity occurs when one or more predictors in our model are highly correlated. Note that this only applies to models with multiple continuous predictors.
+
+### Q8
+>**Question: What are the practical impact(s) of multicolinearity (i.e., how does it affect our modeling results)?**
+
+One way we can check this before we even run our model is to look at the zero-order correlations between variables. Let's do that for all of the variables except happiness in our main dataset `df`:
+
+```{r}
+df %>% 
+  select(-happiness) %>% 
+  cor()
+```
+
+Now let's run a model with all of these predictors in the model and check the tolerance values:
+
+```{r}
+mr_model_1 <- lm(happiness ~ ., data = df)
+```
+
+To get tolerance, we'll use a function from the {olsrr} library called `ols_vif_tol()`. It's very easy to use - we just supply it our model and it calculates tolerance and variance inflation factor (its reciprocal) for each predictor:
+
+```{r}
+ols_vif_tol(mr_model_1)
+```
+
+A common rule of thumb for tolerance is that values $\geq$ .20 are OK. It looks like these variables are OK. Let's take a look at another dataset called `df_mc`.
+
+In it, we have happiness, extraversion, and social_engagement. Social engagement is a facet of Extraversion, so it should be pretty related. First, we can check the correlation matrix:
+
+```{r}
+df_mc %>% 
+  select(-happiness) %>% 
+  cor()
+```
+
+Oof, those are *very* highly correlated. Let's run the regression and get tolerance values:
+
+```{r}
+mr_model_2 <- lm(happiness ~ extraversion + social_engagement, data = df_mc)
+
+ols_vif_tol(mr_model_2)
+```
+
+No surprise, these values are below the .20 rule of thumb. We would not want to have both in our model. 
+
+We can see the practical impact by looking at the standard errors of the coefficients from this model relative to `mr_model_1`:
+
+```{r}
+summary(mr_model_2)
+```
+
+```{r}
+summary(mr_model_1)
+```
+
+Note that the standard error for Extraversion is 3x higher in the model with severe multicollinearity. This is crazy because these are literally the same data (happiness and extraversion are identical in the 2 datasets), the inclusion of a highly multicollinear predictor is inflating our SE substantially. 
+
+# Outlier Detection
+
+We'll spend the rest of today talking about outliers and outlier detection. Recall that there can be univariate or multivariate outliers.
+
+### Q7
+>**Question: What is the difference between a univariate and multivariate outlier?**
+
+## Univariate outliers
+
+One way we can find univariate outliers is by examining distributions of our variables.
+
+```{r}
+df_out %>% 
+  ggplot(aes(x = happiness)) + 
+  geom_histogram(fill = "purple", bins = 15) +
+  theme_minimal()
+```
+
+```{r}
+df_out %>% 
+  ggplot(aes(x = extraversion)) + 
+  geom_histogram(fill = "purple", bins = 15) +
+  theme_minimal()
+```
+
+### Q8
+>**Question: Are there any univariate outliers on either happiness or extraversion**
+
+
+## Multivariate outliers
+
+One straightforward way to visually inspect the data for multivariate outliers is to use bi-variate plots for each combination of outcome and predictor. In this case, we'll just look at a single predictor (extraversion) and our outcome (happiness)
+
+## Bi-variate plot
+```{r}
+ggplot(data = df_out, aes(x = extraversion, y = happiness)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "purple")
+```
+
+### Q9
+>**Question: Are any multivariate outliers apparent in the above graph?**
+
+### Q10
+>**Question: If there are multivariate outliers, do they look like they could have a large or small effect on our model?**
+
+Let's check. Recall from lecture that there are several metrics we can examine to see how much impact an outlier has on our model. Let's look at cook's distance, which summarizes how much the regression model changes if we remove each value. This value is provided by `augment()`, so getting it and plotting it is pretty simple:
+
+```{r}
+model_1d <- lm(happiness ~ extraversion, data = df_out)
+
+model_1d %>% 
+  augment() %>%
+  mutate(id = row.names(.)) %>% 
+  ggplot(data = ., aes(x = id, y = .cooksd)) +
+  geom_point() +
+  geom_text(aes(label = id), check_overlap = TRUE, nudge_y = .01)+ # add labels
+  theme(axis.text.x = element_blank()) + 
+  labs(x = NULL, y = "Cook's D")
+```
+
+We could instead use the `ols_plot_cooksd_chart()`, which is a little easier but harder to customize.
+
+```{r}
+ols_plot_cooksd_chart(model_1d)
+```
+
+Another option for spotting outliers, which works for all variables at once, is to plot the fitted by residual values. Recall we also looked at this for heteroscedasticity above, so this code should look familiar:
+
+```{r}
+ggplot(data = model_1d, aes(x = scale(.fitted), y = scale(.resid))) +
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 0, color = "red")
+```
+
+And finally, a qqplot works for this as well:
+
+```{r}
+model_1d %>% 
+  augment() %>% 
+  ggplot() +
+  stat_qq(aes(sample = .std.resid)) + # this is where it creates the qq plot data
+  geom_abline() + # diagonal line
+  theme_minimal()
+```
+
+# Easily check Regression Diagnostics with sjPlot
+
+The last thing I'll mention today is that you can easily check several diagnostic charts at once using `plot_model()` from sjPlot, setting the `type = ` argument to `"diag"`:
+
+```{r}
+model_1d %>% 
+  plot_model(type = "diag")
+```
+
+You can see that in the case of a single predictor, it gives you a qq plot, a density plot of the residuals, and the fitted by residuals (whcih can be used for outliers and homoscedasticity).
+
+If we have multiple predictors, it also gives us a plot of variance inflation factor to assess multicollinearity:
+
+```{r}
+mr_model_2 %>% 
+  plot_model(type = "diag")
+
+```
+
+# Minihack 1
+
+Load the bfi dataset from the psych package (this is done for you below, in case you haven't loaded a dataset from a package).
+
+First, create a model regressing age on the 5 items for Conscientiousness (labelled C1, C2, C3, C4, and C5).
+
+```{r}
+data(bfi, package = "psych")
+```
+
+
+Next, check if the data meet the homoscedasticity assumption.
+
+```{r}
+```
+
+Next, check if the errors are normally distributed using one of the plots we covered.
+
+```{r}
+
+```
+
+# Minihack 2
+
+Using the `df_out` data from above, run a regression model with and without the outliers we identified. 
+```{r}
+```
+
+Compare the output of the two models. How similar/different are they? What values change?
+
+Next, put both models in a single table.
+```{r}
+
+```
+
+
+# Minihack 3
+
+Using the fitness data from the olsrr package (loaded for you below), regress `runtime` on `weight`, `restpulse`, `runpulse`, and `maxpulse`.
+
+```{r}
+data("fitness")
+```
+
+Check the multicollinearity of predictors. Is multicollinearity at a tolerable level? 
+
+```{r}
+
+```
+
+If there are multicollinearity issues, deal with it using one of the methods covered in lecture. Then compare the relevant output of the new model with the old. What changed?
+
+```{r}
+
+```
+

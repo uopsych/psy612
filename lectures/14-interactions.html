@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Interactions</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -17,6 +18,8 @@ class: center, middle, inverse, title-slide
 ---
 
 
+
+
 ## Last time
 
 Causal models as a tool for model building
@@ -27,319 +30,389 @@ Interactions/moderation
 
 ---
 
+## Motivating example
+
+
+```r
+library(tidyverse)
+t_data = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/tutor.csv")
+glimpse(t_data)
+```
+
+```
+## Rows: 20
+## Columns: 4
+## $ ID    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, …
+## $ study &lt;dbl&gt; 1.62, 0.54, 0.86, 0.80, 0.36, 2.14, 1.13, 1.66, 1.23, 1.92, 1.8…
+## $ grade &lt;dbl&gt; 9.0, 7.8, 8.5, 6.2, 6.9, 9.0, 6.6, 8.7, 6.6, 8.8, 9.7, 5.9, 9.5…
+## $ tutor &lt;dbl&gt; 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0
+```
+
+```r
+t_data = t_data %&gt;%
+  mutate(tutor_lab = factor(tutor, 
+                            levels = c(0,1),
+                            labels = c("No tutor", "Tutor")))
+```
+
+---
+
+
+```r
+mod1 = lm(grade ~ tutor, data = t_data)
+summary(mod1)
+```
+
+```
+...
+## Coefficients:
+##             Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)   6.7600     0.2804  24.108 0.00000000000000375 ***
+## tutor         2.1300     0.3966   5.371 0.00004186706304119 ***
+...
+```
+
+
+Consider the regression model below. How do we interpret the coefficient, `\(b_1\)` ?
+
+`$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor}$$`
+
+--
+
+`\(b_0\)` is the mean of the reference group (no tutor), and `\(b_1\)` represents the difference in means between the two groups.
+
+---
+
+### Visualizing
+
+![](14-interactions_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+---
+
+### Interpreting slopes
+
+Extending this to the multivariate case, let's add hours spent studying (`study`) as another covariate.
+
+
+```r
+mod2 = lm(grade ~ tutor_lab + study, data = t_data)
+summary(mod2)
+```
+
+```
+...
+## Coefficients:
+##                Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept)      5.5882     0.3198  17.474 0.00000000000269 ***
+## tutor_labTutor   1.3751     0.3183   4.320         0.000465 ***
+## study            1.1777     0.2565   4.592         0.000259 ***
+...
+```
+
+`$$\hat{Y} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study}$$`
+
+How do we interpret `\(b_1?\)`
+
+--
+
+
+`\(b_1\)` is the difference in means between the two groups *if the two groups have the same average level of hours studying* or holding `study` constant. 
+
+This, by the way, is ANCOVA.
+
+
+---
+
+### Visualizing
+
+![](14-interactions_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+---
+### Visualizing
+
+![](14-interactions_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+
+### Comparing contributions
+
+
+Just like we use `\(R^2\)` to report how much variance in Y is explained by the model, we can break this down into the unique contributions of each variable in the model. 
+
+`$$\large \eta^2 = \frac{SS_{\text{Variable}}}{SS_{Y}}== \frac{SS_{\text{Variable}}}{SS_{\text{Total}}}$$`
+---
+
+
+```r
+mod2 = lm(grade ~ tutor_lab + study, data = t_data)
+anova(mod2)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: grade
+##           Df  Sum Sq Mean Sq F value       Pr(&gt;F)    
+## tutor_lab  1 22.6845 22.6845  61.049 0.0000005026 ***
+## study      1  7.8362  7.8362  21.089    0.0002593 ***
+## Residuals 17  6.3168  0.3716                         
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+`$$\large \eta^2_{Study} = \frac{7.8362}{7.8362+22.6845+6.3168} = .2127 = 21.3\%$$`
+`$$\large \eta^2_{Tutor} = \frac{22.6845}{7.8362+22.6845+6.3168} = .6158 = 61.6\%$$`
+
+---
+
 ## What are interactions?
 
 When we have two variables, A and B, in a regression model, we are testing whether these variables have **additive effects** on our outcome, Y. That is, the effect of A on Y is constant over all values of B. 
-- Example: Drinking coffee and hours of sleep have additive effects on alertness; no matter how any hours I slept the previous night, drinking one cup of coffee will make me .5 SD more awake than not drinking coffee. 
+
+- Example: Studying and working with a tutor have additive effects on grades; no matter how many hours I spend studying, working with a tutor will improve my grade by 2 points.
+
 ---
 
 ## What are interactions?
 However, we may hypothesis that two variables have **joint effects**, or interact with each other. In this case, the effect of A on Y changes as a function of B. 
-- Example: Chronic stress has a negative impact on health but only for individuals who receive little or no social support; for individuals with high social support, chronic stress has no impact on health. 
+
+- Example: Working with a tutor has a positive impact on grades but only for individuals who do not spend a lot of time studying; for individuals who study a lot, tutoring will have little or no impact. 
+
 - This is also referred to as **moderation.** 
 
----
-.pull-left[
-### Univariate regression
-
-![](14-interactions_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
-
-]
-.pull-right[
-### Multivariate regression
-
-![](14-interactions_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
-
-]
----
-
-### Multivariate regression with an interaction
-
-![](14-interactions_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+Interactions (moderation) tell us whether the effect of one IV (on a DV) _depends_ on another IV.
 
 ---
+## Interactions
 
-### Example
+Now extend this example to include joint effects, not just additive effects:
 
-We shall return to the data we used in the multiple regression model with two continuous variables. Here we have an outcome (Stress) that we are interested in predicting from trait Anxiety and levels of social Support.
-
+`$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})$$`
 
 ```r
-library(here)
-stress.data = read.csv(here("data/stress.csv"))
-library(psych)
-describe(stress.data)
+mod3 = lm(grade ~ tutor_lab + study + tutor_lab:study, data = t_data) 
+mod3 = lm(grade ~ tutor_lab*study, data = t_data)
+summary(mod3)
 ```
 
 ```
-##         vars   n   mean     sd median trimmed    mad  min    max  range  skew
-## id         1 118 488.65 295.95 462.50  485.76 372.13 2.00 986.00 984.00  0.10
-## Anxiety    2 118   7.61   2.49   7.75    7.67   2.26 0.70  14.64  13.94 -0.18
-## Stress     3 118   5.18   1.88   5.27    5.17   1.65 0.62  10.32   9.71  0.08
-## Support    4 118   8.73   3.28   8.52    8.66   3.16 0.02  17.34  17.32  0.18
-## group*     5 118   1.53   0.50   2.00    1.53   0.00 1.00   2.00   1.00 -0.10
-##         kurtosis    se
-## id         -1.29 27.24
-## Anxiety     0.28  0.23
-## Stress      0.22  0.17
-## Support     0.19  0.30
-## group*     -2.01  0.05
-```
-
-
----
-
-```r
-i.model1 = lm(Stress ~ Anxiety + Support + Anxiety:Support, 
-              data = stress.data)
-i.model2 = lm(Stress ~ Anxiety*Support, data = stress.data)
-```
-
-Both methods of specifying the interaction above will work in R. Using the `*` tells R to create both the (partial) main effects and interaction effect. Note, however that the following code *gives you the wrong results*:
-
-
-```r
-imodel_bad = lm(Stress ~ Anxiety:Support, 
-                data = stress.data) # this does not create main effects. 
-#It is VERY WRONG
-```
-
-
----
-
-```r
-i.model1 = lm(Stress ~ Anxiety*Support, data = stress.data)
-summary(i.model1)
-```
-
-```
-## 
-## Call:
-## lm(formula = Stress ~ Anxiety * Support, data = stress.data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.8163 -1.0783  0.0373  0.9200  3.6109 
-## 
+...
 ## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -2.73966    1.12101  -2.444  0.01606 *  
-## Anxiety          0.61561    0.13010   4.732 6.44e-06 ***
-## Support          0.66697    0.09547   6.986 2.02e-10 ***
-## Anxiety:Support -0.04174    0.01309  -3.188  0.00185 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.462 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
+##                      Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+## tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+## study                  1.7567     0.3095   5.676 0.00003443132 ***
+## tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...
 ```
----
-
-### Conceptual interpretation 
-
-`$$\hat{Y} = b_{0} + b_{1}X + b_{2}Z + b_{3}XZ$$`
-
-You can interpret the interaction term in the same way you normally interpret a slope coefficient -- this is the effect of the interaction controlling for other variables in the model. 
-
-You can also interpret the intercept the same way as before (the expected value of Y when all predictors are 0).
-
-But here, `\(b_1\)` is the effect of X on Y when Z is equal to 0.
 
 ---
 
-### Conceptual interpretation
-`$$\hat{Y} = b_{0} + b_{1}X + b_{2}Z + b_{3}XZ$$`
+### Visualizing
+
+![](14-interactions_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+Where should we draw the segment to compare means?
+
+---
+
+## Interpreting coefficients
+
+`$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})$$`
+
+
+```
+...
+## Coefficients:
+##                      Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+## tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+## study                  1.7567     0.3095   5.676 0.00003443132 ***
+## tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...
+```
+
+Intercept: the expected value of Y when all predictors are 0
+
+`\(b_1\)`: The difference in means (tutor vs no tutor) _when study = 0_
+
+`\(b_2\)`: The slope of study _when tutor = 0, or the reference group_
+
+`\(b_3\)`?
+
+---
+
+## Interpreting coefficients
+
+`$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})$$`
+
+
+```
+...
+## Coefficients:
+##                      Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+## tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+## study                  1.7567     0.3095   5.676 0.00003443132 ***
+## tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...
+```
+
+`\(b_3\)`
+- the linear effect of the product of hours studying and tutoring
+- the degree of curvature in the regression plane
+- how much the slope of `study` differs for the two tutoring groups 
+- how much the effect of tutoring changes for for every one 1 hour increase in studying. 
+
+---
+
+##  Terms
+
+
+Interactions tell us whether the effect of one IV (on a DV) _depends_ on another IV. In this case, the effect of tutoring _depends on_ a student's time spent studying. Tutoring has a large effect when a student's spends little time studying, but a small effect when the amount of time studying is high.
+
+`\(b_3\)` is referred to as a "higher-order term."
+
+**Higher-order terms** are those terms that represent interactions. 
+
+---
+
+##  Terms
 
 **Lower-order terms** change depending on the values of the higher-order terms. The value of `\(b_1\)` and `\(b_2\)` will change depending on the value of `\(b_3\)`. 
-- These values represent "conditional effects" (because the value is conditional on the level of the other variable). In many cases, the value and significance test with these terms is either meaningless (if Z is never equal to 0) or unhelpful, as these values and significance change across the data. 
 
-**Higher-order terms** are those terms that represent interactions. `\(b_3\)` is a higher-order term. 
-- This value represents how much the slope of X changes for every 1-unit increase in Z AND how much the slope of Z changes for everyone 1-unit increase in X. 
+- These values represent "conditional effects" (because the value is conditional on the level of the other variable). In many cases, the value and significance test with these terms is either meaningless (if an IV is never equal to 0) or unhelpful, as these values and significance change across the data. 
 
-???
-
-Is `\(b_0\)` a higher-order or lower-order term?
-
-Ask what values `\(b_0\)` depends on -- both intercept and slope. Maybe be helpful to use paper to represent plane. 
-
----
-### Conceptual interpretation
-
-Higher-order interaction terms represent:
-- the change in the slope of X as a function of Z
-- the degree of curvature in the regression plane
-- the linear effect of the product of independent variables
-
-
-```r
-stress.data$AxS = stress.data$Anxiety*stress.data$Support
-head(stress.data[,c("Anxiety", "Support", "AxS")])
-```
-
-```
-##    Anxiety Support       AxS
-## 1 10.18520  6.1602  62.74287
-## 2  5.58873  8.9069  49.77826
-## 3  6.58500 10.5433  69.42763
-## 4  8.95430 11.4605 102.62076
-## 5  7.59910  5.5516  42.18716
-## 6  8.15600  7.5117  61.26543
-```
-
----
-
-
-```r
-summary(lm(Stress ~ Anxiety + Support + AxS, data = stress.data))
-```
-
-```
-## 
-## Call:
-## lm(formula = Stress ~ Anxiety + Support + AxS, data = stress.data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.8163 -1.0783  0.0373  0.9200  3.6109 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -2.73966    1.12101  -2.444  0.01606 *  
-## Anxiety      0.61561    0.13010   4.732 6.44e-06 ***
-## Support      0.66697    0.09547   6.986 2.02e-10 ***
-## AxS         -0.04174    0.01309  -3.188  0.00185 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.462 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
-```
-
----
-
-
-```r
-summary(lm(Stress ~ Anxiety*Support, data = stress.data))
-```
-
-```
-## 
-## Call:
-## lm(formula = Stress ~ Anxiety * Support, data = stress.data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.8163 -1.0783  0.0373  0.9200  3.6109 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -2.73966    1.12101  -2.444  0.01606 *  
-## Anxiety          0.61561    0.13010   4.732 6.44e-06 ***
-## Support          0.66697    0.09547   6.986 2.02e-10 ***
-## Anxiety:Support -0.04174    0.01309  -3.188  0.00185 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.462 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
-```
-
-They're the same!!
 ---
 
 ## Conditional effects and simple slopes
 
 The regression line estimated in this model is quite difficult to interpret on its own. A good strategy is to decompose the regression equation into **simple slopes**, which are determined by calculating the conditional effects at a specific level of the moderating variable.
 
-- Simple slope: the equation for Y on X at differnt levels of Z; but also refers to only the coefficient for X in this equation
+- Simple slope: the equation for Y on X at different levels of Z
 
-- Conditional effect: the slope coefficients in the full regression model which can change. These are the lower-order terms associated with a variable. E.g., X has a conditional effect on Y. 
-
-Which variable is the "predictor" (X) and which is the "moderator" (Z)?
+- Conditional effect: the slope coefficients in the full regression model that can change. These are the lower-order terms associated with a variable. E.g., studying has a conditional effect on grade. 
 
 ---
 
-The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our stress data:
+The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our tutoring data:
+
+
+```
+...
+## Coefficients:
+##                      Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+## tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+## study                  1.7567     0.3095   5.676 0.00003443132 ***
+## tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...
+```
 
 
 
-`$$\hat{Stress} = -2.74 + 0.62(\text{Anx})+ 0.67(\text{Sup})+ -0.04(\text{Anx} \times \text{Sup})$$`
+`$$\hat{\text{grade}} = 5.01 + 2.92(\text{Tutor})+ 1.76(\text{Study})+ -1.17(\text{T} \times \text{S})$$`
+
 --
-**Set Support to 5**
+
+**Set Tutoring to 0**
 $$
 `\begin{aligned}
-\hat{Stress} &amp;= -2.74 + 0.62(\text{Anx})+ 0.67(5)+ -0.04(\text{Anx} \times 5) \\
-&amp;= -2.74 + 0.62(\text{Anx})+ 3.35+ -0.2(\text{Anx}) \\
-&amp;= 0.61 + 0.42(\text{Anx})
-\end{aligned}`
-$$
---
-**Set Support to 10**
-$$
-`\begin{aligned}
-\hat{Stress} &amp;= -2.74 + 0.62(\text{Anx})+ 0.67(10)+ -0.04(\text{Anx} \times 10) \\
-&amp;= -2.74 + 0.62(\text{Anx})+ 6.7+ -0.4(\text{Anx}) \\
-&amp;= 3.96 + 0.22(\text{Anx})
+\hat{\text{grade}} &amp;= 5.01 + 2.92(0)+ 1.76(\text{Study})+ -1.17(0 \times \text{Study}) \\
+&amp;= 5.01 + 0+ 1.76(\text{Study})+ 0(\text{Study}) \\
+&amp;= 5.01 + 1.76(\text{Study})
 \end{aligned}`
 $$
 
 ---
+
+The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our tutoring data:
+
+
+```
+...
+## Coefficients:
+##                      Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+## tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+## study                  1.7567     0.3095   5.676 0.00003443132 ***
+## tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...
+```
+
+
+
+`$$\hat{\text{grade}} = 5.01 + 2.92(\text{Tutor})+ 1.76(\text{Study})+ -1.17(\text{T} \times \text{S})$$`
+
+
+**Set Tutoring to 1**
+$$
+`\begin{aligned}
+\hat{\text{grade}} &amp;= 5.01 + 2.92(1)+ 1.76(\text{Study})+ -1.17(1 \times \text{Study}) \\
+&amp;= 5.01 + 2.92+ 1.76(\text{Study})+ -1.17(\text{Study}) \\
+&amp;= 7.93 + 0.59(\text{Study})
+\end{aligned}`
+$$
+---
+
 
 ## Interaction shapes
 
-Often we graph the simple slopes as a way to understand the interaction. Interpreting the shape of an interaction can be done using the numbers alone, but it requires a lot of calculation and mental rotation. For those reasons, consider it a requirement that you graph interactions in order to interpret them. 
+Often we graph the simple slopes as a way to understand the interaction. The shape of the lines in the graph are informative and help us interpret conceptually what's happening.
 
 ---
 ## Interaction shapes
+### Cross-over interactions
+
+![](14-interactions_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+
+
+---
+## Interaction shapes
+
 ### Ordinal interactions
 
-![](14-interactions_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](14-interactions_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 ---
 ## Interaction shapes
-### Cross-over (disordinal) interactions
 
-![](14-interactions_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+### Ordinal interactions (beware...)
 
+![](14-interactions_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
+
 
 
 ```r
 library(sjPlot)
-plot_model(imodel, type = "int")
+plot_model(mod3, type = "int")
 ```
 
-![](14-interactions_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](14-interactions_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 
 ---
+
 
 
 ```r
-plot_model(imodel, type = "int", mdrt.values = "meansd")
+library(sjPlot)
+plot_model(mod3, type = "pred", terms = c("study", "tutor_lab"))
 ```
 
-![](14-interactions_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+![](14-interactions_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 
 ---
 
-
-```r
-plot_model(imodel, type = "pred", terms = c("Support", "Anxiety"), mdrt.values = "meansd")
-```
-
-![](14-interactions_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
-
----
 
 ### Simple slopes - Significance tests
 
-Recall that the slope at any particular value is a combination of both `\(b_1\)` and `\(b_3\)` 
-`$$\large \hat{Y} = (b_{0} + b_{2}Z) + (b_{1} + b_{3}Z)X$$`
-`$$\large se_{b@z} = \sqrt{se_{b_1}^2 + (2 * Z * cov_{b_1b_3})+ (Z^2 se_{b_3}^2)}$$`
+The slope of studying at a specific level of tutoring (1 or 0) is a combination of both `\(b_1\)` and `\(b_3\)`:
+
+`$$\large \hat{Y} = (b_{0} + b_{2}D) + (b_{1} + b_{3}D)X$$`
+`$$\large se_{b@D} = \sqrt{se_{b_1}^2 + (2 * D * cov_{b_1b_3})+ (D^2 se_{b_3}^2)}$$`
 In this formula, `\(cov_{b_1b_3}\)` refers to the covariance of the coefficients, not the covariance of the variables. This may seem a strange concept, as we only ever have one value for `\(b_1\)` and `\(b_3\)` -- the covariance of these coefficients refer to idea that if we randomly sample from a population, estimate the coefficients each time, and then examine the covariance of coefficients across random samples, it will not be 0.
 
 ---
@@ -347,286 +420,371 @@ In this formula, `\(cov_{b_1b_3}\)` refers to the covariance of the coefficients
 
 
 ```r
-round(vcov(imodel),4)
+round(vcov(mod3),4)
 ```
 
 ```
-##                 (Intercept) Anxiety Support Anxiety:Support
-## (Intercept)          1.2567 -0.1330 -0.0966          0.0100
-## Anxiety             -0.1330  0.0169  0.0110         -0.0015
-## Support             -0.0966  0.0110  0.0091         -0.0011
-## Anxiety:Support      0.0100 -0.0015 -0.0011          0.0002
+##                      (Intercept) tutor_labTutor   study tutor_labTutor:study
+## (Intercept)               0.1222        -0.1222 -0.0953               0.0953
+## tutor_labTutor           -0.1222         0.4119  0.0953              -0.2557
+## study                    -0.0953         0.0953  0.0958              -0.0958
+## tutor_labTutor:study      0.0953        -0.2557 -0.0958               0.1938
 ```
 
-We can use the standard error of the slope to estimate whether or not it is significanly different from 0. 
+We can use the standard error of the slope to estimate whether or not it is significantly different from 0. 
 
 .pull-left[
-`$$\large \hat{Y} = (b_{0} + b_{2}Z) + (b_{1} + b_{3}Z)X$$`
-`$$\large t = \frac{(b_{1} + b_{3}Z)}{se_{b@z}}$$`
+`$$\large \hat{Y} = (b_{0} + b_{2}D) + (b_{1} + b_{3}D)X$$`
+`$$\large t = \frac{(b_{1} + b_{3}D)}{se_{b@D}}$$`
 `$$df = N-p-1$$`
 ]
 
 ---
 
-#### Example
+#### Testing simple slopes
 
 
-`$$\hat{Stress} = -2.74 + 0.62(\text{Anx})+ 0.67(\text{Sup})+ -0.04(\text{Anx} \times \text{Sup})$$`
-
-We want to know whether anxiety is a significant predictor of stress at different levels of support.
+We want to know whether studying is a significant predictor of grades at different levels of tutoring.
 
 
 ```r
-library(reghelper)
-simple_slopes(imodel, levels = list(Support = c(4,6,8,10,12)))
+library(emmeans)
+emtrends(mod3, ~tutor_lab, var = "study")
 ```
 
 ```
-##   Anxiety Support Test Estimate Std. Error t value  df  Pr(&gt;|t|) Sig.
-## 1  sstest       4        0.4486     0.0886  5.0617 114 1.610e-06  ***
-## 2  sstest       6        0.3652     0.0733  4.9791 114 2.289e-06  ***
-## 3  sstest       8        0.2817     0.0654  4.3095 114 3.488e-05  ***
-## 4  sstest      10        0.1982     0.0674  2.9424 114  0.003946   **
-## 5  sstest      12        0.1147     0.0786  1.4600 114  0.147036
+##  tutor_lab study.trend    SE df lower.CL upper.CL
+##  No tutor        1.757 0.310 16   1.1006     2.41
+##  Tutor           0.585 0.313 16  -0.0783     1.25
+## 
+## Confidence level used: 0.95
 ```
 
-If you don't list levels, then this function will test simple slopes at the mean and 1 SD above and below the mean. 
 ---
-## Simple slopes - Significance tests
+
+#### Testing simple slopes
+
 
 What if you want to compare slopes to each other? How would we test this?
 
---
 
-The test of the interaction coefficient is equivalent to the test of the difference in slopes at levels of Z separated by 1 unit. 
+```r
+emtrends(mod3, pairwise~tutor_lab, var = "study")
+```
+
+```
+## $emtrends
+##  tutor_lab study.trend    SE df lower.CL upper.CL
+##  No tutor        1.757 0.310 16   1.1006     2.41
+##  Tutor           0.585 0.313 16  -0.0783     1.25
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast         estimate   SE df t.ratio p.value
+##  No tutor - Tutor     1.17 0.44 16 2.661   0.0171
+```
+
+---
+
+#### Testing simple slopes
+
+Note that this significance test is the same as our interaction coefficient!
 
 
 ```r
-coef(summary(imodel))
+coef(summary(mod3))
 ```
 
 ```
-##                    Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)     -2.73966246 1.12100519 -2.443934 1.606052e-02
-## Anxiety          0.61561220 0.13010161  4.731780 6.435373e-06
-## Support          0.66696689 0.09547464  6.985802 2.017698e-10
-*## Anxiety:Support -0.04174076 0.01309328 -3.187954 1.849736e-03
+##                       Estimate Std. Error   t value           Pr(&gt;|t|)
+## (Intercept)           5.012076  0.3495910 14.336973 0.0000000001502173
+## tutor_labTutor        2.920264  0.6418121  4.550030 0.0003278477460362
+## study                 1.756707  0.3095144  5.675688 0.0000344313228001
+*## tutor_labTutor:study -1.171341  0.4402441 -2.660662 0.0170931704270407
 ```
+
+---
+
+#### Testing simple slopes
+
+
+What if you want to compare the effect of tutoring at different levels of studying?
+
+First, we can calculate specific fitted values at combinations of studying and tutoring.
+
+
+```r
+mylist &lt;- list(study=c(.50,1,2), tutor_lab=c("No tutor","Tutor"))
+emmeans(mod3, ~ study*tutor_lab, at=mylist)
+```
+
+```
+##  study tutor_lab emmean    SE df lower.CL upper.CL
+##    0.5 No tutor    5.89 0.225 16     5.41     6.37
+##    1.0 No tutor    6.77 0.165 16     6.42     7.12
+##    2.0 No tutor    8.53 0.352 16     7.78     9.27
+##    0.5 Tutor       8.23 0.392 16     7.39     9.06
+##    1.0 Tutor       8.52 0.259 16     7.97     9.07
+##    2.0 Tutor       9.10 0.201 16     8.68     9.53
+## 
+## Confidence level used: 0.95
+```
+
+---
+
+Next, we can use the `contrast` function to look at pairwise comparisons of these fitted values.
+
+
+```r
+combins = emmeans(mod3, ~ study*tutor_lab, at=mylist)
+contrast(combins, "pairwise", by = "study")
+```
+
+```
+## study = 0.5:
+##  contrast         estimate    SE df t.ratio p.value
+##  No tutor - Tutor   -2.335 0.452 16 -5.160  0.0001 
+## 
+## study = 1.0:
+##  contrast         estimate    SE df t.ratio p.value
+##  No tutor - Tutor   -1.749 0.307 16 -5.693  &lt;.0001 
+## 
+## study = 2.0:
+##  contrast         estimate    SE df t.ratio p.value
+##  No tutor - Tutor   -0.578 0.406 16 -1.424  0.1736
+```
+
 
 ---
 
 ## Centering
 
-The regression equation built using the raw data is not only diffiuclt to interpret, but often the terms displayed are not relevant to the hypotheses we're interested. 
+The regression equation built using the raw data is not only diffiuclt to interpret, but often the terms displayed are not relevant to the hypotheses we're interested.
 - `\(b_0\)` is the expected value when all predictors are 0, but this may never happen in real life
-- `\(b_1\)` is the slope of X when Z is equal to 0, but this may not ever happen either. 
+- `\(b_1\)` is the effect of tutoring when hours spent studying is equal to 0, but this may not ever happen either.
 
-**Centering** your variables by subracting the mean from all values can improve the interpretation of your results. 
+**Centering** your variables by subtracting the mean from all values can improve the interpretation of your results.
 - Remember, a linear transformation does not change associations (correlations) between variables. In this case, it only changes the interpretation for some coefficients
 ---
 
 
 ```r
-stress.data = stress.data %&gt;%
-  mutate(Anxiety.c = Anxiety - mean(Anxiety),
-         Support.c = Support - mean(Support))
-head(stress.data[,c("Anxiety", "Anxiety.c", "Support", "Support.c")])
+t_data = t_data %&gt;%
+  mutate(study_c = study - mean(study))
+head(t_data)
 ```
 
 ```
-##    Anxiety   Anxiety.c Support  Support.c
-## 1 10.18520  2.57086873  6.1602 -2.5697997
-## 2  5.58873 -2.02560127  8.9069  0.1769003
-## 3  6.58500 -1.02933127 10.5433  1.8133003
-## 4  8.95430  1.33996873 11.4605  2.7305003
-## 5  7.59910 -0.01523127  5.5516 -3.1783997
-## 6  8.15600  0.54166873  7.5117 -1.2182997
+## # A tibble: 6 x 6
+##      ID study grade tutor tutor_lab study_c
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;       &lt;dbl&gt;
+## 1     1  1.62   9       1 Tutor       0.304
+## 2     2  0.54   7.8     1 Tutor      -0.776
+## 3     3  0.86   8.5     1 Tutor      -0.456
+## 4     4  0.8    6.2     0 No tutor   -0.516
+## 5     5  0.36   6.9     0 No tutor   -0.956
+## 6     6  2.14   9       1 Tutor       0.824
 ```
 
-Why did we not center Y (Stress)?
+Why did we not center Y (grades)?
 
 ---
 
 
 ```r
-summary(lm(Stress ~ Anxiety.c*Support.c, data = stress.data))
+summary(lm(grade ~ tutor_lab + study_c + tutor_lab:study_c, data = t_data))
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Anxiety.c * Support.c, data = stress.data)
+## lm(formula = grade ~ tutor_lab + study_c + tutor_lab:study_c, 
+##     data = t_data)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -3.8163 -1.0783  0.0373  0.9200  3.6109 
+## -0.5728 -0.3837 -0.1584  0.1838  1.2555 
 ## 
 ## Coefficients:
-##                     Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)          4.99580    0.14647  34.108  &lt; 2e-16 ***
-## Anxiety.c            0.25122    0.06489   3.872 0.000181 ***
-## Support.c            0.34914    0.05238   6.666 9.82e-10 ***
-## Anxiety.c:Support.c -0.04174    0.01309  -3.188 0.001850 ** 
+##                        Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)              7.3230     0.1929  37.963 &lt; 0.0000000000000002 ***
+## tutor_labTutor           1.3794     0.2732   5.049             0.000119 ***
+## study_c                  1.7567     0.3095   5.676            0.0000344 ***
+## tutor_labTutor:study_c  -1.1713     0.4402  -2.661             0.017093 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.462 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
+## Residual standard error: 0.5232 on 16 degrees of freedom
+## Multiple R-squared:  0.8811,	Adjusted R-squared:  0.8588 
+## F-statistic: 39.53 on 3 and 16 DF,  p-value: 0.0000001259
 ```
 
 ---
 
 
 ```r
-summary(imodel)
+summary(mod3)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Anxiety * Support, data = stress.data)
+## lm(formula = grade ~ tutor_lab + study + tutor_lab:study, data = t_data)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -3.8163 -1.0783  0.0373  0.9200  3.6109 
+## -0.5728 -0.3837 -0.1584  0.1838  1.2555 
 ## 
 ## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -2.73966    1.12101  -2.444  0.01606 *  
-## Anxiety          0.61561    0.13010   4.732 6.44e-06 ***
-## Support          0.66697    0.09547   6.986 2.02e-10 ***
-## Anxiety:Support -0.04174    0.01309  -3.188  0.00185 ** 
+##                      Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+## tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+## study                  1.7567     0.3095   5.676 0.00003443132 ***
+## tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.462 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
+## Residual standard error: 0.5232 on 16 degrees of freedom
+## Multiple R-squared:  0.8811,	Adjusted R-squared:  0.8588 
+## F-statistic: 39.53 on 3 and 16 DF,  p-value: 0.0000001259
 ```
+
 What changed? What stayed the same?
 
-
 ---
- 
-## Standardized regression equation
 
-So far, we've only discussed the unstandardized regression equation. If you're interested in getting the standardized regression equation, you can follow the same procedure of standardizing your variables first and then entering them into your linear model.
+## Example
 
-An important note: You must take the product of the Z-scores, not the Z-score of the products to get the correct regression model. 
-
-.pull-left[
-#### This is OK
-
-```r
-Y ~ z(X) + z(Z) + z(X)*z(Z) 
-
-Y ~ z(X)*z(Z) 
-```
-
-]
-
-.pull-right[
-#### This is not OK
+What if our categorical variable has three groups?
 
 
 ```r
-Y ~ z(X) + z(Z) + z(X*Z) 
+t_data2 = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/tutor_3grp.csv")
+glimpse(t_data2)
 ```
 
-]
+```
+## Rows: 30
+## Columns: 4
+## $ ID    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, …
+## $ study &lt;dbl&gt; 0.76, 0.21, 0.43, 0.44, 1.65, 1.46, 0.70, 0.90, 0.40, 0.58, 0.8…
+## $ grade &lt;dbl&gt; 8.9, 8.6, 8.6, 8.5, 7.7, 7.5, 6.6, 6.8, 8.6, 8.3, 6.7, 7.9, 7.8…
+## $ tutor &lt;chr&gt; "One-on-one tutor", "One-on-one tutor", "One-on-one tutor", "On…
+```
 
 ---
 
 
 ```r
-stress.data = stress.data %&gt;%
-  mutate(zStress = scale(Stress), 
-         zAnxiety = scale(Anxiety), 
-         zSupport = scale(Support))
-head(stress.data[,c("zStress", "zAnxiety", "zSupport")])
-```
-
-```
-##       zStress     zAnxiety    zSupport
-## 1 -1.05630148  1.033649700 -0.78410538
-## 2  0.97450140 -0.814418147  0.05397639
-## 3  0.52978175 -0.413855421  0.55327992
-## 4  1.87547440  0.538751068  0.83313888
-## 5  0.04640497 -0.006123922 -0.96980334
-## 6 -0.02939564  0.217784639 -0.37173144
-```
----
-
-```r
-zmodel = lm(zStress ~ zAnxiety*zSupport, stress.data)
-summary(zmodel)
+mod4 = lm(grade ~ study*tutor, data = t_data2)
+summary(mod4)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = zStress ~ zAnxiety * zSupport, data = stress.data)
+## lm(formula = grade ~ study * tutor, data = t_data2)
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -2.03400 -0.57471  0.01989  0.49037  1.92453 
+## -0.85839 -0.04148 -0.01957  0.03061  0.91044 
 ## 
 ## Coefficients:
-##                   Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)       -0.09818    0.07807  -1.258 0.211093    
-## zAnxiety           0.33302    0.08602   3.872 0.000181 ***
-## zSupport           0.60987    0.09149   6.666 9.82e-10 ***
-## zAnxiety:zSupport -0.18134    0.05688  -3.188 0.001850 ** 
+##                             Estimate Std. Error t value             Pr(&gt;|t|)
+## (Intercept)                   6.4485     0.3188  20.229 &lt; 0.0000000000000002
+## study                         0.2748     0.4135   0.665              0.51262
+## tutorNo tutor                -0.3143     0.6135  -0.512              0.61308
+## tutorOne-on-one tutor         2.8758     0.4111   6.996          0.000000311
+## study:tutorNo tutor           0.6737     0.5090   1.324              0.19807
+## study:tutorOne-on-one tutor  -2.0312     0.6121  -3.318              0.00288
+##                                
+## (Intercept)                 ***
+## study                          
+## tutorNo tutor                  
+## tutorOne-on-one tutor       ***
+## study:tutorNo tutor            
+## study:tutorOne-on-one tutor ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.7792 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
+## Residual standard error: 0.312 on 24 degrees of freedom
+## Multiple R-squared:  0.8857,	Adjusted R-squared:  0.8618 
+## F-statistic: 37.18 on 5 and 24 DF,  p-value: 0.0000000001532
 ```
 
 ---
-
-
 
 
 ```r
-zmodel = lm(zStress ~ zAnxiety + zSupport + zAxS, stress.data)
-summary(zmodel)
+plot_model(mod4, type = "pred", terms = c("study", "tutor"))
+```
+
+![](14-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+emtrends(mod4, pairwise~tutor, var = "study")
 ```
 
 ```
+## $emtrends
+##  tutor            study.trend    SE df lower.CL upper.CL
+##  Group tutor            0.275 0.414 24   -0.579    1.128
+##  No tutor               0.949 0.297 24    0.336    1.561
+##  One-on-one tutor      -1.756 0.451 24   -2.688   -0.825
 ## 
-## Call:
-## lm(formula = zStress ~ zAnxiety + zSupport + zAxS, data = stress.data)
+## Confidence level used: 0.95 
 ## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -2.03400 -0.57471  0.01989  0.49037  1.92453 
+## $contrasts
+##  contrast                         estimate    SE df t.ratio p.value
+##  Group tutor - No tutor             -0.674 0.509 24 -1.324  0.3962 
+##  Group tutor - (One-on-one tutor)    2.031 0.612 24  3.318  0.0078 
+##  No tutor - (One-on-one tutor)       2.705 0.540 24  5.008  0.0001 
 ## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  2.833e-17  7.173e-02   0.000  1.00000    
-## zAnxiety     8.161e-01  1.725e-01   4.732 6.44e-06 ***
-## zSupport     1.165e+00  1.668e-01   6.986 2.02e-10 ***
-## zAxS        -5.003e-01  1.569e-01  -3.188  0.00185 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.7792 on 114 degrees of freedom
-## Multiple R-squared:  0.4084,	Adjusted R-squared:  0.3928 
-## F-statistic: 26.23 on 3 and 114 DF,  p-value: 5.645e-13
+## P value adjustment: tukey method for comparing a family of 3 estimates
 ```
 
 ---
+
+
+```r
+mylist = list(study = c(.5, 1, 2), tutor = c("No tutor", "Group tutor", "One-on-one tutor"))
+combins = emmeans(mod4, ~tutor*study, at = mylist)
+contrast(combins, "pairwise", by = "study")
+```
+
+```
+## study = 0.5:
+##  contrast                         estimate    SE df t.ratio p.value
+##  No tutor - Group tutor             0.0225 0.404 24   0.056 0.9983 
+##  No tutor - (One-on-one tutor)     -1.8377 0.392 24  -4.683 0.0003 
+##  Group tutor - (One-on-one tutor)  -1.8602 0.170 24 -10.930 &lt;.0001 
+## 
+## study = 1.0:
+##  contrast                         estimate    SE df t.ratio p.value
+##  No tutor - Group tutor             0.3594 0.281 24   1.277 0.4215 
+##  No tutor - (One-on-one tutor)     -0.4853 0.334 24  -1.452 0.3311 
+##  Group tutor - (One-on-one tutor)  -0.8447 0.276 24  -3.059 0.0144 
+## 
+## study = 2.0:
+##  contrast                         estimate    SE df t.ratio p.value
+##  No tutor - Group tutor             1.0331 0.548 24   1.886 0.1645 
+##  No tutor - (One-on-one tutor)      2.2196 0.682 24   3.257 0.0090 
+##  Group tutor - (One-on-one tutor)   1.1865 0.856 24   1.386 0.3638 
+## 
+## P value adjustment: tukey method for comparing a family of 3 estimates
+```
+
+---
+
 class: inverse
 
-## Next time...
+## Next time
 
-Mixing categorical and continuous predictors
-
-Factorial ANOVA
+Interactions between continuous predictors
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -674,6 +832,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -691,17 +875,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {

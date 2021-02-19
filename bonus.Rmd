@@ -67,9 +67,15 @@ Patil (2020) ["ggstatsplot"](https://indrajeetpatil.github.io/ggstatsplot/index.
 
 Dunn & Smyth (2019) [Generalized Linear Models With Examples in R](https://link.springer.com/book/10.1007/978-1-4419-0118-7) -- if you're looking for a supplemental (free, online) textbook to cover general and generalized linear models, I highly recommend this one. It includes useful tidbits, like [coding factors](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_1#Sec4), an expansion on the [matrix algebra notation](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec13) for multiple regression, and an extended section on the [R code](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec39) useful for linear models. Plus, it expands to cases we don't cover in class. 
 
-## On politics and forecasting
+## On causality, confounds, colliders, and controls
 
-Silver (May 2016) [How I Acted Like A Pundit And Screwed Up On Donald Trump](https://fivethirtyeight.com/features/how-i-acted-like-a-pundit-and-screwed-up-on-donald-trump/) -- Nate Silver discusses how he allowed bias into his polling models and missed a prediction he could have made.
+Simonsohn (2019) [Interaction effects need interaction controls.](http://datacolada.org/80)
 
-Silver (Nov 2016) [Why FiveThirtyEight Gave Trump A Better Chance Than Almost Anyone Else](https://fivethirtyeight.com/features/why-fivethirtyeight-gave-trump-a-better-chance-than-almost-anyone-else/) --  Nate Silver discusses how his models are bias and theory-free and 538 got it right.
+Wang et al. (2020) [Using independent covariates in experimental designs: Quantifying the trade-off between power boost and Type I error inflation](readings/wang_2020.pdf)
+
+Westfall & Yarkoni (2016) [Statistically Controlling for Confounding Constructs Is Harder than You Think](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0152719)
+
+Wysocki, Lawson, & Rhemtulla (2020) [Statistical Control Requires Causal Justification](https://psyarxiv.com/j9vw4)
+
+
 
