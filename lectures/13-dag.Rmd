@@ -211,7 +211,7 @@ ggdag(dag.obj) +
 ---
 
 .right-column[
-The correlation between IQ and income would be significant but not meaningful.
+The correlation between education and income would be significant but not meaningful.
 ]
 
 ```{r, ref.label="fork-plot", echo = F}
@@ -243,7 +243,7 @@ ggdag(dag.obj) +
 
 ---
 .right-column[
-The correlation between education and income would not be significant and meaningful.
+The correlation between education and IQ would not be significant and meaningful.
 ]
 
 ```{r, ref.label="ifork-plot", echo = F}

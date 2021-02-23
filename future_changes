@@ -107,7 +107,10 @@ lab-6.html
 
 13-dag.html
 * add paper by Grosz, Rohrer, & Thoemmes (2020) "The taboo against explicit causal inference in non experimental psychology." As optional reading. Describe during class?
-* include covariates that reduce noise (two different things that should be included in models: confounds and noise)
+* clarify "causality"
+
+14-interactions.html
+* use name of variable instead of Y-hat
 
 homework-2.html
 * make due last week of class
