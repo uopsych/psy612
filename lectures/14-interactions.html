@@ -715,12 +715,50 @@ summary(mod4)
 
 ---
 
+What if we want a different reference group?
+
+
+```r
+t_data2 = t_data2 %&gt;%
+  mutate(tutor = as.factor(tutor)) %&gt;% # only necessary if your variable is character, not factor
+  mutate(tutor = relevel(tutor, ref = "No tutor"))
+mod4 = lm(grade ~ study*tutor, data = t_data2)
+summary(mod4)
+```
+
+```
+## 
+## Call:
+## lm(formula = grade ~ study * tutor, data = t_data2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.85839 -0.04148 -0.01957  0.03061  0.91044 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value       Pr(&gt;|t|)    
+## (Intercept)                   6.1342     0.5242  11.702 0.000000000021 ***
+## study                         0.9486     0.2967   3.197        0.00387 ** 
+## tutorGroup tutor              0.3143     0.6135   0.512        0.61308    
+## tutorOne-on-one tutor         3.1902     0.5850   5.454 0.000013237857 ***
+## study:tutorGroup tutor       -0.6737     0.5090  -1.324        0.19807    
+## study:tutorOne-on-one tutor  -2.7049     0.5401  -5.008 0.000040705983 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.312 on 24 degrees of freedom
+## Multiple R-squared:  0.8857,	Adjusted R-squared:  0.8618 
+## F-statistic: 37.18 on 5 and 24 DF,  p-value: 0.0000000001532
+```
+
+---
+
 
 ```r
 plot_model(mod4, type = "pred", terms = c("study", "tutor"))
 ```
 
-![](14-interactions_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+![](14-interactions_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -732,17 +770,17 @@ emtrends(mod4, pairwise~tutor, var = "study")
 ```
 ## $emtrends
 ##  tutor            study.trend    SE df lower.CL upper.CL
-##  Group tutor            0.275 0.414 24   -0.579    1.128
 ##  No tutor               0.949 0.297 24    0.336    1.561
+##  Group tutor            0.275 0.414 24   -0.579    1.128
 ##  One-on-one tutor      -1.756 0.451 24   -2.688   -0.825
 ## 
 ## Confidence level used: 0.95 
 ## 
 ## $contrasts
 ##  contrast                         estimate    SE df t.ratio p.value
-##  Group tutor - No tutor             -0.674 0.509 24 -1.324  0.3962 
-##  Group tutor - (One-on-one tutor)    2.031 0.612 24  3.318  0.0078 
-##  No tutor - (One-on-one tutor)       2.705 0.540 24  5.008  0.0001 
+##  No tutor - Group tutor              0.674 0.509 24 1.324   0.3962 
+##  No tutor - (One-on-one tutor)       2.705 0.540 24 5.008   0.0001 
+##  Group tutor - (One-on-one tutor)    2.031 0.612 24 3.318   0.0078 
 ## 
 ## P value adjustment: tukey method for comparing a family of 3 estimates
 ```

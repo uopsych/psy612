@@ -566,6 +566,18 @@ summary(mod4)
 
 ---
 
+What if we want a different reference group?
+
+```{r}
+t_data2 = t_data2 %>%
+  mutate(tutor = as.factor(tutor)) %>% # only necessary if your variable is character, not factor
+  mutate(tutor = relevel(tutor, ref = "No tutor"))
+mod4 = lm(grade ~ study*tutor, data = t_data2)
+summary(mod4)
+```
+
+---
+
 ```{r, results = 'hide', message = F, warning = F}
 plot_model(mod4, type = "pred", terms = c("study", "tutor"))
 ```
