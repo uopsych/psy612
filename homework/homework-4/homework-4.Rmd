@@ -54,7 +54,7 @@ Center the independent variables and re-estimate the model. Interpret the coeffi
 
 Refer to the model built in [Question 3.1](#q3.1).
 
-* Conduct 3 simple regression equations (using the model from above): the regression of Y on $X_1$ at the mean of $X_2$, at one standard deviation above the mean of $X_2$, and at one standard deviation below the mean of $X_2$. You choose which variable is the "moderator." Write out and interpret each of these simple slope equations.
+* Calculate three simple slope equations: the regression of Y on $X_1$ at the mean of $X_2$, at one standard deviation above the mean of $X_2$, and at one standard deviation below the mean of $X_2$. You choose which variable is the "moderator." Write out and interpret each of these simple slope equations. Include both the intercept and slope of these equations. 
 
 # 5-point questions
 
