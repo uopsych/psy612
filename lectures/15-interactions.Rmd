@@ -339,57 +339,67 @@ If both X and Z are categorical variables, the interpretation of coefficients is
 
 ## Example
 
-Recall our hand-eye coordination study:
+.pull-left[
+![](images/dot.jpg)
+]
+.pull-right[
+Recall our hand-eye coordination study (for a reminder of the study design, see the [ANOVA lecture](https://uopsych.github.io/psy612/lectures/10-anova.html#17)):
+]
 
 ```{r}
-handeye_d = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/solomon.csv")
-solomon = janitor::clean_names(solomon)
+handeye_d = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/hand_eye_task.csv")
 
-solomon$perspective = ifelse(solomon$condition %in% c(1,2), "self", "other")
-solomon$distance = ifelse(solomon$condition %in% c(1,3), "immersed", "distanced")
-
-head(solomon[,c("perspective", "distance", "wisdom")])
+glimpse(handeye_d)
 ```
+
+---
+
+```{r}
+handeye_d %>%
+  group_by(Speed, Noise) %>%
+  count()
+```
+
 
 ---
 
 ### Model summary
 
 ```{r, highlight.output = 11}
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ---
 
 ### Model summary
-```{r, highlight.output = 12}
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+```{r, highlight.output = 12:13}
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ---
 
 ### Model summary
-```{r, highlight.output = 13}
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+```{r, highlight.output = 14:15}
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ---
 
 ### Model summary
-```{r, highlight.output = 14}
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+```{r, highlight.output = 16:19}
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ---
 
 ### Model summary
-```{r, highlight.output = 21}
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+```{r, highlight.output = 24}
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ---
@@ -397,7 +407,7 @@ summary(solomon.mod)
 ### Plotting results
 
 ```{r, fig.width=9, fig.height=6}
-plot_model(solomon.mod, type = "pred", terms = c("distance", "perspective"))
+plot_model(handeye_d.mod, type = "pred", terms = c("Speed", "Noise"))
 ```
 
 

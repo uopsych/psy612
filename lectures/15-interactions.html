@@ -81,7 +81,7 @@ glimpse(stress.data)
 ```
 ## Rows: 118
 ## Columns: 5
-## $ id      &lt;dbl&gt; 2, 4, 6, 19, 40, 45, 51, 54, 86, 92, 103, 109, 128, 129, 137,…
+## $ id      &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18…
 ## $ Anxiety &lt;dbl&gt; 10.18520, 5.58873, 6.58500, 8.95430, 7.59910, 8.15600, 9.0802…
 ## $ Stress  &lt;dbl&gt; 3.19813, 7.00840, 6.17400, 8.69884, 5.26707, 5.12485, 6.85380…
 ## $ Support &lt;dbl&gt; 6.16020, 8.90690, 10.54330, 11.46050, 5.55160, 7.51170, 8.556…
@@ -93,12 +93,12 @@ psych::describe(stress.data, fast = T)
 ```
 
 ```
-##         vars   n   mean     sd  min    max  range    se
-## id         1 118 488.65 295.95 2.00 986.00 984.00 27.24
-## Anxiety    2 118   7.61   2.49 0.70  14.64  13.94  0.23
-## Stress     3 118   5.18   1.88 0.62  10.32   9.71  0.17
-## Support    4 118   8.73   3.28 0.02  17.34  17.32  0.30
-## group      5 118    NaN     NA  Inf   -Inf   -Inf    NA
+##         vars   n  mean    sd  min    max  range   se
+## id         1 118 59.50 34.21 1.00 118.00 117.00 3.15
+## Anxiety    2 118  7.61  2.49 0.70  14.64  13.94 0.23
+## Stress     3 118  5.18  1.88 0.62  10.32   9.71 0.17
+## Support    4 118  8.73  3.28 0.02  17.34  17.32 0.30
+## group      5 118   NaN    NA  Inf   -Inf   -Inf   NA
 ```
 
 ---
@@ -320,7 +320,7 @@ glimpse(stress.c)
 ```
 ## Rows: 118
 ## Columns: 5
-## $ id      &lt;dbl&gt; 2, 4, 6, 19, 40, 45, 51, 54, 86, 92, 103, 109, 128, 129, 137,…
+## $ id      &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18…
 ## $ Anxiety &lt;dbl&gt; 2.57086873, -2.02560127, -1.02933127, 1.33996873, -0.01523127…
 ## $ Stress  &lt;dbl&gt; 3.19813, 7.00840, 6.17400, 8.69884, 5.26707, 5.12485, 6.85380…
 ## $ Support &lt;dbl&gt; -2.5697997, 0.1769003, 1.8133003, 2.7305003, -3.1783997, -1.2…
@@ -436,12 +436,12 @@ head(stress.z)
 ## # A tibble: 6 x 5
 ##   id[,1] Anxiety[,1] Stress[,1] Support[,1] group  
 ##    &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
-## 1  -1.64     1.03       -1.06       -0.784  Tx     
-## 2  -1.64    -0.814       0.975       0.0540 Control
-## 3  -1.63    -0.414       0.530       0.553  Tx     
-## 4  -1.59     0.539       1.88        0.833  Tx     
-## 5  -1.52    -0.00612     0.0464     -0.970  Control
-## 6  -1.50     0.218      -0.0294     -0.372  Tx
+## 1  -1.71     1.03       -1.06       -0.784  Tx     
+## 2  -1.68    -0.814       0.975       0.0540 Control
+## 3  -1.65    -0.414       0.530       0.553  Tx     
+## 4  -1.62     0.539       1.88        0.833  Tx     
+## 5  -1.59    -0.00612     0.0464     -0.970  Control
+## 6  -1.56     0.218      -0.0294     -0.372  Tx
 ```
 
 ---
@@ -518,28 +518,54 @@ If both X and Z are categorical variables, the interpretation of coefficients is
 
 ## Example
 
-Recall our Solomon's paradox example from a few weeks ago:
+.pull-left[
+![](images/dot.jpg)
+]
+.pull-right[
+Recall our hand-eye coordination study (for a reminder of the study design, see the [ANOVA lecture](https://uopsych.github.io/psy612/lectures/10-anova.html#17)):
+]
 
 
 ```r
-solomon = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/solomon.csv")
-solomon = janitor::clean_names(solomon)
+handeye_d = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/hand_eye_task.csv")
 
-solomon$perspective = ifelse(solomon$condition %in% c(1,2), "self", "other")
-solomon$distance = ifelse(solomon$condition %in% c(1,3), "immersed", "distanced")
-
-head(solomon[,c("perspective", "distance", "wisdom")])
+glimpse(handeye_d)
 ```
 
 ```
-##   perspective  distance      wisdom
-## 1       other  immersed -0.27589395
-## 2       other distanced  0.42949213
-## 3       other distanced -0.02785874
-## 4       other distanced  0.53271500
-## 5        self distanced  0.62299793
-## 6        self distanced -1.99578129
+## Rows: 180
+## Columns: 4
+## $ X     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, …
+## $ Time  &lt;dbl&gt; 623.1855, 547.8381, 709.5921, 815.2066, 719.5926, 732.8989, 566…
+## $ Speed &lt;chr&gt; "Slow", "Slow", "Slow", "Slow", "Slow", "Slow", "Slow", "Slow",…
+## $ Noise &lt;chr&gt; "None", "None", "None", "None", "None", "None", "None", "None",…
 ```
+
+---
+
+
+```r
+handeye_d %&gt;%
+  group_by(Speed, Noise) %&gt;%
+  count()
+```
+
+```
+## # A tibble: 9 x 3
+## # Groups:   Speed, Noise [9]
+##   Speed  Noise              n
+##   &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt;
+## 1 Fast   Controllable      20
+## 2 Fast   None              20
+## 3 Fast   Uncontrollable    20
+## 4 Medium Controllable      20
+## 5 Medium None              20
+## 6 Medium Uncontrollable    20
+## 7 Slow   Controllable      20
+## 8 Slow   None              20
+## 9 Slow   Uncontrollable    20
+```
+
 
 ---
 
@@ -547,32 +573,36 @@ head(solomon[,c("perspective", "distance", "wisdom")])
 
 
 ```r
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = wisdom ~ perspective * distance, data = solomon)
+## lm(formula = Time ~ Speed * Noise, data = handeye_d)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## -316.23  -70.82    4.99   79.87  244.40 
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value Pr(&gt;|t|)  
-*## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
-## perspectiveself                   -0.2124     0.2630  -0.808   0.4210  
-## distanceimmersed                  -0.1396     0.2490  -0.561   0.5760  
-## perspectiveself:distanceimmersed  -0.5417     0.3526  -1.536   0.1273  
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+*## (Intercept)                      287.234     25.322  11.343  &lt; 2e-16 ***
+## SpeedMedium                      205.483     35.811   5.738 4.27e-08 ***
+## SpeedSlow                        289.439     35.811   8.082 1.11e-13 ***
+## NoiseNone                         42.045     35.811   1.174  0.24200    
+## NoiseUncontrollable              -19.072     35.811  -0.533  0.59502    
+## SpeedMedium:NoiseNone             -9.472     50.644  -0.187  0.85185    
+## SpeedSlow:NoiseNone               12.007     50.644   0.237  0.81287    
+## SpeedMedium:NoiseUncontrollable -169.023     50.644  -3.337  0.00104 ** 
+## SpeedSlow:NoiseUncontrollable     36.843     50.644   0.727  0.46792    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9389 on 111 degrees of freedom
-##   (5 observations deleted due to missingness)
-## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
-## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+## Residual standard error: 113.2 on 171 degrees of freedom
+## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 2.2e-16
 ```
 
 ---
@@ -580,32 +610,36 @@ summary(solomon.mod)
 ### Model summary
 
 ```r
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = wisdom ~ perspective * distance, data = solomon)
+## lm(formula = Time ~ Speed * Noise, data = handeye_d)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## -316.23  -70.82    4.99   79.87  244.40 
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
-*## perspectiveself                   -0.2124     0.2630  -0.808   0.4210  
-## distanceimmersed                  -0.1396     0.2490  -0.561   0.5760  
-## perspectiveself:distanceimmersed  -0.5417     0.3526  -1.536   0.1273  
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      287.234     25.322  11.343  &lt; 2e-16 ***
+*## SpeedMedium                      205.483     35.811   5.738 4.27e-08 ***
+*## SpeedSlow                        289.439     35.811   8.082 1.11e-13 ***
+## NoiseNone                         42.045     35.811   1.174  0.24200    
+## NoiseUncontrollable              -19.072     35.811  -0.533  0.59502    
+## SpeedMedium:NoiseNone             -9.472     50.644  -0.187  0.85185    
+## SpeedSlow:NoiseNone               12.007     50.644   0.237  0.81287    
+## SpeedMedium:NoiseUncontrollable -169.023     50.644  -3.337  0.00104 ** 
+## SpeedSlow:NoiseUncontrollable     36.843     50.644   0.727  0.46792    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9389 on 111 degrees of freedom
-##   (5 observations deleted due to missingness)
-## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
-## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+## Residual standard error: 113.2 on 171 degrees of freedom
+## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 2.2e-16
 ```
 
 ---
@@ -613,32 +647,36 @@ summary(solomon.mod)
 ### Model summary
 
 ```r
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = wisdom ~ perspective * distance, data = solomon)
+## lm(formula = Time ~ Speed * Noise, data = handeye_d)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## -316.23  -70.82    4.99   79.87  244.40 
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
-## perspectiveself                   -0.2124     0.2630  -0.808   0.4210  
-*## distanceimmersed                  -0.1396     0.2490  -0.561   0.5760  
-## perspectiveself:distanceimmersed  -0.5417     0.3526  -1.536   0.1273  
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      287.234     25.322  11.343  &lt; 2e-16 ***
+## SpeedMedium                      205.483     35.811   5.738 4.27e-08 ***
+## SpeedSlow                        289.439     35.811   8.082 1.11e-13 ***
+*## NoiseNone                         42.045     35.811   1.174  0.24200    
+*## NoiseUncontrollable              -19.072     35.811  -0.533  0.59502    
+## SpeedMedium:NoiseNone             -9.472     50.644  -0.187  0.85185    
+## SpeedSlow:NoiseNone               12.007     50.644   0.237  0.81287    
+## SpeedMedium:NoiseUncontrollable -169.023     50.644  -3.337  0.00104 ** 
+## SpeedSlow:NoiseUncontrollable     36.843     50.644   0.727  0.46792    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9389 on 111 degrees of freedom
-##   (5 observations deleted due to missingness)
-## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
-## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+## Residual standard error: 113.2 on 171 degrees of freedom
+## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 2.2e-16
 ```
 
 ---
@@ -646,32 +684,36 @@ summary(solomon.mod)
 ### Model summary
 
 ```r
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = wisdom ~ perspective * distance, data = solomon)
+## lm(formula = Time ~ Speed * Noise, data = handeye_d)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## -316.23  -70.82    4.99   79.87  244.40 
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
-## perspectiveself                   -0.2124     0.2630  -0.808   0.4210  
-## distanceimmersed                  -0.1396     0.2490  -0.561   0.5760  
-*## perspectiveself:distanceimmersed  -0.5417     0.3526  -1.536   0.1273  
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      287.234     25.322  11.343  &lt; 2e-16 ***
+## SpeedMedium                      205.483     35.811   5.738 4.27e-08 ***
+## SpeedSlow                        289.439     35.811   8.082 1.11e-13 ***
+## NoiseNone                         42.045     35.811   1.174  0.24200    
+## NoiseUncontrollable              -19.072     35.811  -0.533  0.59502    
+*## SpeedMedium:NoiseNone             -9.472     50.644  -0.187  0.85185    
+*## SpeedSlow:NoiseNone               12.007     50.644   0.237  0.81287    
+*## SpeedMedium:NoiseUncontrollable -169.023     50.644  -3.337  0.00104 ** 
+*## SpeedSlow:NoiseUncontrollable     36.843     50.644   0.727  0.46792    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9389 on 111 degrees of freedom
-##   (5 observations deleted due to missingness)
-## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
-## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+## Residual standard error: 113.2 on 171 degrees of freedom
+## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 2.2e-16
 ```
 
 ---
@@ -679,32 +721,36 @@ summary(solomon.mod)
 ### Model summary
 
 ```r
-solomon.mod = lm(wisdom ~ perspective*distance, data = solomon)
-summary(solomon.mod)
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = wisdom ~ perspective * distance, data = solomon)
+## lm(formula = Time ~ Speed * Noise, data = handeye_d)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -2.6809 -0.4209  0.0473  0.6694  2.3499 
+## -316.23  -70.82    4.99   79.87  244.40 
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)                        0.3345     0.1878   1.781   0.0776 .
-## perspectiveself                   -0.2124     0.2630  -0.808   0.4210  
-## distanceimmersed                  -0.1396     0.2490  -0.561   0.5760  
-## perspectiveself:distanceimmersed  -0.5417     0.3526  -1.536   0.1273  
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      287.234     25.322  11.343  &lt; 2e-16 ***
+## SpeedMedium                      205.483     35.811   5.738 4.27e-08 ***
+## SpeedSlow                        289.439     35.811   8.082 1.11e-13 ***
+## NoiseNone                         42.045     35.811   1.174  0.24200    
+## NoiseUncontrollable              -19.072     35.811  -0.533  0.59502    
+## SpeedMedium:NoiseNone             -9.472     50.644  -0.187  0.85185    
+## SpeedSlow:NoiseNone               12.007     50.644   0.237  0.81287    
+## SpeedMedium:NoiseUncontrollable -169.023     50.644  -3.337  0.00104 ** 
+## SpeedSlow:NoiseUncontrollable     36.843     50.644   0.727  0.46792    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9389 on 111 degrees of freedom
-##   (5 observations deleted due to missingness)
-## Multiple R-squared:  0.1262,	Adjusted R-squared:  0.1026 
-*## F-statistic: 5.343 on 3 and 111 DF,  p-value: 0.001783
+## Residual standard error: 113.2 on 171 degrees of freedom
+*## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 2.2e-16
 ```
 
 ---
@@ -713,10 +759,10 @@ summary(solomon.mod)
 
 
 ```r
-plot_model(solomon.mod, type = "pred", terms = c("distance", "perspective"))
+plot_model(handeye_d.mod, type = "pred", terms = c("Speed", "Noise"))
 ```
 
-![](15-interactions_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+![](15-interactions_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
 
 
 ---

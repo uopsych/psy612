@@ -1,5 +1,5 @@
 ---
-title: 'Interactions (III)'
+title: 'Factorial ANOVA I'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -26,6 +26,7 @@ A factorial design is used when there is an interest in how two or more variable
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+library(here)
 ```
 
 ---
@@ -85,7 +86,7 @@ mean.summary = Data %>%
 mean.summary$Noise = as.character(mean.summary$Noise)
 mean.summary$Marginal = rowMeans(mean.summary[2:4])
 mean.summary[4,1] = "Marginal"
-mean.summary[4,2:5] = colMeans(mean.summary[2:5], na.rm=T)
+mean.summary[4,2:5] = as.list(colMeans(mean.summary[2:5], na.rm=T))
 
 kable(mean.summary, digits = 2) %>% 
   kable_styling() %>% 
