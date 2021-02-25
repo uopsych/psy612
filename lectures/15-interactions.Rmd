@@ -339,10 +339,10 @@ If both X and Z are categorical variables, the interpretation of coefficients is
 
 ## Example
 
-Recall our Solomon's paradox example from a few weeks ago:
+Recall our hand-eye coordination study:
 
 ```{r}
-solomon = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/solomon.csv")
+handeye_d = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/solomon.csv")
 solomon = janitor::clean_names(solomon)
 
 solomon$perspective = ifelse(solomon$condition %in% c(1,2), "self", "other")

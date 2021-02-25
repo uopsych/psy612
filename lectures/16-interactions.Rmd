@@ -11,13 +11,6 @@ output:
       countIncrementalSlides: false
 ---
 
-## Last time
-
-Mixing categorical and continuous variables
-- [New example](https://uopsych.github.io/psy612/lectures/15-interactions.html#23)
-
-- Starting factorial ANOVA
----
 class:inverse
 ## Factorial ANOVA
 
@@ -68,6 +61,7 @@ Data = data.frame(Time = c(DV_Slow_N,
                                   each = 20), 3)) #repeat each label 20 times, then repeat that whole sequence 3 times
 Data$Speed = factor(Data$Speed, levels = c("Slow", "Medium", "Fast")) # set order of levels as I want them presented
 Data$Noise = factor(Data$Noise, levels = c("None", "Controllable", "Uncontrollable")) # set order of levels as I want them presented
+write.csv(Data, file = here("data/hand_eye_task.csv")) # save data to a CSV file
 ```
 
 .pull-left[
