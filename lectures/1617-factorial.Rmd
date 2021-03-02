@@ -679,54 +679,6 @@ The sum of partial $\eta^2$ does not have a meaningful interpretation.
 
 ---
 
-
-## Power
-
-
-The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
-* increase our sample size
-* reduce (error) variance
-* raise our Type I error rate
-* study larger effects
-
-
----
-
-```{r, echo = F, fig.width = 10, fig.height = 8, message = F}
-library(tidyverse)
-mu = 100
-s = 20
-mean = 110
-n = 20
-sem = s/sqrt(n)
-cv = qnorm(mean = mu, sd = sem, p = .05, lower.tail = F)
-
-ggplot(data.frame(x = seq(70, 130)), aes(x)) +
-  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) +
-  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem)) +
-  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem),
-                geom = "area", xlim = c(cv, 130), 
-                aes(fill = "Power"), alpha = .5) +
-  #geom_vline(aes(xintercept = mu))+
-  #geom_vline(aes(xintercept = mean))+
-  geom_hline(aes(yintercept = 0))+
-  scale_x_continuous("Means", breaks = seq(70,130,10)) +
-  scale_y_continuous(NULL, breaks = NULL) + 
-  guides(color = F)+
-  theme_bw()+
-  theme( text = element_text(size = 20))
-```
-
----
-
-## Power (omnibus test)
-
-When calculating power for the omnibus test, use the expected multiple $R^2$ value to calculate an effect size:
-
-$$\large f^2 = \frac{R^2}{1-R^2}$$
-
----
-
 ### Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
@@ -920,7 +872,55 @@ pooled_sd = sqrt(MS_error)
 
 ---
 
-### Omnibus power
+## Power
+
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+```{r, echo = F, fig.width = 10, fig.height = 8, message = F}
+library(tidyverse)
+mu = 100
+s = 20
+mean = 110
+n = 20
+sem = s/sqrt(n)
+cv = qnorm(mean = mu, sd = sem, p = .05, lower.tail = F)
+
+ggplot(data.frame(x = seq(70, 130)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) +
+  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem)) +
+  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem),
+                geom = "area", xlim = c(cv, 130), 
+                aes(fill = "Power"), alpha = .5) +
+  #geom_vline(aes(xintercept = mu))+
+  #geom_vline(aes(xintercept = mean))+
+  geom_hline(aes(yintercept = 0))+
+  scale_x_continuous("Means", breaks = seq(70,130,10)) +
+  scale_y_continuous(NULL, breaks = NULL) + 
+  guides(color = F)+
+  theme_bw()+
+  theme( text = element_text(size = 20))
+```
+
+---
+
+## Power (omnibus test)
+
+When calculating power for the omnibus test, use the expected multiple $R^2$ value to calculate an effect size:
+
+$$\large f^2 = \frac{R^2}{1-R^2}$$
+
+---
+
+### Power (omnibus test)
+
 ```{r}
 R2 = .10
 (f = R2/(1-R2))
@@ -951,9 +951,6 @@ An independent samples t-test. We can use the Cohen's D value for any pairwise c
 (d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
 pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
 ```
-
-
-
 
 ---
 

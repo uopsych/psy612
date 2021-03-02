@@ -809,31 +809,6 @@ The sum of partial `\(\eta^2\)` does not have a meaningful interpretation.
 
 ---
 
-
-## Power
-
-
-The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
-* increase our sample size
-* reduce (error) variance
-* raise our Type I error rate
-* study larger effects
-
-
----
-
-![](1617-factorial_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
-
----
-
-## Power (omnibus test)
-
-When calculating power for the omnibus test, use the expected multiple `\(R^2\)` value to calculate an effect size:
-
-`$$\large f^2 = \frac{R^2}{1-R^2}$$`
-
----
-
 ### Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
@@ -983,7 +958,7 @@ plot_model(fit, type = "pred",
 ]
 
 .pull-left[
-![](1617-factorial_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 
 ]
 ---
@@ -1005,7 +980,7 @@ plot_model(fit, type = "pred",
 ]
 
 .pull-left[
-![](1617-factorial_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
 
 ]---
 
@@ -1027,7 +1002,7 @@ plot_model(fit, type = "pred",
 ]
 
 .pull-left[
-![](1617-factorial_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -1052,7 +1027,7 @@ plot_model(fit, type = "emm",
 ]
 
 .pull-left[
-![](1617-factorial_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
 
 ]
 ---
@@ -1122,7 +1097,32 @@ pooled_sd = sqrt(MS_error)
 
 ---
 
-### Omnibus power
+## Power
+
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+![](1617-factorial_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+
+---
+
+## Power (omnibus test)
+
+When calculating power for the omnibus test, use the expected multiple `\(R^2\)` value to calculate an effect size:
+
+`$$\large f^2 = \frac{R^2}{1-R^2}$$`
+
+---
+
+### Power (omnibus test)
+
 
 ```r
 R2 = .10

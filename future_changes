@@ -10,6 +10,7 @@ labs overall
 * show only broom and kable for creating table summaries throughout
 * in lab 9, show them papaja in depth (add links to other options, like stargazer, apaTables, and sjPlot to just create tables in Word)
 * incorporate in-text R code to summarize results throughout 
+* most useful to teach from R, not from html output
 
 final-project.html
 
@@ -117,13 +118,12 @@ homework-2.html
 * weights are 1/predicted values, not predicted values!!!
 
 lab-8.html
+* is it worth keeping in contrast codes? 
 
+15-interactions.html
+* write out equations on the screen 
 
 17-interactions.html
-* don't mention regression sums of squares
-* remove "most common" sums of squares in slides
-* add SPSS and SAS defaults are type III
-* add to FA and Regression comparison slide: compare output
 * take out sjPlot main effects
 
 lab-9.html
