@@ -14,6 +14,34 @@ output:
 class:inverse
 ## Factorial ANOVA
 
+```{r, echo=F, message=FALSE, warning=FALSE}
+options(scipen = 999)
+library(tidyverse)
+library(knitr)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+```
 
 The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
 
@@ -651,6 +679,54 @@ The sum of partial $\eta^2$ does not have a meaningful interpretation.
 
 ---
 
+
+## Power
+
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+```{r, echo = F, fig.width = 10, fig.height = 8, message = F}
+library(tidyverse)
+mu = 100
+s = 20
+mean = 110
+n = 20
+sem = s/sqrt(n)
+cv = qnorm(mean = mu, sd = sem, p = .05, lower.tail = F)
+
+ggplot(data.frame(x = seq(70, 130)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) +
+  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem)) +
+  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem),
+                geom = "area", xlim = c(cv, 130), 
+                aes(fill = "Power"), alpha = .5) +
+  #geom_vline(aes(xintercept = mu))+
+  #geom_vline(aes(xintercept = mean))+
+  geom_hline(aes(yintercept = 0))+
+  scale_x_continuous("Means", breaks = seq(70,130,10)) +
+  scale_y_continuous(NULL, breaks = NULL) + 
+  guides(color = F)+
+  theme_bw()+
+  theme( text = element_text(size = 20))
+```
+
+---
+
+## Power (omnibus test)
+
+When calculating power for the omnibus test, use the expected multiple $R^2$ value to calculate an effect size:
+
+$$\large f^2 = \frac{R^2}{1-R^2}$$
+
+---
+
 ### Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
@@ -706,25 +782,100 @@ noise_lsm
 ```
 
 
-
 ---
 
-```{r, message=F, warning=F, fig.width=10, fig.height=6, echo = T}
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't give it all of M, it will choose every possible value.
+
+.pull-left[
+```{r pred2.plot, message = F, eval = F}
 library(sjPlot)
-noise_m = plot_model(fit, type = "emm", terms = c("Noise")) + 
-  theme_sjplot(base_size = 20)
-speed_m = plot_model(fit, type = "emm", terms = c("Speed")) + 
-  theme_sjplot(base_size = 20)
-library(ggpubr)
-ggarrange(noise_m, speed_m, ncol = 2)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", "Speed")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
 ```
+
+]
+
+.pull-left[
+```{r, ref.label = "pred2.plot", message = F, echo = F}
+
+```
+
+]
+---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+
+`type = "pred"` gives you cell means.
+
+.pull-left[
+```{r pred.plot, message = F, eval = F}
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+```{r, ref.label = "pred.plot", message = F, echo = F}
+
+```
+
+]---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+
+`type = "pred"` gives you cell means.
+
+.pull-left[
+```{r pred.plot2, message = F, eval = F}
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", 
+                     "Speed[Fast]")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+```{r, ref.label = "pred.plot2", message = F, echo = F}
+
+```
+
+]
+
+
 
 ---
 
-```{r, message=F, warning=F, fig.width=10, fig.height=6}
-plot_model(fit, type = "pred", terms = c("Speed", "Noise")) + 
-  theme_sjplot(base_size = 20) + theme(legend.position = "bottom")
+In `sjPlot()`, estimated marginal means are the expected value of Y given all possible values of X, **ignoring M**. 
+
+`type = "emm"` gives you marginal means.
+
+.pull-left[
+```{r emm.plot, message = F, eval = F}
+library(sjPlot)
+plot_model(fit, type = "emm", 
+           terms = c("Noise")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
 ```
+
+]
+
+.pull-left[
+```{r, ref.label = "emm.plot", message = F, echo = F}
+
+```
+
+]
 ---
 
 ### Precision
@@ -765,6 +916,40 @@ pooled_sd = sqrt(MS_error)
 (noise_df = as.data.frame(noise_lsm))
 
 (d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+```
+
+---
+
+### Omnibus power
+```{r}
+R2 = .10
+(f = R2/(1-R2))
+library(pwr)
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+---
+
+### Power for pairwise comparisons
+
+The comparison of two cell means is analogous to what test?
+
+--
+
+An independent samples t-test. We can use the Cohen's D value for any pairwise comparison to examine power.
+
+---
+
+```{r}
+(noise_df = as.data.frame(noise_lsm))
+
+(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
 ```
 
 
@@ -858,7 +1043,7 @@ In a Venn diagram, the overlap represents the variance shared by the variables. 
 .pull-right[
 There are three basic ways that overlapping variance accounted for in the outcome can be handled.  These are known as Type I, Type II, and Type III sums of squares. 
 
-Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome.
+Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome. This is the default in many other statistical programs, including SPSS and SAS.
 ]
 
 ---
@@ -896,7 +1081,7 @@ lsr::etaSquared(fit_1, type = 1)
 ---
 ### Sums of Squares (II)
 
-Type II sums of squares are the most commonly used but also a bit more complex to understand.  
+Type II sums of squares are commonly used but also a bit more complex to understand.  
 
 An approximately true description is that an effect is allocated the proportion of variance in the outcome that is unshared with effects at a similar or lower level.
 
@@ -980,97 +1165,36 @@ A main effect is the effect of one IV on the DV **ignoring the other variable(s)
 .pull-right[
 #### Regression
 
-Interaction tests whether slope changes. 
+Interaction tests whether slope or difference in means changes. 
 
 A conditional effect is the effect of IV on the DV **assuming all the other variables are 0**.
 ]
 
-
 ---
 
-## Power
-
-What is (statistical) power? How can we increase power?
-
---
-
-The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
-* increase our sample size
-* reduce (error) variance
-* raise our Type I error rate
-* study larger effects
 
 
----
-
-```{r, echo = F, fig.width = 10, fig.height = 8, message = F}
-library(tidyverse)
-mu = 100
-s = 20
-mean = 110
-n = 20
-sem = s/sqrt(n)
-cv = qnorm(mean = mu, sd = sem, p = .05, lower.tail = F)
-
-ggplot(data.frame(x = seq(70, 130)), aes(x)) +
-  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) +
-  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem)) +
-  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem),
-                geom = "area", xlim = c(cv, 130), 
-                aes(fill = "Power"), alpha = .5) +
-  #geom_vline(aes(xintercept = mu))+
-  #geom_vline(aes(xintercept = mean))+
-  geom_hline(aes(yintercept = 0))+
-  scale_x_continuous("Means", breaks = seq(70,130,10)) +
-  scale_y_continuous(NULL, breaks = NULL) + 
-  guides(color = F)+
-  theme_bw()+
-  theme( text = element_text(size = 20))
-```
-
----
-
-## Power in multiple regression (additive effects)
-
-When calculating power for the omnibus test, use the expected multiple $R^2$ value to calculate an effect size:
-
-$$\large f^2 = \frac{R^2}{1-R^2}$$
----
-
-### Omnibus power
-```{r}
-R2 = .10
-(f = R2/(1-R2))
-library(pwr)
-pwr.f2.test(u = 3, # number of predictors in the model
-            f2 = f, 
-            sig.level = .05, #alpha
-            power =.90) # desired power
-```
-
-`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
-
----
-
-### Coefficient power
-
-To estimate power for a single coefficient, you need to consider (1) how much variance is accounted for by just the variable and (2) how much variance you'll account for in Y overall.
-
-$$\large f^2 = \frac{R^2_Y-R^2_{Y.X}}{1-R_Y^2}$$
----
-### Coefficient power
+.pull-left[
+#### Factorial ANOVA
 
 ```{r}
-R2 = .10
-RX1 = .03
-(f = (R2-RX1)/(1-R2))
-pwr.f2.test(u = 3, # number of predictors in the model
-            f2 = f, 
-            sig.level = .05, #alpha
-            power =.90) # desired power
+anova(fit)
 ```
 
-`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+]
+.pull-right[
+#### Regression
+
+```{r}
+summary(fit)
+```
+
+
+]
+
+
+
 ---
 
 class: inverse

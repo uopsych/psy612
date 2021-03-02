@@ -24,6 +24,7 @@ class:inverse
 ## Factorial ANOVA
 
 
+
 The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
 
 A factorial design is used when there is an interest in how two or more variables (or factors) affect the outcome. 
@@ -250,7 +251,7 @@ If not, then we would need to say that the noise condition effect depends upon (
 ---
 
 
-![](1617-factorial_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 
 
 The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
@@ -263,7 +264,7 @@ The presence of an interaction qualifies any main effect conclusions, leading to
 
 .pull-left[
 
-![](1617-factorial_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -338,7 +339,7 @@ An interaction.]
 
 ]
 
-![](1617-factorial_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 ---
 
 ### Null Hypotheses
@@ -564,11 +565,11 @@ anova(fit)
 ## Analysis of Variance Table
 ## 
 ## Response: Time
-##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
-## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
-## Noise         2  341315  170658  13.3075 4.252e-06 ***
-## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
-## Residuals   171 2192939   12824                       
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -591,11 +592,11 @@ anova(fit)
 ## Analysis of Variance Table
 ## 
 ## Response: Time
-##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
-## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
-## Noise         2  341315  170658  13.3075 4.252e-06 ***
-## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
-## Residuals   171 2192939   12824                       
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -622,7 +623,7 @@ Interactions are tests of the differences of differences of means -- is the diff
 
 ### Visualizing main effects and interactions
 
-![](1617-factorial_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 
 ???
 No effect of A
@@ -632,7 +633,7 @@ No interaction
 
 ### Visualizing main effects and interactions
 
-![](1617-factorial_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ???
 Main effect of A
 Main effect of B
@@ -641,7 +642,7 @@ Interaction
 
 ### Visualizing main effects and interactions
 
-![](1617-factorial_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+![](1617-factorial_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 
 ???
 No effect of A
@@ -808,6 +809,31 @@ The sum of partial `\(\eta^2\)` does not have a meaningful interpretation.
 
 ---
 
+
+## Power
+
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+![](1617-factorial_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+
+## Power (omnibus test)
+
+When calculating power for the omnibus test, use the expected multiple `\(R^2\)` value to calculate an effect size:
+
+`$$\large f^2 = \frac{R^2}{1-R^2}$$`
+
+---
+
 ### Differences in means
 
 In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
@@ -881,11 +907,11 @@ anova(fit)
 ## Analysis of Variance Table
 ## 
 ## Response: Time
-##              Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
-## Speed         2 2805871 1402936 109.3975 &lt; 2.2e-16 ***
-## Noise         2  341315  170658  13.3075 4.252e-06 ***
-## Speed:Noise   4  295720   73930   5.7649 0.0002241 ***
-## Residuals   171 2192939   12824                       
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -925,13 +951,6 @@ The lsmeans( ) function produces marginal and cell means along with their confid
 
 ```r
 noise_lsm = emmeans::lsmeans(time_rg, "Noise")
-```
-
-```
-## NOTE: Results may be misleading due to involvement in interactions
-```
-
-```r
 noise_lsm
 ```
 
@@ -946,31 +965,96 @@ noise_lsm
 ```
 
 
-
 ---
 
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't give it all of M, it will choose every possible value.
+
+.pull-left[
 
 ```r
 library(sjPlot)
-noise_m = plot_model(fit, type = "emm", terms = c("Noise")) + 
-  theme_sjplot(base_size = 20)
-speed_m = plot_model(fit, type = "emm", terms = c("Speed")) + 
-  theme_sjplot(base_size = 20)
-library(ggpubr)
-ggarrange(noise_m, speed_m, ncol = 2)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", "Speed")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
 ```
 
-![](1617-factorial_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+]
+---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+
+`type = "pred"` gives you cell means.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+]---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+
+`type = "pred"` gives you cell means.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", 
+                     "Speed[Fast]")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+
+]
+
+
 
 ---
 
+In `sjPlot()`, estimated marginal means are the expected value of Y given all possible values of X, **ignoring M**. 
+
+`type = "emm"` gives you marginal means.
+
+.pull-left[
 
 ```r
-plot_model(fit, type = "pred", terms = c("Speed", "Noise")) + 
-  theme_sjplot(base_size = 20) + theme(legend.position = "bottom")
+library(sjPlot)
+plot_model(fit, type = "emm", 
+           terms = c("Noise")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
 ```
 
-![](1617-factorial_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+
+]
 ---
 
 ### Precision
@@ -1036,6 +1120,89 @@ pooled_sd = sqrt(MS_error)
 ## [1] -0.3787367
 ```
 
+---
+
+### Omnibus power
+
+```r
+R2 = .10
+(f = R2/(1-R2))
+```
+
+```
+## [1] 0.1111111
+```
+
+```r
+library(pwr)
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+```
+## 
+##      Multiple regression power calculation 
+## 
+##               u = 3
+##               v = 127.5235
+##              f2 = 0.1111111
+##       sig.level = 0.05
+##           power = 0.9
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+---
+
+### Power for pairwise comparisons
+
+The comparison of two cell means is analogous to what test?
+
+--
+
+An independent samples t-test. We can use the Cohen's D value for any pairwise comparison to examine power.
+
+---
+
+
+```r
+(noise_df = as.data.frame(noise_lsm))
+```
+
+```
+##            Noise   lsmean       SE  df lower.CL upper.CL
+## 1           None 495.0976 14.61974 171 466.2392 523.9560
+## 2   Controllable 452.2079 14.61974 171 423.3495 481.0663
+## 3 Uncontrollable 389.0759 14.61974 171 360.2175 417.9343
+```
+
+```r
+(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+```
+
+```
+## [1] -0.3787367
+```
+
+```r
+pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
+```
+
+```
+## 
+##      Two-sample t test power calculation 
+## 
+##               n = 147.4716
+##               d = 0.3787367
+##       sig.level = 0.05
+##           power = 0.9
+##     alternative = two.sided
+## 
+## NOTE: n is number in *each* group
+```
+
 
 
 
@@ -1056,13 +1223,6 @@ The `emmeans` package makes these comparisons very easy to conduct.
 
 ```r
 noise_lsm = emmeans::lsmeans(time_rg, "Noise")
-```
-
-```
-## NOTE: Results may be misleading due to involvement in interactions
-```
-
-```r
 pairs(noise_lsm, adjust = "holm")
 ```
 
@@ -1138,7 +1298,7 @@ In a Venn diagram, the overlap represents the variance shared by the variables. 
 .pull-right[
 There are three basic ways that overlapping variance accounted for in the outcome can be handled.  These are known as Type I, Type II, and Type III sums of squares. 
 
-Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome.
+Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome. This is the default in many other statistical programs, including SPSS and SAS.
 ]
 
 ---
@@ -1164,10 +1324,10 @@ summary(fit_1)
 ```
 
 ```
-##             Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
-## Noise        1  579478  579478   41.78 8.44e-09 ***
-## Level        1  722588  722588   52.10 3.20e-10 ***
-## Residuals   77 1067848   13868                     
+##             Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
+## Noise        1  579478  579478   41.78 0.00000000844 ***
+## Level        1  722588  722588   52.10 0.00000000032 ***
+## Residuals   77 1067848   13868                          
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1193,10 +1353,10 @@ summary(fit_1)
 ```
 
 ```
-##             Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
-## Level        1 1035872 1035872   74.69 5.86e-13 ***
-## Noise        1  266194  266194   19.20 3.68e-05 ***
-## Residuals   77 1067848   13868                     
+##             Df  Sum Sq Mean Sq F value            Pr(&gt;F)    
+## Level        1 1035872 1035872   74.69 0.000000000000586 ***
+## Noise        1  266194  266194   19.20 0.000036815466646 ***
+## Residuals   77 1067848   13868                              
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1214,7 +1374,7 @@ lsr::etaSquared(fit_1, type = 1)
 ---
 ### Sums of Squares (II)
 
-Type II sums of squares are the most commonly used but also a bit more complex to understand.  
+Type II sums of squares are commonly used but also a bit more complex to understand.  
 
 An approximately true description is that an effect is allocated the proportion of variance in the outcome that is unshared with effects at a similar or lower level.
 
@@ -1273,11 +1433,11 @@ Anova(aov(fit), type = "II")
 ## Anova Table (Type II tests)
 ## 
 ## Response: Time
-##              Sum Sq  Df  F value    Pr(&gt;F)    
-## Speed       2805871   2 109.3975 &lt; 2.2e-16 ***
-## Noise        341315   2  13.3075 4.252e-06 ***
-## Speed:Noise  295720   4   5.7649 0.0002241 ***
-## Residuals   2192939 171                       
+##              Sum Sq  Df  F value                Pr(&gt;F)    
+## Speed       2805871   2 109.3975 &lt; 0.00000000000000022 ***
+## Noise        341315   2  13.3075           0.000004252 ***
+## Speed:Noise  295720   4   5.7649             0.0002241 ***
+## Residuals   2192939 171                                   
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1312,112 +1472,89 @@ A main effect is the effect of one IV on the DV **ignoring the other variable(s)
 .pull-right[
 #### Regression
 
-Interaction tests whether slope changes. 
+Interaction tests whether slope or difference in means changes. 
 
 A conditional effect is the effect of IV on the DV **assuming all the other variables are 0**.
 ]
 
-
 ---
 
-## Power
-
-What is (statistical) power? How can we increase power?
-
---
-
-The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
-* increase our sample size
-* reduce (error) variance
-* raise our Type I error rate
-* study larger effects
 
 
----
+.pull-left[
+#### Factorial ANOVA
 
-![](1617-factorial_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
-
----
-
-## Power in multiple regression (additive effects)
-
-When calculating power for the omnibus test, use the expected multiple `\(R^2\)` value to calculate an effect size:
-
-`$$\large f^2 = \frac{R^2}{1-R^2}$$`
----
-
-### Omnibus power
 
 ```r
-R2 = .10
-(f = R2/(1-R2))
+anova(fit)
 ```
 
 ```
-## [1] 0.1111111
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
+
+
+]
+.pull-right[
+#### Regression
+
 
 ```r
-library(pwr)
-pwr.f2.test(u = 3, # number of predictors in the model
-            f2 = f, 
-            sig.level = .05, #alpha
-            power =.90) # desired power
+summary(fit)
 ```
 
 ```
 ## 
-##      Multiple regression power calculation 
+## Call:
+## lm(formula = Time ~ Speed * Noise, data = Data)
 ## 
-##               u = 3
-##               v = 127.5235
-##              f2 = 0.1111111
-##       sig.level = 0.05
-##           power = 0.9
-```
-
-`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
-
----
-
-### Coefficient power
-
-To estimate power for a single coefficient, you need to consider (1) how much variance is accounted for by just the variable and (2) how much variance you'll account for in Y overall.
-
-`$$\large f^2 = \frac{R^2_Y-R^2_{Y.X}}{1-R_Y^2}$$`
----
-### Coefficient power
-
-
-```r
-R2 = .10
-RX1 = .03
-(f = (R2-RX1)/(1-R2))
-```
-
-```
-## [1] 0.07777778
-```
-
-```r
-pwr.f2.test(u = 3, # number of predictors in the model
-            f2 = f, 
-            sig.level = .05, #alpha
-            power =.90) # desired power
-```
-
-```
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -316.23  -70.82    4.99   79.87  244.40 
 ## 
-##      Multiple regression power calculation 
+## Coefficients:
+##                                 Estimate Std. Error t value
+## (Intercept)                       630.72      25.32  24.908
+## SpeedMedium                      -105.44      35.81  -2.944
+## SpeedFast                        -301.45      35.81  -8.418
+## NoiseControllable                 -54.05      35.81  -1.509
+## NoiseUncontrollable               -36.28      35.81  -1.013
+## SpeedMedium:NoiseControllable      21.48      50.64   0.424
+## SpeedFast:NoiseControllable        12.01      50.64   0.237
+## SpeedMedium:NoiseUncontrollable  -184.39      50.64  -3.641
+## SpeedFast:NoiseUncontrollable     -24.84      50.64  -0.490
+##                                             Pr(&gt;|t|)    
+## (Intercept)                     &lt; 0.0000000000000002 ***
+## SpeedMedium                                  0.00369 ** 
+## SpeedFast                         0.0000000000000149 ***
+## NoiseControllable                            0.13305    
+## NoiseUncontrollable                          0.31243    
+## SpeedMedium:NoiseControllable                0.67201    
+## SpeedFast:NoiseControllable                  0.81287    
+## SpeedMedium:NoiseUncontrollable              0.00036 ***
+## SpeedFast:NoiseUncontrollable                0.62448    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-##               u = 3
-##               v = 182.1634
-##              f2 = 0.07777778
-##       sig.level = 0.05
-##           power = 0.9
+## Residual standard error: 113.2 on 171 degrees of freedom
+## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 0.00000000000000022
 ```
 
-`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+]
+
+
+
 ---
 
 class: inverse

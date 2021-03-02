@@ -117,11 +117,7 @@ homework-2.html
 * weights are 1/predicted values, not predicted values!!!
 
 lab-8.html
-* change eemmeans() to lsmeans()
-* use pairs() instead of contrast()
-* need to specify contrasts before running the model `options(contrasts = c("contr.sum", "contr.poly"))` in order for the apaTables apa.aov.table() function to be correct
-* download papaja before lab 9 (this often has errors!!!! do this soon so we can skip troubleshooting in lab 9)
-* laTex may need admin privleges 
+
 
 17-interactions.html
 * don't mention regression sums of squares
