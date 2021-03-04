@@ -1203,9 +1203,6 @@ pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
 ## NOTE: n is number in *each* group
 ```
 
-
-
-
 ---
 
 ### Follow-up comparisons
@@ -1220,9 +1217,11 @@ The `emmeans` package makes these comparisons very easy to conduct.
 
 ---
 
+Marginal means comparisons
+
 
 ```r
-noise_lsm = emmeans::lsmeans(time_rg, "Noise")
+noise_lsm = emmeans::lsmeans(time_rg, c("Noise"))
 pairs(noise_lsm, adjust = "holm")
 ```
 
@@ -1234,6 +1233,58 @@ pairs(noise_lsm, adjust = "holm")
 ## 
 ## Results are averaged over the levels of: Speed 
 ## P value adjustment: holm method for 3 tests
+```
+
+---
+
+Cell means comparisons
+
+
+```r
+all_lsm = emmeans::lsmeans(time_rg, c("Noise", "Speed"))
+pairs(all_lsm, adjust = "holm")
+```
+
+```
+##  contrast                                    estimate   SE  df t.ratio p.value
+##  None Slow - Controllable Slow                   54.1 35.8 171  1.509  1.0000 
+##  None Slow - Uncontrollable Slow                 36.3 35.8 171  1.013  1.0000 
+##  None Slow - None Medium                        105.4 35.8 171  2.944  0.0553 
+##  None Slow - Controllable Medium                138.0 35.8 171  3.854  0.0026 
+##  None Slow - Uncontrollable Medium              326.1 35.8 171  9.106  &lt;.0001 
+##  None Slow - None Fast                          301.4 35.8 171  8.418  &lt;.0001 
+##  None Slow - Controllable Fast                  343.5 35.8 171  9.592  &lt;.0001 
+##  None Slow - Uncontrollable Fast                362.6 35.8 171 10.124  &lt;.0001 
+##  Controllable Slow - Uncontrollable Slow        -17.8 35.8 171 -0.496  1.0000 
+##  Controllable Slow - None Medium                 51.4 35.8 171  1.435  1.0000 
+##  Controllable Slow - Controllable Medium         84.0 35.8 171  2.344  0.2627 
+##  Controllable Slow - Uncontrollable Medium      272.1 35.8 171  7.597  &lt;.0001 
+##  Controllable Slow - None Fast                  247.4 35.8 171  6.908  &lt;.0001 
+##  Controllable Slow - Controllable Fast          289.4 35.8 171  8.082  &lt;.0001 
+##  Controllable Slow - Uncontrollable Fast        308.5 35.8 171  8.615  &lt;.0001 
+##  Uncontrollable Slow - None Medium               69.2 35.8 171  1.931  0.6615 
+##  Uncontrollable Slow - Controllable Medium      101.7 35.8 171  2.841  0.0707 
+##  Uncontrollable Slow - Uncontrollable Medium    289.8 35.8 171  8.093  &lt;.0001 
+##  Uncontrollable Slow - None Fast                265.2 35.8 171  7.405  &lt;.0001 
+##  Uncontrollable Slow - Controllable Fast        307.2 35.8 171  8.579  &lt;.0001 
+##  Uncontrollable Slow - Uncontrollable Fast      326.3 35.8 171  9.111  &lt;.0001 
+##  None Medium - Controllable Medium               32.6 35.8 171  0.910  1.0000 
+##  None Medium - Uncontrollable Medium            220.7 35.8 171  6.162  &lt;.0001 
+##  None Medium - None Fast                        196.0 35.8 171  5.473  &lt;.0001 
+##  None Medium - Controllable Fast                238.1 35.8 171  6.648  &lt;.0001 
+##  None Medium - Uncontrollable Fast              257.1 35.8 171  7.180  &lt;.0001 
+##  Controllable Medium - Uncontrollable Medium    188.1 35.8 171  5.252  &lt;.0001 
+##  Controllable Medium - None Fast                163.4 35.8 171  4.564  0.0002 
+##  Controllable Medium - Controllable Fast        205.5 35.8 171  5.738  &lt;.0001 
+##  Controllable Medium - Uncontrollable Fast      224.6 35.8 171  6.271  &lt;.0001 
+##  Uncontrollable Medium - None Fast              -24.7 35.8 171 -0.689  1.0000 
+##  Uncontrollable Medium - Controllable Fast       17.4 35.8 171  0.486  1.0000 
+##  Uncontrollable Medium - Uncontrollable Fast     36.5 35.8 171  1.018  1.0000 
+##  None Fast - Controllable Fast                   42.0 35.8 171  1.174  1.0000 
+##  None Fast - Uncontrollable Fast                 61.1 35.8 171  1.707  0.9867 
+##  Controllable Fast - Uncontrollable Fast         19.1 35.8 171  0.533  1.0000 
+## 
+## P value adjustment: holm method for 36 tests
 ```
 
 ---

@@ -966,9 +966,20 @@ The `emmeans` package makes these comparisons very easy to conduct.
 
 ---
 
+Marginal means comparisons
+
 ```{r}
-noise_lsm = emmeans::lsmeans(time_rg, "Noise")
+noise_lsm = emmeans::lsmeans(time_rg, c("Noise"))
 pairs(noise_lsm, adjust = "holm")
+```
+
+---
+
+Cell means comparisons
+
+```{r}
+all_lsm = emmeans::lsmeans(time_rg, c("Noise", "Speed"))
+pairs(all_lsm, adjust = "holm")
 ```
 
 ---
