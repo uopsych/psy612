@@ -20,7 +20,8 @@ library(tidyverse)
 library(papaja)
 ```
 
-Prior to today's lab, make sure that you have installed Latex and `papaja` (see Sara's announcement on Canvas).
+Prior to today's lab, make sure that you have installed Latex and `papaja` (see Sara's announcement on Canvas). You can download the Rmd file [here](lab-9.Rmd) and the example papaja Rmd file [here](papaja_example_ms.Rmd).
+
 
 # Purpose
 
