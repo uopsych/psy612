@@ -9,24 +9,26 @@ output:
     toc_float: TRUE
     df_print: paged
 bibliography: "lab-9.bib"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 # suppress scientific notation
 options(scipen = 999)
 library(tidyverse)
+library(papaja)
 ```
 
+Prior to today's lab, make sure that you have installed Latex and `papaja` (see Sara's announcement on Canvas).
 
 # Purpose
 
-The following lab covers `papaja`, a powerful package for creating reproducible, APA-style manuscripts in Rmarkdown. We will go over how to write a manuscript in `papaja`, including creating tables, figures, citations, and in-text statistical reporting. This page has some broad (overview) information and links to useful resources. We will then switch to working hands-on with a `papaja` RMD.
+The following lab covers `papaja`, a package for creating reproducible, APA-style manuscripts in Rmarkdown. We will go over how to write a manuscript in `papaja`, including creating tables, figures, citations, and in-text statistical reporting. This page has some broad (overview) information and links to useful resources.
 
 # `papaja`
 
-papaja is an R package for Preparing APA Journal Articles (get it: PAPAJA). It contains several functions and perhaps most importantly, an RMD template that formats the output document (.docx or .pdf) in APA format. 
-
-The single most useful thing I will provide today is a [link to papaja's documentation](https://crsh.github.io/papaja_man/index.html). When I've used papaja, I have this open on a tab and check it pretty regularly.
+papaja is an R package for **P**reparing **APA** **J**ournal **A**rticles. It contains several functions and perhaps most importantly, an RMD template that formats the output document (.docx or .pdf) in APA format. Here is the link to [papaja's documentation](https://crsh.github.io/papaja_man/index.html), the most helpful and comprehensive papaja resource out there. 
 
 ## Installing `papaja`
 
@@ -45,8 +47,8 @@ library(papaja)
 In addition to `papaja`, the `citr` package is going to be helpful when it comes to citing works in text (within our RMD) and the `corx` package is going to make it easier to create a table of correlations.
 
 ```{r}
-if(!"citr" %in% rownames(installed.packages())) install.packages("citr")
-if(!"corx" %in% rownames(installed.packages())) install.packages("corx")
+#devtools::install_github("crsh/citr")
+#install.packages("corx")
 ```
 
 OK, now we're ready to go! Below I'll briefly review some of the functions we'll use today before we dive into hands-on work in a papaja template RMD.
@@ -69,53 +71,44 @@ Let's start by getting a table of descriptive stats. We'll use the bfi data from
 
 ```{r}
 b5 <- psych::bfi %>% 
-  # score items with psych's scoreVeryFast
-  cbind( # column-bind the 5 scale scores
-    # using scoreVeryFast from psych
-    # which scores questionnaires based on a 
-    # key
-    psych::scoreVeryFast(psych::bfi.keys, # scoring key goes here, which psych has for this data
-                        psych::bfi) # data goes here
-  )
+  cbind(psych::scoreVeryFast(psych::bfi.keys, psych::bfi))
+
 ```
 
 First, we create a dataframe with the descriptives of our Big Five scales. We'll use some of the tidyverse functions for this.
 
-```{r descrips_calc}
+```{r}
 descriptives <- b5 %>%
-  # select just the scale scores
   select(agree:openness) %>% 
-  # gather so that each row is a person's score for a particular
-  # Big Five scale
   gather(scale, score) %>% 
-  # Group by the scale (so we can get descriptives for each scale)
   group_by(scale) %>% 
-  #
   summarize(
     Mean = mean(score), 
     Median = median(score), 
     SD = sd(score), 
     Min = min(score),
-    Max = max(score)
-  )
+    Max = max(score))
+
 descriptives
 ```
 
-Next, we format the numerical columns using `printnum()` function from `papaja` for this. In essence, this puts everything to 2 decimal points (you can change this), pads with zeroes when necessary, and turns those to strings so they print correctly. 
+Next, we format the numerical columns using `printnum()` function from `papaja` for this. In essence, this puts everything to 2 decimal points (you can change this), pads with zeroes when necessary, and turns those to strings so they print correctly. "-1" indicates that the first column is non-numerical so does not apply.
 
 ```{r}
-descriptives[, -1] <- printnum(descriptives[, -1]) # printnum changes numbers to character (from papaja)
-# note: -1 since the first column is labels (not numerical)
+descriptives[, -1] <- papaja::printnum(descriptives[, -1]) 
+
+descriptives
+
 ```
  
 Then, we run `apa_table()` on the dataframe, and we can add a caption and note. You have to set `results = "asis"` in the chunk options for it to render correctly:
 
 ```{r descrips_tab, results = "asis"}
-apa_table(
-  descriptives
-  , caption = "Descriptive statistics of Big Five Scale Scores."
-  , note = "This table was created with apa_table()."
-  , escape = TRUE
+
+apa_table(descriptives, 
+          caption = "Descriptive statistics of Big Five Scale Scores.", 
+          note = "This table was created with apa_table().", 
+          escape = TRUE
 )
 ```
 
@@ -130,18 +123,18 @@ Basically, the workflow for this is:
 1. Use `corx` to create the correlation table
 2. Use `apa_table()` to add a caption, note, and print it
 
-```{r results = "asis" }
+```{r corr_tab, results = "asis" }
 library(corx)
 
-# create table with corx
 cor <-  b5 %>%
   select(agree:openness) %>% 
-  corx(triangle = "lower", # print just lower triangle
-       stars = c(0.05, 0.01, 0.001), # tell it which p values to star
-       describe = c(`$M$` = mean, `$SD$` = sd)) # optionally provide descriptives
+  corx(triangle = "lower",
+       stars = c(0.05, 0.01, 0.001),
+       describe = c(`$M$` = mean, `$SD$` = sd)) 
 
-# print the apa table with apa_table()
-apa_table(cor$apa, # apa contains the data.frame needed for apa_table
+cor
+
+papaja::apa_table(cor$apa, 
           caption = "Example corr matrix",
           note = "* p < 0.05; ** p < 0.01; *** p < 0.001",
           escape = TRUE)
@@ -163,50 +156,42 @@ First, conduct the regressions
 ```{r reg}
 b5 <- b5 %>% 
   mutate(
-    # turning education to a factor
     education = as.factor(education),
-    # re-labelling education
     education = case_when(
       education == 1 ~ "Some HS",
       education == 2 ~ " (Finished HS)",
       education == 3 ~ " (Some College)",
       education == 4 ~ " (College Grad)",
-      education == 5 ~ " (Grad Degree)"
-    )
-  ) %>%
-  # removing NAs to make thing a little
-  # easier for today
+      education == 5 ~ " (Grad Degree)")) %>%
   filter(!is.na(conscientious),
          !is.na(age),
          !is.na(education))
 
-# regressions
-m1 <- lm(conscientious ~ age, data = b5)
-m2 <- lm(conscientious ~ age + education, data = b5)
+# Regression models
+model_1 <- lm(conscientious ~ age, data = b5)
+model_2 <- lm(conscientious ~ age + education, data = b5)
 ```
 
 Next, use `apa_print()` to create those apa-style results objects:
 
 ```{r print_reg}
 # model 1 results
-m1_results <- apa_print(m1)
+model_1_results <- apa_print(model_1)
 # model 2 results
-m2_results <- apa_print(m2)
+model_2_results <- apa_print(model_1)
 # model comparison results
-mod_comp_results <- apa_print(list(m1, m2),
-                              # setting to 0
-                              # otherwise it creates bootstrapped
-                              # CI for delta R^2 - we will cover bootstrapping 
-                              # soon.
+model_comp_results <- apa_print(list(model_1, model_2),
                               boot_samples = 0)
 ```
+
+Note: We set `boot_samples = 0` otherwise it creates a bootstrapped CI for delta R^2. We will cover bootstrapping next week.
 
 Then, we can pull the tables out of them.
 
 You could get a table of just the Model 1 results:
 
 ```{r reg_tbl_1, results = "asis"}
-m1_results$table %>% 
+model_1_results$table %>% 
   apa_table(caption = "Model Regressing Conscientiousness on Age",
             note = "* p < 0.05; ** p < 0.01; *** p < 0.001",
             escape = TRUE)
@@ -215,7 +200,7 @@ m1_results$table %>%
 Or we could get a table of just model 2's results:
 
 ```{r reg_tbl_2, results = "asis"}
-m2_results$table %>% 
+model_2_results$table %>% 
   apa_table(caption = "Model Regressing Conscientiousness on Age & Education",
             note = "* p < 0.05; ** p < 0.01; *** p < 0.001",
             escape = TRUE)
@@ -224,7 +209,7 @@ m2_results$table %>%
 And finally, we can get them together with their comparison:
 
 ```{r reg_tbl_3, results = "asis"}
-mod_comp_results$table %>% 
+model_comp_results$table %>% 
   apa_table(caption = "Model Comparison: Conscientiousness by Age and Age + Education",
             note = "* p < 0.05; ** p < 0.01; *** p < 0.001",
             escape = TRUE)
@@ -234,7 +219,7 @@ The last thing I'll mention here is that we can use the chunk labels for our tab
 
 # Figures
 
-Figures are, in some ways, a little easier. You can create figures using basically any of the options we've learned about. I personally like ggplot, which can be put into APA format using the `theme_apa()` theme (which comes from papaja).
+You can create figures using basically any of the options we've learned about. I personally like ggplot, which can be put into APA format using the `theme_apa()` theme (which comes from papaja).
 
 Let's get an APA-formatted plot for the relation between age and conscientiousness.
 
@@ -244,7 +229,6 @@ ggplot(b5, aes(x = age, y = conscientious)) +
   geom_smooth(method = "lm") +
   labs(x = "Age",
        y = "Conscientiousness") +
-  # theme_apa puts it in apa format
   theme_apa()
 ```
 
@@ -254,7 +238,7 @@ The best way to give that figure a caption is to use preface it with:
 
 You then set the chunk option `fig.cap = "(ref:fig-ageXconsc-cap) "`, There is an example of this in the example papaja manuscript, so we will see it in action in a moment.
 
-Just to be perfectly clear, you should be able to expand this to more complicated plots. For example, let's take a look a figure that also has education in it:
+Just to be perfectly clear, you should be able to expand this to more complicated plots. For example, let's take a look at a figure that also has education in it:
 
 ```{r fig_ageXedu_consc}
 ggplot(b5, aes(x = age, y = conscientious, color = education)) +
@@ -262,7 +246,6 @@ ggplot(b5, aes(x = age, y = conscientious, color = education)) +
   geom_smooth(method = "lm", se = FALSE) +
   labs(x = "Age",
        y = "Conscientiousness") +
-  # theme_apa puts it in apa format
   theme_apa()
 ```
 
@@ -278,36 +261,35 @@ ggplot(aes(x = age, y = score)) +
   labs(x = "Age",
        y = "Scale Score") +
   facet_grid(~trait) + 
-  # theme_apa puts it in apa format
   theme_apa()
 ```
 
 # In-text Summaries of tests
 
-One of the most useful aspects of writing manuscripts in RMD and `papaja` is that we can report our results directly from the statistical models we run in R, reducing the likelihood of copypasta errors. 
+One of the most useful aspects of writing manuscripts in RMD and `papaja` is that we can report our results directly from the statistical models we run in R, reducing the likelihood of copy and paste errors. 
 
-We can use `apa_print()` from `papaja` to report the results of our statistical tests in text. Abbreviated results (estimate and CI) can be called with `$estimate` from the `apa_print()` obect. For example, `m1_results$estimate$age` will print a nicely formatted printout of the slope for age on conscientiousness:
+We can use `apa_print()` from `papaja` to report the results of our statistical tests in text. Abbreviated results (estimate and CI) can be called with `$estimate` from the `apa_print()` object. For example, `model_1_results$estimate$age` will print a nicely formatted printout of the slope for age on conscientiousness:
 
->Age significantly predicted conscientiousness, `r m1_results$estimate$age`. 
+>Age significantly predicted conscientiousness, `r model_1_results$estimate$age`. 
 
-We can instead get the full result (including *t*, *df*, and *p*) by calling the `$full_result` object, so `m1_results$full_result$age` will be rendered like so:
+We can instead get the full result (including *t*, *df*, and *p*) by calling the `$full_result` object, so `model_1_results$full_result$age` will be rendered like so:
 
->Age significantly predicted conscientiousness, `r m1_results$full_result$age`. 
+>Age significantly predicted conscientiousness, `r model_1_results$full_result$age`. 
 
-It probably goes without saying, but we could get the resylts of other slopes by changing out `$age` to reference other terms. For example, we could report the result of the difference between some high school and having finished highschool with `m2_results$estimate$education_Finished_HS`:
+We could get the results of other slopes by changing out `$age` to reference other terms. For example, we could report the result of the difference between some high school and having finished high school with `model_2_results$estimate$education_Finished_HS`:
 
->Finishing highschool (vs. not finishing highschool) was not associated with Conscientiousness, `r m2_results$full_result$education_Finished_HS`.
+>Finishing highschool (vs. not finishing highschool) was not associated with Conscientiousness, `r model_2_results$full_result$education_Finished_HS`.
 
 ## Regression model results
-And we could get model fit results too, both from each model and the compairson object. For example
+And we could get model fit results too, both from each model and the comparison object. For example
 
-+ `m1_results$full_result$modelfit$r2` will print the $R^2$ for model 1   
-+ `m2_results$full_result$modelfit$r2` will print the $R^2$ for model 2   
-+ `mod_comp_results$full_result$model2` will print the $\Delta R^2$ value (difference in $R^2$), and the *F* test for that difference.   
++ `model_1_results$full_result$modelfit$r2` will print the $R^2$ for model 1.   
++ `model_2_results$full_result$modelfit$r2` will print the $R^2$ for model 2.  
++ `model_comp_results$full_result$model2` will print the $\Delta R^2$ value (difference in $R^2$), and the *F* test for that difference.   
 
 Putting it all together, we can report those results with something like the following:
 
->The model with just age explained less variance, `r m1_results$full_result$modelfit$r2`, than the model that also included (dummy-coded) education `r m2_results$full_result$modelfit$r2`, which was significant `r mod_comp_results$full_result$model2`
+>The model with just age explained less variance, `r model_1_results$full_result$modelfit$r2`, than the model that also included (dummy-coded) education `r model_2_results$full_result$modelfit$r2`, which was significant `r model_comp_results$full_result$model2`
 
 `papaja` has various print methods, so be sure to check [that part of the documentation](https://crsh.github.io/papaja_man/reporting.html#results-from-statistical-tests).
 
@@ -352,7 +334,7 @@ You should see this:
 
 You would then want to copy that into a .bib file (you can edit it within RStudio or choose another text editor), and then make sure you reference that .bib file in the `references:` part of your YAML (we'll see this in the example).
 
-You can also use popular reference managers like mendeley, zotero, etc. to create bibtex files. I use mendeley and it works pretty well.
+You can also use popular reference managers like mendeley, zotero, etc. to create bibtex files.
 
 ## In-text citations
 
