@@ -1,0 +1,56 @@
+---
+title: 'PSY 612 Homework #5'
+author: "YOUR NAME HERE"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+# Instructions
+
+Please complete this assignment using the RMarkdown file provided [Link to Rmarkdown file here]. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-3.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+
+All points earned on this homework assignment are **bonus points.** That is, this assignment is completely optional. Points earned can help you bring up your overall homework score if you have less than 100% on other assignments. You cannot earn more than 5 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
+
+1. Points are all-or-nothing, meaning you cannot receive partial credit if you correctly answer only some of the bullet points for a question. All must be answered correctly.
+
+2. After the homework has been graded, you may retry questions to earn full credit, but you may only retry the questions you attempted on the first round. 
+
+3. The first time you complete this assignment, it must be turned in by 9am on the [due date](https://uopsych.github.io/psy612/schedule.html). Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+
+4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
+
+**Data:**  
+
+-`homework-health`: In this study, students reporting to Health Services for anxiety complaints were asked to participate in a clinical treatment study. Those agreeing to participate were randomly assigned to one of the following conditions: waiting list control, meditation, medication, cognitive behavior therapy, or exercise. After three-weeks of treatment (or waiting in the case of the controls), participants completed an anxiety inventory (scores could range from 0 to 100), with higher numbers indicating greater anxiety.
+
+-`homework-happy`: The dataset looks at happiness in college as a relationship with school success, friendship quality, SES, and an intervention group (1 = control, 2 = study skills training, 3 = social skills training). (Note that the variable names have spaces in them, which may make it tricky to work with. You might consider renaming the variables.)
+
+# 3-point questions
+
+## Question 1
+
+
+This question uses the dataset `homework-health`. Health service clinicians have the following research hypotheses: 
+
+* Conduct a factorial analysis of variance of the anxiety measure using class (freshmen, upperclassmen) and treatment condition (waiting list control, meditation, medication, cognitive behavior therapy, or exercise) as factors. Report a summary of the results (source of variance, df, SS, MS, F, and p) in a table.
+
+* Create a figure that depicts these results. What would you conclude?
+
+## Question 2
+
+This question uses the dataset `homework-happy.` 
+
+* Construct a linear model to test whether friendship quality has a curvilinear relationship with happiness. Interpret the results.
+
+* Create a figure that plots the predicted values of happiness by friendship quality using the model you created above. Include in this figure the raw data points. Based on this figure, do you believe the model you fit above represents a real relationship or a methodological artifact?
+
+## Question 3
+
+This question uses the dataset `homework-happy.` 
+
+* Construct a model with school success as the outcome and SES and friendship quality as predictors. Calculate the 95% confidence interval around each regression coefficient.
+
+* Use bootstrapping to calculate new estimates of the regression coefficients and 95% confidence intervals. (Use the `bca` method for the CIs.) Do these estimates change your interpretation of the data? 
