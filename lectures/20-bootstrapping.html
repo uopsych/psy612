@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Bootstrapping</title>
     <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
@@ -47,39 +48,47 @@ Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, an
 
 
 ```
-## [1] "Ross"   "Monica" "Joey"   "Monica" "Joey"   "Monica"
+## [1] "Chandler" "Chandler" "Monica"   "Ross"     "Joey"     "Monica"
 ```
 
 ```
-## [1] 68
+## [1] 69.5
 ```
 
 ```
-## [1] "Phoebe" "Rachel" "Rachel" "Ross"   "Monica" "Ross"
+## [1] "Chandler" "Phoebe"   "Phoebe"   "Monica"   "Joey"     "Phoebe"
 ```
 
 ```
-## [1] 68.16667
+## [1] 68.5
 ```
 
 ```
-## [1] "Monica" "Joey"   "Monica" "Joey"   "Joey"   "Joey"
+## [1] "Chandler" "Ross"     "Phoebe"   "Phoebe"   "Phoebe"   "Ross"
 ```
 
 ```
-## [1] 68.33333
+## [1] 70.33333
 ```
 
 ```
-## [1] "Rachel" "Phoebe" "Monica" "Phoebe" "Rachel" "Joey"
+## [1] "Chandler" "Ross"     "Rachel"   "Ross"     "Rachel"   "Phoebe"
 ```
 
 ```
-## [1] 66.83333
+## [1] 69.33333
 ```
 
 ```
-## [1] "Phoebe" "Rachel" "Monica" "Ross"   "Rachel" "Joey"
+## [1] "Monica" "Joey"   "Phoebe" "Ross"   "Rachel" "Ross"
+```
+
+```
+## [1] 69
+```
+
+```
+## [1] "Phoebe"   "Phoebe"   "Monica"   "Phoebe"   "Rachel"   "Chandler"
 ```
 
 ```
@@ -87,23 +96,15 @@ Imagine you had a sample of 6 people: Rachel, Monica, Phoebe, Joey, Chandler, an
 ```
 
 ```
-## [1] "Joey"     "Joey"     "Monica"   "Ross"     "Chandler" "Phoebe"
+## [1] "Chandler" "Chandler" "Phoebe"   "Phoebe"   "Phoebe"   "Ross"
 ```
 
 ```
-## [1] 69.66667
+## [1] 70.16667
 ```
 
 ```
-## [1] "Chandler" "Ross"     "Joey"     "Rachel"   "Monica"   "Joey"
-```
-
-```
-## [1] 69.16667
-```
-
-```
-## [1] "Rachel"   "Phoebe"   "Joey"     "Chandler" "Monica"   "Ross"
+## [1] "Ross"     "Monica"   "Monica"   "Joey"     "Phoebe"   "Chandler"
 ```
 
 ```
@@ -541,12 +542,12 @@ describe(stress.data, fast = T)
 ```
 
 ```
-##         vars   n   mean     sd  min    max  range    se
-## id         1 118 488.65 295.95 2.00 986.00 984.00 27.24
-## Anxiety    2 118   7.61   2.49 0.70  14.64  13.94  0.23
-## Stress     3 118   5.18   1.88 0.62  10.32   9.71  0.17
-## Support    4 118   8.73   3.28 0.02  17.34  17.32  0.30
-## group      5 118    NaN     NA  Inf   -Inf   -Inf    NA
+##         vars   n  mean    sd  min    max  range   se
+## id         1 118 59.50 34.21 1.00 118.00 117.00 3.15
+## Anxiety    2 118  7.61  2.49 0.70  14.64  13.94 0.23
+## Stress     3 118  5.18  1.88 0.62  10.32   9.71 0.17
+## Support    4 118  8.73  3.28 0.02  17.34  17.32 0.30
+## group      5 118   NaN    NA  Inf   -Inf   -Inf   NA
 ```
 
 ```r
@@ -657,94 +658,94 @@ lasso.mod
 ## 
 ## Call:  glmnet(x = X.matrix[, -1], y = stress.data$Stress) 
 ## 
-##    Df    %Dev  Lambda
-## 1   0 0.00000 0.97920
-## 2   1 0.04664 0.89220
-## 3   1 0.08537 0.81300
-## 4   1 0.11750 0.74080
-## 5   1 0.14420 0.67500
-## 6   1 0.16640 0.61500
-## 7   1 0.18480 0.56040
-## 8   1 0.20000 0.51060
-## 9   1 0.21270 0.46520
-## 10  1 0.22320 0.42390
-## 11  1 0.23200 0.38620
-## 12  2 0.24110 0.35190
-## 13  2 0.24980 0.32070
-## 14  2 0.25700 0.29220
-## 15  2 0.26290 0.26620
-## 16  3 0.27400 0.24260
-## 17  2 0.29390 0.22100
-## 18  2 0.30440 0.20140
-## 19  2 0.31310 0.18350
-## 20  2 0.32030 0.16720
-## 21  2 0.32630 0.15230
-## 22  2 0.33130 0.13880
-## 23  2 0.33540 0.12650
-## 24  2 0.33880 0.11520
-## 25  2 0.34170 0.10500
-## 26  2 0.34410 0.09567
-## 27  2 0.34600 0.08717
-## 28  2 0.34760 0.07943
-## 29  2 0.34900 0.07237
-## 30  3 0.35400 0.06594
-## 31  3 0.36320 0.06009
-## 32  3 0.37090 0.05475
-## 33  3 0.37720 0.04988
-## 34  3 0.38250 0.04545
-## 35  3 0.38690 0.04141
-## 36  4 0.39060 0.03774
-## 37  4 0.39350 0.03438
-## 38  4 0.39610 0.03133
-## 39  4 0.39810 0.02855
-## 40  4 0.39990 0.02601
-## 41  4 0.40130 0.02370
-## 42  4 0.40250 0.02159
-## 43  4 0.40350 0.01968
-## 44  6 0.40450 0.01793
-## 45  5 0.40570 0.01633
-## 46  5 0.40650 0.01488
-## 47  5 0.40720 0.01356
-## 48  5 0.40780 0.01236
-## 49  5 0.40830 0.01126
-## 50  6 0.40880 0.01026
-## 51  6 0.40950 0.00935
-## 52  6 0.41000 0.00852
-## 53  6 0.41040 0.00776
-## 54  6 0.41080 0.00707
-## 55  6 0.41110 0.00644
-## 56  6 0.41130 0.00587
-## 57  6 0.41150 0.00535
-## 58  6 0.41170 0.00487
-## 59  6 0.41180 0.00444
-## 60  6 0.41190 0.00405
-## 61  6 0.41200 0.00369
-## 62  6 0.41210 0.00336
-## 63  6 0.41220 0.00306
-## 64  6 0.41220 0.00279
-## 65  6 0.41230 0.00254
-## 66  6 0.41230 0.00231
-## 67  6 0.41240 0.00211
-## 68  7 0.41240 0.00192
-## 69  7 0.41240 0.00175
-## 70  7 0.41240 0.00160
-## 71  7 0.41250 0.00145
-## 72  7 0.41250 0.00132
-## 73  7 0.41250 0.00121
-## 74  7 0.41250 0.00110
-## 75  7 0.41250 0.00100
-## 76  7 0.41260 0.00091
-## 77  7 0.41260 0.00083
-## 78  7 0.41260 0.00076
-## 79  7 0.41260 0.00069
-## 80  7 0.41260 0.00063
-## 81  7 0.41260 0.00057
-## 82  7 0.41260 0.00052
-## 83  7 0.41260 0.00048
-## 84  7 0.41260 0.00043
-## 85  7 0.41260 0.00040
-## 86  7 0.41260 0.00036
-## 87  7 0.41260 0.00033
+##    Df  %Dev  Lambda
+## 1   0  0.00 0.97920
+## 2   1  4.66 0.89220
+## 3   1  8.54 0.81300
+## 4   1 11.75 0.74080
+## 5   1 14.42 0.67500
+## 6   1 16.64 0.61500
+## 7   1 18.48 0.56040
+## 8   1 20.00 0.51060
+## 9   1 21.27 0.46520
+## 10  1 22.32 0.42390
+## 11  1 23.20 0.38620
+## 12  2 24.11 0.35190
+## 13  2 24.98 0.32070
+## 14  2 25.70 0.29220
+## 15  2 26.29 0.26620
+## 16  3 27.40 0.24260
+## 17  2 29.39 0.22100
+## 18  2 30.44 0.20140
+## 19  2 31.31 0.18350
+## 20  2 32.03 0.16720
+## 21  2 32.63 0.15230
+## 22  2 33.13 0.13880
+## 23  2 33.54 0.12650
+## 24  2 33.88 0.11520
+## 25  2 34.17 0.10500
+## 26  2 34.41 0.09567
+## 27  2 34.60 0.08717
+## 28  2 34.76 0.07943
+## 29  2 34.90 0.07237
+## 30  3 35.40 0.06594
+## 31  3 36.32 0.06009
+## 32  3 37.09 0.05475
+## 33  3 37.72 0.04988
+## 34  3 38.25 0.04545
+## 35  3 38.69 0.04141
+## 36  4 39.06 0.03774
+## 37  4 39.35 0.03438
+## 38  4 39.61 0.03133
+## 39  4 39.81 0.02855
+## 40  4 39.99 0.02601
+## 41  4 40.13 0.02370
+## 42  4 40.25 0.02159
+## 43  4 40.35 0.01968
+## 44  6 40.45 0.01793
+## 45  5 40.57 0.01633
+## 46  5 40.65 0.01488
+## 47  5 40.72 0.01356
+## 48  5 40.78 0.01236
+## 49  5 40.83 0.01126
+## 50  6 40.88 0.01026
+## 51  6 40.95 0.00935
+## 52  6 41.00 0.00852
+## 53  6 41.04 0.00776
+## 54  6 41.08 0.00707
+## 55  6 41.11 0.00644
+## 56  6 41.13 0.00587
+## 57  6 41.15 0.00535
+## 58  6 41.17 0.00487
+## 59  6 41.18 0.00444
+## 60  6 41.19 0.00405
+## 61  6 41.20 0.00369
+## 62  6 41.21 0.00336
+## 63  6 41.22 0.00306
+## 64  6 41.22 0.00279
+## 65  6 41.23 0.00254
+## 66  6 41.23 0.00231
+## 67  6 41.24 0.00211
+## 68  7 41.24 0.00192
+## 69  7 41.24 0.00175
+## 70  7 41.24 0.00160
+## 71  7 41.25 0.00145
+## 72  7 41.25 0.00132
+## 73  7 41.25 0.00121
+## 74  7 41.25 0.00110
+## 75  7 41.25 0.00100
+## 76  7 41.26 0.00091
+## 77  7 41.26 0.00083
+## 78  7 41.26 0.00076
+## 79  7 41.26 0.00069
+## 80  7 41.26 0.00063
+## 81  7 41.26 0.00057
+## 82  7 41.26 0.00052
+## 83  7 41.26 0.00048
+## 84  7 41.26 0.00043
+## 85  7 41.26 0.00040
+## 86  7 41.26 0.00036
+## 87  7 41.26 0.00033
 ```
 
 ???
@@ -892,6 +893,7 @@ class: inverse
 ## Next time...
 
 PSY 613 with Elliot Berkman!
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -939,6 +941,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -956,17 +984,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {

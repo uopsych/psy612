@@ -1,0 +1,527 @@
+---
+title: 'Interactions (Power analyses and 3-way interactions)'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+options(scipen = 999)
+library(tidyverse)
+library(knitr)
+library(broom)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+```
+
+---
+
+## Power
+
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+```{r, echo = F, fig.width = 10, fig.height = 8, message = F}
+library(tidyverse)
+mu = 100
+s = 20
+mean = 110
+n = 20
+sem = s/sqrt(n)
+cv = qnorm(mean = mu, sd = sem, p = .05, lower.tail = F)
+
+ggplot(data.frame(x = seq(70, 130)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) +
+  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem)) +
+  stat_function(fun = function(x) dnorm(x, m = mean, sd = sem),
+                geom = "area", xlim = c(cv, 130), 
+                aes(fill = "Power"), alpha = .5) +
+  #geom_vline(aes(xintercept = mu))+
+  #geom_vline(aes(xintercept = mean))+
+  geom_hline(aes(yintercept = 0))+
+  scale_x_continuous("Means", breaks = seq(70,130,10)) +
+  scale_y_continuous(NULL, breaks = NULL) + 
+  guides(color = F)+
+  theme_bw()+
+  theme( text = element_text(size = 20))
+```
+
+---
+
+## Power in multiple regression (additive effects)
+
+When calculating power for the omnibus test, use the expected multiple $R^2$ value to calculate an effect size:
+
+$$\large f^2 = \frac{R^2}{1-R^2}$$
+---
+
+### Omnibus power
+```{r}
+R2 = .10
+(f = R2/(1-R2))
+library(pwr)
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+---
+
+### Coefficient power
+
+To estimate power for a single coefficient, you need to consider (1) how much variance is accounted for by just the variable and (2) how much variance you'll account for in Y overall.
+
+$$\large f^2 = \frac{R^2_Y-R^2_{Y.X}}{1-R_Y^2}$$
+---
+### Coefficient power
+
+```{r}
+R2 = .10
+RX1 = .03
+(f = (R2-RX1)/(1-R2))
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+---
+
+## Effect sizes (interactions)
+
+To start our discussion on powering interaction terms, we need to first consider the effect size of an interaction. 
+
+How big can we reasonably expect an interaction to be?
+
+- Interactions are always partialled effects; that is, we examine the relationship between the product of variables X and Z only after we have controlled for X and controlled for Z. How does this affect the size of the relationship between XZ and Y?
+
+???
+
+The effect of XZ and Y will be made smaller as X or Z (or both) is related to the product -- the semi-partial correlation is always smaller than or equal to the zero-order correlation. 
+
+---
+
+## McClelland and Judd (1993)
+
+Is it more difficult to find interaction effects in experimental studies or observational studies?
+
+--
+
+What factors make it relatively easier to find interactions in experimental work?
+
+---
+
+### Factors influencing power in experimental studies
+
+- No measurement error of IV 
+    * don't have to guess what condition a participant is in
+    * measurement error is exacerbated when two variables measured with error are multiplied by each other
+    
+- Studies with experimental designs are more likely to yield cross-over interactions; observational studies may be restricted to fan interactions
+    * cross-over interactions are easier to detect than fan interactions
+    
+---
+
+### Factors influencing power in experimental studies
+
+- Researchers can concentrate scores on extreme ends on both X and Z.
+    * increases variability in both X and Z, and in XZ
+    * in observational studies, data tends to cluster around the mean 
+  
+
+- Researchers can also force orthogonality in X and Z.
+
+- Researchers can study the full range of X in an experiment.
+
+---
+
+### McClelland and Judd's simulation
+
+For the experiment simulations, we used 2 X 2 factorial designs, with values of X and Z equal to +1 and —1 and an equal number of observations at each of the four combinations of X and Z values.
+
+```{r}
+X = rep(c(-1,1), each = 50)
+Z = rep(c(-1,1), times = 50)
+table(X,Z)
+```
+
+---
+
+### McClelland and Judd's simulation
+
+For the field study simulations, we used values of X and Z that varied between the extreme values of +1 and —1. ...values of X and Z were each sampled independently from a normal distribution with a mean of 0 and a standard deviation of 0.5. Values of X and Z were rounded to create equally spaced 9-point scales ranging from -1 to +1.
+
+```{r}
+score = function(x){
+  new = 2*(x - min(x))/(max(x)-min(x))
+  new_round = (round(new/.25)*.25)-1
+  return(new_round)
+}
+X = rnorm(n = 100, mean = 0, sd = .5) %>% score()
+Z = rnorm(n = 100, mean = 0, sd = .5) %>% score()
+
+
+psych::describe(data.frame(X,Z), fast = T)
+```
+---
+
+For the simulations of both the field studies and the experiments, $\beta_0 = 0, \beta_X=\beta_Z=\beta_{XZ} = 1.$ There were 100 observations, and errors for the model were sampled from the same normal distribution with a mean of 0 and a standard deviation of 4.
+
+```{r}
+Y = 0 + 1*X + 1*Z + 1*X*Z + rnorm(n = 100, mean = 0, sd = 4)
+summary(lm(Y ~ X*Z))
+```
+
+---
+
+From 100 simulations each, estimates of the model parameter $\beta_{XZ}$ the moderator or interaction effect equaled 0.977 and 0.979 for the field studies and experiments, respectively.
+```{r}
+set.seed(0309)
+```
+
+.pull-left[
+```{r}
+# for experimental studies
+sim = 100
+ebeta_xz = numeric(length = 100)
+et_xz = numeric(length = 100)
+for(i in 1:sim){
+  # simulate data
+  X = rep(c(-1,1), each = 50)
+  Z = rep(c(-1,1), times = 50)
+ 
+  
+   Y = 0 + 1*X + 1*Z + 1*X*Z + 
+    rnorm(n = 100, mean = 0, sd = 4)
+  #run model
+  model = lm(Y ~ X*Z)
+  coef = coef(summary(model))
+  #extract coefficients
+  beta = coef["X:Z", "Estimate"]
+  t_val = coef["X:Z", "t value"]
+  #save to vectors
+  ebeta_xz[i] = beta
+  et_xz[i] = t_val
+}
+```
+]
+
+.pull-right[
+
+```{r}
+# for observational studies
+
+obeta_xz = numeric(length = 100)
+ot_xz = numeric(length = 100)
+for(i in 1:sim){
+  # simulate data
+  X = rnorm(n = 100, mean = 0, sd = .5) %>% score()
+  Z = rnorm(n = 100, mean = 0, sd = .5) %>% score()
+  Y = 0 + 1*X + 1*Z + 1*X*Z + 
+    rnorm(n = 100, mean = 0, sd = 4)
+  #run model
+  model = lm(Y ~ X*Z)
+  coef = coef(summary(model))
+  #extract coefficients
+  beta = coef["X:Z", "Estimate"]
+  t_val = coef["X:Z", "t value"]
+  #save to vectors
+  obeta_xz[i] = beta
+  ot_xz[i] = t_val
+}
+```
+
+]
+---
+
+```{r}
+mean(ebeta_xz)
+mean(obeta_xz)
+```
+
+```{r, echo = F, fig.width=10, fig.height=6}
+data.frame(sim = rep(c("experimental", "observational"), each = 100),
+           estimate = c(ebeta_xz, obeta_xz)) %>%
+  ggplot(aes(x = estimate)) + 
+  geom_density(aes(fill = sim, color = sim), alpha = .3) +
+  scale_color_discrete("") + scale_fill_discrete("")+
+  theme_bw() + theme(legend.position = "bottom")
+```
+
+---
+
+```{r}
+mean(et_xz)
+mean(ot_xz)
+```
+
+```{r, echo = F, fig.width=10, fig.height=6}
+data.frame(sim = rep(c("experimental", "observational"), each = 100),
+           t_val = c(et_xz, ot_xz)) %>%
+  ggplot(aes(x = t_val)) + 
+  geom_density(aes(fill = sim, color = sim), alpha = .3) +
+  geom_vline(aes(xintercept = qt(p = .975, df = 100-3-1)))+
+  scale_x_continuous("t statistic") +
+  scale_color_discrete("") + scale_fill_discrete("")+
+  theme_bw() + theme(legend.position = "bottom")
+```
+
+---
+
+```{r}
+cv = qt(p = .975, df = 100-3-1)
+esig = et_xz > cv
+sum(esig)
+
+osig = ot_xz > cv
+sum(osig)
+```
+
+In our simulation, `r sum(esig)`% of experimental studies were statistically significant, whereas only `r sum(osig)`% of observational studies were significant. Remember, we built our simulation based on data where there really is an interaction effect (i.e., the null is false). 
+
+McClelland and Judd found that 74% of experimental studies and 9% of observational studies were significant.
+
+---
+
+### Efficiency
+
+```{r, echo = F, out.width='55%'}
+knitr::include_graphics("images/efficiency.png")
+```
+
+???
+Efficiency = the ratio of the variance of XZ (controlling for X and Z) of a design to the best possible design (upper right corner). High efficiency is better; best efficiency is 1. 
+
+---
+
+### Efficiency
+
+.pull-left[
+If the optimal design has N obserations, then to have the same standard error (i.e., the same power), any other design needs to have N*(1/efficency). 
+
+So a design with .06 efficency needs $\frac{1}{.06} = 16.67$ times the sample size to detect the effect. 
+]
+
+.pull-right[
+![](images/common.png)
+]
+
+This particular point has been ["rediscovered"](https://statmodeling.stat.columbia.edu/2018/03/15/need-16-times-sample-size-estimate-interaction-estimate-main-effect/) as recently as 2018: 
+
+* you need 16 times the sample size to detect an interaction as you need for a main effect of the same size. 
+
+???
+
+This generalizes to higher-order interactions as well. If you have a three-way interaction, you need 16*16 (256 times the number of people). 
+
+---
+
+## Observational studies: What NOT to do
+
+Recode X and Z into more extreme values (e.g., median splits).
+
+* While this increases variance in X and Z, it also increases measurement error.
+
+Collect a random sample and then only perform analyses on the subsample with extreme values
+
+* Reduces sample size and also generalizability.
+    
+#### What can be done?
+M&J suggest oversampling extremes and using weighted and unweighted samples.
+
+---
+
+## Experimental studies: What NOT to do
+
+Forget about lack of external validity and generalizability.
+
+Ignore power when comparing interaction between covariate and experimental predictors (ANCOVA or multiple regression with categorical and continuous predictors).
+
+---
+
+class: inverse
+
+## Three-way interactions and beyond
+
+---
+
+
+### Three-way interactions (regression)
+
+**Regression equation**
+
+$$\hat{Y} = b_{0} + b_{1}X + b_{2}Z + b_{3}W + b_{4}XZ + b_{5}XW + b_{6}ZW + b_{7}XZW$$
+The three-way interaction qualifies the three main effects (and any two-way interactions). 
+
+Like a two-way interaction, the three-way interaction is a conditional effect.  And it is symmetrical, meaning there are several equally correct ways of interpreting it.
+
+**Factorial ANOVA**
+
+We describe the factorial ANOVA design by the number of levels of each factor. "X by Z by W" (e.g., 2 by 3 by 4, or 2x3x4)
+---
+A two-way  (A x B) interaction means that the magnitude of one main effect (e.g., A main effect) depends on levels of the other variable (B).  But, it is equally correct to say that the magnitude of the B main effect depends on levels of A. In regression, we refer to these as **conditional effects** and in ANOVA, they are called **simple main effects.**
+
+A three-way interaction means that the magnitude of one two-way interaction (e.g., A x B) depends on levels of the remaining variable (C). 
+
+It is equally correct to say that the magnitude of the A x C interaction depend on levels of B. Or, that the magnitude of the B x C interaction depends on levels of A. These are known as **simple interaction effects**.
+
+---
+### Example (regression)
+
+```{r, echo = F, message = F}
+set.seed(03032020)
+gender = sample(c("male", "female"), size = 150, replace = T)
+bad_day = sample(x = c(1:5), size = 150, replace = T)
+talk = round(2*(gender == "female") + .2*(bad_day) + rnorm(n = 150))
+talk = talk + 1
+talk[talk < 1] = 1
+talk[talk > 5] = 5
+stress = bad_day + talk - (bad_day*talk) + round(rnorm(n = 150, sd = 5))
+stress_m = bad_day + talk + (bad_day*talk)+ round(rnorm(n = 150, sd = 5))
+stress[gender == "male"] = stress_m[gender == "male"]
+stress = stress+1+abs(min(stress))
+
+stress_data = data.frame(gender, bad_day, talk, stress)
+write.csv(stress_data, file = here::here("data/stress2.csv"))
+```
+
+
+```{r}
+#stress_data = read.csv()
+# necessary for simple_slopes() function later
+stress_data$gender = as.factor(stress_data$gender) 
+
+#always check your data!
+psych::describe(stress_data, fast = T)
+table(stress_data$gender)
+```
+
+---
+
+```{r}
+mod_stress = lm(stress ~ bad_day*talk*gender, data = stress_data)
+summary(mod_stress)
+```
+
+---
+
+```{r, fig.width=10, fig.height = 6}
+library(sjPlot)
+plot_model(mod_stress, type = "pred", 
+           terms = c("bad_day", # x-axis
+                     "talk[meansd]", # color of lines
+                     "gender")) # facets
+```
+
+
+---
+
+```{r, message = F}
+library(reghelper)
+simple_slopes(mod_stress)
+```
+
+---
+
+```{r, message = F}
+# choose levels of the moderator to test
+mylist = list(gender = c("male", "female"),
+              talk = c(1.4, 2.6, 3.8))
+simple_slopes(mod_stress, levels = mylist)
+```
+
+---
+
+As a reminder, centering will change all but the highest-order terms in a model. 
+
+```{r}
+stress_c = stress_data %>%
+  mutate(
+    across( c(bad_day, talk) , ~.x-mean(.x) )
+    )
+
+mod_c = lm(stress ~ bad_day*talk*gender, data = stress_c)
+```
+
+---
+```{r}
+library(broom)
+tidy(mod_stress)
+```
+```{r}
+tidy(mod_c)
+```
+
+
+---
+### Four-way? 
+
+
+$$
+\begin{aligned}
+\hat{Y} &= b_0 + b_1X + b_{2}Z + b_{3}W + b_{4}Q + b_{5}XW\\
+&+ b_{6}ZW + b_{7}XZ + b_{8}QX + b_{9}QZ + b_{10}QW\\
+&+ b_{11}XZQ + b_{12}XZW + b_{13}XWQ + b_{14}ZWQ + b_{15}XZWQ\\
+\end{aligned}
+$$
+
+--
+
+3-way (and higher) interactions are incredibly difficult to interpret, in part because they represent incredibly complex processes. 
+
+If you have a solid theoretical rationale for conducting a 3-day interaction, be sure you've collected enough subjects to power your test (see above). 
+
+---
+
+Especially with small samples, three-way interactions may be the result of a few outliers skewing a regression line. If you have stumbled upon a three-way interaction during exploratory analyses, **be careful.** This is far more likely to be a result of over-fitting than uncovering a true underlying process.
+
+Best practice for 3-way (and higher) interactions is to use at least one nominal moderator (ideally with only 2 levels), instead of all continuous moderators. This allows you to examine the 2-way interaction at each level of the nominal moderator.
+
+Even better if one of these moderators is experimenter manipulated, which increases the likelihood of balanced conditions. 
+
+
+---
+
+class: inverse
+
+## Next time...
+
+Polynomials and bootstrapping
