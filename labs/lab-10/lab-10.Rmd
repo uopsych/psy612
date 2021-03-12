@@ -146,7 +146,11 @@ get_r2 <- function(d, i){ # calling data d; calling index i
 
 
 # Running `boot()` {#runBoot}
-Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Let's go ahead and give it a try. We set (in order) the `data`, `statistic`, and `R` arguments
+Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Let's go ahead and give it a try. We set (in order) the `data`, `statistic`, and `R` arguments.
+
+- The data argument is where we provide the name of the dataset.
+- The statistic argument is where we provide the name of our function for indexing from the dataset, running the linear model, and extracting r^2 values from each model. The statistic function generates a set of random indices with replacement from the integers 1:nrow(data).
+- R is the number of times that we want to sample with replacement
 
 ```{r}
 set.seed(227) # don't forget to set.seed()
