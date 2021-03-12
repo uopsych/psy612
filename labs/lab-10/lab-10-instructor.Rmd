@@ -12,8 +12,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-10/lab-10.Rmd).
-
 
 ```{r setup, include=FALSE}
 # suppress scientific notation
@@ -340,6 +338,82 @@ Using the same dataset we used here, calculate bootstrapped estimates of *adjust
 3. Happiness on Extraversion, Positive Expressivity, & Social Support   
 4. Happiness on Extraversion, Positive Expressivity, Optimism, & Social Support   
 5. Happiness on Extraversion, Positive Expressivity, Optimism, Social Support, & Exercise  
+```{r}
+get_r2 <- function(d, i, formula){ # calling data d; calling index i
+  d2 <- d[i,] # subset data using the i argument
+  m <- lm(formula, data = d2) # this changed; now it runs 
+                              # whatever model we setup 
+                              # in the formula argument
+  rsq <- summary(m)$adj.r.squared # extract r^2
+  return(rsq) # return r^2
+}
+
+set.seed(671)
+boot_adjr2_model1 <- boot(df,     # data
+                       get_r2, # function
+                       formula = happiness ~ extraversion, # formula
+                       R = 1000) # resamples
+set.seed(028383)
+boot_adjr2_model2 <- boot(df,     # data
+                       get_r2, # function
+                       formula = happiness ~ extraversion + pos_express, # formula
+                       R = 1000) # resamples
+
+set.seed(5421)
+boot_adjr2_model3 <- boot(df,     # data
+                       get_r2, # function
+                       formula = happiness ~ extraversion + pos_express + 
+                         soc_sup, # formula
+                       R = 1000) # resamples
+
+set.seed(6777)
+boot_adjr2_model4 <- boot(df,     # data 
+                       get_r2, # function
+                       formula = happiness ~ extraversion + pos_express + 
+                         soc_sup + optimism, # formula
+                       R = 1000) # resamples
+
+set.seed(9148)
+boot_adjr2_model5 <- boot(df,     # data
+                       get_r2, # function
+                       formula = happiness ~ extraversion + pos_express + 
+                         soc_sup + optimism + exercise, # formula
+                       R = 1000) # resamples
+
+adjr2_model1_results <- tibble(rsq = boot_adjr2_model1$t,
+                            predictors = "Extr.")
+
+adjr2_model2_results <- tibble(rsq = boot_adjr2_model2$t,
+                            predictors = "Extr. + Pos. Expr.")
+
+adjr2_model3_results <- tibble(rsq = boot_adjr2_model3$t,
+                            predictors = "Extr. + Pos. Expr. + Soc. Supp.")
+
+adjr2_model4_results <- tibble(rsq = boot_adjr2_model4$t,
+                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
+
+adjr2_model5_results <- tibble(rsq = boot_adjr2_model5$t,
+                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
+
+adjr2_all_models <- adjr2_model1_results %>% # row bind each df
+  rbind(adjr2_model2_results) %>% 
+  rbind(adjr2_model3_results) %>% 
+  rbind(adjr2_model4_results) %>% 
+  rbind(adjr2_model5_results) %>% 
+  group_by(predictors) %>% # group by predictors since we want a median and CI per model
+  mutate(median = median(rsq),
+         lower = quantile(rsq, probs = .025),
+         upper = quantile(rsq, probs = .975))
+
+  ggplot(adjr2_all_models,
+         aes(x = predictors, y = rsq)) + # predictors on the x, rsq on the y
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper)) + # geom_linerange
+  geom_hline(yintercept = 0, color = "red") + # set a red line at 0
+  coord_flip() + # this flips the coordinates, which is useful when you have longer x-axis labels
+    labs(x = NULL, # remove x axis label
+         y = expression(paste(R^{2}, " (with bootstrapped 95% CIs)"))) + # label Y
+  theme_minimal()
+```
 
 ## Minihack 2
 
@@ -351,3 +425,66 @@ Get bootstrapped estimates of correlations between:
 4. Extraversion and exercise   
 
 Then, plot these alongside one another using one of the methods covered today.
+
+```{r}
+get_r <- function(d, i, vars){ # calling data d; calling index i
+  d2 <- d[i,] # subset data using the i argument
+  r <- cor(d2[,vars])
+  return(r) # return r
+}
+
+set.seed(671)
+cor_extr_posexp <- boot(df,     # data
+                       get_r, # function
+                       vars = c("extraversion", "pos_express"), # formula
+                       R = 1000) # resamples
+set.seed(123)
+cor_extr_socsup <- boot(df,     # data
+                       get_r, # function
+                       vars = c("extraversion", "soc_sup"), # formula
+                       R = 1000) # resamples
+
+set.seed(5634)
+cor_extr_opt <- boot(df,     # data
+                       get_r, # function
+                       vars = c("extraversion", "optimism"), # formula
+                       R = 1000) # resamples
+
+set.seed(0398)
+cor_extr_exer <- boot(df,     # data
+                       get_r, # function
+                       vars = c("extraversion", "exercise"), # formula
+                       R = 1000) # resamples
+
+
+cor_extr_posexp_results <- tibble(r = cor_extr_posexp$t,
+                            vars = "r(Extr., Pos. Expr.)")
+
+cor_extr_socsup_results <- tibble(r = cor_extr_socsup$t,
+                            vars = "r(Extr., Soc. Supp.)")
+
+cor_extr_opt_results <- tibble(r = cor_extr_opt$t,
+                            vars = "r(Extr., Opt.)")
+
+cor_extr_exer_results <- tibble(r = cor_extr_exer$t,
+                            vars = "r(Extr., Exercise)")
+
+cor_all <- cor_extr_posexp_results %>% # row bind each df
+  rbind(cor_extr_socsup_results) %>% 
+  rbind(cor_extr_opt_results) %>% 
+  rbind(cor_extr_exer_results) %>% 
+  group_by(vars) %>% # group by predictors since we want a median and CI per model
+  mutate(median = median(r),
+         lower = quantile(r, probs = .025),
+         upper = quantile(r, probs = .975))
+
+ggplot(cor_all,
+       aes(x = vars, y = r)) + # predictors on the x, rsq on the y
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper)) + # geom_linerange
+  geom_hline(yintercept = 0, color = "red") + # set a red line at 0
+  coord_flip() + # this flips the coordinates, which is useful when you have longer x-axis labels
+  labs(x = NULL, # remove x axis label
+       y = "zero-order r (with bootstrapped 95% CIs)") + # label Y
+  theme_minimal()
+```
+
