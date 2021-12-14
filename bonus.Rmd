@@ -67,6 +67,8 @@ Patil (2020) ["ggstatsplot"](https://indrajeetpatil.github.io/ggstatsplot/index.
 
 Dunn & Smyth (2019) [Generalized Linear Models With Examples in R](https://link.springer.com/book/10.1007/978-1-4419-0118-7) -- if you're looking for a supplemental (free, online) textbook to cover general and generalized linear models, I highly recommend this one. It includes useful tidbits, like [coding factors](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_1#Sec4), an expansion on the [matrix algebra notation](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec13) for multiple regression, and an extended section on the [R code](https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec39) useful for linear models. Plus, it expands to cases we don't cover in class. 
 
+Gelman posted a document containing [Tips for improving regression](https://statmodeling.stat.columbia.edu/wp-content/uploads/2020/07/raos_tips.pdf) on his blog, but I can't find the original citation. It may be from one of his own works or from someone else's. Let me know if you figure it out!
+
 ## On causality, confounds, colliders, and controls
 
 Simonsohn (2019) [Interaction effects need interaction controls.](http://datacolada.org/80)

@@ -1,18 +1,18 @@
 lectures overall
 * add 60 second break in the middle 
 * email students -- share FYP for class?
-
-course website:
-* include in required materials: LaTex
-* Add link to this: https://statmodeling.stat.columbia.edu/wp-content/uploads/2020/07/raos_tips.pdf
+* more in-class activities (breakout groups like simple slope drawings)
+* make a flow chart or organization for material? See example shared by S Lieber
 
 labs overall
 * show only broom and kable for creating table summaries throughout
 * in lab 9, show them papaja in depth (add links to other options, like stargazer, apaTables, and sjPlot to just create tables in Word)
 * incorporate in-text R code to summarize results throughout 
 * most useful to teach from R, not from html output
+* should we replace papaja with data cleaning (for loops, functions, regular expressions, etc)
 
 final-project.html
+* add descriptive statistics back in?
 
 1-correlation.html
 - use t or z for statistical test?
@@ -123,8 +123,16 @@ lab-8.html
 15-interactions.html
 * write out equations on the screen 
 
-17-interactions.html
-* take out sjPlot main effects
+16-18-factorial.html
+* keep venn diagrams in sums of squares
+* give examples for when to use different SS
+* switch order of simple slope examples
+
+19-interactions.html
+* blank slides
+
+20-poly-boot.html
+* keep -- when do I use this!
 
 lab-9.html
-* we will NOT troubleshoot installing papaja at the beginning of this lab
+* short and straightfoward -- good for this lab. 

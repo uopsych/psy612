@@ -1,5 +1,5 @@
 ---
-title: 'Polynomials and Bootstrapping'
+title: 'Polynomials and bootstrapping'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -10,7 +10,6 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
-
 
 
 ```{r, echo=F, message=FALSE, warning=FALSE}
