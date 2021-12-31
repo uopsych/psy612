@@ -7,53 +7,30 @@ output:
   pdf_document:
     toc: yes
 ---
-```{r setup, include=FALSE}
-key = TRUE
-knitr::opts_chunk$set(echo = key, eval = key)
-library(tidyverse)
-```
 
 # Instructions
 
-Please complete this assignment using the RMarkdown file provided [Link to Rmarkdown file here]. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-2.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+Please complete this assignment using the RMarkdown file provided. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-1.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
 
-To receive full credit on this homework assignment, you must earn **15 points**. You may notice that the total number of points available to earn on this assignment is 34 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 15 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
+To receive full credit on this homework assignment, you must earn **30 points**. You may notice that the total number of points available to earn on this assignment is 65 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 30 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
 
 1. Points are all-or-nothing, meaning you cannot receive partial credit if you correctly answer only some of the bullet points for a question. All must be answered correctly.
 
 2. After the homework has been graded, you may retry questions to earn full credit, but you may only retry the questions you attempted on the first round. 
 
-3. The first time you complete this assignment, it must be turned in by 9am on the due date (February 5). Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+3. The first time you complete this assignment, it must be turned in by 9am on the due date. Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 27 points, the assignment will receive 13.5 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points.
 
 4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
-**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find five variables: 
-
+**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find four variables: 
   - id - numeric, refers to participant ID
-  - Anxiety - participant's average levels of anxiety over a week
-  - Stress -- the participant's average level of stress over a week
+  - Anxiety - participant's average levels of anxiety over a week; Stress -- the participant's average level of stress over a week
   - Support -- the participant's perceived social support over a week
   - group -- categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week. 
 
-# 3-point questions
+# 2-point Questions
 
-### Question 1
-
-Use the `homework-anxiety` data. Fit a model with Stress as the outcome and Anxiety as the predictor. Use it to answer the following questions:
-
-* Write the estimated regression equation that links Anxiety to Stress. 
-
-* Interpret each of the coefficients. Be sure to include both an explanation of what each number means -- e.g., "the intercept is equal to 10, which refers to the expected...." -- and an interpretation of the significance test.
-
-* How much of the variance in Stress can be explained by this model?
-
-### Question 2
-
-* Use the `homework-anxiety` data. Run a regression with Social Support (X) predicting Anxiety (Y). Then run a regression with Anxiety predicting Social Support. What is similar and different between these analyses?
-
-* For the rest of the problems, use just the model with Anxiety as the outcome. Using the anova function for the model output, calculate $R^2$ "by hand" using numbers in the anova table.
-
-### Question 3
+## Question 1
 
 Use the `homework-anxiety` data. You'll need the functions `pcor.test` and `spcor.test` in the `ppcor` package. 
 
@@ -61,11 +38,41 @@ Use the `homework-anxiety` data. You'll need the functions `pcor.test` and `spco
 
 * Calculate the semi-partial correlation of Stress and Anxiety controlling for Support. Treat Stress as the outcome. (Note that the spcor function removes partials variance from the second variable in the function, labeled `y`. You're being asked to remove variance from your predictor, Anxiety). Interpret this correlation and its significance. What do you learn when you compare this correlation to the zero-order correlation?
 
+## Question 2
+
 * Calculate the partial correlation of Stress and Anxiety controlling for support. Treat Stress as the outcome. Interpret this correlation and its significance. What do you learn when you compare this correlation to the semi-partial correlation?
 
-# 5-point questions
+## Question 3
 
-### Question 1
+
+Using the data `homework-happy_d`, create a regression model predicting happiness from friendship quality, SES, and school success. Interpret each regression coefficient. 
+
+## Question 4
+
+Calculate the standardized regression coefficients (b*) for the model above. You can use whatever method you would like.
+
+
+## Question 5
+
+You are testing the efficacy of multiple intervention programs on school success. Your research design includes three groups: a control group, a tutoring program, and a study group program. You analyze your data and report the results:
+
+```{r, message = F}
+library(tidyverse)
+library(janitor)
+happy_d = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/homework/homework-happy.csv")
+happy_d = clean_names(happy_d)
+mod2.3 = lm(school_success ~ intervention_group, data = happy_d)
+anova(mod2.3)
+```
+
+You show these results to your adviser, who hasn't had any coffee yet today. They glance briefly at your Markdown output and say, "You did this wrong. Do it again." Before they can explain how to fix the code, their dog starts barking. They mutter something under their breath, say, "Gotta deal with the dog. I'll see you next week," and end the Zoom meeting. 
+
+Fix the code above to generate the correct analysis for this research question.
+
+
+# 5-point Questions
+
+## Question 1
 
 Use the `homework-anxiety` data. Fit a model with Stress as the outcome and Support as the predictor. Use it to answer the following questions:
 
@@ -77,19 +84,54 @@ Use the `homework-anxiety` data. Fit a model with Stress as the outcome and Supp
 
 ## Question 2
 
-*t*-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0's and 1's. 0's correspond to a reference group and 1's correspond to the other group. 
+You're interested in studying the joint and combined influence of school success, ses, and friendship quality on the happiness of adolescents. Using the dataset `homework-happy_d`, build three regression models. Each model should use happiness as the outcome variable and be nested within the subsequent model. That is, you should with one predictor and add one additional predictor at a time. 
 
-* Using the `homework-anxiety`, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?
+* Justify the choices you made in building your models: How did you decide what order to add the variables?
 
-* Create your own variable inside the `homework-anxiety` data frame of 1's and 0's that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?
+* Formally (statistically) compare these models. What do you conclude?
 
-* Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?
 
-* Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).
+## Question 3
 
-# 15-point questions
+Using the dataset `homework-happy_d`, create a regression model predicting happiness from friendship quality, SES, and school success; be sure to save the output to an object.
 
-### Question 1
+Load the `sjPlot` package and run through the following code. Interpret each figure along the way. (As a general hint: you'll want to open the help page for this function or use Google to find tutorials online.)
+
+* Enter your model object into the function `plot_model` and set the argument `type = "est"`. What does this plot represent?
+
+* Enter your model object into the function `plot_model` and set the argument `type = "std"`. What does this plot represent?
+
+* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = "school_success"` (or whatever the name of your school success variable is). What does this plot represent?
+
+* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = c("school_success", "ses[meansd]"` (or whatever the name of your school success and SES variables are). What does this plot represent? (Hint, think about the regression plane....)
+
+
+# 10-point Questions
+
+## Question 1
+
+Using the dataset `homework-happy_d`, run a three-predictor regression predicting happiness by friendship quality, SES, and school success. 
+
+Check each of the six assumptions discussed in class. List each assumption and state how you examined (or would examine) that assumption. Note that not every aassumption can be directly examined, but all should be addressed. Include plots where applicable and be sure to _interpret your output_. 
+
+
+## Question 2
+
+Use the `homework-world` dataset for this question. This dataset contains 7 variables of interest: happiness, gross domestic product, support, life expectancy, freedom, generosity, and corruption. 
+
+* Conduct an analysis of variance (use the `aov()` function) for each of the measures, using country development status (`world`) as the grouping variable. In a table, report the degrees of freedom, _F_-statistic, and _p_-value for each analysis (one row for each analysis). Make sure this table is formatted nicely, i.e., not just R output. I recommend `kable` from the `knitr` package, but there are many good options available.
+
+* If the _F_-test is significant for an analysis, conduct follow-up pairwise comparisons using a Holm correction. Report these in a table (one table per analysis).  Make sure these tables are formatted nicely.
+
+* Recall that the ANOVA model has the same homogeneity of variance assumption as the independent samples _t_-test. Assess the homogeneity of variance assumption for each of the outcome measures (use the `leveneTest()` function). Report these results in a single table and comment on whether this assumption is satisfied for each measure.
+
+* If we cannot assume homogeneity of variance when using a (Student's) independent samples _t_-test, we run a Welch's _t_-test, which doesn't have this assumption (but has lower power). There is an analogous test in the ANOVA framework, called the Welch's one-way test. Re-run the analyses of variance, but now use the Welch one-way test (use the `oneway.test() function`). Report these results in a single table.  Make sure this table is formatted nicely. Comment on whether any conclusions about group differences change compared to the original ANOVAs.
+
+**Earn 5 additional points:** For those looking to stretch your `R` skills a bit, you can earn additional points by completing this problem using iteration. Here's what that means: you'll see this problem asks you to run multiple ANOVA tests. Instead of hard coding these or writing each test out by hand, write code that applies a single function or set of code to each outcome variable. To accomplish this, you might look into the various apply functions (`apply`, `sapply`, and `lapply`), but I would recommend diving into the world of `purrr`. These analyses can be completed elegantly with the use of `gather` and `map`. [This tutorial](https://emoriebeck.github.io/R-tutorials/purrr/) is a nice starting place, but you should expect to do a bit of independent learning. To earn these bonus points, you'll need to use iteration on all parts of this problem except for the pairwise comparisons. (Unless you want to try that too!)
+
+# 20-point Questions
+
+## Question 1
 
 In PSY 611 we discussed the problem of p-hacking, which can arise in quite a number of ways. While we have not spent much time talking about p-hacking this term, regression models are just as susceptible to p-hacking. In fact, there are be additional tools researchers can exploit to generate significant p-values. 
 
@@ -110,3 +152,6 @@ One strategy would be to use an outer loop to index the 10,000 scenarios and an 
 * Repeat the scenario above, but without the addition of any covariates. Construct a histogram that shows the distribution of final p-values for the 10,000 studies. What do you conclude about the distribution of p-values when the null hypothesis is true and the researcher is not p-hacking?
 
 * Finally, repeat the scenario above (no p-hacking), but using an X and a Y that are associated with each other. (Hint: A regression equation may be especially helpful here.) Construct a histogram that shows the distribution of final p-values for the 10,000 studies. 
+
+
+

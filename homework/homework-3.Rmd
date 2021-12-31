@@ -10,88 +10,140 @@ output:
 
 # Instructions
 
-Please complete this assignment using the RMarkdown file provided [Link to Rmarkdown file here]. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-3.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+Please complete this assignment using the RMarkdown file provided. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-1.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
 
-To receive full credit on this homework assignment, you must earn **15 points**. You may notice that the total number of points available to earn on this assignment is 34 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 15 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
+To receive full credit on this homework assignment, you must earn **30 points**. You may notice that the total number of points available to earn on this assignment is 65 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 30 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
 
 1. Points are all-or-nothing, meaning you cannot receive partial credit if you correctly answer only some of the bullet points for a question. All must be answered correctly.
 
 2. After the homework has been graded, you may retry questions to earn full credit, but you may only retry the questions you attempted on the first round. 
 
-3. The first time you complete this assignment, it must be turned in by 9am on the [due date](https://uopsych.github.io/psy612/schedule.html). Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+3. The first time you complete this assignment, it must be turned in by 9am on the due date. Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 27 points, the assignment will receive 13.5 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points.
 
 4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
-**Data:**  
+**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find four variables: 
+  - id - numeric, refers to participant ID
+  - Anxiety - participant's average levels of anxiety over a week; Stress -- the participant's average level of stress over a week
+  - Support -- the participant's perceived social support over a week
+  - group -- categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week. 
 
--`homework-happy`: The dataset looks at happiness in college as a relationship with school success, friendship quality, socioeconomic status, and an intervention group (1 = control, 2 = study skills training, 3 = social skills training). (Note that the variable names have spaces in them, which may make it tricky to work with. You might consider renaming the variables.)
+Some questions refer to the dataset `homework-dawtry.csv` This dataset comes from Study 1a in the article by [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset. 
 
--`homework-world`: Remember this? These data from the World Happiness Survey, which we used in PSY 611. As a reminder, for each country we have the average response to the *happiness* ladder, the log of the *gross domestic product* per capita, the proportion of participants who believed they had friends and family they could count on, average *life* expectancy at birth, the proportion of participants satisfied with their *freedom*, the average amount donated to charity (*generosity*, residual, adjusting for GDP), the average response to two *corruption* items, and the country development status (first *world*, second world, third world, or other). 
+# 2-point Questions
 
-# 3-point questions
+## Question 1{#q2.1}
 
-## Question 1
+* Using the dataset `homework-happy`, run a two-predictor regression model predicting happiness by friendship and school success and the interaction between the two.
 
-Using the data `homework-happy_d`, create a regression model predicting happiness from friendship quality, SES, and school success. Interpret each regression coefficient. 
+* Describe your hypothesis for the interaction using the study variables (i.e., don't write a formula, but describe the hypothesis in words).
 
-## Question 2 
-
-Calculate the standardized regression coefficients (b*) for the model above. You can use whatever method you would like.
-
-## Question 3
-
-You are testing the efficacy of multiple intervention programs on school success. Your research design includes three groups: a control group, a tutoring program, and a study group program. You analyze your data and report the results:
-
-```{r, message = F}
-library(tidyverse)
-library(janitor)
-happy_d = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/homework/homework-happy.csv")
-happy_d = clean_names(happy_d)
-mod2.3 = lm(school_success ~ intervention_group, data = happy_d)
-anova(mod2.3)
-```
-
-You show these results to your adviser, who hasn't had any coffee yet today. They glance briefly at your Markdown output and say, "You did this wrong. Do it again." Before they can explain how to fix the code, their dog starts barking. They mutter something under their breath, say, "Gotta deal with the dog. I'll see you next week," and end the Zoom meeting. 
-
-Fix the code above to generate the correct analysis for this research question.
-
-# 5-point questions
-
-## Question 1
-
-Using the dataset `homework-happy_d`, create a regression model predicting happiness from friendship quality, ses, and school success; be sure to save the output to an object.
-
-Load the `sjPlot` package and run through the following code. Interpret each figure along the way. (As a general hint: you'll want to open the help page for this function or use Google to find tutorials online.)
-
-* Enter your model object into the function `plot_model` and set the argument `type = "est"`. What does this plot represent?
-
-* Enter your model object into the function `plot_model` and set the argument `type = "std"`. What does this plot represent?
-
-* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = "school_success"` (or whatever the name of your school success variable is). What does this plot represent?
-
-* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = c("school_success", "ses[meansd]"` (or whatever the name of your school success and SES variables are). What does this plot represent? (Hint, think about the regression plane....)
-
-* Enter your model object into the function `plot_model` and set the argument `type = "slope"`. What does this plot represent? 
+* Describe in words exactly what the coefficients $b_1$, $b_2$, and $b_3$ are telling us in this model. 
 
 ## Question 2
 
-Using the dataset `homework-happy_d`, run a three-predictor regression predicting happiness by friendship quality, SES, and school success. 
+Refer to the model built in [Question 2.1](#q2.1).
 
-Check each of the six assumptions discussed in class. List each assumption and state how you examined (or would examine) that assumption. Note that not every aassumption can be directly examined, but all should be addressed. Include plots where applicable and be sure to _interpret your output_. 
+Center the independent variables and re-estimate the model. Interpret the coefficient estimates. 
 
-# 10-point questions
+## Question 3
+
+Health researchers commonly acknowledge that cardiac arrest is caused by high levels of cholesterol. They also agree that cholesterol is caused by smoking and weight. Moreover, it is generally agreed that both the choice to smoke and choices that contribute to weight are caused by generally unhealthy life styles. (Note, these are not the only causal factors contributing to either smoking or weight, but we're trying to keep the example manageable, for a 2-point problem). Build a DAG model that represents these known relationships. What are the different paths that transmit associations from smoking to cardiac arrest?
+
+## Question 4
+
+* In the question above, what variables, if any should a researcher control for if they want to estimate the causal association between smoking and cardiac arrest?
+
+* Should the researcher control for cholesterol? Why or why not?
+
+## Question 5
+
+This question uses the dataset `homework-happy.` 
+
+* Construct a linear model to test whether friendship quality has a curvilinear relationship with happiness. Interpret the results.
+
+* Create a figure that plots the predicted values of happiness by friendship quality using the model you created above. Include in this figure the raw data points. Based on this figure, do you believe the model you fit above represents a real relationship or a methodological artifact?
+
+# 5-point Questions
 
 ## Question 1
 
-**Earn 5 additional points:** For those looking to stretch your `R` skills a bit, you can earn additional points by completing this problem using iteration. Here's what that means: you'll see this problem asks you to run multiple ANOVA tests. Instead of hard coding these or writing each test out by hand, write code that applies a single function or set of code to each outcome variable. To accomplish this, you might look into the various apply functions (`apply`, `sapply`, and `lapply`), but I would recommend diving into the world of `purrr`. These analyses can be completed elegantly with the use of `gather` and `map`. [This tutorial](https://emoriebeck.github.io/R-tutorials/purrr/) is a nice starting place, but you should expect to do a bit of independent learning. To earn these bonus points, you'll need to use iteration on all parts of this problem except for the pairwise comparisons. (Unless you want to try that too!)
+Refer to the model built in [Question 2.1](#q2.1).
 
-Use the `homework-world` dataset for this question. This dataset contains 7 variables of interest: happiness, gross domestic product, support, life expectancy, freedom, generosity, and corruption. 
+* Calculate three simple slope equations: the regression of Y on $X_1$ at the mean of $X_2$, at one standard deviation above the mean of $X_2$, and at one standard deviation below the mean of $X_2$. You choose which variable is the "moderator." Write out and interpret each of these simple slope equations. Include both the intercept and slope of these equations. 
 
-* Conduct an analysis of variance (use the `aov()` function) for each of the measures, using country development status (`world`) as the grouping variable. In a table, report the degrees of freedom, _F_-statistic, and _p_-value for each analysis (one row for each analysis). Make sure this table is formatted nicely, i.e., not just R output. I recommend `kable` from the `knitr` package, but there are many good options available.
+## Question 2
 
-* If the _F_-test is significant for an analysis, conduct follow-up pairwise comparisons using a Holm correction. Report these in a table (one table per analysis).  Make sure these tables are formatted nicely.
+Check the assumptions of the model built in [Question 2.1](#q2.1).
 
-* Recall that the ANOVA model has the same homogeneity of variance assumption as the independent samples _t_-test. Assess the homogeneity of variance assumption for each of the outcome measures (use the `leveneTest()` function). Report these results in a single table and comment on whether this assumption is satisfied for each measure.
 
-* If we cannot assume homogeneity of variance when using a (Student's) independent samples _t_-test, we run a Welch's _t_-test, which doesn't have this assumption (but has lower power). There is an analogous test in the ANOVA framework, called the Welch's one-way test. Re-run the analyses of variance, but now use the Welch one-way test (use the `oneway.test() function`). Report these results in a single table.  Make sure this table is formatted nicely. Comment on whether any conclusions about group differences change compared to the original ANOVAs.
+## Question 3{#q5.3}
+
+[Maglio & Polman (2014)](Maglio and Polman 2014.pdf) studied the psychological distance of objects (how far away we _feel_ an object is) in the context of the subway: How far away does a passenger on a train perceive a station to be? For their study, they recruited participants who were standing either on an eastbound or westbound platform of a specific subway station (Bay Street). All participants were asked how far away another station on the route feels on a scale from 1 (very close) to 7 (very far). Participants were randomly asked about one of four stations: Spadina (two stops to the west), St. George (one stop to the west), Bloor-Yonge (one stop to the east), or Sherbourne (two stops to the east).
+
+* What are the sample sizes for each group?
+
+* Run the factorial ANOVA from Experiment 1. Interpret the sums of squares and F-ratios.
+
+* What is the effect size associated with each of your terms? What is the $R^2$ for the model?
+
+* Conduct a series of post-hoc tests that address the following hypotheses (be sure to interpret):
+
+    * People standing on the eastbound side of the station perceive things as closer than people standing on the westbound side of the station.
+    * People perceive stations to the east as closer than stations to the west.
+    * People on the westbound side perceive Spadina as being closer than people on the Eastbound side.
+    
+* Graph the results in a manner that you think best conveys that data. Make sure you include 95% CIs. 
+
+
+# 10-point Questions
+
+## Question 1
+
+Refer to the dataset and model estimated in Question 5.3(#q5.3).
+
+* Run a power analysis to determine sample size needed for the effect sizes found in the model fit above. (Note: the `pwr` package is a nice one to use but be sure to use the glm/regression one, `pwr.f2.test`, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)
+
+* The power analysis above does not give you the power for detecting differences between two cell means. Find the number of subjects needed for power of .90 with an effect size difference of .4 between two cell means, assuming no corrections for Type 1 error. (Hint: .4 is an unstandardized effect size, but most power functions require a standardized effect size. Some of the equations covered in PSY 611 may be helpful here.)
+
+* Assume that the researchers had an additional variable, familiarity with the area, to use as a covariate. The reasoning is that people who know the area well may make better distance predictions than those that do not. How do you think this would impact the findings? Describe what would change in terms of your standard regression components (why and in what direction).
+
+## Question 2
+
+This question uses the dataset `homework-heath`. Health service clinicians have the following research hypotheses: 
+
+1. Any treatment is better than doing nothing.
+2. Medication is the most effective treatment overall.
+3. Freshmen suffer from more anxiety than upperclassmen, regardless of what is done for them to alleviate their anxiety.
+4. Upperclassmen, compared to freshmen, are better able to benefit from meditation. 5. Freshmen, by contrast, are likely to lapse into rumination during meditation, making their anxiety symptoms worse. Upperclassmen, compared to freshmen, are better able to benefit from exercise. Freshmen are less likely to see the stress-reduction benefits of exercise. Instead they see exercise as detracting from time that could be spend studying, producing even worse anxiety symptoms.
+
+* Conduct a factorial analysis of variance of the anxiety measure using class (freshmen, upperclassmen) and treatment condition (waiting list control, meditation, medication, cognitive behavior therapy, or exercise) as factors. Report a summary of the results (source of variance, df, SS, MS, F, and p) in a table.
+
+* Display in a graph the means and 95% confidence intervals for the 2 x 5 design.
+
+* Calculate $\eta^2$ and partial $\eta^2$ for the main effects and interaction. Report these in a table. Which sums of squares method did you use and why?
+
+* Conduct follow-up comparisons. Use some kind of adjustment to account for multiple comparisons. List the significant comparisons in a table.
+
+* Check the homogeneity of variance and normality assumptions. Are they met?
+
+* Given all that you learned from this analysis, comment on the support for each of the research hypotheses.
+
+
+# 20-point Questions
+
+### Question 1
+
+In class, we simulated the power to detect an interaction when X and Z were drawn from a normal distribution. However, in this simulation, we assumed that X and Z were uncorrelated. 
+
+* Repeat the simulations performed in class with the following changes:
+1. Include a third scenario in which X and Z are correlated with each other. 
+2. Vary the sample size -- specifically, run each experiment with 50 subjects, 100 subjects, 150 subject... up to 2000 subjects. 
+3. Simulate each version of each experiment 1,000 times, not 100 times. (So you should run 1,000 simulations for the experimental study with 50 subjects, and 1,000 simulations for the experimental study with 100 subjects, etc).
+
+Don't forget to set a seed so your results are reproducible.
+
+* For each scenario, calculate (a) the average effect size of the interaction and (b) the proportion of studies that found a significant effect. Display these results in a table. 
+
+* Create a figure that shows the relationship of power (i.e., the proportion of studies that found a significant effect) to sample size for each of the three scenarios. How many participants do you think you need to achieve 80% power for each of the three scenarios?
 

@@ -8,17 +8,23 @@ output:
     toc: yes
 ---
 
+```{r, include = F}
+knitr::opts_chunk$set(message = F, warning = F)
+library(tidyverse)
+```
+
+
 # Instructions
 
-Please complete this assignment using the RMarkdown file provided [Link to Rmarkdown file here]. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-1.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+Please complete this assignment using the RMarkdown file provided. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-1.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
 
-To receive full credit on this homework assignment, you must earn **15 points**. You may notice that the total number of points available to earn on this assignment is 27 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 15 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
+To receive full credit on this homework assignment, you must earn **30 points**. You may notice that the total number of points available to earn on this assignment is 65 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 30 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
 
 1. Points are all-or-nothing, meaning you cannot receive partial credit if you correctly answer only some of the bullet points for a question. All must be answered correctly.
 
 2. After the homework has been graded, you may retry questions to earn full credit, but you may only retry the questions you attempted on the first round. 
 
-3. The first time you complete this assignment, it must be turned in by 9am on the due date (January 22). Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 14 points, the assignment will receive 7 points. If you resubmit this assignment with corrected answers (a total of 15 points), the assignment will receive 7.5 points.
+3. The first time you complete this assignment, it must be turned in by 9am on the due date. Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totaling 27 points, the assignment will receive 13.5 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points.
 
 4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
@@ -30,19 +36,9 @@ To receive full credit on this homework assignment, you must earn **15 points**.
 
 Some questions refer to the dataset `homework-dawtry.csv` This dataset comes from Study 1a in the article by [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset. 
 
-# 3-point questions
+# 2-point Questions
 
-### Question 1
-
-You are contacted by the Dean's office. They ran a correlation between UO undergraduate SAT scores and happiness and found a correlation of r = .21061 with a sample of $N = 600$. They want to know if this is lower than a published meta-analytic estimate (.2554)? 
-
-* Is the correlation found in the UO sample significantly different from the population parameter? Do this "by hand". Treat the meta-analytic estimate as the "population."
-
-* Calculate a 95% confidence interval around the estimate correlation "by hand." 
-
-* What would the 95% confidence interval around this estimate be if the sample size were only $N = 60$?
-
-### Question 2{#q3.2}
+## Question 1{#q2.1}
 
 | X | Y  |
 |---|----|
@@ -62,30 +58,78 @@ You are contacted by the Dean's office. They ran a correlation between UO underg
 | 4 | 8  |
 | 4 | 3  |
 
+Calculate the correlation between X and Y. 
+
+## Question 2
+
+Using the `homework-dawtry` dataset, answer the following questions:
+
+* What is the correlation between age and the mean income of one's social circle?
+
+* Is that correlation statistically significant?
+
+* Use the `corrplot` package to create a figure of the correlation matrix of the variables in the dataset. Describe one thing you find interesting in this figure. 
+
+## Question 3
+
+You are contacted by the Dean's office. They ran a correlation between UO undergraduate SAT scores and happiness and found a correlation of r = .21061 with a sample of $N = 600$. They want to know if this is lower than a published meta-analytic estimate (.2554)? 
+
+* Is the correlation found in the UO sample significantly different from the population parameter? Do this "by hand". Treat the meta-analytic estimate as the "population."
+
+* Calculate a 95% confidence interval around the estimate correlation "by hand." 
+
+* What would the 95% confidence interval around this estimate be if the sample size were only $N = 60$?
+
+## Question 4
+
+You are given data with two variables, X and Y. The mean of X is 3 with a SD .75. Y has a mean of 4 with a SD of .50. The correlation between the two is r = .3. 
+
+* "By hand", calculate the regression equation. Interpret each term in equation.
+
+* "By hand," convert the equation into a standardized regression equation. Interpret each term.
+
+## Question 5
+
+Refer to the data provided in [Question 2.1](#q2.1).
+
 * Calculate the unstandardized regression equation (use Y as the outcome). You may use whatever functions you want.
 
 * Calculate the standardized regression equation. You may use whatever functions you want.
 
-### Question 3
+# 5-point Questions
 
-Refer to the data provided in [Question 3.2](#q3.2).
-
-* Use the average product of z-scores method to calculate the correlation between x and y. How does this compare to the result of the cor() function? 
-
-* Why do you think these differ? (Hint: is there a component of the z-score calculation that be computed with two different formulas?)
-
-* Change your code in such a way that the product of z-scores does in fact equal the correlation between x and y. 
-
-
-# 5-point questions
-
-### Question 1
+## Question 1
 
 * Given a sample size of 40 participants, what is the smallest correlation we are able to detect as being significantly different from 0? Use a two-tailed test and $\alpha = .05$. (Do not use the `pwr` package for this problem -- there is an answer that does not depend on power.)
 
 * Given a sample size of 40 participants, what is the smallest correlation we are able to detect as being significantly different from .3? Use a two-tailed test and $\alpha = .05$. (Do not use the `pwr` package for this problem -- there is an answer that does not depend on power.)
 
-### Question 2
+## Question 2
+
+Refer to the data provided in [Question 2.1](#q2.1).
+
+* Use the average product of z-scores method to calculate the correlation between x and y. How does this compare to the result of the cor() function? 
+
+* Why do you think these differ? (Hint: is there a component of the z-score calculation that be computed with two different formulas?)
+
+* Change your code in such a way that the product of z-scores does in fact equal the correlation between x and y.
+
+
+## Question 3 
+
+* Use the `homework-anxiety` data. Run a regression with Social Support (X) predicting Anxiety (Y). Then run a regression with Anxiety predicting Social Support. What is similar and different between these analyses?
+
+* Graph the regression with Anxiety as the DV. Include a confidence band and raw data points. Be sure your figure includes a title and caption.
+
+* For the regression of Social Support predicting Anxiety, correlate the fitted values with: a. residuals, b. Social Support, c., Anxiety. Explain the patterns you find.
+
+* Using the anova function for the model output, calculate R squared "by hand" using numbers in the anova table.
+
+* For the same model, interpret the residual standard error.
+
+# 10-point Questions
+
+## Question 1 
 
 Choices that individuals make in the voting booth, such as whether to support a more conservative or liberal candidate, may be affected by a number of factors. In their research, Beall, Hofer, and Schaller (2016) sought to examine the role of outbreaks of infectious diseases on voting behavior. The authors hypothesized that an outbreak of a disease, such as Ebola, may increase support for more conservative political candidates. To test this hypothesis, the authors examined the frequency of Google searches for “Ebola” during the weeks prior to and after the outbreak of Ebola that occurred in 2014. The authors also examined support for the conservative Republican party in the US.
 
@@ -95,11 +139,9 @@ There are some missing values in the output, labeled with red letters. Complete 
 
 ![](beall_output.png)
 
-# 10-point questions
+## Question 2
 
-### Question 1
-
-* Using the data from [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), replicate the correlation matrix part of Table 1. (Note: you will have to create at least one composite to do so, and some of the items may need to be reverse scored.)
+* Using the data from [Dawtry et al. (2015)](Dawtry et al 2015 PS.pdf)), replicate the correlation matrix part of Table 1. (Note: you will have to create at least one composite to do so, and some of the items may need to be reverse scored.)
 
 * Calculate the means and standard deviations for Table 1 variables.
 
@@ -107,4 +149,19 @@ There are some missing values in the output, labeled with red letters. Complete 
 
 * Run a regression where political preferences predict redistribution. Interpret the intercept, the regression coefficient and $R^2$. Then create a scatter plot with a best fit line between redistribution and political preference variables. Be sure your figure includes a title and a caption.
 
-* Dichotomize the political preferences data into a dichotomous conservative and liberal variable, assuming the midpoint is conservative. Then run a linear model with this new binary variable predicting redistribution. What are the conceptual differences between the regression in #5 and #6. Which one would you prefer?
+* Dichotomize the political preferences data into a dichotomous conservative and liberal variable, assuming the midpoint is conservative. Then run a linear model with this new binary variable predicting redistribution. What are the conceptual differences between the two regression models. Which one would you prefer?
+
+
+# 20-point Questions
+
+## Question 1
+
+*t*-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0's and 1's. 0's correspond to a reference group and 1's correspond to the other group. 
+
+* Using the `homework-anxiety`, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?
+
+* Create your own variable inside the `homework-anxiety` data frame of 1's and 0's that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?
+
+* Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?
+
+* Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).
