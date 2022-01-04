@@ -16,7 +16,7 @@ For additional review of correlation and regression beyond the assigned textbook
 
 [Chapter 1. **Introduction.**](readings/CCWA_ch1.pdf) 
   - Multiple regression/correlation as a general data-analytic system
-  - A comparisons of multiple regression/correlation and analysis of variance approaches
+  - A comparison of multiple regression/correlation and analysis of variance approaches
   - Multiple regression/correlation and the complexity of behavioral sciences
   - Orientation of the book
   - Computation, the computer, and numerical results
@@ -42,14 +42,14 @@ For additional review of correlation and regression beyond the assigned textbook
   - Multiple regression/correlation with _k_ independent variables
   - Statistical inference
   - Precision and power
-  - Equations and predition
+  - Equations and prediction
   
 
 ## On coding and data science
 
 Peters (2004) ["The Zen of Python."](https://www.python.org/dev/peps/pep-0020/) -- A list of 19 principles for writing better Python code; the principles also apply to writing better R code. 
 
-Hill (2019) ["Meet xaringan."](https://arm.rbind.io/slides/xaringan.html#1) -- There are a ton of resource for learning how to make slides using R. Too many to list here. I like this one because it's accessible, funny, visually appealing, and will help you make slides that you're proud of. (By the way, UO has theme you can use.)
+Hill (2019) ["Meet xaringan."](https://arm.rbind.io/slides/xaringan.html#1) -- There are a ton of resources for learning how to make slides using R. Too many to list here. I like this one because it's accessible, funny, visually appealing, and will help you make slides that you're proud of. (By the way, UO has theme you can use.)
 
 Bryan (2019) ["Happy Git with R."](https://happygitwithr.com) -- Interested in using GitHub for version control? Jenny Bryan will guide you through the process and metaphorically hand you a tissue when you're screaming with frustration.
 
