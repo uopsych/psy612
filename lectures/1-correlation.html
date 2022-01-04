@@ -434,6 +434,8 @@ If we want to make calculations around correlation values that are not equal to 
 $$ SE_z = \frac{1}{\sqrt{N-3}}$$
 
 `$$\large r = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$`
+**Note:** Calculations using the Fisher r-to-z' transformation conventionally use the standard normal `\((z)\)` distribution as the sampling distribution. 
+
 ---
 
 ### Example
@@ -447,17 +449,17 @@ In a sample of 42 students, you calculate a correlation of 0.44 between hours sp
 `$$z = {\frac{1}{2}}ln{\frac{1+.44}{1-.44}} = 0.47$$`
 `$$SE_z = \frac{1}{\sqrt{42-3}} = 0.16$$`
 
-`$$CI_{Z_{LB}} = 0.47-(2.021)0.16 = 0.15$$`
+`$$CI_{Z_{LB}} = 0.47-(1.96)0.16 = 0.16$$`
 
-`$$CI_{Z_{UB}} = 0.47+(2.021)0.16 = 0.8$$`
+`$$CI_{Z_{UB}} = 0.47+(1.96)0.16 = 0.79$$`
 ]
 
 ---
 
 .pull-left[
-`$$CI_{r_{LB}} = {\frac{e^{2(0.15)}-1}{e^{2(0.15)}+1}} = 0.15$$`
+`$$CI_{r_{LB}} = {\frac{e^{2(0.16)}-1}{e^{2(0.16)}+1}} = 0.16$$`
 
-`$$CI_{r_{UB}} = = {\frac{e^{2(0.8)}-1}{e^{2(0.8)}+1}} = 0.66$$`
+`$$CI_{r_{UB}} = {\frac{e^{2(0.79)}-1}{e^{2(0.79)}+1}} = 0.66$$`
 
 These formulas are easy to mistype in R -- use the `psych` package and its functions `fisherz()` and `fisherz2r()` to save time and reduce human error. 
 
@@ -485,12 +487,12 @@ se = 1/( sqrt(42-3) )
 ```
 
 ```r
-ct = qt(p = .975, df = N-2, lower.tail = T)
-lbz = z_r - ( se*ct )
+cv = qnorm(p = .975, lower.tail = T)
+lbz = z_r - ( se*cv )
 ```
 
 ```
-## [1] 0.1485997
+## [1] 0.1583854
 ```
 
 ```r
@@ -498,7 +500,7 @@ lbz = z_r - ( se*ct )
 ```
 
 ```
-## [1] 0.1475155
+## [1] 0.1570741
 ```
 
 ]

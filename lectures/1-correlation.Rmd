@@ -563,6 +563,8 @@ data.frame(r,z) %>%
 $$ SE_z = \frac{1}{\sqrt{N-3}}$$
 
 $$\large r = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$
+**Note:** Calculations using the Fisher r-to-z' transformation conventionally use the standard normal $(z)$ distribution as the sampling distribution. 
+
 ---
 
 ### Example
@@ -574,9 +576,9 @@ r = .44
 N = 42
 z = fisherz(r)
 se = 1/(sqrt(N-3))
-ct = qt(p = .975, df = N-2, lower.tail = T)
-lbz = z-(se*ct)
-ubz = z+(se*ct)
+cv = qnorm(p = .975, lower.tail = T)
+lbz = z-(se*cv)
+ubz = z+(se*cv)
 lb = fisherz2r(lbz)
 ub = fisherz2r(ubz)
 ```
@@ -586,9 +588,9 @@ ub = fisherz2r(ubz)
 $$z = {\frac{1}{2}}ln{\frac{1+.44}{1-.44}} = `r round(z,2)`$$
 $$SE_z = \frac{1}{\sqrt{42-3}} = `r round(se,2)`$$
 
-$$CI_{Z_{LB}} = `r round(z,2)`-(`r round(ct,3)`)`r round(se,2)` = `r round(lbz,2)`$$
+$$CI_{Z_{LB}} = `r round(z,2)`-(`r round(cv,3)`)`r round(se,2)` = `r round(lbz,2)`$$
 
-$$CI_{Z_{UB}} = `r round(z,2)`+(`r round(ct,3)`)`r round(se,2)` = `r round(ubz,2)`$$
+$$CI_{Z_{UB}} = `r round(z,2)`+(`r round(cv,3)`)`r round(se,2)` = `r round(ubz,2)`$$
 ]
 
 ---
@@ -596,7 +598,7 @@ $$CI_{Z_{UB}} = `r round(z,2)`+(`r round(ct,3)`)`r round(se,2)` = `r round(ubz,2
 .pull-left[
 $$CI_{r_{LB}} = {\frac{e^{2(`r round(lbz,2)`)}-1}{e^{2(`r round(lbz,2)`)}+1}} = `r round(lb,2)`$$
 
-$$CI_{r_{UB}} = = {\frac{e^{2(`r round(ubz,2)`)}-1}{e^{2(`r round(ubz,2)`)}+1}} = `r round(ub,2)`$$
+$$CI_{r_{UB}} = {\frac{e^{2(`r round(ubz,2)`)}-1}{e^{2(`r round(ubz,2)`)}+1}} = `r round(ub,2)`$$
 
 These formulas are easy to mistype in R -- use the `psych` package and its functions `fisherz()` and `fisherz2r()` to save time and reduce human error. 
 
@@ -611,8 +613,8 @@ library(psych)
 z_r
 se = 1/( sqrt(42-3) )
 se
-ct = qt(p = .975, df = N-2, lower.tail = T)
-lbz = z_r - ( se*ct )
+cv = qnorm(p = .975, lower.tail = T)
+lbz = z_r - ( se*cv )
 lbz
 {{lb = fisherz2r(lbz)}}
 lb
