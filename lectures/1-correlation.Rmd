@@ -21,9 +21,11 @@ options(scipen=999)
 
 **Last term:**
 
-- Probability, sampling, hypothesis testing
 - Descriptive statistics
-- A little matrix algebra
+- Probability
+- Sampling
+- Hypothesis testing
+
 
 **This term:**
 
@@ -43,12 +45,10 @@ options(scipen=999)
 Structure of this course:
  - Lectures, Labs, Reading 
  - Weekly quizzes (T/F)
- - Homework assignments (5, 15 points each)
+ - Homework assignments (3, 30 points each)
  - Final project (1)
  
 Journals are optional (no impact on grade)
-
-One lab time (10:30-11:45, Fridays)
 
 ---
 
