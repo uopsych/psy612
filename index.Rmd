@@ -42,7 +42,7 @@ Office Hours: Mondays, 12:30 - 2:30 pm, [Zoom](https://uoregon.zoom.us/j/9761776
 
 We will primarily be referring to chapters in [_Learning Statistics with R_](https://learningstatisticswithr-bookdown.netlify.com/index.html) by Danielle Navarro. This textbook is available for free online. You may choose to purchase a paper copy if you wish, but it is not required. Additional readings assignments will be posted here. 
 
-## LaTex
+## LaTeX
 
 You'll need to download and install some version of LaTeX. There are different software programs for different operating systems -- you can find links to download them all [here](https://www.latex-project.org/get/).
 
