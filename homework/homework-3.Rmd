@@ -28,13 +28,13 @@ To receive full credit on this homework assignment, you must earn **30 points**.
 
 4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
-**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find four variables: 
-  - id - numeric, refers to participant ID
-  - Anxiety - participant's average levels of anxiety over a week; Stress -- the participant's average level of stress over a week
-  - Support -- the participant's perceived social support over a week
-  - group -- categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week. 
+**Data:** 
 
-One question refers to the dataset `homework-memory`. These data were generously provided by the first author, Wanjia Guo. (You might know her.) A full description of these data are provided in the relevant question.
+-`homework-happy`: The dataset looks at happiness in college as a relationship with school success, friendship quality, socioeconomic status, and an intervention group (1 = control, 2 = study skills training, 3 = social skills training). (Note that the variable names have spaces in them, which may make it tricky to work with. You might consider renaming the variables.)
+  
+  -`homework-spatial`: These data come from Experiment 1 of Maglio & Polman (2014) where they examined whether a person’s spatial orientation would affect perceived distance. They conducted the experiment on a train. Half of the participants were headed eastbound whereas the other half were headed westbound (`direction` and also `orientation`; these are the same variable). Participants were also randomly assigned to indicate the subjective distance of one of the four subway stations (`station`). The outcome variable is `subjective distance`.
+
+  - `homework-memory`. These data were generously provided by the first author, Wanjia Guo. (You might know her.) A full description of these data are provided in the relevant question.
 
 # 2-point Questions
 
@@ -42,7 +42,7 @@ One question refers to the dataset `homework-memory`. These data were generously
 
 * Using the dataset `homework-happy`, run a two-predictor regression model predicting happiness by friendship and school success and the interaction between the two.
 
-* Describe your hypothesis for the interaction using the study variables (i.e., don't write a formula, but describe the hypothesis in words).
+* Describe in words exactly what each coefficient (there are 4) are telling us in this model. 
 
 * Describe in words exactly what the coefficients $b_1$, $b_2$, and $b_3$ are telling us in this model. 
 
@@ -74,18 +74,21 @@ This question uses the dataset `homework-happy.`
 
 ## Question 1
 
-Refer to the model built in [Question 2.1](#q2.1).
+Refer to the model built in [Question 2.1](#q2.1).Calculate the slope of friendship quality at three different levels of school success: 
 
-* Calculate three simple slope equations: the regression of Y on $X_1$ at the mean of $X_2$, at one standard deviation above the mean of $X_2$, and at one standard deviation below the mean of $X_2$. You choose which variable is the "moderator." Write out and interpret each of these simple slope equations. Include both the intercept and slope of these equations. 
+* the mean of school success
+* 1 standard deviation below the mean of school success
+* 1 standard deviation above the mean of school success
 
-## Question 2
+Interpret the results.
 
-Check the assumptions of the model built in [Question 2.1](#q2.1).
+Plot these simple slopes.
 
-
-## Question 3{#q5.3}
+## Question 2{#q5.2}
 
 [Maglio & Polman (2014)](Maglio and Polman 2014.pdf) studied the psychological distance of objects (how far away we _feel_ an object is) in the context of the subway: How far away does a passenger on a train perceive a station to be? For their study, they recruited participants who were standing either on an eastbound or westbound platform of a specific subway station (Bay Street). All participants were asked how far away another station on the route feels on a scale from 1 (very close) to 7 (very far). Participants were randomly asked about one of four stations: Spadina (two stops to the west), St. George (one stop to the west), Bloor-Yonge (one stop to the east), or Sherbourne (two stops to the east).
+
+* How many factors are in this design, and how many levels does each factor have?
 
 * What are the sample sizes for each group?
 
@@ -93,20 +96,27 @@ Check the assumptions of the model built in [Question 2.1](#q2.1).
 
 * What is the effect size associated with each of your terms? What is the $R^2$ for the model?
 
-* Conduct a series of post-hoc tests that address the following hypotheses (be sure to interpret):
+* Graph the results in a manner that you think best conveys that data (it does not have to be the same as in the article). Make sure you include 95% CIs. 
+
+
+## Question 3{#q5.3}
+
+Refer to the dataset and model estimated in Question 5.2(#q5.2).
+
+* Conduct a series of post-hoc tests that address the following hypotheses. (Be sure to interpret)
 
     * People standing on the eastbound side of the station perceive things as closer than people standing on the westbound side of the station.
-    * People perceive stations to the east as closer than stations to the west.
-    * People on the westbound side perceive Spadina as being closer than people on the Eastbound side.
-    
-* Graph the results in a manner that you think best conveys that data. Make sure you include 95% CIs. 
 
+    * People perceive the Spadina station as being farther away than the Sherbourne station.
+
+    * People on the westbound side perceive St.George as being closer than people on the Eastbound side.
+    
 
 # 10-point Questions
 
 ## Question 1
 
-Refer to the dataset and model estimated in Question 5.3(#q5.3).
+Refer to the dataset and model estimated in Question 5.2(#q5.2).
 
 * Run a power analysis to determine sample size needed for the effect sizes found in the model fit above. (Note: the `pwr` package is a nice one to use but be sure to use the glm/regression one, `pwr.f2.test`, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)
 
