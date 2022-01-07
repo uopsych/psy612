@@ -22,7 +22,6 @@ If you are missing any of the following packages, you can use the following code
 install.packages("pwr")
 ```
 
-
 ```{r, message=FALSE, warning = FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
@@ -47,26 +46,8 @@ Scatter plots allow us to visualize the relationship between two variables. Here
 ```{r, message = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
   geom_point() +
-  geom_smooth(method = "lm", color = "gray", se = FALSE)+
-  labs(x = "marshmellows per grape", y = "harry potter")+
-  theme_classic()
+  geom_smooth(method = "lm")
 
-ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point(alpha=1, color="lightpink") +
-  geom_smooth(method = "lm", color ="lightblue", show.legend = TRUE, se = FALSE) +
-  labs(title    = "Scatterplot of MPG by Horse Power",
-       x        = "Miles Per Gallon",
-       y        = "Horse Power") +
-  # set theme
-  theme_dark()
-
-library(ggthemes) # Load
-
-ggplot(data = mtcars, aes(x = mpg, y = hp)) + # establish the background of the painting, data from mtcars, x-axis is mpg and y-axis is hp
-  geom_point(shape=8, size=4) + # add a layer of data points (mpg,hp)
-  geom_smooth(method = "lm", color="lightblue", se=FALSE) + # draw linear-model line
-  ggtitle("Horsepower Baby") +
-  theme_tufte()
 ```
 
 
@@ -75,9 +56,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) + # establish the background of the 
 "SPLOM" stands for scatter plot matrix. The `pairs.panel()` function from the `{psych}` package allows a quick way to visualize relationships among all the continuous variables in your data frame. The lower diagonal contains scatter plots showing bivariate relationships between pairs of variables, and the upper diagonal contains the corresponding correlation coefficients. Histograms for each variable are shown along the diagonal. 
 
 ```{r}
-pairs.panels(mtcars, lm=TRUE, stars = TRUE, cex = 5)
-# starts indicates significance
-# cex change the size of fonts for the correlation coefficients.
+pairs.panels(mtcars, lm = TRUE)
 ```
 
 
@@ -86,10 +65,7 @@ pairs.panels(mtcars, lm=TRUE, stars = TRUE, cex = 5)
 Heat maps are a great way to get a high-level visualization of a correlation matrix. They are particularly useful for visualizing the number of "clusters" in your data if that's something you're looking for. `Thurstone`, built into the `{psych}` package, is a correlation matrix of variables assessing different aspects of cognitive ability. We can plot a heatmap of this correlation matrix using the `corrplot()` function from the `{corrplot}` package. Note: make sure that you are feeding the function a correlation matrix (not the data set).
 
 ```{r}
-corrplot(corr = Thurstone, 
-         method = "square",
-         type = "upper",
-         tl.col = "black")
+corrplot(corr = Thurstone, method = "square")
 
 ```
 
@@ -120,22 +96,6 @@ apa.cor.table(mtcars,
 Covariance captures how the variances of two variables are related, i.e., how they *co*-vary. If higher values of one variable tend to correspond with higher values of the other variable, and lower values of one variable tend to correspond with lower values of the other variable, then the covariance would be positive. However, if the two variables are inversely related (i.e., higher values on one variable correspond with lower values on the other variable), then the covariance would be negative.  
 
 $$\large cov_{xy} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}$$
-
-Use a simple example to build an intuition on why positive cov means they are moving in the same direction, but a negative cov means two variables are moving in the opposite direction. 
-
-```{r}
-
-x = c(1,4,9)
-y = c(1,2,3)
-
-df = data.frame(x, y)
-
-df %>% mutate(m_x = mean(x), m_y = mean(y)) %>% 
-  mutate(x_mx = x - m_x, y_my = y - m_y) %>% 
-  mutate(nominator = x_mx * y_my)
-
-```
-
 
 To calculate covariance, use the function `cov()` from the `{stats}` package. The `cov()` function takes two arguments: the first variable "x" and the second variable "y". 
 
@@ -253,8 +213,7 @@ health %>%
   ggplot(aes(consc, sr_health, color = gender)) + 
   geom_point(size = 2) +
   geom_smooth(method = "lm") + 
-  labs(x = "Conscientiousness", y = "Self-reported Health") + 
-  facet_wrap(~gender)
+  labs(x = "Conscientiousness", y = "Self-reported Health")
 ```
 
 >**Question:** What can we conclude from this graph?
@@ -289,6 +248,7 @@ r.test(n = nrow(health_women), r12 = r_women, r34 = r_men)
 >**Question:** What does this test suggest about the correlation between conscientiousness and health across genders?
 
 
+
 ***
 
 # Minihacks
@@ -302,63 +262,30 @@ Use the `pwr.r.test` function to answer the following questions:
 a. How many participants should we collect if we expect a small correlation (r = .2) and want to achieve power = .8? Assume alpha = .05.
 
 ```{r}
-(power_test_1 <- pwr.r.test(n = , sig.level = .05, power = .8, r = .2))
-
+#pwr.r.test(n = , sig.level = , power = , r = )
 ```
-
-`r ceiling(power_test_1$n)` people.
 
 b. How does the number of participants needed to obtain .8 power change when you decrease the significance level to .01? 
 ```{r}
-(power_test_2 <- pwr.r.test(n = , sig.level = .01, power = .8, r = .2))
+#pwr.r.test(n = , sig.level = , power = , r = )
 ```
-
-It increases (to `r ceiling(power_test_2$n)`).
 
 c. How does the number of participants needed to obtain .8 power change when you increase the effect size (r) to .5? 
 
 ```{r}
-(power_test_3 <- pwr.r.test(n = , sig.level = .05, power = .8, r = .5))
-(power_test_4 <- pwr.r.test(n = , sig.level = .01, power = .8, r = .5))
-
+#pwr.r.test(n = , sig.level = , power = , r = )
 ```
-
-It decreases to `r ceiling(power_test_3$n)` (alpha = .05) or `r ceiling(power_test_4$n)` (alpha = .01). 
 
 ## Minihack 2
 
 For this minihack, calculate a 95% CI "by hand" (i.e., you can use R but not the `cor.test()` function) for the correlation between conscientiousness and self-reported health from the `health()` dataset. Make sure you get the same answer that was given by `cor.test()`. Hint: when calculating CI's, use the functions `fisherz()` and `fisherz2r()` from `{psych}`.
 
-To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#45){target="_blank"}.
+To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#44){target="_blank"}.
 
 ```{r lab-1-45}
-#calculating correlation coefficient
-r <- cor(health$consc, health$sr_health)
-
-#calculating n
-n <- nrow(health)
-
-#calculating standard error
-se <- 1/(sqrt(n-3))
-
-#transforming r to fisher's z
-z_r <- fisherz(r)
-
-#calculating critical t value for a 95% CI
-crit_t = qt(p = .975, df = n-2, lower.tail = T)
-
-#calculating confidence interval (fisher's z)
-lower_ci_z = z_r - (se*crit_t)
-upper_ci_z = z_r + (se*crit_t)
-
-#converting back from fisher's z to r
-lower_ci <- fisherz2r(lower_ci_z) %>% round(2)
-upper_ci <- fisherz2r(upper_ci_z) %>% round(2)
-
-(output <- paste0("95% CI [", lower_ci, ", ", upper_ci, "]"))
+# Your code here
 ```
 
-`r output`.
 
 ## Minihack 3
 
@@ -377,36 +304,13 @@ dawtry_clean <- import("https://raw.githubusercontent.com/uopsych/psy612/master/
 
 a. Replicate the correlation matrix from the table using the `apa.cor.table()` function and open it in Microsoft Word. 
 
-```{r, eval = FALSE}
-apa.cor.table(dawtry_clean, 
-              filename = here("labs", "lab-1", "dawtry.doc"), 
-              table.number = 1)
+```{r}
+#Your text here
 ```
 
 b. Visualize the correlation matrix using a SPLOM plot and/or a heat map.
 
 ```{r}
-#SPLOM plot
-pairs.panels(dawtry_clean, lm = TRUE)
-
-```
-
-```{r}
-#heat map
-names(dawtry_clean) <- c("Household Income",
-                        "Social Circle Mean Income",
-                        "Population Mean Income",
-                        "Social Circle Inequality Gini Index",
-                        "Population Inequality Gini Index",
-                        "Fairness Satisfaction",
-                        "Support Redistribution",
-                        "Political Preference")
-
-corrplot(corr = cor(dawtry_clean, use = "pairwise"), 
-         method = "square",
-         tl.col = "black",
-         type = "upper",
-         title = "Correlation matrix")
-
+#Your text here
 ```
 
