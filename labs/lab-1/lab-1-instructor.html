@@ -623,7 +623,7 @@ se &lt;- 1/(sqrt(n-3))
 z_r &lt;- fisherz(r)
 
 #calculating critical t value for a 95% CI
-crit_t = qt(p = .975, df = n-2, lower.tail = T)
+crit_t = qnorm(p = .975, lower.tail = T)
 
 #calculating confidence interval (fisher&#39;s z)
 lower_ci_z = z_r - (se*crit_t)
