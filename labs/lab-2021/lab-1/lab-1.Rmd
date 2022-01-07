@@ -16,6 +16,12 @@ In today's lab, we will discuss how to use R to visualize correlations, calculat
 
 For today's lab, you will need to load the following libraries. 
 
+If you are missing any of the following packages, you can use the following code to install it.
+
+```{r, eval = FALSE}
+install.packages("pwr")
+```
+
 ```{r, message=FALSE, warning = FALSE}
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
