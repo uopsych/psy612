@@ -607,22 +607,22 @@ sjPlot::tab_model(model, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc
 
 # Minihack 1
 
+You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost begins to appear on the corner of your computer screen. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
 
+"First question," Professor Regressor intones. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation."
 
-For this minihack, you'll demonstrate the equivalence of a correlation between two variables and the standardized coefficient from a univariate regression regressing one on the other. You'll be working with a dataset called PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder. It can be downloaded from the following web address:
+Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression regressing one of the variables on the other will always be equivalent."
 
-"https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv"
+"Prove it!" exclaims Professor Regressor. They begin to laugh hysterically.
 
-It contains a number of variables, but we'll focus on Extraversion and Happiness first.
-
-Calculate the bi-variate correlation between Extraversion and Happiness. Then, conduct a univariate regression, regressing Happiness on Extraversion and obtain the standardized estimate for the slope. Finally, conduct a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
+Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
 
 ```{r, eval = FALSE}
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
+
 # code here
 
 # remoeve
-df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
-
 cor <- cor.test(df$Extraversion, df$Happiness)
 reg <- lm(scale(Happiness) ~ scale(Extraversion), data = df)
 
@@ -633,35 +633,59 @@ round(cor$p.value, 3) == round(summary(reg)$coefficients[2, 4], 3)
 
 # Minihack 2
 
-For this minihack, you'll calculate fitted scores 'by hand' using the regression equation, compare them to the fitted scores stored in the model, and finally use the fitted scores you calculate to estimate $R^2$. We'll work with the same dataset, but this time you'll regress social support (SocSup) on Extraversion.
+"Bah!" exclaims Professor Regressor. "You've only answered one of my questions! Now then, what is the coefficient of determination of extraversion regressed on social support?"
+
+Calculate fitted scores 'by hand' using the regression equation, compare them to the fitted scores stored in the model, and finally use the fitted scores you calculate to estimate $R^2$ for Professor Regressor.
 
 a.) Run the regression model. Extract the coefficients, calculate the fitted scores **using the extracted coefficients** (HINT: think about the regression equation).
 
 ```{r, eval = FALSE}
+# remove
+reg2 <- lm(SocSup ~ Extraversion, data = df)
+
+predicted <- reg2$coefficients[1] + df$Extraversion*reg2$coefficients[2]
+
 # code here
 ```
-
 
 b.) Demonstrate that the fitted scores are the same as the values from `fitted.values`.
 
 ```{r, eval = FALSE}
+# remove
+round(fitted.values(reg2), 3) == round(predicted, 3)
+
 # code here
 ```
 
 c.) Use those fitted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
 
 ```{r, eval = FALSE}
+# remove
+rsq <- cor(predicted, df$SocSup)^2
+
+round(rsq, 3) == round(summary(reg2)$r.squared, 3)
+
 # code here
 ```
 
 # Minihack 3
 
-Create two tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on Exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on Extraversion).
+Professor Regressor begins to sob.
+
+"I am no match for one as powerful as you," they say. "Please, you must share with me the secrets of your models..."
+
+You take pity on Professor Regressor. Create two APA-formatted tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on extraversion).
 
 ```{r, eval = FALSE}
+# remove
+stargazer(reg, type = "html", out = here("labs", "lab-2", "output", "mh_reg_tbl1.html"))
+
 # Code here
 ```
 
 ```{r, eval = FALSE}
+# remove
+sjPlot::tab_model(reg2, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
+
 # code here
 ```
