@@ -210,6 +210,7 @@ pre code {
 </ol>
 <p><strong>Data:</strong> Some of the questions in this homework assignment use the dataset referred to as <code>homework-anxiety</code>. [Link to data goes here.] In this dataset, you’ll find four variables: - id - numeric, refers to participant ID - Anxiety - participant’s average levels of anxiety over a week; Stress – the participant’s average level of stress over a week - Support – the participant’s perceived social support over a week - group – categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week.</p>
 <p>Some questions refer to the dataset <code>homework-dawtry.csv</code> This dataset comes from Study 1a in the article by <a href="../data/Dawtry%20et%20al%202015%20PS.pdf">Dawtry et al. (2015)</a>, which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset.</p>
+<p>The 20-point question refers to the dataset <code>homework-robin.csv</code>. These data were collected by Taylor Guthrie and Rob Chavez. A longer description of these data can be found in the question problem.</p>
 </div>
 <div id="point-questions" class="section level1">
 <h1>2-point Questions</h1>
@@ -333,11 +334,12 @@ pre code {
 </div>
 <div id="question-2-1" class="section level2">
 <h2>Question 2</h2>
-<p>Refer to the data provided in <a href="#q2.1">Question 2.1</a>.</p>
+<p><em>t</em>-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0’s and 1’s. 0’s correspond to a reference group and 1’s correspond to the other group.</p>
 <ul>
-<li><p>Use the average product of z-scores method to calculate the correlation between x and y. How does this compare to the result of the cor() function?</p></li>
-<li><p>Why do you think these differ? (Hint: is there a component of the z-score calculation that be computed with two different formulas?)</p></li>
-<li><p>Change your code in such a way that the product of z-scores does in fact equal the correlation between x and y.</p></li>
+<li><p>Using the <code>homework-anxiety</code>, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?</p></li>
+<li><p>Create your own variable inside the <code>homework-anxiety</code> data frame of 1’s and 0’s that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?</p></li>
+<li><p>Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?</p></li>
+<li><p>Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).</p></li>
 </ul>
 </div>
 <div id="question-3-1" class="section level2">
@@ -375,13 +377,15 @@ pre code {
 <h1>20-point Questions</h1>
 <div id="question-1-2" class="section level2">
 <h2>Question 1</h2>
-<p><em>t</em>-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0’s and 1’s. 0’s correspond to a reference group and 1’s correspond to the other group.</p>
+<p>Round robin designs are great tools in perception research. A round-robin design is when each member of a group rates every other member. Taylor Guthrie, a UO grad student in the Computational Social Neuroscience Lab, spearheaded one such study in 2019. Taylor recruited groups of 6 people that all somewhat knew each other. Groups included those from Greek life, academic organizations,coworkers and friend groups. Each person came in individually for a behavioral session in which they rated both themselves and all of the other members of their group on a variety of survey measures. We’ll be using the ratings on the Big Five personality traits for this question.</p>
+<p>You’ll find the <code>homework-robin</code> dataset is organized as follows: each row is the rating of one person by one person. The <code>group</code> indicates which group the two people – subject (judge) and target – belong to, as well as columns indicating the specific <code>subject</code> and <code>target</code>. Note that when the subject number is the same as the target number, the ratings are self-ratings. The remaining 5 columns hold the ratings of each trait. Your task is to calculate the following <strong>for each trait</strong>:</p>
 <ul>
-<li><p>Using the <code>homework-anxiety</code>, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?</p></li>
-<li><p>Create your own variable inside the <code>homework-anxiety</code> data frame of 1’s and 0’s that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?</p></li>
-<li><p>Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?</p></li>
-<li><p>Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).</p></li>
+<li><p>The correlation between targets’ self-reports and the ratings of the target by other people.</p></li>
+<li><p>The correlation between targets’ self-reports and the average rating of the target across the group. How do these values compare to the ones estimated above? What do you conclude about the agreement between self- and other-ratings?</p></li>
+<li><p>The correlation between targets’ self-reports and the other people by the target.</p></li>
+<li><p>The correlation between targets’ self-reports and the target’s average rating of other people. How do these values compare to the values estimated above? What do you conclude about the relationship between ratings of the self and ratings of others?</p></li>
 </ul>
+<p>Note, this is primarily a data cleaning problem. You may <em>not</em> solve this problem by rewriting vectors by hand (e.g., <code>target = c(1, 2, 3)</code>) or indexing values based on position (e.g., <code>target[c(1,2,3)]</code>). I recommend the use of the <code>tidyverse</code> suite of packages, but there are many other ways to solve this problem. You can ignore the issue of dependency in this problem.</p>
 </div>
 </div>
 

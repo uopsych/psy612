@@ -7,11 +7,14 @@ navbar:
       href: schedule.html
     - text: Lectures
       menu:
-      - text: "Coming soon!"
-        
+      - text: "1-Correlation"
+        href: lectures/1-correlation.html
+      - text: "2-Correlation"
+        href: lectures/2-correlation.html
     - text: Labs
       menu:
-      - text: "Coming soon!"
+      - text: "1-Correlations"
+        href: labs/lab-1/lab-1.html
     - text: Homework
       href: homework.html
     - text: Final Project

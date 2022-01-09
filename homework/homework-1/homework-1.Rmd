@@ -36,6 +36,8 @@ To receive full credit on this homework assignment, you must earn **30 points**.
 
 Some questions refer to the dataset `homework-dawtry.csv` This dataset comes from Study 1a in the article by [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset. 
 
+The 20-point question refers to the dataset `homework-robin.csv`. These data were collected by Taylor Guthrie and Rob Chavez. A longer description of these data can be found in the question problem. 
+
 # 2-point Questions
 
 ## Question 1{#q2.1}
@@ -106,13 +108,15 @@ Refer to the data provided in [Question 2.1](#q2.1).
 
 ## Question 2
 
-Refer to the data provided in [Question 2.1](#q2.1).
+*t*-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0's and 1's. 0's correspond to a reference group and 1's correspond to the other group. 
 
-* Use the average product of z-scores method to calculate the correlation between x and y. How does this compare to the result of the cor() function? 
+* Using the `homework-anxiety`, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?
 
-* Why do you think these differ? (Hint: is there a component of the z-score calculation that be computed with two different formulas?)
+* Create your own variable inside the `homework-anxiety` data frame of 1's and 0's that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?
 
-* Change your code in such a way that the product of z-scores does in fact equal the correlation between x and y.
+* Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?
+
+* Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).
 
 
 ## Question 3 
@@ -156,12 +160,23 @@ There are some missing values in the output, labeled with red letters. Complete 
 
 ## Question 1
 
-*t*-tests are a simple form of regression, where there is only one predictor variable and it is binary. In the process of estimating this model, R takes the character variable associated with X and creates a new variable of 0's and 1's. 0's correspond to a reference group and 1's correspond to the other group. 
+Round robin designs are great tools in perception research. A round-robin design is when each member of a group rates every other member. Taylor Guthrie, a UO grad student in the Computational Social Neuroscience Lab, spearheaded one such study in 2019. Taylor recruited groups of 6 people that all somewhat knew each other. Groups included those from Greek life, academic organizations,coworkers and friend groups. Each person came in individually for a
+behavioral session in which they rated both themselves and all of the other members of their group on a variety of survey measures. We'll be using the ratings on the Big Five personality traits for this question. 
 
-* Using the `homework-anxiety`, estimate the regression model with Support as the outcome and group as the predictor. Which level of group was made the reference group? How can you tell?
+You'll find the `homework-robin` dataset is organized as follows: each row is the rating of one person by one person. The `group` indicates which group the two people -- subject (judge) and target -- belong to, as well as columns indicating the specific `subject` and `target`. Note that when the subject number is the same as the target number, the ratings are self-ratings. The remaining 5 columns hold the ratings of each trait. Your task is to calculate the following **for each trait**: 
 
-* Create your own variable inside the `homework-anxiety` data frame of 1's and 0's that make the other level the reference group. Estimate the regression model with this new variable. How are the two models the same and how are they different?
+* The correlation between targets' self-reports and the ratings of the target by other people.
 
-* Now create a new variable with 0 (reference group) and 5 (other group). (You can choose which level is the reference group.) Run the regression model with this variable. What do the intercept and slope represent?
+* The correlation between targets' self-reports and the average rating of the target across the group. How do these values compare to the ones estimated above? What do you conclude about the agreement between self- and other-ratings?
 
-* Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).
+* The correlation between targets' self-reports and the other people by the target. 
+
+* The correlation between targets' self-reports and the target's average rating of other people. How do these values compare to the values estimated above? What do you conclude about the relationship between ratings of the self and ratings of others?
+
+Note, this is primarily a data cleaning problem. You may *not* solve this problem by rewriting vectors by hand (e.g., `target = c(1, 2, 3)`) or indexing values based on position (e.g., `target[c(1,2,3)]`). I recommend the use of the `tidyverse` suite of packages, but there are many other ways to solve this problem. You can ignore the issue of dependency in this problem. 
+
+
+
+
+
+

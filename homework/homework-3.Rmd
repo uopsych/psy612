@@ -8,9 +8,15 @@ output:
     toc: yes
 ---
 
+```{r, include = F}
+knitr::opts_chunk$set(message = F, warning = F)
+library(tidyverse)
+```
+
+
 # Instructions
 
-Please complete this assignment using the RMarkdown file provided. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-1.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
+Please complete this assignment using the RMarkdown file provided. Once you download the RMarkdown file please (1) include your name in the preamble, (2) rename the file to include your last name (e.g., "weston-homework-3.Rmd"). When you turn in the assignment, include both the .Rmd and knitted .html files.  
 
 To receive full credit on this homework assignment, you must earn **30 points**. You may notice that the total number of points available to earn on this assignment is 65 -- this means you do not have to answer all of the questions. You may choose which questions to answer. You cannot earn more than 30 points, but it may be worth attempting many questions for learning's sake. Here are a couple things to keep in mind:
 
@@ -22,13 +28,13 @@ To receive full credit on this homework assignment, you must earn **30 points**.
 
 4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
-**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find four variables: 
-  - id - numeric, refers to participant ID
-  - Anxiety - participant's average levels of anxiety over a week; Stress -- the participant's average level of stress over a week
-  - Support -- the participant's perceived social support over a week
-  - group -- categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week. 
+**Data:** 
 
-Some questions refer to the dataset `homework-dawtry.csv` This dataset comes from Study 1a in the article by [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset. 
+-`homework-happy`: The dataset looks at happiness in college as a relationship with school success, friendship quality, socioeconomic status, and an intervention group (1 = control, 2 = study skills training, 3 = social skills training). (Note that the variable names have spaces in them, which may make it tricky to work with. You might consider renaming the variables.)
+  
+  -`homework-spatial`: These data come from Experiment 1 of Maglio & Polman (2014) where they examined whether a person’s spatial orientation would affect perceived distance. They conducted the experiment on a train. Half of the participants were headed eastbound whereas the other half were headed westbound (`direction` and also `orientation`; these are the same variable). Participants were also randomly assigned to indicate the subjective distance of one of the four subway stations (`station`). The outcome variable is `subjective distance`.
+
+  - `homework-memory`. These data were generously provided by the first author, Wanjia Guo. (You might know her.) A full description of these data are provided in the relevant question.
 
 # 2-point Questions
 
@@ -36,7 +42,7 @@ Some questions refer to the dataset `homework-dawtry.csv` This dataset comes fro
 
 * Using the dataset `homework-happy`, run a two-predictor regression model predicting happiness by friendship and school success and the interaction between the two.
 
-* Describe your hypothesis for the interaction using the study variables (i.e., don't write a formula, but describe the hypothesis in words).
+* Describe in words exactly what each coefficient (there are 4) are telling us in this model. 
 
 * Describe in words exactly what the coefficients $b_1$, $b_2$, and $b_3$ are telling us in this model. 
 
@@ -68,18 +74,21 @@ This question uses the dataset `homework-happy.`
 
 ## Question 1
 
-Refer to the model built in [Question 2.1](#q2.1).
+Refer to the model built in [Question 2.1](#q2.1).Calculate the slope of friendship quality at three different levels of school success: 
 
-* Calculate three simple slope equations: the regression of Y on $X_1$ at the mean of $X_2$, at one standard deviation above the mean of $X_2$, and at one standard deviation below the mean of $X_2$. You choose which variable is the "moderator." Write out and interpret each of these simple slope equations. Include both the intercept and slope of these equations. 
+* the mean of school success
+* 1 standard deviation below the mean of school success
+* 1 standard deviation above the mean of school success
 
-## Question 2
+Interpret the results.
 
-Check the assumptions of the model built in [Question 2.1](#q2.1).
+Plot these simple slopes.
 
-
-## Question 3{#q5.3}
+## Question 2{#q5.2}
 
 [Maglio & Polman (2014)](Maglio and Polman 2014.pdf) studied the psychological distance of objects (how far away we _feel_ an object is) in the context of the subway: How far away does a passenger on a train perceive a station to be? For their study, they recruited participants who were standing either on an eastbound or westbound platform of a specific subway station (Bay Street). All participants were asked how far away another station on the route feels on a scale from 1 (very close) to 7 (very far). Participants were randomly asked about one of four stations: Spadina (two stops to the west), St. George (one stop to the west), Bloor-Yonge (one stop to the east), or Sherbourne (two stops to the east).
+
+* How many factors are in this design, and how many levels does each factor have?
 
 * What are the sample sizes for each group?
 
@@ -87,20 +96,27 @@ Check the assumptions of the model built in [Question 2.1](#q2.1).
 
 * What is the effect size associated with each of your terms? What is the $R^2$ for the model?
 
-* Conduct a series of post-hoc tests that address the following hypotheses (be sure to interpret):
+* Graph the results in a manner that you think best conveys that data (it does not have to be the same as in the article). Make sure you include 95% CIs. 
+
+
+## Question 3{#q5.3}
+
+Refer to the dataset and model estimated in Question 5.2(#q5.2).
+
+* Conduct a series of post-hoc tests that address the following hypotheses. (Be sure to interpret)
 
     * People standing on the eastbound side of the station perceive things as closer than people standing on the westbound side of the station.
-    * People perceive stations to the east as closer than stations to the west.
-    * People on the westbound side perceive Spadina as being closer than people on the Eastbound side.
-    
-* Graph the results in a manner that you think best conveys that data. Make sure you include 95% CIs. 
 
+    * People perceive the Spadina station as being farther away than the Sherbourne station.
+
+    * People on the westbound side perceive St.George as being closer than people on the Eastbound side.
+    
 
 # 10-point Questions
 
 ## Question 1
 
-Refer to the dataset and model estimated in Question 5.3(#q5.3).
+Refer to the dataset and model estimated in Question 5.2(#q5.2).
 
 * Run a power analysis to determine sample size needed for the effect sizes found in the model fit above. (Note: the `pwr` package is a nice one to use but be sure to use the glm/regression one, `pwr.f2.test`, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)
 
@@ -110,14 +126,12 @@ Refer to the dataset and model estimated in Question 5.3(#q5.3).
 
 ## Question 2
 
-This question uses the dataset `homework-heath`. Health service clinicians have the following research hypotheses: 
+This question uses the dataset `homework-memory`, which are the data used in a study published by some in our UO community [(Guo, Favila, Kim, Molitor, & Kuhl, 2021)](https://www.nature.com/articles/s41467-021-25126-0). A description of the study: 
 
-1. Any treatment is better than doing nothing.
-2. Medication is the most effective treatment overall.
-3. Freshmen suffer from more anxiety than upperclassmen, regardless of what is done for them to alleviate their anxiety.
-4. Upperclassmen, compared to freshmen, are better able to benefit from meditation. 5. Freshmen, by contrast, are likely to lapse into rumination during meditation, making their anxiety symptoms worse. Upperclassmen, compared to freshmen, are better able to benefit from exercise. Freshmen are less likely to see the stress-reduction benefits of exercise. Instead they see exercise as detracting from time that could be spend studying, producing even worse anxiety symptoms.
+In this experiment, participants learn associations between scene and objects. Importantly, for every scene-object association, there exists another scene that is highly similar and is paired to an object from the same category, referred to as the _pairmate_. During the study, participants learned 18 pairmates (36 scene-object associations) across 6 rounds of learning and testing. For each participant and each pairmate, we identify the first round that the participant successfully associated the object with the scene, and we called it the _learned round_. The round that is just prior to the learned round is the _learned round - 1_. We calculated pattern similarity scores between each pairmates between _learned round - 1_ and _learned round_ -- referred to as the inflection point or _IP_ -- for 4 regions in the brain: CA23DG and CA1 (two subfields within the hippocampus) and PPA and EVC (two areas in the visual cortex). We also calculated the pattern similarity scores between _learned round - 2_ and _learned round - 1_ -- referred to as Pre. 
 
-* Conduct a factorial analysis of variance of the anxiety measure using class (freshmen, upperclassmen) and treatment condition (waiting list control, meditation, medication, cognitive behavior therapy, or exercise) as factors. Report a summary of the results (source of variance, df, SS, MS, F, and p) in a table.
+
+* Conduct a factorial analysis of variance of the outcome (similarity) measure using region of interest (CA23DG, CA1, PPA, and EVC) and learning status (IP and Pre) as factors. Report a summary of the results (source of variance, _df_, _SS_, _MS_, _F_, and _p_) in a table.
 
 * Display in a graph the means and 95% confidence intervals for the 2 x 5 design.
 
@@ -126,8 +140,6 @@ This question uses the dataset `homework-heath`. Health service clinicians have 
 * Conduct follow-up comparisons. Use some kind of adjustment to account for multiple comparisons. List the significant comparisons in a table.
 
 * Check the homogeneity of variance and normality assumptions. Are they met?
-
-* Given all that you learned from this analysis, comment on the support for each of the research hypotheses.
 
 
 # 20-point Questions
