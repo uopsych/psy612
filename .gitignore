@@ -2,4 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# ignore macOS organizational files
 .DS_Store
+
+# ignore word temporary files
+~$*
