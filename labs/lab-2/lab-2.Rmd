@@ -11,7 +11,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-2/lab-2.Rmd).
+You will need the Rmd file for today's lab. You can download it [here](https://uopsych.github.io/psy612/labs/lab-2/lab-2.Rmd).
 
 # Purpose
 
@@ -35,14 +35,14 @@ library(psych) # for covariance and correlation functions
 library(apaTables) # for correlation tables
 library(pwr) # for power calculation
 library(broom) # for cleaning up output
-library(stargazer)
-library(sjPlot)
+library(stargazer) # for creating apa tables
+library(sjPlot) # for creating apa tables
 ```
 
 
 # Estimating Regression Models
 
-A univariate linear regression model is made up of two parameters: a y-intercept (β0) and a slope (β1). If we had population-level data, we could assess what the true values each of these model terms.  
+A univariate linear regression model is made up of two parameters: a y-intercept (β0) and a slope (β1). If we had population-level data, we could assess the true value of each of these model terms.  
 
 $$Y_i = \beta_0 + \beta_1X_i + \epsilon_i$$
 
@@ -63,7 +63,7 @@ Without further ado, let's go ahead and estimate a regression equation in R.
 
 ### Estimating Regressions in R
 
-Conducting regressions in R is actually pretty simple. We use the `lm()` function which is part of the pre-loaded {stats} library. The `lm()` function takes two arguments:
+Conducting regressions in R is actually pretty simple. We use the `lm()` function, which is part of the pre-loaded {stats} library. The `lm()` function takes two arguments:
 
 1. **The formula:** Specify your regression formula in the general form `y ~ x`.
 
@@ -72,7 +72,7 @@ Conducting regressions in R is actually pretty simple. We use the `lm()` functio
 *Example:* model <- lm(y ~ x, data = df)
 
 
-Let's perform a linear regression analysis. First we'll import the same data that we used last week:
+Let's perform a linear regression analysis. First, we'll import the same data that we used last week:
 ```{r, eval = FALSE}
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
 
@@ -146,7 +146,7 @@ We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMEN
 
 ### Extracting Predicted Y values
 
-The fitted values of Y are stored in `model` in the element called fitted.values. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called fitted_Y. Print the fitted Y values.
+The fitted values of Y are stored in `model` in an element called fitted.values. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called fitted_Y. Print the fitted Y values.
 
 ```{r, eval = FALSE}
 
@@ -216,7 +216,7 @@ And see that it is equivalent to what we calculated above:
 ```
 
 #### Q1:
->**Question:** What does this residual standard error (aka standard error of the estimate) omean? 
+>**Question:** What does this residual standard error (aka standard error of the estimate) mean? 
 
 
 
@@ -253,7 +253,7 @@ round(r_squared, 8) == round(model_summary$r.squared, 8)
 
 
 #### Q2:
->**Question:** What does this r-squared value mean (in plain english)?
+>**Question:** What does this r-squared value mean (in plain English)?
 
 
 
@@ -315,7 +315,7 @@ Does it match what we got when we calculated from scratch?
 
 
 
-### Getting p value
+### Getting p-value
 
 And we can use these numbers to look up its p value:
 
@@ -400,7 +400,7 @@ coefficients(std_model) %>%
 
 In addition to the omnibus test, we can also test the significance of each of the regression coefficient estimates.
 
-Recall that for each coefficient, we get a *t* test from the formula:
+Recall that for each coefficient, we get a *t*-test from the formula:
 
 $$t = \frac{b_1}{se_b}$$
 
@@ -409,7 +409,7 @@ $$se_b = \frac{s_Y}{s_X}\sqrt{\frac{1 - r^2_{XY}}{n-2}}$$
 
 This *t* is distributed with $df = n - 2$.
 
-We can get these from the summary of our model object, by extracting the coefficients *from the summary*.
+We can get these from the summary of our model object by extracting the coefficients *from the summary*.
 
 ```{r, eval = FALSE}
 summary(model)$coefficients
@@ -431,6 +431,7 @@ You may have noticed at this point that working with lists has its challenges. E
 Thankfully, there is. This requires the {broom} library, which might be new. It is a package for *tidying* model results objects. It's pretty easy to use - you just pass the model object to a function from {broom} called `tidy`. There are some more advanced things you can do, but just `tidy(model_obj)` (where model_obj is the name of the model) works for most purposes. And, one really nice thing about `broom` is that it works with a lot of different types of models, so this will continue to work as we move to other techniques (e.g., multi-level model with `lme4`).
 
 ## broom::tidy()
+
 Let's see what happens when we tidy our model:
 
 ```{r, eval = FALSE}
@@ -456,7 +457,7 @@ augment(model)
 
 Using augment, we get the DV, IV, fitted values, residuals, and other diagnostic information we'll learn about in future weeks.
 
-So with broom, just remember:   
+So with {broom}, just remember:   
 1. We `tidy` up coefficients.   
 2. We `glance` at (omnibus) model statistics.    
 3. We `augment` to find everything else. 
@@ -477,8 +478,10 @@ tidy(model) %>%
 
 The last thing we'll cover today is how to report the results of your regression in Tables. 
 
-### 'by hand' using broom and kable
+### 'by hand' using {broom} and {kable}
+
 Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable` function from {knitr}. 
+
 ```{r, eval = FALSE}
 tidy(model) %>% # first run tidy on the model.
                 # Then pipe it to knitr's kable function
@@ -487,7 +490,7 @@ tidy(model) %>% # first run tidy on the model.
                caption = "Results of Regressing Self-Reported Health on Conscientiousness") # provide a table caption
 ```
 
-We could clean things up a bit more by changing the names and re-formatting that pesky p value column:
+We could clean things up a bit more by changing the names and reformatting that pesky p-value column:
 
 ```{r, eval = FALSE}
 tidy(model) %>% # we'll still run tidy on the model first
@@ -518,7 +521,7 @@ However, it has a downside in that it is hard to get this into picture perfect A
 
 ### Stargazer
 
-Now this gets us most of the way to an APA formmated table, but not quite all the way. We can get APA formatted tables with even less code by using the {stargazer} library.
+Now this gets us most of the way to an APA formatted table, but not quite all the way. We can get APA formatted tables with even less code by using the {stargazer} library.
 
 ```{r results = "asis", eval = FALSE}
 stargazer(model, type = "html", out = "./tbl/reg_tbl_sg.html")
