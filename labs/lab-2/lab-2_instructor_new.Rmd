@@ -314,7 +314,7 @@ Remember that variance (aka mean square) is the sum of squares divided by the de
 
 Let's calculate `ms_model`, which is the `ss_model` divided by the models degrees of freedom. 
 
-* We already calculated `ss_model` above, so we just need to divide it by the model degrees of freedom, which is equal to the number of regression parameters minus 1. 
+* We already calculated `ss_model` above, so we just need to divide it by the model degrees of freedom, which is equal to the number of predictors. 
 
 ```{r, eval = FALSE}
 ms_model <- ss_model / 1
