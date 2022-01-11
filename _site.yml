@@ -11,6 +11,8 @@ navbar:
         href: lectures/1-correlation.html
       - text: "2-Correlation"
         href: lectures/2-correlation.html
+      - text: "3-Univariate regression"
+        href: lectures/3-regression.html
     - text: Labs
       menu:
       - text: "1-Correlations"
