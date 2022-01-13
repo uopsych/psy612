@@ -636,9 +636,9 @@ You are presenting some of your data at a weekly lab meeting. According to the r
 
 "First question," Professor Regressor announces. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation?"
 
-Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression regressing one of the variables on the other will always be equivalent."
+Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression between the same two variables will always be equivalent."
 
-"Prove it!" exclaims Professor Regressor. Professor Regressor begins to laugh hysterically.
+"Prove it!" exclaims Professor Regressor.
 
 Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the *p*-value associated with the test statistic (Hint: You can use `round(x, 3)` to round a value to 3 digits, which will probably be necessary).
 
