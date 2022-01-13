@@ -55,6 +55,8 @@ Bryan (2019) ["Happy Git with R."](https://happygitwithr.com) -- Interested in u
 
 Anderson (2021) ["Social Data Science with R"](https://www.sds.pub/index.html) -- This book is currently being developed for the data science sequence at the University of Oregon, taught in the education department by Daniel Anderson. It is a helpful resource for foundational coding skills and data visualization in R. 
 
+Robinson (2016) [Broom: Converting Statistical Models to Tidy Data Frames](https://www.youtube.com/watch?v=7VGPUBWGv6g) -- This YouTube video explains how to use the `{Broom}` package to extract useful information from model objects. 
+
 ## On creating useful graphics
 
 Patil (2020) ["ggstatsplot"](https://indrajeetpatil.github.io/ggstatsplot/index.html) -- A very useful R package for creating visuals to display some basic univariate and bivariate descriptives. 
