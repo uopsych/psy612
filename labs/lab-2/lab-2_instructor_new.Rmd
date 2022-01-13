@@ -83,9 +83,18 @@ Say we're interested in whether self-reported health scores are related to self-
 
 ```{r, eval = FALSE}
 ggplot(data = health, aes(x = consc, y = sr_health)) +
-  geom_point() + 
-  geom_smooth(method = "lm") +
-  labs(x = "Conscientiousness", y = "Self-reported health", title = "Conscientiousness and self-reported health")
+  geom_point(shape = 18, 
+             size  = 5,
+             alpha = .8, 
+             color = "turquoise4") + 
+  geom_smooth(method = "lm", 
+              se     = FALSE,
+              lwd    = 1.5,
+              color  = "red3") +
+  labs(x     = "Conscientiousness", 
+       y     = "Self-reported health", 
+       title = "Conscientiousness and self-reported health") + 
+  theme_bw()
 ```
 
 * Regress self-report health scores on conscientiousness using the `lm()` function below. 
@@ -631,7 +640,7 @@ Since you have taken Psychology 612, you proudly announce, "False! A correlation
 
 "Prove it!" exclaims Professor Regressor. They begin to laugh hysterically.
 
-Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the p value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
+Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the *p*-value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
 
 ```{r, eval = FALSE}
 df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
@@ -680,9 +689,9 @@ round(rsq, 3) == round(summary(reg2)$r.squared, 3)
 
 Professor Regressor begins to sob.
 
-"I am no match for one as powerful as you," they say. "Please, you must share with me the secrets of your models..."
+"I am no match for one as powerful as you," they say. "Please, share with me the secrets of your models..."
 
-You take pity on Professor Regressor. Create two APA-formatted tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on extraversion).
+You take pity on Professor Regressor. Create two APA-formatted tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on extraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on extraversion).
 
 ```{r, eval = FALSE}
 # REMOVE
