@@ -27,20 +27,18 @@ To review.
 
 Today, we'll just be focusing on univariate linear regression with a single continuous predictor, but over the coming weeks we will build up into much more complicated regression equations.
 
-
-```{r lab-2-1, warning = FALSE, message=FALSE}
-library(tidyverse) # for plotting and data wrangling
-library(rio) # for importing data
-library(psych) # for covariance and correlation functions
+```{r lab-2-1, warning = FALSE, message = FALSE}
+library(tidyverse)  # for plotting and data wrangling
+library(rio)        # for importing data
+library(psych)      # for covariance and correlation functions
 library(effectsize) # for standardizing our model parameters
-library(apaTables) # for correlation tables
-library(pwr) # for power calculation
-library(broom) # for cleaning up output
-library(stargazer) # for creating apa tables
-library(sjPlot) # for creating apa tables
-library(here) # for creating quick path directories
+library(apaTables)  # for correlation tables
+library(pwr)        # for power calculation
+library(broom)      # for cleaning up output
+library(stargazer)  # for creating apa tables
+library(sjPlot)     # for creating apa tables
+library(here)       # for creating quick path directories
 ```
-
 
 # Estimating Regression Models
 
@@ -58,7 +56,7 @@ $$\hat{Y_i} = b_0 + b_1X_i$$
 
 >**Question:** Using Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
 
-
+REMOVE: The line that yields the smallest sum of squared deviations.
 
 ### Estimating Regressions in R
 
@@ -72,11 +70,12 @@ Conducting regressions in R is actually pretty simple. We use the `lm()` functio
 
 *Example:* `model <- lm(y ~ x, data = df)`
 
-
 Let's perform a linear regression analysis. First, we'll import the same data that we used last week:
 ```{r, eval = FALSE}
+# import data using rio::import
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
 
+# view the data
 head(health)
 ```
 
@@ -93,10 +92,8 @@ ggplot(data = health, aes(x = consc, y = sr_health)) +
 * Store the results of `lm()` in an object called `model`.
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 model <- lm(health$sr_health ~ health$consc)
-
-# alternatively 
 model <- lm(sr_health ~ consc, data = health)
 ```
 
@@ -116,6 +113,22 @@ We can get even more information using `summary()`.
 
 ```{r, eval = FALSE}
 summary(model)
+
+# we can also turn off the significance asterisks
+options(show.signif.stars = FALSE)
+summary(model)
+
+# we can also turn off scientific notation
+options(scipen = 999)
+summary(model)
+
+# we can also set the number of significant digits to use (you probably don't want to do this)
+1.5 * 3.0
+options(digits = 1)
+1.5 * 3.0
+options(digits = 7)
+1.5 * 3.0
+
 ```
 
 This output provides us with the following:
@@ -126,13 +139,13 @@ This output provides us with the following:
 
 * The estimates of the model coefficients ($b_0$ and $b_1$), the standard error (SE) for each model coefficient estimate, the t-statistic testing the significance of each model coefficient (compared to zero), and the p-value for each t-statistic
 
-* The residual standard error (aka the residual standard deviation aka the standard error of estimate)
+* The residual standard error (AKA the residual standard deviation AKA the standard error of estimate)
 
 * R-squared (aka the coefficient of determination)
 
 * Adjusted R-squared 
 
-* F-statistic testing the significance of the overall model, along with the p-value corresponding to the F-statistic
+* F-statistic testing the significance of the overall model, along with the *p*-value corresponding to the F-statistic
 
 ### Unpacking the Output
 
@@ -161,18 +174,16 @@ We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMEN
 The fitted values of Y are stored in `model` in an element called `fitted.values`. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called `fitted_y`. Print `fitted_y`.
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 fitted_y <- model$fitted.values
 print(fitted_y)
-
-# alternatively 
 fitted(model)
 ```
 
 Next, calculate the difference between the actual values of Y and the fitted values of Y. Store the output in an object called `residuals` and print them.
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 residuals <- (health$sr_health - fitted_y)
 print(residuals)
 ```
@@ -206,7 +217,7 @@ $$\Sigma(Y_i - \hat{Y_i})^2$$
 Calculate the sum of squared residuals and store the output in an object called `sum_sq_residuals`.
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 sum_sq_residuals <- sum(residuals^2)
 sum_sq_residuals
 ```
@@ -214,7 +225,7 @@ sum_sq_residuals
 Finally, now that we have pulled the necessary components, calculate the residual standard error using the formula above. Store the results of the calculation to an object called `residual_standard_error`. 
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 residual_standard_error <- sqrt(sum_sq_residuals / (nrow(health) - 2))
 residual_standard_error
 ```
@@ -231,7 +242,7 @@ str(model_summary)
 Can you find what the residual standard error is called? Once you find it, extract it from the model_summary.
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 model_summary$sigma 
 ```
 
@@ -240,14 +251,13 @@ model_summary$sigma
 And see that it is equivalent to what we calculated above:
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 model_summary$sigma == residual_standard_error
 ```
 
->**Question:** What does this residual standard error (aka standard error of the estimate) mean? 
+>**Question:** What does this residual standard error (AKA standard error of the estimate) mean? 
 
-
-
+REMOVE: We interpret the standard error of the estimate to represent the spread of observed data around the regression line. We want lower.
 
 ### The Coefficient of Determination ($R^2$)
 
@@ -268,7 +278,7 @@ Calculate the following:
 * $R^2$
 
 ```{r, eval = FALSE}
-# REMOVE ALL
+# REMOVE
 ss_model <- sum((fitted_y - mean(health$sr_health))^2)
 ss_model
 
@@ -298,7 +308,7 @@ cor(health$sr_health, fitted(model))^2
 
 >**Question:** What does this r-squared value mean (in plain English)?
 
-
+REMOVE: $R^2$ represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.
 
 ### Checking Significance of Overall Model
 
@@ -310,7 +320,7 @@ $$F = \frac{MS_{model}}{MS_{residual}}$$
 
 #### Getting F from scratch
 
-Remember that variance (aka mean square) is the sum of squares divided by the degrees of freedom for each respective term in the equation above. 
+Remember that variance (AKA mean square) is the sum of squares divided by the degrees of freedom for each respective term in the equation above. 
 
 Let's calculate `ms_model`, which is the `ss_model` divided by the models degrees of freedom. 
 
@@ -331,7 +341,7 @@ $$SS_{Residual} = \Sigma(Y_i - \hat{Y_i})^2$$
 Use one of these methods to calculate SS_Residual below.
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 ss_residual <- ss_y - ss_model
 ss_residual
 
@@ -342,7 +352,7 @@ ss_residual
 Divide the `ss_residual` by the degrees of freedom of the residuals, which is equal to the sample size minus the number of regression parameters.
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 ms_residual <- ss_residual / (nrow(health) - 2) 
 ms_residual
 ```
@@ -350,7 +360,7 @@ ms_residual
 We can finally calculate the F-statistic. Store it in an object called `f_stat`.
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 f_stat <- ms_model / ms_residual
 ```
 
@@ -387,7 +397,7 @@ summary(model)
 
 >**Question:** Is the F significant? What does this mean?
 
-
+REMOVE: If the *p*-value is less than the significance level, your sample data provide sufficient evidence to conclude that your regression model fits the data better than the model with no independent variables.
 
 ### Calculating the Estimates of the Regression Coefficients
 
@@ -402,7 +412,7 @@ $$b_1 = r(\frac{s_y}{s_x})$$
 Calculate $b_1$ using the equation above. Store the value in an object called `b1`.
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 r <- cor(health$sr_health, health$consc)
 r
 
@@ -435,15 +445,15 @@ coef(model)
 
 >**Question:** What does the intercept mean?
 
+REMOVE: At zero conscientiousness, self-reported health is estimated to be 1.66. 
+
 >**Question:** What about the slope for conscientiousness?
 
-You probably recall that these are called the *unstandardized* coefficients. We can also get the standardized coefficients, but that is a little trickier. Before I show you how to do that:
-
->**Question:** How does a standardized coefficient differ from an unstandardized coefficient?
+REMOVE: For every one-unit increase in conscientiousness, self-reported health increases by .49 units.
 
 #### Getting standardized coefficients
 
-Standardized regression coefficients, often notated as $\beta$, are just the regression coefficients after the variables have been *standardized* or *Z-scored*. To obtain them, we need to z-score our data with `scale()` before we run the `lm()` function. One really cool thing is that we can do it in the `lm()` call:
+You probably recall that these are called the *unstandardized* coefficients. We can also get the standardized coefficients. Standardized regression coefficients, often notated as $\beta$, are just the regression coefficients after the variables have been *standardized* or *Z-scored*. To obtain them, we need to z-score our data with `scale()` before we run the `lm()` function. One really cool thing is that we can do it in the `lm()` call:
 
 
 ```{r, eval = FALSE}
@@ -453,7 +463,7 @@ coefficients(std_model) %>%
   round(3)
 ```
 
-We can also standardize using the aptly-named `standardize()` function from the {effectsize} package:
+We can also standardize using the aptly-named `standardize()` function from the `{effectsize}` package:
 
 ```{r, eval = FALSE}
 standardize(model)
@@ -461,7 +471,11 @@ standardize(model)
 
 >**Question:** What does the standardized slope for conscientiousness mean?
 
+REMOVE: For everyone one standard deviation increase in conscientiousness, there is  a .4765 standard deviation increase in self-reported health.
+
 >**Question:** Why is the intercept zero?
+
+REMOVE: At the mean of conscientiousness, value of self-reported helath is the zero (because it has been scaled and is also the mean).
 
 ## Coefficient tests
 
@@ -485,7 +499,11 @@ summary(model)$coefficients
 
 >**Question:** Is the test of the intercept significant? What does this mean?
 
+REMOVE: Yes. The intercept of 1.66 is significantly different than zero. 
+
 >**Question:** Is the test of the slope significant? What does this mean?
+
+REMOVE: Yes. The slope of 0.49 is significantly different than zero. 
 
 # A Tidier way to Extract Information from Regression Models
 
@@ -607,9 +625,9 @@ sjPlot::tab_model(model, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc
 
 # Minihack 1
 
-You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost begins to appear on the corner of your computer screen. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
+You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost appears on the corner of your computer screen. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
 
-"First question," Professor Regressor intones. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation."
+"First question," Professor Regressor intones. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation?"
 
 Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression regressing one of the variables on the other will always be equivalent."
 
@@ -620,9 +638,7 @@ Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, co
 ```{r, eval = FALSE}
 df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
 
-# code here
-
-# remoeve
+# REMOVE
 cor <- cor.test(df$Extraversion, df$Happiness)
 reg <- lm(scale(Happiness) ~ scale(Extraversion), data = df)
 
@@ -640,32 +656,26 @@ Calculate fitted scores 'by hand' using the regression equation, compare them to
 a.) Run the regression model. Extract the coefficients, calculate the fitted scores **using the extracted coefficients** (HINT: think about the regression equation).
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 reg2 <- lm(SocSup ~ Extraversion, data = df)
 
 predicted <- reg2$coefficients[1] + df$Extraversion*reg2$coefficients[2]
-
-# code here
 ```
 
 b.) Demonstrate that the fitted scores are the same as the values from `fitted.values`.
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 round(fitted.values(reg2), 3) == round(predicted, 3)
-
-# code here
 ```
 
 c.) Use those fitted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 rsq <- cor(predicted, df$SocSup)^2
 
 round(rsq, 3) == round(summary(reg2)$r.squared, 3)
-
-# code here
 ```
 
 # Minihack 3
@@ -677,15 +687,11 @@ Professor Regressor begins to sob.
 You take pity on Professor Regressor. Create two APA-formatted tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on exraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on extraversion).
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 stargazer(reg, type = "html", out = here("labs", "lab-2", "output", "mh_reg_tbl1.html"))
-
-# Code here
 ```
 
 ```{r, eval = FALSE}
-# remove
+# REMOVE
 sjPlot::tab_model(reg2, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
-
-# code here
 ```
