@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Univariate regression II</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Univariate regression II
+
+---
+
+
+
+
+
+## Last time...
+
+- Introduction to univariate regression
+
+- Calculation and interpretation of `\(b_0\)` and `\(b_1\)`
+
+- Relationship between `\(X\)`, `\(Y\)`, `\(\hat{Y}\)`, and `\(e\)` 
+
+---
+
+
+```r
+library(gapminder)
+gapminder = gapminder %&gt;% filter(year == 2007 &amp; continent == "Asia") %&gt;% 
+  mutate(log_gdp = log(gdpPercap))
+glimpse(gapminder)
+```
+
+```
+## Rows: 33
+## Columns: 7
+## $ country   &lt;fct&gt; "Afghanistan", "Bahrain", "Bangladesh", "Cambodia", "China",…
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
+## $ year      &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, …
+## $ lifeExp   &lt;dbl&gt; 43.828, 75.635, 64.062, 59.723, 72.961, 82.208, 64.698, 70.6…
+## $ pop       &lt;int&gt; 31889923, 708573, 150448339, 14131858, 1318683096, 6980412, …
+## $ gdpPercap &lt;dbl&gt; 974.5803, 29796.0483, 1391.2538, 1713.7787, 4959.1149, 39724…
+## $ log_gdp   &lt;dbl&gt; 6.882007, 10.302131, 7.237961, 7.446456, 8.508983, 10.589735…
+```
+
+
+```r
+cor(gapminder$log_gdp, gapminder$lifeExp)
+```
+
+```
+## [1] 0.8003474
+```
+
+---
+
+
+```r
+mod = lm(lifeExp ~ log_gdp, data = gapminder)
+summary(mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.314  -1.650  -0.040   3.428   8.370 
+## 
+## Coefficients:
+##             Estimate Std. Error t value     Pr(&gt;|t|)    
+## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
+## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.851 on 31 degrees of freedom
+## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
+## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+```
+
+---
+
+
+```r
+gapminder %&gt;% ggplot(aes(x = log_gdp, y = lifeExp)) + geom_point() + 
+  geom_smooth(method = "lm", se = F)
+```
+
+![](4-regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+---
+
+
+```r
+model_info = augment(mod)
+glimpse(model_info)
+```
+
+```
+## Rows: 33
+## Columns: 8
+## $ lifeExp    &lt;dbl&gt; 43.828, 75.635, 64.062, 59.723, 72.961, 82.208, 64.698, 70.…
+## $ log_gdp    &lt;dbl&gt; 6.882007, 10.302131, 7.237961, 7.446456, 8.508983, 10.58973…
+## $ .fitted    &lt;dbl&gt; 61.14241, 78.78087, 62.97815, 64.05342, 69.53314, 80.26412,…
+## $ .resid     &lt;dbl&gt; -17.31440645, -3.14587188, 1.08384831, -4.33041614, 3.42785…
+## $ .hat       &lt;dbl&gt; 0.10099050, 0.08018112, 0.07650934, 0.06457760, 0.03140215,…
+## $ .sigma     &lt;dbl&gt; 3.633249, 4.894628, 4.926826, 4.862899, 4.889954, 4.916913,…
+## $ .cooksd    &lt;dbl&gt; 0.79594884967, 0.01992817309, 0.00223925933, 0.02940651673,…
+## $ .std.resid &lt;dbl&gt; -3.764431939, -0.676182383, 0.232501753, -0.922995812, 0.71…
+```
+
+---
+
+
+```r
+model_info %&gt;% ggplot(aes(x = log_gdp, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") +
+  scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+![](4-regression_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+model_info %&gt;% ggplot(aes(x = lifeExp, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+![](4-regression_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+model_info %&gt;% ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous(expression(hat(Y))) + 
+  scale_y_continuous("e") + theme_bw(base_size = 30)
+```
+
+![](4-regression_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+---
+
+## Least squares as springs
+
+![](4-regression_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+See demo [here](https://enchufa2.shinyapps.io/ls-springs/) too.
+
+.small[Loftus (2020, Nov. 23). Neurath's Speedboat: Least squares as springs. Retrieved from http://joshualoftus.com/posts/2020-11-23-least-squares-as-springs/]
+
+---
+
+### Today...
+
+Statistical inferences with regression
+
+- Partitioning variance
+
+- Testing `\(b_{xy}\)`
+
+---
+
+## Statistical Inference
+
+- The way the world is = our model + error
+
+- How good is our model? Does it "fit" the data well? 
+
+--
+
+To assess how well our model fits the data, we will examine the proportion of variance in our outcome variable that can be "explained" by our model.
+
+To do so, we need to partition the variance into different categories. For now, we will partition it into two categories: the variability that is captured by (explained by) our model, and variability that is not.
+
+---
+
+## Partitioning variation 
+
+Let's start with the formula defining the relationship between observed `\(Y\)` and fitted `\(\hat{Y}\)`:
+
+`$$Y_i = \hat{Y}_i + e_i$$`
+
+One of the properties that we love about variance is that variances are additive when two variables are independent. In other words, if we create some variable, C, by adding together two other variables, A and B, then the variance of C is equal to the sum of the variances of A and B.
+
+Why can we use that rule in this case?
+
+???
+
+Students must recognize that Y-hat and e are uncorrelated, they must be the way that we've built the OLS function.
+
+---
+
+## Partitioning variation 
+
+`\(\hat{Y}_i\)` and `\(e_i\)` must be independent from each other. Thus, the variance of `\(Y\)` is equal to the sum of the variance of `\(\hat{Y}\)` and `\(e\)`.
+
+
+`$$\Large s^2_Y = s^2_{\hat{Y}} + s^2_{e}$$`
+
+Recall that variances are sums of squares divided by N-1. In the case, all variances have the same sample size, so we can also note the following:
+
+`$$\Large SS_Y = SS_{\hat{Y}} + SS_{\text{e}}$$`
+
+And each of these values can be rewritten as the sum of squared deviations:
+
+`$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
+???
+
+Draw out the best fit line and residuals as lines. Show them this is the case. 
+
+---
+
+`$$\Large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
+
+A quick note about terminology: Here, I've demonstrated the calculation of these values using Y, `\(\hat{Y}\)` and `\(e\)`. This framewok will apply to all models we discuss in this class. However, you may also see the same terms written differently, to more clearly indicate the source of the variance.
+
+`$$\Large SS_Y = SS_{\hat{Y}} + SS_{\text{e}}$$`
+`$$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$`
+
+The relative magnitude of sums of squares, especially in more complex designs, provides a way of identifying particularly large and important sources of variability. In the future, we can further partition `\(SS_{\text{Model}}\)` and `\(SS_{\text{Residual}}\)` into smaller pieces, which will help us make more specific inferences and increase statistical power, respectively. 
+---
+
+## Partitioning variance in Y
+Consider the case with no correlation between X and Y
+
+`$$\Large \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$`
+--
+`$$\Large \hat{Y} = \bar{Y}$$`
+
+To the extent that we can generate different predicted values of Y based on the values of the predictors, we are doing well in our prediction
+
+`$$\large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$`
+
+`$$\Large SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$`
+
+---
+## Coefficient of Determination
+
+`$$\Large \frac{s_{Model}^2}{s_{y}^2} = \frac{SS_{Model}}{SS_{Y}} = R^2$$`
+
+`\(R^2\)` represents the proportion of variance in Y that is explained by the model. 
+
+--
+
+`\(\sqrt{R^2} = R\)` is the correlation between the predicted values of Y from the model and the actual values of Y
+
+`$$\large \sqrt{R^2} = r_{Y\hat{Y}}$$`
+
+---
+
+
+
+.pull-left[
+![](4-regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+]
+
+--
+
+.pull-right[
+![](4-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+]
+
+
+
+
+---
+## Example
+
+```r
+fit.1 = lm(lifeExp ~ log_gdp, data = gapminder)
+summary(fit.1) 
+```
+
+```
+## 
+## Call:
+## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.314  -1.650  -0.040   3.428   8.370 
+## 
+## Coefficients:
+##             Estimate Std. Error t value     Pr(&gt;|t|)    
+## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
+## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.851 on 31 degrees of freedom
+*## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
+## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+```
+
+```r
+summary(fit.1)$r.squared
+```
+
+```
+## [1] 0.6405559
+
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+NA
+*NA```
+
+---
+
+## Example
+
+
+```r
+cor(gapminder$log_gdp, gapminder$lifeExp, use = "pairwise")
+```
+
+```
+## [1] 0.8003474
+```
+
+--
+
+
+```r
+cor(gapminder$log_gdp, gapminder$lifeExp)^2
+```
+
+```
+## [1] 0.6405559
+```
+---
+
+## Coefficient of Alienation
+
+`\(1-R^2\)` is sometimes referred to as the "coefficient of alienation." It represents the proportion of variance in Y that is unexplained by our model, or left over after accounting for X (and other predictors).
+
+---
+
+Note the relationship between the variation of Y and the variation of the residuals:
+
+`$$\large \frac{SS_{Model}}{SS_{Y}} = R^2$$`
+`$$\large SS_{Model} = R^2({SS_{Y})}$$`
+`$$\large SS_{residual} = SS_{Y} - R^2({SS_{Y})}$$`
+
+`$$\large  SS_{residual} = {SS_{Y}(1- R^2)}$$`
+also:
+`$$\large  s^2_{residual} = {s^2_{Y}(1- R^2)}$$`
+`$$\large  s_{residual} = {s_{Y}\sqrt{(1- R^2)}}$$`
+
+
+---
+### standard deviation of the residuals
+
+
+```r
+sd(gapminder$lifeExp)
+```
+
+```
+## [1] 7.963724
+```
+
+```r
+summary(fit.1)$r.squared
+```
+
+```
+## [1] 0.6405559
+```
+
+```r
+sd(gapminder$lifeExp)*sqrt(1-summary(fit.1)$r.squared)
+```
+
+```
+## [1] 4.774544
+```
+
+```r
+sd(model_info$.resid)
+```
+
+```
+## [1] 4.774544
+```
+
+---
+
+Residuals carry information about where and how the model fails to fit the data. However, it's important to note that residuals (like all other aspects of our data) are estimates. 
+
+In fact, residuals are _latent variables_ as we do not directly observe them in our data collection but infer their presence and value from other data. 
+
+We can use residuals to estimate true score error. Note that this formula will look similar to (but differ from) the calculation of the standard deviation.
+
+---
+## residual standard error
+
+- aka **standard error of the estimate**
+
+`$$\hat{\sigma} = \sqrt{\frac{SS_{\text{Residual}}}{df_{\text{Residual}}}} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$`
+
+- interpreted in original units (unlike `\(R^2\)`)
+
+- We interpret the standard error of the estimate to represent the spread of observed data around the regression line. 
+
+---
+## residual standard error or standard error of the estimate
+
+
+```
+## 
+## Call:
+## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.314  -1.650  -0.040   3.428   8.370 
+## 
+## Coefficients:
+##             Estimate Std. Error t value     Pr(&gt;|t|)    
+## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
+## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+*## Residual standard error: 4.851 on 31 degrees of freedom
+## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
+## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+```
+---
+
+## residual standard error or standard error of the estimate
+
+
+```r
+summary(fit.1)$sigma 
+```
+
+```
+## [1] 4.850941
+```
+
+```r
+sd(model_info$.resid)
+```
+
+```
+## [1] 4.774544
+```
+
+Note: these are not the same!
+
+
+---
+## `\(1-R^2\)` and residual standard error
+
+- two sides of same coin
+
+- one in original units (residual standard error), the other standardized `\((1-R^2)\)`
+
+---
+## Inferential tests
+
+NHST is about making decisions:
+  
+  - these two means are/are not different
+  - this correlation is/is not significant
+  - the distribution of this categorical variable is/is not different between these groups
+  
+--
+
+In regression, there are several inferential tests being conducted at once. The first is called the **omnibus test** -- this is a test of whether the model fits the data. 
+
+---
+
+### Omnibus test
+
+Historically we use **the _F_ distribution** to estimate the significance of our model, because it works with our ability to partition variance.
+
+What is our null hypothesis?
+
+**The model does not account for variance in `\(Y\)`.**
+
+--
+
+But you can also think of the null hypothesis as
+
+`$$\Large H_{0}: \rho_{Y\hat{Y}}^2= 0$$`
+
+
+---
+
+![](4-regression_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+
+
+---
+
+## _F _ Distribution review
+
+The F probability distribution represents all possible ratios of two variances:
+
+`$$F \approx \frac{s^2_{1}}{s^2_{2}}$$`
+Each variance estimate in the ratio is `\(\chi^2\)` distributed, if the data are normally distributed. The ratio of two `\(\chi^2\)` distributed variables is `\(F\)` distributed. It should be noted that each `\(\chi^2\)` distribution has its own degrees of freedom.
+
+`$$F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$`
+As a result, _F_ has two degrees of freedom, `\(\nu_1\)` and `\(\nu_2\)`
+
+???
+
+---
+
+## _F_  Distributions and regression
+
+Recall that when using a _z_ or _t_ distribution, we were interested in whether one mean was equal to another mean -- sometimes the second mean was calculated from another sample or hypothesized (i.e., the value of the null). In this comparison, we compared the _difference of two means_ to 0 (or whatever our null hypothesis dictates), and if the difference was not 0, we concluded significance. 
+
+_F_ statistics are not testing the likelihood of differences; they test the likelihood of _ratios_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance. 
+
+Which variance?
+
+---
+
+`$$\Large F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$`
+`$$\Large F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$`
+
+`$$\Large F = \frac{MS_{Model}}{MS_{residual}}$$`
+---
+
+.pull-left[
+The degrees of freedom for our model are 
+
+`$$DF_1 = k$$`
+`$$DF_2 = N-k-1$$`
+
+Where k is the number of IV's in your model, and N is the sample size. ]
+
+.pull-right[
+
+Mean squares are calculated by taking the relevant Sums of Squares and dividing by their respective degrees of freedom.
+
+- `\(SS_{\text{Model}}\)` is divided by `\(DF_1\)`
+
+- `\(SS_{\text{Residual}}\)` is divided by `\(DF_2\)`
+]
+
+---
+
+
+```r
+anova(fit.1)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: lifeExp
+##           Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
+## log_gdp    1 1299.99 1299.99  55.244 0.00000002263 ***
+## Residuals 31  729.48   23.53                          
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
+summary(fit.1)
+```
+
+```
+## 
+## Call:
+## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.314  -1.650  -0.040   3.428   8.370 
+## 
+## Coefficients:
+##             Estimate Std. Error t value     Pr(&gt;|t|)    
+## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
+## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.851 on 31 degrees of freedom
+## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
+*## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+```
+
+
+---
+## Mean square error (MSE)
+
+
+- AKA mean square residual/within
+
+- unbiased estimate of error variance
+
+    - measure of discrepancy between the data and the model
+
+- the MSE is the variance around the fitted regression line
+
+- Note: it is the same as the residual standard error/standard error of the estimate!
+
+
+```r
+anova(fit.1)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: lifeExp
+##           Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
+## log_gdp    1 1299.99 1299.99  55.244 0.00000002263 ***
+*## Residuals 31  729.48   23.53                          
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+???
+
+What does it mean to be "unbiased"?
+* Variance estimates are biased because they are more likely to underestimate the true pop variance than overestimate. 
+
+
+---
+
+class: inverse
+
+## Next time...
+
+Even more univariate regression!
+
+--
+
+- Confidence intervals 
+
+- Confidence and prediction _bands_
+
+- Model comparison
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

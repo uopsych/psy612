@@ -283,7 +283,7 @@ $$\large b_{1} = r_{xy} \frac{s_{y}}{s_{x}}$$
 
 If the standard deviation of both X and Y is equal to 1: 
 
-$$\large b_1 = \frac{s_{xy}}{s_xs_y} = \frac{s_{xy}}{s_x^2}=\frac{r_{xy}}{1^2} = \beta_{yx} = b_{yx}^*$$
+$$\large b_1 = r_{xy} \frac{s_{y}}{s_{x}} = r_{xy} \frac{1}{1} = r_{xy} = \beta_{yx} = b_{yx}^*$$
 
 ---
 
