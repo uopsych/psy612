@@ -30,10 +30,7 @@ Today, we'll just be focusing on univariate linear regression with a single cont
 ```{r lab-2-1, warning = FALSE, message = FALSE}
 library(tidyverse)  # for plotting and data wrangling
 library(rio)        # for importing data
-library(psych)      # for covariance and correlation functions
 library(effectsize) # for standardizing our model parameters
-library(apaTables)  # for correlation tables
-library(pwr)        # for power calculation
 library(broom)      # for cleaning up output
 library(stargazer)  # for creating apa tables
 library(sjPlot)     # for creating apa tables
@@ -54,7 +51,7 @@ We determine the values of these estimates by finding the best-fitting linear mo
 
 $$\hat{Y_i} = b_0 + b_1X_i$$
 
->**Question:** Using Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
+>**Question:** Using the Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
 
 REMOVE: The line that yields the smallest sum of squared deviations.
 
@@ -193,7 +190,7 @@ Next, calculate the difference between the actual values of Y and the fitted val
 
 ```{r, eval = FALSE}
 # REMOVE
-residuals <- (health$sr_health - fitted_y)
+residuals <- health$sr_health - fitted_y
 print(residuals)
 ```
 
@@ -214,7 +211,7 @@ Let's check to see that our calculation of the residuals matches what we grabbed
 ```{r, eval = FALSE}
 residuals == model$residuals
 
-round(residuals, 10) == round(model$residuals, 10)
+all.equal(residuals, model$residuals)
 ```
 
 #### Sum of squared residuals
@@ -307,10 +304,7 @@ model_summary$r.squared
 Is it equivalent to what we calculated above?
 
 ```{r, eval = FALSE}
-round(r_squared, 10) == round(model_summary$r.squared, 10)
-
-# REMOVE
-cor(health$sr_health, fitted(model))^2
+r_squared == model_summary$r.squared
 ```
 
 >**Question:** What does this r-squared value mean (in plain English)?
@@ -431,7 +425,8 @@ b1
 ```
 
 And for obtaining $b_0$:
-$$b0 = M_y - b_1M_x$$
+
+$$b_0 = M_y - b_1M_x$$
 
 Calculate $b_0$ using the equation above. Store the value in an object called `b0`.
 
@@ -445,8 +440,10 @@ b0
 We can also grab these estimates from the model output using `model$coefficients` or the `coef()` function.
 
 ```{r, eval = FALSE}
+# option 1
 model$coefficients
 
+# option 2
 coef(model)
 ```
 
@@ -518,7 +515,7 @@ You may have noticed at this point that working with lists has its challenges. E
 
 Thankfully, there is. The `{broom}` package is a package for *tidying* the results of models. It's pretty easy to use---you just pass the model object to a function from `{broom}` called `tidy()`. There are some more advanced things you can do, but just `tidy(model)` works for most purposes. And one really nice thing about `{broom}` is that it works with a lot of different types of models, so this will continue to work as we move to other techniques (e.g., multi-level modelling with `{lme4}`).
 
-## `tidy()`
+### `tidy()`
 
 Let's see what happens when we tidy our model:
 
@@ -528,7 +525,7 @@ tidy(model)
 
 You can see it produces a dataframe containing the model coefficients and their significance tests.  
 
-## `glance()`
+### `glance()`
 
 `{broom}` also has a function called `glance()` that provides some of the omnibus model information we might want:
 
@@ -536,7 +533,7 @@ You can see it produces a dataframe containing the model coefficients and their 
 glance(model)
 ```
 
-## `augment()`
+### `augment()`
 
 And the function `augment()` provides even more information from our model:
 
@@ -619,7 +616,9 @@ However, it has a downside in that it is hard to get this into picture perfect A
 We can, however, get APA-formatted tables with even less code by using the `{stargazer}` package.
 
 ```{r results = "asis", eval = FALSE}
-stargazer(model, type = "html", out = here("labs", "lab-2", "output", "reg_tbl_sg.html"))
+stargazer(model, 
+          type = "html", 
+          out  = here("labs", "lab-2", "output", "reg_tbl_sg.html"))
 ```
 
 ### `{sjPlot}`
@@ -627,20 +626,21 @@ stargazer(model, type = "html", out = here("labs", "lab-2", "output", "reg_tbl_s
 A third option is to use `tab_model()` from the `{sjPlot}` package. This one does not work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
 
 ```{r, eval = FALSE}
-sjPlot::tab_model(model, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
+sjPlot::tab_model(model, 
+                  file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
 ```
 
 # Minihack 1
 
-You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost appears on the corner of your computer screen. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
+You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost creeps across the windows. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
 
-"First question," Professor Regressor intones. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation?"
+"First question," Professor Regressor announces. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation?"
 
 Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression regressing one of the variables on the other will always be equivalent."
 
-"Prove it!" exclaims Professor Regressor. They begin to laugh hysterically.
+"Prove it!" exclaims Professor Regressor. Professor Regressor begins to laugh hysterically.
 
-Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the *p*-value associated with the test statistic (Hint: You can round to 3 digits, which will probably be necessary).
+Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the *p*-value associated with the test statistic (Hint: You can use `round(x, 3)` to round a value to 3 digits, which will probably be necessary).
 
 ```{r, eval = FALSE}
 df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
@@ -689,7 +689,7 @@ round(rsq, 3) == round(summary(reg2)$r.squared, 3)
 
 Professor Regressor begins to sob.
 
-"I am no match for one as powerful as you," they say. "Please, share with me the secrets of your models..."
+"I am no match for a stats sorcerer as powerful as you," says Professor Regressor. "Please, share with me the secrets of your models..."
 
 You take pity on Professor Regressor. Create two APA-formatted tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on extraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on extraversion).
 
