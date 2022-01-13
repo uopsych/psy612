@@ -40,7 +40,7 @@ library(sjPlot)     # for creating apa tables
 library(here)       # for creating quick path directories
 ```
 
-# Estimating Regression Models
+# Estimating regression models
 
 A univariate linear regression model is made up of two parameters: a y-intercept ($\beta_0$) and a slope ($\beta_1$). If we had population-level data, we could assess the true value of each of these model terms.  
 
@@ -58,11 +58,11 @@ $$\hat{Y_i} = b_0 + b_1X_i$$
 
 REMOVE: The line that yields the smallest sum of squared deviations.
 
-### Estimating Regressions in R
+### Estimating a regression model in R
 
 Without further ado, let's go ahead and estimate a regression equation in R.
 
-Conducting regressions in R is actually pretty simple. We use the `lm()` function, which is part of the pre-loaded {stats} package. The `lm()` function takes two arguments:
+Conducting regressions in R is actually pretty simple. We use the `lm()` function, which is part of the pre-loaded `{stats}` package. The `lm()` function takes two arguments:
 
 1. **The formula:** Specify your regression formula in the general form `y ~ x`.
 
@@ -147,11 +147,11 @@ This output provides us with the following:
 
 * F-statistic testing the significance of the overall model, along with the *p*-value corresponding to the F-statistic
 
-### Unpacking the Output
+### Unpacking the output
 
 Let's unpack some of that output. First, let's start with understanding how the two measures of overall model fit, *residual standard error* and *r-squared*, are being derived.
 
-#### Residual Standard Error
+#### Residual standard error
 
 The **residual standard error**, also called the **standard error of the estimate**, measures the average deviation between observed and fitted values of Y. It is in the original units of the outcome variable, Y. See the formula below.   
 
@@ -169,7 +169,7 @@ str(model)
 
 We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMENT"]]`.
 
-### Extracting Predicted Y values
+### Extracting predicted Y values
 
 The fitted values of Y are stored in `model` in an element called `fitted.values`. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called `fitted_y`. Print `fitted_y`.
 
@@ -188,7 +188,7 @@ residuals <- (health$sr_health - fitted_y)
 print(residuals)
 ```
 
-### Extracting Residuals
+### Extracting residuals
 
 OK, so I made you do extra work. You can actually grab the residuals directly from the `model` object using `model$residuals` or the function `resid()`.
 
@@ -208,7 +208,7 @@ residuals == model$residuals
 round(residuals, 10) == round(model$residuals, 10)
 ```
 
-#### Sum of Squared Residuals
+#### Sum of squared residuals
 
 With this information, we could calculate the sum of squared residuals, which is the numerator of the residual standard error equation:
 
@@ -230,7 +230,7 @@ residual_standard_error <- sqrt(sum_sq_residuals / (nrow(health) - 2))
 residual_standard_error
 ```
 
-### Extracting Residual Standard Error with summary
+### Extracting residual standard error
 
 We can also get the standard error more directly. However, it is not stored in the model object that we stored the output of the `lm()` function to. It is stored in the output of the `summary()` function. Let's assign the output of this function to an object called `model_summary`, and then inspect its structure:
 
@@ -246,9 +246,7 @@ Can you find what the residual standard error is called? Once you find it, extra
 model_summary$sigma 
 ```
 
-#### Check Equivalency
-
-And see that it is equivalent to what we calculated above:
+Is it equivalent to what we calculated above?
 
 ```{r, eval = FALSE}
 # REMOVE
@@ -259,9 +257,9 @@ model_summary$sigma == residual_standard_error
 
 REMOVE: We interpret the standard error of the estimate to represent the spread of observed data around the regression line. We want lower.
 
-### The Coefficient of Determination ($R^2$)
+### The coefficient of determination ($R^2$)
 
-#### Calculating $R^2$ by hand
+#### Calculating $R^2$ 'by hand'
 
 Another measure of how well our linear model is capturing variation in the outcome variable is $R^2$. 
 
@@ -291,13 +289,13 @@ r_squared
 
 #### Extracting $R^2$ 
 
-Another way we can evaluate our regression model is by extracting the coefficient of determination, $R^2$, which is stored in the element called `r.squared`. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
+The coefficient of determination is also stored in the element called `r.squared`. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
 
 ```{r, eval = FALSE}
 model_summary$r.squared
 ```
 
-#### Check Equivalency
+Is it equivalent to what we calculated above?
 
 ```{r, eval = FALSE}
 round(r_squared, 10) == round(model_summary$r.squared, 10)
@@ -310,9 +308,7 @@ cor(health$sr_health, fitted(model))^2
 
 REMOVE: $R^2$ represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.
 
-### Checking Significance of Overall Model
-
-## Omnibus test
+### Omnibus test
 
 We can perform an omnibus test to see, overall, whether the amount of variation accounted for by the model is significantly different from what would be expected if the null hypothesis were true. The omnibus test is typically tested using an F-statistic that compares the variance accounted for by the model divided by the residual variance:
 
@@ -364,7 +360,7 @@ We can finally calculate the F-statistic. Store it in an object called `f_stat`.
 f_stat <- ms_model / ms_residual
 ```
 
-#### F-Statistic 
+#### Extracting F
 
 The value of the F-statistic is also stored in the summary of our model:
 
@@ -378,7 +374,7 @@ Does it match what we got when we calculated from scratch?
 round(summary(model)$fstatistic[1], 10) == round(f_stat, 10)
 ```
 
-#### Getting p-value
+#### Getting the p-value
 
 We can use these numbers to look up its p-value:
 
@@ -397,11 +393,13 @@ summary(model)
 
 >**Question:** Is the F significant? What does this mean?
 
-REMOVE: If the *p*-value is less than the significance level, your sample data provide sufficient evidence to conclude that your regression model fits the data better than the model with no independent variables.
+REMOVE: If the *p*-value is less than the significance level, your sample data provide sufficient evidence to conclude that your regression model fits the data better than the model with no independent variables. The amount of variance explained is significantly different than zero. The ratio of the amount variance explained (the amount of variability of the predicted values; i.e., the model) to the amount variance left over (the amount of variability of the error; the residual) is significantly different than 1. 
 
-### Calculating the Estimates of the Regression Coefficients
+### Regression coefficients
 
 Recall that we also get estimates for the individual regression coefficients, $b_0$ and $b_1$ in the case of univariate regression. 
+
+#### Calculating regression coefficients 'by hand'
 
 We can calculate these from scratch using the following formulas.
 
@@ -433,7 +431,7 @@ b0 <- mean(health$sr_health) - (b1 * (mean(health$consc)))
 b0
 ```
 
-### Extracting Estimates of the Regression Coefficients
+#### Extracting regression coefficients
 
 We can also grab these estimates from the model output using `model$coefficients` or the `coef()` function.
 
@@ -477,7 +475,7 @@ REMOVE: For everyone one standard deviation increase in conscientiousness, there
 
 REMOVE: At the mean of conscientiousness, value of self-reported helath is the zero (because it has been scaled and is also the mean).
 
-## Coefficient tests
+#### Getting the p-values
 
 In addition to the omnibus test, we can also test the significance of each of the regression coefficient estimates.
 
@@ -505,13 +503,13 @@ REMOVE: Yes. The intercept of 1.66 is significantly different than zero.
 
 REMOVE: Yes. The slope of 0.49 is significantly different than zero. 
 
-# A Tidier way to Extract Information from Regression Models
+# A tidier way to extract information
 
 You may have noticed at this point that working with lists has its challenges. Even just extracting the information we've extracted so far has some pretty messy code. There must be a better (tidier) way!
 
-Thankfully, there is. The {broom} package is a package for *tidying* the results of models. It's pretty easy to use---you just pass the model object to a function from {broom} called `tidy()`. There are some more advanced things you can do, but just `tidy(model)` works for most purposes. And one really nice thing about `broom` is that it works with a lot of different types of models, so this will continue to work as we move to other techniques (e.g., multi-level modelling with `lme4`).
+Thankfully, there is. The `{broom}` package is a package for *tidying* the results of models. It's pretty easy to use---you just pass the model object to a function from `{broom}` called `tidy()`. There are some more advanced things you can do, but just `tidy(model)` works for most purposes. And one really nice thing about `{broom}` is that it works with a lot of different types of models, so this will continue to work as we move to other techniques (e.g., multi-level modelling with `{lme4}`).
 
-## broom::tidy()
+## `tidy()`
 
 Let's see what happens when we tidy our model:
 
@@ -521,15 +519,15 @@ tidy(model)
 
 You can see it produces a dataframe containing the model coefficients and their significance tests.  
 
-## broom::glance()
+## `glance()`
 
-{broom} also has a function called `glance()` that provides some of the omnibus model information we might want:
+`{broom}` also has a function called `glance()` that provides some of the omnibus model information we might want:
 
 ```{r, eval = FALSE}
 glance(model)
 ```
 
-## broom::augment()
+## `augment()`
 
 And the function `augment()` provides even more information from our model:
 
@@ -539,13 +537,13 @@ augment(model)
 
 Using `augment()`, we get the DV, IV, fitted values, residuals, and other diagnostic information we'll learn about in future weeks.
 
-So with {broom}, just remember:   
+So with `{broom}`, just remember:   
 
-1. We `tidy` up coefficients.
+1. We `tidy()` up coefficients.
 
-2. We `glance` at (omnibus) model statistics. 
+2. We `glance()` at (omnibus) model statistics. 
 
-3. We `augment` to find everything else. 
+3. We `augment()` to find everything else. 
 
 The payoff for these functions comes when you want to do something *with* some of your regression results. As an example, you could use `tidy()` to make it easier to make a plot of your regression coefficients:
 
@@ -557,13 +555,13 @@ tidy(model) %>%
                  ymax = estimate + std.error))
 ```
 
-# Reporting Regressions
+# Reporting regressions
 
 The last thing we'll cover today is how to report the results of your regression in Tables. 
 
-### 'by hand' using {broom} and {kable}
+### 'by hand' with `{broom}` and `{kable}`
 
-Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable()` function from {knitr}. 
+Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable()` function from `{knitr}`. 
 
 ```{r, eval = FALSE}
 tidy(model) %>% # first run tidy on the model.
@@ -607,17 +605,17 @@ This method is nice for two reasons:
 
 However, it has a downside in that it is hard to get this into picture perfect APA format (we didn't get all the way there above) and so you may have to do some editing once you get it into word.
 
-### Stargazer
+### `{stargazer}`
 
-We can, however, get APA-formatted tables with even less code by using the {stargazer} package.
+We can, however, get APA-formatted tables with even less code by using the `{stargazer}` package.
 
 ```{r results = "asis", eval = FALSE}
 stargazer(model, type = "html", out = here("labs", "lab-2", "output", "reg_tbl_sg.html"))
 ```
 
-### `sjPlot`
+### `{sjPlot}`
 
-A third option is to use `tab_model()` from the {sjPlot} package. This one does not work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
+A third option is to use `tab_model()` from the `{sjPlot}` package. This one does not work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
 
 ```{r, eval = FALSE}
 sjPlot::tab_model(model, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
