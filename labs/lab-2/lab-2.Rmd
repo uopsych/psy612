@@ -103,10 +103,10 @@ ggplot(data = health, aes(x = consc, y = sr_health)) +
 # your code here
 ```
 
-Let's see what the output looks like using `print()`.
+Let's see what the output looks like:
 
 ```{r, eval = FALSE}
-print(model)
+model
 ```
 
 The output provides us with the following:
@@ -163,7 +163,6 @@ Our regression model object, called `model`, is actually a `list` that contains 
 
 ```{r, eval = FALSE}
 str(model)
-
 ```
 
 We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMENT"]]`.
@@ -197,7 +196,7 @@ resid(model)
 Let's check to see that our calculation of the residuals matches what we grabbed directly from the model output.
 
 ```{r, eval = FALSE}
-all.equal(residuals, model$residuals)
+round(residuals, 10) == round(resid(model), 10)
 ```
 
 #### Sum of squared residuals
@@ -260,7 +259,11 @@ Calculate the following:
 -   $R^2$
 
 ```{r, eval = FALSE}
-# your code here
+ss_model <- sum((fitted_y - mean(health$sr_health))^2)
+ss_y     <- sum((health$sr_health - mean(health$sr_health))^2)
+
+r_squared <- ss_model / ss_y
+r_squared
 ```
 
 #### Extracting $R^2$
@@ -311,7 +314,7 @@ Use one of these methods to calculate SS_Residual below.
 # your code here
 ```
 
-Divide the `ss_residual` by the degrees of freedom of the residuals, which is equal to the sample size minus the number of predictors minus 1 (i.e., *N* - k - 1).
+Divide the `ss_residual` by the degrees of freedom of the residuals, which is equal to the sample size minus the number of predictors minus 1 (i.e., *N* - k - 1). Save this to `ms_residual`.
 
 ```{r, eval = FALSE}
 # your code here
@@ -376,7 +379,7 @@ Calculate $b_1$ using the equation above. Store the value in an object called `b
 
 And for obtaining $b_0$:
 
-$$b_0 = M_y - b_1M_x$$
+$$b_0 = \bar{Y} - b_1\bar{X}$$
 
 Calculate $b_0$ using the equation above. Store the value in an object called `b0`.
 
@@ -563,17 +566,17 @@ stargazer(model,
 A third option is to use `tab_model()` from the `{sjPlot}` package. This one does not work well within the rMarkdown document, but it is **very** easy to export these tables to word. we can do so by setting the file extension of our output to `.doc`:
 
 ```{r, eval = FALSE}
-sjPlot::tab_model(model, 
-                  file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
+tab_model(model, 
+          file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
 ```
 
 # Minihack 1
 
-You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost creeps across the windows. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
+You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness (*r* = .56). As you are about to progress to the next slide, the lights in the room begin to flicker. Suddenly, the door of the lab room bursts open. Standing outside is a figure dressed in dark robes. The figure rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor. They have come to test your stats knowledge.
 
 "First question," Professor Regressor announces. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation?"
 
-Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression between the same two variables will always be equivalent."
+Since you have taken Psychology 612, you say, "False! A correlation between two variables and the standardized coefficients from a univariate regression between the same two variables will always be equivalent."
 
 "Prove it!" exclaims Professor Regressor.
 

@@ -15,15 +15,18 @@ You will need the Rmd file for today's lab. You can download it [here](https://u
 
 # Purpose
 
-Today we'll be going over the basics of univariate linear regression in R, including reporting regression results in Tables. 
+Today we'll be going over the basics of univariate linear regression in R, including reporting regression results in Tables.
 
 To review.
 
-+ Regression is a general approach for data analysis in which a best-fitting linear model (i.e., a line) is used to model the relationship between two variables for which data has been collected: the predictor variable, X, and an outcome variable, Y.
-+ Regression can handle a variety of types of predictor variables (for example, predictors can be continuous or categorical).
-+ The results of a linear regression analysis include everything we might want:
-  + Statistical tests 
-  + Effect sizes 
+-   Regression is a general approach for data analysis in which a best-fitting linear model (i.e., a line) is used to model the relationship between two variables for which data has been collected: the predictor variable, X, and an outcome variable, Y.
+
+-   Regression can handle a variety of types of predictor variables (for example, predictors can be continuous or categorical).
+
+-   The results of a linear regression analysis include everything we might want:
+
+    -   Statistical tests
+    -   Effect sizes
 
 Today, we'll just be focusing on univariate linear regression with a single continuous predictor, but over the coming weeks we will build up into much more complicated regression equations.
 
@@ -39,7 +42,7 @@ library(here)       # for creating quick path directories
 
 # Estimating regression models
 
-A univariate linear regression model is made up of two parameters: a y-intercept ($\beta_0$) and a slope ($\beta_1$). If we had population-level data, we could assess the true value of each of these model terms.  
+A univariate linear regression model is made up of two parameters: a y-intercept ($\beta_0$) and a slope ($\beta_1$). If we had population-level data, we could assess the true value of each of these model terms.
 
 $$Y_i = \beta_0 + \beta_1X_i + \epsilon_i$$
 
@@ -47,11 +50,11 @@ However, because we typically are working with sample data, we most often have t
 
 $$Y_i = b_0 + b_1X_i + e_i$$
 
-We determine the values of these estimates by finding the best-fitting linear model for a set of collected data and determining the slope and y-intercept of the model. Once we have determined our best estimates of the slope and y-intercept for our linear model, we can use these values to calculate fitted values of Y ($\hat{Y_i}$) given a particular value on our predictor variable, X. 
+We determine the values of these estimates by finding the best-fitting linear model for a set of collected data and determining the slope and y-intercept of the model. Once we have determined our best estimates of the slope and y-intercept for our linear model, we can use these values to calculate fitted values of Y ($\hat{Y_i}$) given a particular value on our predictor variable, X.
 
 $$\hat{Y_i} = b_0 + b_1X_i$$
 
->**Question:** Using the Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
+> **Question:** Using the Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
 
 REMOVE: The line that yields the smallest sum of squared deviations.
 
@@ -61,13 +64,14 @@ Without further ado, let's go ahead and estimate a regression equation in R.
 
 Conducting regressions in R is actually pretty simple. We use the `lm()` function, which is part of the pre-loaded `{stats}` package. The `lm()` function takes two arguments:
 
-1. **The formula:** Specify your regression formula in the general form `y ~ x`.
+1.  **The formula:** Specify your regression formula in the general form `y ~ x`.
 
-2. **The data:** the dataframe that contains the variables in the formula. This is technically optional.
+2.  **The data:** the dataframe that contains the variables in the formula. This is technically optional.
 
 *Example:* `model <- lm(y ~ x, data = df)`
 
 Let's perform a linear regression analysis. First, we'll import the same data that we used last week:
+
 ```{r, eval = FALSE}
 # import data using rio::import
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-1/data/consc_health.csv")
@@ -94,8 +98,8 @@ ggplot(data = health, aes(x = consc, y = sr_health)) +
   theme_bw()
 ```
 
-* Regress self-report health scores on conscientiousness using the `lm()` function below. 
-* Store the results of `lm()` in an object called `model`.
+-   Regress self-report health scores on conscientiousness using the `lm()` function below.
+-   Store the results of `lm()` in an object called `model`.
 
 ```{r, eval = FALSE}
 # REMOVE
@@ -111,9 +115,9 @@ print(model)
 
 The output provides us with the following:
 
-* The formula we used for the linear model.
+-   The formula we used for the linear model.
 
-* The estimates of the model coefficients, $b_0$ (intercept) and $b_1$ (the slope of conscientiousness).
+-   The estimates of the model coefficients, $b_0$ (intercept) and $b_1$ (the slope of conscientiousness).
 
 We can get even more information using `summary()`.
 
@@ -139,19 +143,19 @@ options(digits = 7)
 
 This output provides us with the following:
 
-* The formula we used for the linear model
+-   The formula we used for the linear model
 
-* A description of how the residuals are distributed. This is useful for checking whether the normally-distributed residuals assumption has been met. You want a median of approximately 0 and the first quartile (1Q) to be approximately equal to the third quartile (3Q)
+-   A description of how the residuals are distributed. This is useful for checking whether the normally-distributed residuals assumption has been met. You want a median of approximately 0 and the first quartile (1Q) to be approximately equal to the third quartile (3Q)
 
-* The estimates of the model coefficients ($b_0$ and $b_1$), the standard error (SE) for each model coefficient estimate, the t-statistic testing the significance of each model coefficient (compared to zero), and the p-value for each t-statistic
+-   The estimates of the model coefficients ($b_0$ and $b_1$), the standard error (SE) for each model coefficient estimate, the t-statistic testing the significance of each model coefficient (compared to zero), and the p-value for each t-statistic
 
-* The residual standard error (AKA the residual standard deviation AKA the standard error of estimate)
+-   The residual standard error (AKA the residual standard deviation AKA the standard error of estimate)
 
-* R-squared (aka the coefficient of determination)
+-   R-squared (aka the coefficient of determination)
 
-* Adjusted R-squared 
+-   Adjusted R-squared
 
-* F-statistic testing the significance of the overall model, along with the *p*-value corresponding to the F-statistic
+-   F-statistic testing the significance of the overall model, along with the *p*-value corresponding to the F-statistic
 
 ### Unpacking the output
 
@@ -159,11 +163,11 @@ Let's unpack some of that output. First, let's start with understanding how the 
 
 #### Residual standard error
 
-The **residual standard error**, also called the **standard error of the estimate**, measures the average deviation between observed and fitted values of Y. It is in the original units of the outcome variable, Y. See the formula below.   
+The **residual standard error**, also called the **standard error of the estimate**, measures the average deviation between observed and fitted values of Y. It is in the original units of the outcome variable, Y. See the formula below.
 
 $$\sqrt{\frac{\Sigma(Y_i - \hat{Y_i})^2}{N-2}}$$
 
-Let's calculate the residual standard error from scratch, and then I will show you how to pull this value directly from the output. 
+Let's calculate the residual standard error from scratch, and then I will show you how to pull this value directly from the output.
 
 First, we need to get the predicted values of Y.
 
@@ -206,12 +210,10 @@ model$residuals
 resid(model)
 ```
 
-Let's check to see that our calculation of the residuals matches what we grabbed directly from the model output. 
+Let's check to see that our calculation of the residuals matches what we grabbed directly from the model output.
 
 ```{r, eval = FALSE}
-residuals == model$residuals
-
-all.equal(residuals, model$residuals)
+round(residuals, 10) == round(resid(model), 10)
 ```
 
 #### Sum of squared residuals
@@ -228,7 +230,7 @@ sum_sq_residuals <- sum(residuals^2)
 sum_sq_residuals
 ```
 
-Finally, now that we have pulled the necessary components, calculate the residual standard error using the formula above. Store the results of the calculation to an object called `residual_standard_error`. 
+Finally, now that we have pulled the necessary components, calculate the residual standard error using the formula above. Store the results of the calculation to an object called `residual_standard_error`.
 
 ```{r, eval = FALSE}
 # REMOVE
@@ -259,7 +261,7 @@ Is it equivalent to what we calculated above?
 model_summary$sigma == residual_standard_error
 ```
 
->**Question:** What does this residual standard error (AKA standard error of the estimate) mean? 
+> **Question:** What does this residual standard error (AKA standard error of the estimate) mean?
 
 REMOVE: We interpret the standard error of the estimate to represent the spread of observed data around the regression line. We want lower.
 
@@ -267,7 +269,7 @@ REMOVE: We interpret the standard error of the estimate to represent the spread 
 
 #### Calculating $R^2$ 'by hand'
 
-Another measure of how well our linear model is capturing variation in the outcome variable is $R^2$. 
+Another measure of how well our linear model is capturing variation in the outcome variable is $R^2$.
 
 Let's calculate $R^2$ by hand first. Here is the formula:
 
@@ -275,14 +277,13 @@ $$R^2 = \frac{SS_{Model}}{SS_Y} = \frac{\Sigma(\hat{Y_i} - \bar{Y})^2}{\Sigma(Y_
 
 Calculate the following:
 
-* $SS_{Model}$
+-   $SS_{Model}$
 
-* $SS_Y$
+-   $SS_Y$
 
-* $R^2$
+-   $R^2$
 
 ```{r, eval = FALSE}
-# REMOVE
 ss_model <- sum((fitted_y - mean(health$sr_health))^2)
 ss_model
 
@@ -293,7 +294,7 @@ r_squared <- ss_model / ss_y
 r_squared
 ```
 
-#### Extracting $R^2$ 
+#### Extracting $R^2$
 
 The coefficient of determination is also stored in the element called `r.squared`. This represents the proportion of variance explained by the model. Like the residual standard error, we need to use the summary function to get it:
 
@@ -307,7 +308,7 @@ Is it equivalent to what we calculated above?
 r_squared == model_summary$r.squared
 ```
 
->**Question:** What does this r-squared value mean (in plain English)?
+> **Question:** What does this r-squared value mean (in plain English)?
 
 REMOVE: $R^2$ represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.
 
@@ -319,11 +320,11 @@ $$F = \frac{MS_{model}}{MS_{residual}}$$
 
 #### Getting F from scratch
 
-Remember that variance (AKA mean square) is the sum of squares divided by the degrees of freedom for each respective term in the equation above. 
+Remember that variance (AKA mean square) is the sum of squares divided by the degrees of freedom for each respective term in the equation above.
 
-Let's calculate `ms_model`, which is the `ss_model` divided by the models degrees of freedom. 
+Let's calculate `ms_model`, which is the `ss_model` divided by the models degrees of freedom.
 
-* We already calculated `ss_model` above, so we just need to divide it by the model degrees of freedom, which is equal to the number of predictors. 
+-   We already calculated `ss_model` above, so we just need to divide it by the model degrees of freedom, which is equal to the number of predictors.
 
 ```{r, eval = FALSE}
 ms_model <- ss_model / 1
@@ -394,13 +395,13 @@ And we can check this against what we got from `summary(model)`:
 summary(model)
 ```
 
->**Question:** Is the F significant? What does this mean?
+> **Question:** Is the F significant? What does this mean?
 
-REMOVE: If the *p*-value is less than the significance level, your sample data provide sufficient evidence to conclude that your regression model fits the data better than the model with no independent variables. The amount of variance explained is significantly different than zero. The ratio of the amount variance explained (the amount of variability of the predicted values; i.e., the model) to the amount variance left over (the amount of variability of the error; the residual) is significantly different than 1. 
+REMOVE: If the *p*-value is less than the significance level, your sample data provide sufficient evidence to conclude that your regression model fits the data better than the model with no independent variables. The amount of variance explained is significantly different than zero. The ratio of the amount variance explained (the amount of variability of the predicted values; i.e., the model) to the amount variance left over (the amount of variability of the error; the residual) is significantly different than 1.
 
 ### Regression coefficients
 
-Recall that we also get estimates for the individual regression coefficients, $b_0$ and $b_1$ in the case of univariate regression. 
+Recall that we also get estimates for the individual regression coefficients, $b_0$ and $b_1$ in the case of univariate regression.
 
 #### Calculating regression coefficients 'by hand'
 
@@ -447,18 +448,17 @@ model$coefficients
 coef(model)
 ```
 
->**Question:** What does the intercept mean?
+> **Question:** What does the intercept mean?
 
-REMOVE: At zero conscientiousness, self-reported health is estimated to be 1.66. 
+REMOVE: At zero conscientiousness, self-reported health is estimated to be 1.66.
 
->**Question:** What about the slope for conscientiousness?
+> **Question:** What about the slope for conscientiousness?
 
 REMOVE: For every one-unit increase in conscientiousness, self-reported health increases by .49 units.
 
 #### Getting standardized coefficients
 
 You probably recall that these are called the *unstandardized* coefficients. We can also get the standardized coefficients. Standardized regression coefficients, often notated as $\beta$, are just the regression coefficients after the variables have been *standardized* or *Z-scored*. To obtain them, we need to z-score our data with `scale()` before we run the `lm()` function. One really cool thing is that we can do it in the `lm()` call:
-
 
 ```{r, eval = FALSE}
 std_model <- lm(scale(sr_health) ~ scale(consc), data = health)
@@ -473,11 +473,11 @@ We can also standardize using the aptly-named `standardize()` function from the 
 standardize(model)
 ```
 
->**Question:** What does the standardized slope for conscientiousness mean?
+> **Question:** What does the standardized slope for conscientiousness mean?
 
-REMOVE: For everyone one standard deviation increase in conscientiousness, there is  a .4765 standard deviation increase in self-reported health.
+REMOVE: For everyone one standard deviation increase in conscientiousness, there is a .4765 standard deviation increase in self-reported health.
 
->**Question:** Why is the intercept zero?
+> **Question:** Why is the intercept zero?
 
 REMOVE: At the mean of conscientiousness, value of self-reported helath is the zero (because it has been scaled and is also the mean).
 
@@ -501,13 +501,13 @@ We can get these from the summary of our model object by extracting the coeffici
 summary(model)$coefficients
 ```
 
->**Question:** Is the test of the intercept significant? What does this mean?
+> **Question:** Is the test of the intercept significant? What does this mean?
 
-REMOVE: Yes. The intercept of 1.66 is significantly different than zero. 
+REMOVE: Yes. The intercept of 1.66 is significantly different than zero.
 
->**Question:** Is the test of the slope significant? What does this mean?
+> **Question:** Is the test of the slope significant? What does this mean?
 
-REMOVE: Yes. The slope of 0.49 is significantly different than zero. 
+REMOVE: Yes. The slope of 0.49 is significantly different than zero.
 
 # A tidier way to extract information
 
@@ -523,7 +523,7 @@ Let's see what happens when we tidy our model:
 tidy(model)
 ```
 
-You can see it produces a dataframe containing the model coefficients and their significance tests.  
+You can see it produces a dataframe containing the model coefficients and their significance tests.
 
 ### `glance()`
 
@@ -543,13 +543,13 @@ augment(model)
 
 Using `augment()`, we get the DV, IV, fitted values, residuals, and other diagnostic information we'll learn about in future weeks.
 
-So with `{broom}`, just remember:   
+So with `{broom}`, just remember:
 
-1. We `tidy()` up coefficients.
+1.  We `tidy()` up coefficients.
 
-2. We `glance()` at (omnibus) model statistics. 
+2.  We `glance()` at (omnibus) model statistics.
 
-3. We `augment()` to find everything else. 
+3.  We `augment()` to find everything else.
 
 The payoff for these functions comes when you want to do something *with* some of your regression results. As an example, you could use `tidy()` to make it easier to make a plot of your regression coefficients:
 
@@ -563,11 +563,11 @@ tidy(model) %>%
 
 # Reporting regressions
 
-The last thing we'll cover today is how to report the results of your regression in Tables. 
+The last thing we'll cover today is how to report the results of your regression in Tables.
 
 ### 'by hand' with `{broom}` and `{kable}`
 
-Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable()` function from `{knitr}`. 
+Our first option would be to make a table 'by hand' using a combination of `tidy()` and the `kable()` function from `{knitr}`.
 
 ```{r, eval = FALSE}
 tidy(model) %>% # first run tidy on the model.
@@ -603,11 +603,11 @@ tidy(model) %>% # we'll still run tidy on the model first
                caption = "Results of Regressing Self-Reported Health on Conscientiousness") 
 ```
 
-This method is nice for two reasons:   
+This method is nice for two reasons:
 
-1. You have a lot of control over how things look.   
+1.  You have a lot of control over how things look.
 
-2. It's pretty general-purpose, and you can easily adapt it to new things you learn how to do in R.   
+2.  It's pretty general-purpose, and you can easily adapt it to new things you learn how to do in R.
 
 However, it has a downside in that it is hard to get this into picture perfect APA format (we didn't get all the way there above) and so you may have to do some editing once you get it into word.
 
@@ -632,11 +632,11 @@ sjPlot::tab_model(model,
 
 # Minihack 1
 
-You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness. As you are about to progress to the next slide, the lights in the room begin to flicker and frost creeps across the windows. Suddenly, the door of the lab room swings open, slamming against the wall. Standing outside is a figure dressed in dark robes. The figure suddenly rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor and they are here to test your stats knowledge.
+You are presenting some of your data at a weekly lab meeting. According to the results of a correlational analysis you ran, extraversion is positively associated with happiness (*r* = .56). As you are about to progress to the next slide, the lights in the room begin to flicker. Suddenly, the door of the lab room bursts open. Standing outside is a figure dressed in dark robes. The figure rises a foot off the floor and glides into the room. They land at the foot of the table and announce that they are Professor Regressor. They have come to test your stats knowledge.
 
 "First question," Professor Regressor announces. "True or false: You would have achieved different results if you ran a univariate regression with standardized variables instead of a correlation?"
 
-Since you have taken Psychology 612, you proudly announce, "False! A correlation between two variables and the standardized coefficients from a univariate regression between the same two variables will always be equivalent."
+Since you have taken Psychology 612, you say, "False! A correlation between two variables and the standardized coefficients from a univariate regression between the same two variables will always be equivalent."
 
 "Prove it!" exclaims Professor Regressor.
 
