@@ -586,6 +586,12 @@ Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, co
 df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv")
 
 # your code here
+cor <- cor.test(df$Extraversion, df$Happiness)
+reg <- lm(scale(Happiness) ~ scale(Extraversion), data = df)
+
+round(cor$estimate, 3)  == round(reg$coefficients[2], 3)             # coefs
+round(cor$statistic, 3) == round(summary(reg)$coefficients[2, 3], 3) # t
+round(cor$p.value, 3)   == round(summary(reg)$coefficients[2, 4], 3) # p
 ```
 
 # Minihack 2
@@ -598,18 +604,25 @@ a.) Run the regression model. Extract the coefficients, calculate the fitted sco
 
 ```{r, eval = FALSE}
 # your code here
+reg2 <- lm(SocSup ~ Extraversion, data = df)
+
+predicted <- reg2$coefficients[1] + df$Extraversion*reg2$coefficients[2]
 ```
 
 b.) Demonstrate that the fitted scores are the same as the values from `fitted.values`.
 
 ```{r, eval = FALSE}
 # your code here
+round(fitted.values(reg2), 3) == round(predicted, 3)
 ```
 
 c.) Use those fitted scores to calculate $R^2$. Demonstrate its equivalence to the result of `summary(model)$r.squared`.
 
 ```{r, eval = FALSE}
 # your code here
+rsq <- cor(predicted, df$SocSup)^2
+
+round(rsq, 3) == round(summary(reg2)$r.squared, 3)
 ```
 
 # Minihack 3
@@ -622,8 +635,10 @@ You take pity on Professor Regressor. Create two APA-formatted tables using two 
 
 ```{r, eval = FALSE}
 # your code here
+stargazer(reg, type = "html", out = here("labs", "lab-2", "output", "mh_reg_tbl1.html"))
 ```
 
 ```{r, eval = FALSE}
 # your code here
+tab_model(reg2, file = here("labs", "lab-2", "output", "reg_tbl_sjp.doc"))
 ```

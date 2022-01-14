@@ -631,26 +631,41 @@ coefficients(std_model) %&gt;%
 <p>Using the PSY612_Lab2_Data.csv, which is located in the lab-2/data subfolder, conduct a bivariate correlation between extraversion and happiness. Then, conduct a univariate regression, regressing happiness on extraversion and obtain the standardized estimate for the slope. Finally, prove to Professor Regressor that they are equivalent by conducting a series of logical tests showing the equivalence of the estimate (correlation and standardized slope value), their test statistic, and the <em>p</em>-value associated with the test statistic (Hint: You can use <code>round(x, 3)</code> to round a value to 3 digits, which will probably be necessary).</p>
 <pre class="r"><code>df &lt;- import(&quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv&quot;)
 
-# your code here</code></pre>
+# your code here
+cor &lt;- cor.test(df$Extraversion, df$Happiness)
+reg &lt;- lm(scale(Happiness) ~ scale(Extraversion), data = df)
+
+round(cor$estimate, 3)  == round(reg$coefficients[2], 3)             # coefs
+round(cor$statistic, 3) == round(summary(reg)$coefficients[2, 3], 3) # t
+round(cor$p.value, 3)   == round(summary(reg)$coefficients[2, 4], 3) # p</code></pre>
 </div>
 <div id="minihack-2" class="section level1">
 <h1>Minihack 2</h1>
 <p>“Bah!” exclaims Professor Regressor. “You’ve only answered one of my questions! Now then, what is the coefficient of determination of extraversion regressed on social support?”</p>
 <p>Calculate fitted scores ‘by hand’ using the regression equation, compare them to the fitted scores stored in the model, and finally use the fitted scores you calculate to estimate <span class="math inline">\(R^2\)</span> for Professor Regressor.</p>
 <p>a.) Run the regression model. Extract the coefficients, calculate the fitted scores <strong>using the extracted coefficients</strong> (HINT: think about the regression equation).</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+reg2 &lt;- lm(SocSup ~ Extraversion, data = df)
+
+predicted &lt;- reg2$coefficients[1] + df$Extraversion*reg2$coefficients[2]</code></pre>
 <p>b.) Demonstrate that the fitted scores are the same as the values from <code>fitted.values</code>.</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+round(fitted.values(reg2), 3) == round(predicted, 3)</code></pre>
 <p>c.) Use those fitted scores to calculate <span class="math inline">\(R^2\)</span>. Demonstrate its equivalence to the result of <code>summary(model)$r.squared</code>.</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+rsq &lt;- cor(predicted, df$SocSup)^2
+
+round(rsq, 3) == round(summary(reg2)$r.squared, 3)</code></pre>
 </div>
 <div id="minihack-3" class="section level1">
 <h1>Minihack 3</h1>
 <p>Professor Regressor begins to sob.</p>
 <p>“I am no match for a stats sorcerer as powerful as you,” says Professor Regressor. “Please, share with me the secrets of your models…”</p>
 <p>You take pity on Professor Regressor. Create two APA-formatted tables using two different methods we covered today. The first table should correspond to the regression from Minihack 1 (regressing happiness on extraversion) and the second should correspond to the regression from Minihack 2 (regressing social support on extraversion).</p>
-<pre class="r"><code># your code here</code></pre>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+stargazer(reg, type = &quot;html&quot;, out = here(&quot;labs&quot;, &quot;lab-2&quot;, &quot;output&quot;, &quot;mh_reg_tbl1.html&quot;))</code></pre>
+<pre class="r"><code># your code here
+tab_model(reg2, file = here(&quot;labs&quot;, &quot;lab-2&quot;, &quot;output&quot;, &quot;reg_tbl_sjp.doc&quot;))</code></pre>
 </div>
 
 
