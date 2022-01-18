@@ -22,11 +22,14 @@ final-project.html
   
 3-regression.html
 
+* prediction is tricky -- can't predict for observation with X out of range. bad idea to use regression models to estimate changes over time. 
+
 4-regression.html
   
 2-lab.html
 
-  * more interactive labs are good! This one is already interactive, so good template for future labs.
+  * this is a bit long.
+  * wasn't able to cover stargazer/sjPlot and other formatting code
 
 5-regression.html
 
@@ -119,3 +122,4 @@ lab-8.html
 
 lab-9.html
 * short and straightfoward -- good for this lab. 
+* add stargazer/ sjPlot/kable something for making formatted tables

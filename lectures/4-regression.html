@@ -24,6 +24,7 @@ class: center, middle, inverse, title-slide
 ## Last time...
 
 - Introduction to univariate regression
+  - Explaination, prediction, adjustment
 
 - Calculation and interpretation of `\(b_0\)` and `\(b_1\)`
 
@@ -99,6 +100,9 @@ gapminder %&gt;% ggplot(aes(x = log_gdp, y = lifeExp)) + geom_point() +
 
 ![](4-regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
 
+???
+
+Prediction: can predict for another country here, so long as it has X in range
 
 ---
 
@@ -213,7 +217,7 @@ Students must recognize that Y-hat and e are uncorrelated, they must be the way 
 
 `$$\Large s^2_Y = s^2_{\hat{Y}} + s^2_{e}$$`
 
-Recall that variances are sums of squares divided by N-1. In the case, all variances have the same sample size, so we can also note the following:
+Recall that variances are sums of squares divided by N-1. Thus, all variances have the same sample size, so we can also note the following:
 
 `$$\Large SS_Y = SS_{\hat{Y}} + SS_{\text{e}}$$`
 
@@ -439,7 +443,7 @@ We can use residuals to estimate true score error. Note that this formula will l
 
 - aka .purple[residual standard error]
 
-`$$\hat{\sigma} = \sqrt{\frac{SS_{\text{Residual}}}{df_{\text{Residual}}}} = s_{Y|X} = \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$`
+`$$s_{Y|X} = \sqrt{\frac{SS_{\text{Residual}}}{df_{\text{Residual}}}} =  \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$`
 
 - interpreted in original units (unlike `\(R^2\)`)
 

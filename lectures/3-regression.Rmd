@@ -66,7 +66,7 @@ The output of regression includes both effect sizes and, if using frequentist or
 
   + If everyone had the same level of SES, would education still predict wealth?
 
-- **Prediction**: We can develop models based on what's happened in the past to predict what will happen in the figure.
+- **Prediction**: We can develop models based on what's happened in the past to predict what will happen in the future.
 
   + Insurance premiums
   + Graduate school... success?
@@ -134,7 +134,7 @@ $$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$
 
 The second is the equation that represents our expected or **fitted value** of the outcome $(\hat{Y_i})$, sometimes referred to as the "predicted value." This expected value is the sum of some constant $(b_0)$, the weighted $(b_1)$ observed values of the predictors $(X_i)$.
 
-Note that $Y_i - \hat{Y_i} = e$.
+Note that $Y_i - \hat{Y_i} = e_i$.
 
 ???
 

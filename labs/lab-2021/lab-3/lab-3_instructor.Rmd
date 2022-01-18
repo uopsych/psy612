@@ -50,6 +50,7 @@ First, let's load in the data.
 health <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-3/data/consc_health.csv")
 ```
 
+
 Our model can be described with the following regression equation:
 
 $$health_i = b_0 + b_1consc_i + e_i$$
