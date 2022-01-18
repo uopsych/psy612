@@ -96,7 +96,7 @@ $$b^*_1 = r_{xy}$$
  
 *Overclaiming* occurs when people claim that they know something that is impossible to know; are experts susceptible to overclaiming?
 
-Participants completed a measure of self-perceived knowledge, in which they indicate their level of knowledge in the area of personal finance. Next participants indicated how much they knew about 15 terms related to personal finance (e.g., home equity). Included in the 15 items were three terms that do not actually exist (e.g., annualized credit). Thus, overclaiming occurred when participants said that they were knowledgeable about the non-existent terms. Finally, participants completed a test of financial literacy called the FINRA.
+Participants completed a measure of **_self-perceived knowledge_**, in which they indicate their level of knowledge in the area of personal finance. Next participants indicated how much they knew about 15 terms related to personal finance (e.g., home equity). Included in the 15 items were three terms that do not actually exist (e.g., annualized credit). Thus, **_overclaiming_** occurred when participants said that they were knowledgeable about the non-existent terms. 
 
 .small[
 Atir, S., Rosenzweig, E., & Dunning, D. (2015). [When knowledge knows no bounds: Self-perceived expertise predicts claims of impossible knowledge.](https://journals.sagepub.com/stoken/default+domain/ZtrwAQcGwtzhkvv8vgKq/full) Psychological Science, 26, 1295-1303. ]
@@ -149,6 +149,11 @@ plot_model(fit.1,
 ```
 ]
 
+???
+
+Point out here:
+* Can be hard to visualize data when you have a Likert scale or other measure with a relatively small number of possible answers. 
+* BUT jitter can produce impossible data points and possibly hide floor or ceiling effects. 
 ---
 
 ## regression coefficient
@@ -185,7 +190,7 @@ summary(fit.1)
 
 ---
 
-## $SE_b$
+## $se_b$
 
 - .purple[standard error for the slope coefficient]
 
@@ -216,11 +221,9 @@ summary(fit.1)
 
 - same equation as we've been working with:
 
-$$CI_b = b \pm CV(SE_b)$$
+$$CI_b = b \pm CV(se_b)$$
 
 - How do we estimate the critical value?
-
-- After a certain sample size, the CV can be estimated as what value?
 
 ---
 
@@ -236,11 +239,11 @@ cv = qt(.975, df = nrow(expertise)-2)
 moe = b_se*cv
 ```
 
-$b_1 \pm CV(SE_b) = `r round(b_est,3)` \pm `r round(cv,3)`(`r round(b_se,3)`)$
-$b_1 \pm CV(SE_b) = `r round(b_est,3)` \pm `r round(moe,3)`$
+$b_1 \pm CV(se_b) = `r round(b_est,3)` \pm `r round(cv,3)`(`r round(b_se,3)`)$
+$b_1 \pm CV(se_b) = `r round(b_est,3)` \pm `r round(moe,3)`$
 
 ---
-## $SE_{\hat{Y_i}}$
+## $se_{\hat{Y_i}}$
 
 In addition to estimating precision around the our coefficients, we can also estimate our precision around our predicted values, $\hat{Y_i}$. Why might this be a useful exercise?
 
@@ -248,7 +251,7 @@ In addition to estimating precision around the our coefficients, we can also est
 
 The formula to estimate the standard error of any particular $\hat{Y_i}$ is
 
-$$s_{\hat{Y}_X} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+$$se_{\hat{Y}_i} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
 ---
 
 ```{r, highlight.output = 5}
@@ -335,7 +338,7 @@ expertise %>%
 
 ---
 
-```{r, echo = F}
+```{r, echo = F, cache = T}
 
 set.seed(012220)
 
@@ -357,6 +360,7 @@ animate(p, fps = 3)
 
 ---
 ## Confidence Bands for regression line
+
 ```{r, echo=FALSE, message=FALSE, warning = F, fig.width = 10}
 set.seed(123)
 
@@ -415,19 +419,19 @@ ggpubr::ggarrange(p1, p2, align = "v")
 ---
 ## Confidence Bands
 
-$$\Large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+$$\large \hat{Y}_i\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
 
 
 ---
 ## Prediction bands
 
-$$\large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+$$\large \hat{Y}_i\pm t_{critical} * s_{Y|X}*\sqrt{1+ \frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
 
-- predicting and individual $i's$ score, not the $\hat{Y}$ for a particular level of X. (A new $Y_i$ given $X_i$, rather than $\bar{Y}$ given $X_i$ )
+- predicting an individual $i's$ score, not the $\hat{Y}$ for a particular level of X. (A new $Y_i$ given $X_i$, rather than $\bar{Y}$ given $X_i$ )
 
 - Because there is greater variation in predicting an individual value rather than a mean, the prediction band is greater
 
-- Combines unknown variability of the estimated mean $(\text{as reflected in }SE_b)$ with peoples' scores around mean $(\text{standard error of the estimate }, s_{Y|X})$
+- Combines unknown variability of the estimated mean $(\text{as reflected in }se_b)$ with peoples' scores around mean $(\text{standard error of the estimate }, s_{Y|X})$
 
 
 ---
