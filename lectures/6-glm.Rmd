@@ -35,14 +35,16 @@ knit_hooks$set(output = function(x, options) {
   )
 ```
 
+## Annoucements
+
+* Homework 1 due next Friday
+* Updated language on syllabus -- I am an Assisting Employee
 
 ## Last time
 
 Wrap up univariate regression
 
 - Confidence and prediction bands
-
-- Matrix algebra
 
 - Model comparison
 
@@ -101,9 +103,9 @@ This model (equation) can be very simple as in a treatment/control experiment. I
 
 The majority of our models fall under the umbrella of a general(ized) linear model
 
-  + The **general linear model** is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your residuals* are normally distributed. 
+  + The .purple[general linear model] is a family of models that assume the relationship between your DV and IV(s) is linear and additive, and that your residuals* are normally distributed. 
     
-  + This is a subset of the **generalized linear model** which allows for non-linear associations and non-normally distributed outcomes. 
+  + This is a subset of the .purple[generalized linear model] which allows for non-linear associations and non-normally distributed outcomes. 
 
 All models imply our theory about how the data are generated (i.e., how the world works)
 
@@ -292,7 +294,8 @@ t.test(traffic.risk ~ tx, data = traffic)
 
 The *p*-values for the two tests are the same, because they are the same test. 
 
-The probability distribution may differ, however. 
+The probability distribution may differ... sort of. Recall that all these distributions are derived from the standard normal.
+
   - *t*-test uses a *t*-distribution
   - regression uses an *F*-distribution for the omnibus test
   - regression uses a *t*-distribution for the test of the coefficients
@@ -332,7 +335,7 @@ summary(mod.3)
 ---
 Regression models provide all the same information as the *t*-test or correlation. But they provide additional information. 
 
-Regression omnibus test are the same as *t*- or *r*-tests, even the same as ANOVAs. But the coefficient tests give you additional information, like intercepts, and make it easier to calculate predicted values and to assess relative fit.
+Regression omnibus test are the same as *t*-test or correlation tests, even the same as ANOVAs. But the coefficient tests give you additional information, like intercepts, and make it easier to calculate predicted values and to assess relative fit.
 
 ---
 ## Predictions
@@ -356,7 +359,7 @@ summary(mod.1)
 ---
 ## Predictions
 
-- Unless you've collected a new dataset, you can't really assess the accuracy of preditions. Instead, we evaluate our $\hat{Y}_i$'s instead. We want $\hat{Y}_i$ to be close to our actual data for each person $(Y_{i})$
+- Unless you've collected a new dataset, you can't really assess the accuracy of predictions. Instead, we evaluate the fit to the data used to create the model. We want $\hat{Y}_i$ to be close to our actual data for each person $(Y_{i})$
 
 - The difference between the actual data and our guess $(Y_{i}  - \hat{Y}_{i} = e)$ is the residual, how far we are "off". This tells us how good our fit is. 
 
