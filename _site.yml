@@ -18,7 +18,7 @@ navbar:
       - text: "5-Univariate regression (precision)"
         href: lectures/5-regression.html
       - text: "6-General Linear Model"
-        href: lectures/g-glm.html
+        href: lectures/6-glm.html
     - text: Labs
       menu:
       - text: "1-Correlations"
