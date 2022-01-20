@@ -10,11 +10,14 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
+
 ```{r, echo = F, warning = F, message = F}
 options(scipen = 999)
 knitr::opts_chunk$set(message = FALSE) # suppress messages
 library(tidyverse)
 library(broom)
+library(gganimate)
+library(ungeviz)
 ```
 
 
@@ -27,7 +30,7 @@ library(broom)
 $$Y = b_0 + b_1X + e$$
 
 - Intercept and slope are interpreted in the units of Y.
-  - Useful if the units of Y are meaningful. (Dollars, days, donuts)
+  - Useful if the units of Y are meaningful.
   
 - Built from covariances and variances
 
@@ -76,22 +79,16 @@ $$b^*_1 = r_{xy}$$
 
 - $R^2$
 --
-  - **coefficient of determination**
+  - .purple[coefficient of determination]
   - squared correlation between $Y$ and $\hat{Y}$
   - proportion of variance in Y accounted for by the model
   
 - $s_{Y|X}$ 
 
 --
-  - **standard error of the estimate** or standard deviation of the residuals.
-  - The standard deviation of Y not accounted for by the model. (Compare this to the original standard deviation.)
-  
-- $MSE$
-
---
-  - **mean square error** or unbiased estimate of error variance
+  - .purple[standard error of the estimate] and the square root of the .purple[mean square error (MSE)] 
   - measure of discrepancy between model and data
-  - variance around fitted regression line
+  - MSE: variance around fitted regression line
 
 ---
 
@@ -99,7 +96,7 @@ $$b^*_1 = r_{xy}$$
  
 *Overclaiming* occurs when people claim that they know something that is impossible to know; are experts susceptible to overclaiming?
 
-Participants completed a measure of self-perceived knowledge, in which they indicate their level of knowledge in the area of personal finance. Next participants indicated how much they knew about 15 terms related to personal finance (e.g., home equity). Included in the 15 items were three terms that do not actually exist (e.g., annualized credit). Thus, overclaiming occurred when participants said that they were knowledgeable about the non-existent terms. Finally, participants completed a test of financial literacy called the FINRA.
+Participants completed a measure of **_self-perceived knowledge_**, in which they indicate their level of knowledge in the area of personal finance. Next participants indicated how much they knew about 15 terms related to personal finance (e.g., home equity). Included in the 15 items were three terms that do not actually exist (e.g., annualized credit). Thus, **_overclaiming_** occurred when participants said that they were knowledgeable about the non-existent terms. 
 
 .small[
 Atir, S., Rosenzweig, E., & Dunning, D. (2015). [When knowledge knows no bounds: Self-perceived expertise predicts claims of impossible knowledge.](https://journals.sagepub.com/stoken/default+domain/ZtrwAQcGwtzhkvv8vgKq/full) Psychological Science, 26, 1295-1303. ]
@@ -131,10 +128,13 @@ summary(fit.1)
 ```
 
 ---
-.pull-left[
-```{r, results = 'hide', message = F, warning = F}
+```{r}
 library(sjPlot)
 set_theme(base = theme_bw())
+```
+
+.pull-left[
+```{r, results = 'hide', message = F, warning = F}
 plot_model(fit.1, 
            type = "pred", 
            show.data = T) 
@@ -144,12 +144,16 @@ plot_model(fit.1,
 .pull-right[
 ```{r, results = 'hide', message = F, warning = F}
 plot_model(fit.1, 
-           type = "pred", 
-           show.data = T, 
+           type = "pred", show.data = T, 
            jitter = T) 
 ```
 ]
 
+???
+
+Point out here:
+* Can be hard to visualize data when you have a Likert scale or other measure with a relatively small number of possible answers. 
+* BUT jitter can produce impossible data points and possibly hide floor or ceiling effects. 
 ---
 
 ## regression coefficient
@@ -165,9 +169,10 @@ $$\Large H_{1}: \beta_{1} \neq 0$$
 
 - Does X provide any explanatory power regarding the variability of Y? 
 
-- Is the the average value the best guess (i.e., is Y bar equal to the predicted value of Y?)
+- Is the the average value different from the best guess 
+  - (i.e., is $\bar{Y}$ equal to $\hat{Y}$ ?)
 
-- Is the regression line flat? 
+- Is the regression line not flat? 
 
 - Are X and Y correlated?  
 
@@ -185,22 +190,25 @@ summary(fit.1)
 
 ---
 
-## $SE_b$
+## $se_b$
 
-- standard errors for the slope coefficient
+- .purple[standard error for the slope coefficient]
 
 - represent our uncertainty (noise) in our estimate of the regression coefficient 
+- different from (but proportional to) the standard error of the estimate
 
-- different from residual standard error/deviation (but proportional to)  
-
-- much like previously we can take our estimate (b) and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
+-  we can take our estimate $(b)$ and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
 
 ---
 ## Intercept
 
-- more complex standard error calculation as the calculation depends on how far the X value (here zero) is away from the mean of X
+- more complex standard error calculation
+
+- the calculation depends on how far the X value (here zero) is away from the mean of X
 
     - farther from the mean, less information, thus more uncertainty 
+    
+- we'll come back to this calculation shortly
     
 ---
 
@@ -213,14 +221,29 @@ summary(fit.1)
 
 - same equation as we've been working with:
 
-$$CI_b = b \pm CV(SE_b)$$
+$$CI_b = b \pm CV(se_b)$$
 
 - How do we estimate the critical value?
 
-- After a certain sample size, the CV can be assumed to be what?
+---
+
+```{r}
+coef(summary(fit.1))
+confint(fit.1)
+```
+
+```{r, echo = F}
+b_est = coef(summary(fit.1))[2,1]
+b_se = coef(summary(fit.1))[2,2]
+cv = qt(.975, df = nrow(expertise)-2)
+moe = b_se*cv
+```
+
+$b_1 \pm CV(se_b) = `r round(b_est,3)` \pm `r round(cv,3)`(`r round(b_se,3)`)$
+$b_1 \pm CV(se_b) = `r round(b_est,3)` \pm `r round(moe,3)`$
 
 ---
-## $SE_{\hat{Y_i}}$
+## $se_{\hat{Y_i}}$
 
 In addition to estimating precision around the our coefficients, we can also estimate our precision around our predicted values, $\hat{Y_i}$. Why might this be a useful exercise?
 
@@ -228,7 +251,7 @@ In addition to estimating precision around the our coefficients, we can also est
 
 The formula to estimate the standard error of any particular $\hat{Y_i}$ is
 
-$$s_{\hat{Y}_X} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+$$se_{\hat{Y}_i} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
 ---
 
 ```{r, highlight.output = 5}
@@ -243,7 +266,27 @@ head(model_info[,c(".fitted", ".se.fit")])
 
 
 We can string these together in a figure and create **confidence bands**.
+---
 
+```{r, echo = F}
+cv = qt(.975, df = nrow(model_info)-2)
+model_info %>% 
+  ggplot(aes(x = self_perceived_knowledge)) +
+  geom_point(aes(y = .fitted)) +
+  geom_errorbar(aes(ymin = .fitted-(cv*.se.fit), 
+                    ymax = .fitted+(cv*.se.fit)  ))
+```
+---
+
+```{r, echo = F}
+cv = qt(.975, df = nrow(model_info)-2)
+model_info %>% 
+  ggplot(aes(x = self_perceived_knowledge)) +
+  geom_point(aes(y = .fitted)) +
+  geom_errorbar(aes(ymin = .fitted-(cv*.se.fit), 
+                    ymax = .fitted+(cv*.se.fit)  )) +
+  geom_smooth(aes(y = overclaiming_proportion), method = "lm")
+```
 ---
 
 ```{r, echo = F}
@@ -259,14 +302,29 @@ expertise %>%
 
 
 ---
+
+Let's return to the idea of the uncertainty around our slope and intercept estimates. 
+
 ```{r}
 confint(fit.1)
 ```
 
----
+We accept that these ranges represent our guess for where the true values of these parameters could be. So while we estimated a single slope and single intercept, reasonably, there is a set of slopes and intercepts that we would consider reasonable. 
 
 ```{r, echo = F}
 ci = confint(fit.1)
+```
+
+What if we took the extremes from these distributions?
+
+$\hat{Y}_i = `r round(ci[1,1], 2)` + `r round(ci[2,2],2)`X_i$
+
+$\hat{Y}_i = `r round(ci[1,2], 2)` + `r round(ci[2,1],2)`X_i$
+
+---
+
+```{r, echo = F}
+
 expertise %>%
   ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) + 
   geom_jitter(size = .5, color = "darkgrey") + 
@@ -279,7 +337,30 @@ expertise %>%
 ```
 
 ---
+
+```{r, echo = F, cache = T}
+
+set.seed(012220)
+
+boots <- bootstrapper(100)
+
+p <- expertise %>%
+  ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) +
+  geom_smooth(method = "lm", color = NA) +
+  geom_jitter(alpha = 0.3) +
+  geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) +
+  theme_minimal() +
+  transition_states(.draw, 1, 1) +
+  enter_fade() +
+  exit_fade() +
+  ease_aes()
+
+animate(p, fps = 3)
+```
+
+---
 ## Confidence Bands for regression line
+
 ```{r, echo=FALSE, message=FALSE, warning = F, fig.width = 10}
 set.seed(123)
 
@@ -295,14 +376,14 @@ pd.2 <- data.frame(px.2,py.2)
 
 
 p1 <- ggplot(pd.1, aes(x = px.1,y =  py.1)) +
-    geom_point() +    
-    geom_smooth(method = lm) +
+    geom_point(alpha = .3) +    
+    geom_smooth(method = lm, fill = "blue", alpha = .7) +
    scale_x_continuous(limits = c(-3, 3))  +
   scale_y_continuous(limits = c(-3, 3))
 
 p2 <- ggplot(pd.2, aes(x=px.2, y=py.2)) +
-    geom_point() +    
-    geom_smooth(method=lm) +
+    geom_point(alpha = .3) +    
+    geom_smooth(method=lm, fill = "blue", alpha = .7) +
   scale_x_continuous(limits = c(-3, 3))  +
   scale_y_continuous(limits = c(-3, 3))
 
@@ -338,19 +419,19 @@ ggpubr::ggarrange(p1, p2, align = "v")
 ---
 ## Confidence Bands
 
-$$\Large \hat{Y}\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+$$\large \hat{Y}_i\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
 
 
 ---
 ## Prediction bands
 
-$$\large \hat{Y}\pm t_{critical} * se_{residual}*\sqrt{1+ \frac {1}{n}+\frac{(X-\bar{X})^2}{(n-1)s_{X}^2}}$$
+$$\large \hat{Y}_i\pm t_{critical} * s_{Y|X}*\sqrt{1+ \frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
 
-- predicting and individual $i's$ score, not the $\hat{Y}$ for a particular level of X. (A new $Y_i$ given x, rather than $\bar{Y}$ given x)
+- predicting an individual $i's$ score, not the $\hat{Y}$ for a particular level of X. (A new $Y_i$ given $X_i$, rather than $\bar{Y}$ given $X_i$ )
 
-- Because there is greater variation in predicting an individual value rather than a collection of individual values (i.e., the mean) the prediction band is greater
+- Because there is greater variation in predicting an individual value rather than a mean, the prediction band is greater
 
-- Combines unknown variability of the estimated mean $(\text{as reflected in }SE_b)$ with peoples' scores around mean $(\text{residual standard error }, s_{Y|X})$
+- Combines unknown variability of the estimated mean $(\text{as reflected in }se_b)$ with peoples' scores around mean $(\text{standard error of the estimate }, s_{Y|X})$
 
 
 ---
@@ -367,280 +448,6 @@ pred <- ggplot(new_df, aes(x=self_perceived_knowledge, y=overclaiming_proportion
 
 pred
 ```
-
----
-
-## Matrix algebra
-
-Matrix algebra serves several uses here. First, it can help us to visualize our regression equation in terms of data:
-
-$$\small \left[\begin{array}
-{r}
-y_1   \\
-y_2   \\
-\dots \\
-y_n   
-\end{array}\right]
-=
-\left[\begin{array}
-{rrr}
-b_{0} & b_{1}
-\end{array}\right] 
-\times 
-\left[\begin{array}
-{rr}
-1 & x_1   \\
-1 & x_2   \\
-\dots \\
-1 & x_n   
-\end{array}\right]
-+
-\left[\begin{array}
-{r}
-e_1   \\
-e_2   \\
-\dots \\
-e_n   
-\end{array}\right]$$
-
----
-
-## Matrix algebra
-
-Recall that $Y$ is a vector of values, which can be represented as an $n\times1$ matrix, $\mathbf{y}$. Similarly, X can be represented as an $n\times1$ matrix, $\mathbf{X}$.
-
-Consider now our regression equation:
-
-$$\mathbf{y} = b_0 + b_1\mathbf{x} + e$$
-
-If we augment the matrix $\mathbf{X}$ to be an $n\times2$ matrix, in which the first column is filled with 1's, we can simplify this equation:
-
-$$\mathbf{y} = \mathbf{b}\mathbf{X}$$
-
-Where $\mathbf{b}$ is a $1 \times 2$ matrix containing our estimates of the intercept and slope. If we solve for b, we find that
-
-$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
-
-???
-One property of the residuals is that the the average residual is 0, so we can remove this from the equation as well.
-
-
----
-
-### A "simple" example
-
-.pull-left[
-| X | 6 | 7 | 8 | 9 | 7 |
-|:-:|:-:|:-:|:-:|:-:|:-:|
-| Y | 1 | 2 | 3 | 3 | 4 |
-]
-
-.pull-right[
-$$\mathbf{X} = \left(\begin{array}
-{rr}
-1 & 6  \\
-1 & 7 \\
-1 & 8 \\
-1 & 9 \\
-1 & 7 \\
-\end{array}\right)$$
-]
-
---
-
-$$\mathbf{X'X} = \left(\begin{array}
-{rrrrr}
-1 & 1 & 1 & 1 & 1  \\
-6 & 7 & 8 & 9 & 7 \\
-\end{array}\right) \left(\begin{array}
-{rr}
-1 & 6  \\
-1 & 7 \\
-1 & 8 \\
-1 & 9 \\
-1 & 7 \\
-\end{array}\right) = 
-\left(\begin{array}
-{rr}
-5 & 37  \\
-37 & 279 \\
-\end{array}\right)$$
-
-
-
-???
-
-$$
-\mathbf{X'X} = \left(\begin{array}
-{rr}
-N & \Sigma X  \\
-\Sigma X & \Sigma X^2 \\
-\end{array}\right)
-$$
-
-
----
-
-$$\mathbf{X'X} = 
-\left(\begin{array}
-{rr}
-5 & 37  \\
-37 & 279 \\
-\end{array}\right)$$
-
-```{r}
-m = matrix(c(5,37,37,279), nrow = 2)
-solve(m)
-```
-
-
-$$(\mathbf{X'X})^{-1} = 
-\left(\begin{array}
-{rr}
-10.73 & -1.42  \\
--1.42 & .19 \\
-\end{array}\right)$$
-
----
-
-.pull-left[
-$$\mathbf{X} = \left(\begin{array}
-{rr}
-1 & 6  \\
-1 & 7 \\
-1 & 8 \\
-1 & 9 \\
-1 & 7 \\
-\end{array}\right)$$
-]
-.pull-right[
-$$\mathbf{y} = \left(\begin{array}
-{r}
-1   \\
-2  \\
-3  \\
-3  \\
-4  \\
-\end{array}\right)$$
-]
-
-$$\mathbf{X'y} = \left(\begin{array}
-{rrrrr}
-1 & 1 & 1 & 1 & 1  \\
-6 & 7 & 8 & 9 & 7 \\
-\end{array}\right) \left(\begin{array}
-{r}
-1   \\
-2  \\
-3  \\
-3  \\
-4  \\
-\end{array}\right) = 
-\left(\begin{array}
-{r}
-13   \\
-99 \\
-\end{array}\right)$$
-
-???
-
-$$
-\mathbf{X'y} = \left(\begin{array}
-{rr}
-\Sigma Y   \\
-\Sigma XY  \\
-\end{array}\right)
-$$
----
-$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
-
-$$\mathbf{X'y} = \left(\begin{array}
-{rr}
-10.73 & -1.42   \\
--1.42 & .19  \\
-\end{array}\right) \left(\begin{array}
-{r}
-13   \\
-99  \\
-\end{array}\right) = 
-\left(\begin{array}
-{r}
--1.38   \\
-0.54 \\
-\end{array}\right)$$
-
-```{r, echo = T, eval = T}
-x = c(6,7,8,9,7)
-y = c(1,2,3,3,4)
-summary(lm(y ~ x))
-```
-
----
-
-## Matrix algebra
-
-In the case of a single predictor (univariate regression), the matrix algebra method to calculate coefficients may seem more complicated than using the formulas for OLS. (See [here](https://www.stat.purdue.edu/~boli/stat512/lectures/topic3.pdf) for formulas showing how they're the same.)
-
-However, when we expand into multiple regression (next week), the matrix algebra method is much easier to expand to fit.
-
-Matrix algebra can [explain *why* our formulas](https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/13/lecture-13.pdf) for the intercept and slope generate the regression line with the smallest squared error.
-
-
----
-## Model Comparison
-
-- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
-
-- Every test of an omnibus model is implicitly a model comparisons, typically of your fitted model with the nil model (no slopes). This framework allows you to be more flexible and explicit.   
-
----
-
-```{r}
-fit.1 <- lm(overclaiming_proportion ~ self_perceived_knowledge, 
-            data = expertise)
-
-fit.0 <- lm(overclaiming_proportion ~ 1,
-            data = expertise)
-```
-
-
----
-
-```{r}
-summary(fit.0)
-```
-
----
-```{r}
-summary(fit.1)
-```
-
-
----
-```{r}
-anova(fit.0)
-```
-
----
-```{r}
-anova(fit.1)
-```
-
-
----
-```{r}
-anova(fit.1, fit.0)
-```
----
-## Model Comparisons 
-
-- Model comparisons are redundant with nil/null hypotheses and coefficient tests right now, but will be more flexible down the road. 
-
-- Key is to start thinking about your implicit alternative models
-
-- The ultimate goal would be to create two models that represent two equally plausible theories. 
-
-- Theory A is made up of components XYZ, whereas theory B has QRS components. You can then ask which theory (model) is better? 
 
 ---
 class: inverse

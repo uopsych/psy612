@@ -172,9 +172,9 @@ _Note: `cor.test` cannot handle a null hypothesis other than 0. You'll have to c
 ### Recap: testing the significance of a correlation
 
 .pull-left[
-If the null hypothesis is the **nil hypothesis**:
+If the null hypothesis is the .purple[nil hypothesis]:
  
- - test significance using a *t*-distribution, where 
+ - test significance using a _t_-distribution, where 
  
  `$$\large t = \frac{r}{SE_r}$$`
  `$$\large SE_r = \sqrt{\frac{1-r^2}{N-2}}$$`
@@ -630,9 +630,9 @@ round(cor(bfi, use = "complete"),2)
 
 ---
 
-With **pairwise deletion**, different sets of cases contribute to different correlations.  That maximizes the sample sizes, but can lead to problems if the data are missing for some systematic reason.
+With .purple[pairwise deletion], different sets of cases contribute to different correlations.  That maximizes the sample sizes, but can lead to problems if the data are missing for some systematic reason.
 
-**Listwise deletion** (often referred to in `R` as use complete cases) doesn't have the same issue of biasing correlations, but does result in smaller samples and potentially limited generalizability.
+.purple[Listwise deletion] (often referred to in `R` as use complete cases) doesn't have the same issue of biasing correlations, but does result in smaller samples and potentially limited generalizability.
 
 A good practice is comparing the different matrices; if the correlation values are very different, this suggests that the missingness that affects pairwise deletion is systematic.
 
@@ -737,17 +737,17 @@ round(cor(bfi, use = "pairwise")- cor(bfi, use = "complete"),2)
 
 ## Types of missingness
 
-Ideally our missingness is **missing completely at random (MCAR)**. This means the probability of being missing is the same for all observations. If this is the case, our correlation estimates will be unbiased (if underpowered) and we're free to use them with no concerns (other than the usual).
+Ideally our missingness is .purple[missing completely at random (MCAR)]. This means the probability of being missing is the same for all observations. If this is the case, our correlation estimates will be unbiased (if underpowered) and we're free to use them with no concerns (other than the usual).
 * Aliens beam into a warehouse and randomly take some files.
 
-However, our data might be **missing at random (MAR)**. This means the probability of being missing is different between cases, and also the probability is related to variables we have observed. This is not great, but sometimes we can account for this using the variables we have observed (e.g., imputation, different estimation methods).
+However, our data might be .purple[missing at random (MAR)]. This means the probability of being missing is different between cases, and also the probability is related to variables we have observed. This is not great, but sometimes we can account for this using the variables we have observed (e.g., imputation, different estimation methods).
 * Raccoons sneak into the warehouse and eat all the files by the door. 
 
 ---
 
 ## Types of missingness
 
-It's a problem if our data is **missing not at random (MNAR)**. The probability of being missing differs for reasons that are unknown to us. This is especially problematic if the reason is associated with the variables at the heart of our study. Sensitivity analyses might help us detect MNAR-ness and possibly define the limits of our study, but we can't adjust our data for this issue.
+It's a problem if our data is .purple[missing not at random (MNAR)]. The probability of being missing differs for reasons that are unknown to us. This is especially problematic if the reason is associated with the variables at the heart of our study. Sensitivity analyses might help us detect MNAR-ness and possibly define the limits of our study, but we can't adjust our data for this issue.
 * Criminals break into the warehouse and steal files about themselves.
 
 ---
@@ -755,7 +755,7 @@ It's a problem if our data is **missing not at random (MNAR)**. The probability 
 
 A single correlation can be informative; a correlation matrix is more than the sum of its parts. 
 
-Correlation matrices can be used to infer larger patterns of relationships. You may be one of the gifted who can look at a matrix of numbers and see those patterns immediately. Or you can use **heat maps** to visualize correlation matrices. 
+Correlation matrices can be used to infer larger patterns of relationships. You may be one of the gifted who can look at a matrix of numbers and see those patterns immediately. Or you can use .purple[heat maps] to visualize correlation matrices. 
 
 
 ```r
@@ -878,7 +878,7 @@ alpha(bfi[,c("A1", "A2", "A3", "A4", "A5")])
 ---
 ## Reliability
 
-- if you are going to measure something do it well
+- if you are going to measure something, do it well
 
 - applies to ALL IVs and DVs, and all designs
 
@@ -889,7 +889,7 @@ alpha(bfi[,c("A1", "A2", "A3", "A4", "A5")])
 
 - Many ways to get at relationship between two variables
 
-- Statistically the different types are *almost* exactly the same
+- Statistically the different types are _almost_ exactly the same
 - Exist for historical reasons
 
 ---

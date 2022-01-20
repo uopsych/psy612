@@ -16,32 +16,20 @@ final-project.html
 
 1-correlation.html
 - trim interpretations of correlations (only effect size, remove vectors)
+- other (better?) ways of describing symmetry assumption
 
 2-correlation.html
-
-- add slides about MAR/MCAR/MNAR 
-
-1-lab.html
-
-  * maybe add missingness (but included in class already) -- minihack?
-  * change Dawtry example to something else
   
 3-regression.html
-  
-  * go back and add i's 
-  * double check z for standardized regression equation
-  * remove sxy etc from slide 19
-  * positive feedback on discussion of eugenics
+
+* prediction is tricky -- can't predict for observation with X out of range. bad idea to use regression models to estimate changes over time. 
 
 4-regression.html
   
-  * check z's for standardized regression equation
-  * add the squares
-  * add this! https://joshualoftus.com/post/2020-11-23-least-squares-as-springs/least-squares-as-springs/ 
-  
 2-lab.html
 
-  * more interactive labs are good! This one is already interactive, so good template for future labs.
+  * this is a bit long.
+  * wasn't able to cover stargazer/sjPlot and other formatting code
 
 5-regression.html
 
@@ -134,3 +122,4 @@ lab-8.html
 
 lab-9.html
 * short and straightfoward -- good for this lab. 
+* add stargazer/ sjPlot/kable something for making formatted tables

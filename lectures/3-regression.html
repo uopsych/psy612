@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Univariate regression</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Univariate regression
+
+---
+
+
+
+
+
+## Last time
+
+- Correlation as inferential test
+   - Power 
+   
+- Fisher's r to z transformation
+
+- Correlation matrices
+
+- Interpreting effect size
+
+---
+
+## Today
+
+**Regression**
+
+- What is it? Why is it useful
+
+- Nuts and bolts
+
+  - Equation
+
+  - Ordinary least squares
+
+  - Interpretation
+  
+---
+
+## Regression
+
+Regression is a general data analytic system, meaning lots of things fall under the umbrella of regression. This system can handle a variety of forms of relations, although all forms have to be specified in a linear way. Usefully, we can incorporate IVs of all nature -- continuous, categorical, nominal, ordinal....
+
+The output of regression includes both effect sizes and, if using frequentist or Bayesian software, statistical significance. We can also incorporate multiple influences (IVs) and account for their intercorrelations. 
+
+---
+
+### Regression
+
+- **Adjustment**: Statistically control for known effects
+
+  + If everyone had the same level of SES, would education still predict wealth?
+
+- **Prediction**: We can develop models based on what's happened in the past to predict what will happen in the future.
+
+  + Insurance premiums
+  + Graduate school... success?
+  
+- **Explanation**: explaining the influence of one or more variables on some outcome. 
+
+  + Does this intervention affect reaction time?
+  + Does self-esteem predict relationship quality?
+
+
+---
+
+## Regression equation
+
+What is a regression equation?
+
+- Functional relationship
+
+  - Ideally like a physical law `\((E = MC^2)\)`
+  - In practice, it's never as robust as that. 
+  - Note: this equation may not represent the true causal process!
+
+How do we uncover the relationship?
+
+---
+
+### How does Y vary with X?
+
+- The regression of Y (DV) on X (IV) corresponds to the line that gives the mean value of Y corresponding to each possible value of X
+
+- `\(\large E(Y|X)\)`
+
+- "Our best guess" regardless of whether our model includes categories or continuous predictor variables
+
+---
+
+## Regression Equation
+
+There are two ways to think about our regression equation. They're similar to each other, but they produce different outputs.
+
+`$$\Large Y_i = b_{0} + b_{1}X_i +e_i$$`
+
+`$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$`
+
+
+The first is the equation that represents how each **observed outcome** `\((Y_i)\)` is calculated. This observed value is the sum of some constant `\((b_0)\)`, the weighted `\((b_1)\)` observed values of the predictors `\((X_i)\)` and error `\((e_i)\)` that cannot be covered by the observed data.
+
+???
+
+`\(\hat{Y}\)` signifies the fitted score -- no error
+
+The difference between the fitted and observed score is the residual ($e_i$)
+
+There is a different e value for each observation in the dataset
+---
+
+## Regression Equation
+
+There are two ways to think about our regression equation. They're similar to each other, but they produce different outputs.
+
+`$$\Large Y_i = b_{0} + b_{1}X_i + e_i$$`
+
+`$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$`
+
+
+The second is the equation that represents our expected or **fitted value** of the outcome `\((\hat{Y_i})\)`, sometimes referred to as the "predicted value." This expected value is the sum of some constant `\((b_0)\)`, the weighted `\((b_1)\)` observed values of the predictors `\((X_i)\)`.
+
+Note that `\(Y_i - \hat{Y_i} = e_i\)`.
+
+???
+
+`\(\hat{Y}\)` signifies the fitted score -- no error
+
+The difference between the fitted and observed score is the residual ($e_i$)
+
+There is a different e value for each observation in the dataset
+---
+
+## OLS
+- How do we find the regression estimates? 
+- Ordinary Least Squares (OLS) estimation
+- Minimizes deviations 
+
+$$ min\sum(Y_{i}-\hat{Y})^{2} $$ 
+
+- Other estimation procedures possible (and necessary in some cases)
+
+---
+
+ 
+
+
+![](3-regression_files/figure-html/plot1-1.png)&lt;!-- --&gt;
+
+---
+
+![](3-regression_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+
+---
+
+![](3-regression_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+![](3-regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+---
+
+## compare to bad fit
+
+.pull-left[
+![](3-regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+]
+.pull-right[
+![](3-regression_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+]
+
+
+---
+`$$\Large Y_i = b_{0} + b_{1}X_i +e_i$$`
+
+`$$\Large \hat{Y_i} = b_{0} + b_{1}X_i$$`
+
+`$$\Large Y_i = \hat{Y_i} + e_i$$`
+
+`$$\Large e_i = Y_i - \hat{Y_i}$$`
+
+---
+
+## OLS
+
+The line that yields the smallest sum of squared deviations
+
+`$$\Large \Sigma(Y_i - \hat{Y_i})^2$$`
+`$$\Large = \Sigma(Y_i - (b_0+b_{1}X_i))^2$$`
+`$$\Large = \Sigma(e_i)^2$$`
+
+--
+
+In order to find the OLS solution, you could try many different coefficients `\((b_0 \text{ and } b_{1})\)` until you find the one with the smallest sum squared deviation. Luckily, there are simple calculations that will yield the OLS solution every time.
+
+---
+## Regression coefficient, `\(b_{1}\)`
+
+`$$\large b_{1} = \frac{cov_{XY}}{s_{x}^{2}} = r_{xy} \frac{s_{y}}{s_{x}}$$`
+
+&lt;!-- `$$\large r_{xy} = \frac{s_{xy}}{s_xs_y}$$` --&gt;
+
+
+What units is the regression coefficient in?
+
+--
+
+The regression coefficient (slope) equals the estimated change in Y for a 1-unit change in X  
+
+---
+
+`$$\large b_{1} = r_{xy} \frac{s_{y}}{s_{x}}$$`
+
+
+If the standard deviation of both X and Y is equal to 1: 
+
+`$$\large b_1 = r_{xy} \frac{s_{y}}{s_{x}} = r_{xy} \frac{1}{1} = r_{xy} = \beta_{yx} = b_{yx}^*$$`
+
+---
+
+## Standardized regression equation
+
+`$$\large Z_{y_i} = b_{yx}^*Z_{x_i}+e_i$$`
+
+`$$\large b_{yx}^* = b_{yx}\frac{s_x}{s_y} = r_{xy}$$`
+--
+
+According to this regression equation, when `\(X = 0, Y = 0\)`. Our interpretation of the coefficient is that a one-standard deviation increase in X is associated with a `\(b_{yx}^*\)` standard deviation increase in Y. Our regression coefficient is equivalent to the correlation coefficient *when we have only one predictor in our model.*
+
+---
+
+## Estimating the intercept, `\(b_0\)`
+
+- intercept serves to adjust for differences in means between X and Y
+
+`$$\Large \hat{Y_i} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X_i-\bar{X})$$`
+- if standardized, intercept drops out  
+
+- otherwise, intercept is where regression line crosses the y-axis at X = 0  
+
+???
+##Make this point
+- Also, notice that when `\(X = \bar{X}\)` the regression line goes through  `\(\bar{Y}\)`
+
+???
+`$$\Large b_0 = \bar{Y} - b_1\bar{X}$$`
+---
+
+The intercept adjusts the location of the regression line to ensure that it runs through the point `\((\bar{X}, \bar{Y}).\)`  We can calculate this value using the equation:
+
+`$$\Large b_0 = \bar{Y} - b_1\bar{X}$$`
+
+---
+
+## Example
+
+[Gallup](https://news.gallup.com/poll/350486/record-high-support-same-sex-marriage.aspx) has been tracking support for same-sex marriage since 1996. They provide data for the `percent` of respondents who agree with the statement, "Do you think marriages between same-sex couples should or should not be recognized by the law as valid, with the same rights as traditional marriages?"
+
+
+```r
+gallup = read_csv(here("data/gallup_marriage.csv"))
+describe(gallup[,c("year", "percent")], fast = T)
+```
+
+```
+##         vars  n    mean    sd  min  max range   se
+## year       1 25 2011.08  6.26 1996 2021    25 1.25
+## percent    2 25   50.72 11.39   27   70    43 2.28
+```
+
+```r
+cor(gallup$year, gallup$percent)
+```
+
+```
+## [1] 0.9611824
+```
+
+---
+
+If we regress percent onto year:
+
+
+```r
+r = cor(gallup$year, gallup$percent)
+m_year = mean(gallup$year)
+m_percent = mean(gallup$percent)
+s_year = sd(gallup$year)
+s_percent = sd(gallup$percent)
+
+b1 = r*(s_percent/s_year)
+```
+
+```
+## [1] 1.748766
+```
+
+```r
+b0 = m_percent - b1*m_year
+```
+
+```
+## [1] -3466.188
+```
+
+
+How will this change if we regress year onto percent?
+
+---
+
+
+```r
+(b1 = r*(s_percent/s_year))
+```
+
+```
+## [1] 1.748766
+```
+
+```r
+(b0 = m_percent - b1*m_year)
+```
+
+```
+## [1] -3466.188
+```
+
+
+
+```r
+(b1 = r*(s_year/s_percent))
+```
+
+```
+## [1] 0.5282992
+```
+
+```r
+(b0 = m_year - b1*m_percent)
+```
+
+```
+## [1] 1984.285
+```
+
+---
+## In `R`
+
+
+```r
+fit.1 &lt;- lm(percent ~ year, data = gallup)
+summary(fit.1)
+```
+
+```
+## 
+## Call:
+## lm(formula = percent ~ year, data = gallup)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.0826 -2.3289  0.4248  2.4199  5.4051 
+## 
+## Coefficients:
+##               Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept) -3466.1878   210.5071  -16.47 0.0000000000000319 ***
+## year            1.7488     0.1047   16.71 0.0000000000000234 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.209 on 23 degrees of freedom
+## Multiple R-squared:  0.9239,	Adjusted R-squared:  0.9206 
+## F-statistic: 279.1 on 1 and 23 DF,  p-value: 0.00000000000002344
+```
+
+???
+
+**Things to discuss**
+
+- Coefficient estimates
+- Statistical tests (covered in more detail soon)
+
+---
+
+
+![](3-regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+---
+
+### Data, fitted, and residuals
+
+
+```r
+library(broom)
+model_info = augment(fit.1)
+head(model_info)
+```
+
+```
+## # A tibble: 6 × 8
+##   percent  year .fitted .resid   .hat .sigma .cooksd .std.resid
+##     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+## 1      70  2021    68.1  1.93  0.145    3.25 0.0359       0.651
+## 2      67  2020    66.3  0.681 0.125    3.28 0.00366      0.227
+## 3      63  2019    64.6 -1.57  0.107    3.26 0.0160      -0.518
+## 4      67  2018    62.8  4.18  0.0910   3.15 0.0933       1.37 
+## 5      64  2017    61.1  2.93  0.0773   3.22 0.0378       0.950
+## 6      61  2016    59.3  1.68  0.0658   3.26 0.0103       0.540
+```
+
+
+```r
+describe(model_info, fast = T)
+```
+
+```
+##            vars  n    mean    sd     min     max range   se
+## percent       1 25   50.72 11.39   27.00   70.00 43.00 2.28
+## year          2 25 2011.08  6.26 1996.00 2021.00 25.00 1.25
+## .fitted       3 25   50.72 10.94   24.35   68.07 43.72 2.19
+## .resid        4 25    0.00  3.14   -7.08    5.41 12.49 0.63
+## .hat          5 25    0.08  0.06    0.04    0.28  0.24 0.01
+## .sigma        6 25    3.21  0.09    2.89    3.28  0.39 0.02
+## .cooksd       7 25    0.05  0.09    0.00    0.43  0.43 0.02
+## .std.resid    8 25    0.02  1.02   -2.26    1.88  4.14 0.20
+```
+
+???
+
+Point out the average of the residuals is 0, just like average deviation from the mean is 0. 
+
+---
+
+### The relationship between `\(X_i\)` and `\(\hat{Y_i}\)`
+
+
+```r
+model_info %&gt;% ggplot(aes(x = year, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") +
+  scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+![](3-regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+---
+
+### The relationship between `\(X_i\)` and `\(e_i\)`
+
+
+```r
+model_info %&gt;% ggplot(aes(x = year, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
+```
+
+![](3-regression_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+
+---
+
+### The relationship between `\(Y_i\)` and `\(\hat{Y_i}\)`
+
+
+```r
+model_info %&gt;% ggplot(aes(x = percent, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+![](3-regression_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+---
+
+### The relationship between `\(Y_i\)` and `\(e_i\)`
+
+
+```r
+model_info %&gt;% ggplot(aes(x = percent, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 25)
+```
+
+![](3-regression_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+
+### The relationship between `\(\hat{Y_i}\)` and `\(e_i\)`
+
+
+```r
+model_info %&gt;% ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_y_continuous("e") + scale_x_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+![](3-regression_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+
+---
+
+## Regression to the mean
+
+An observation about heights was part of the motivation to develop the regression equation: If you selected a parent who was exceptionally tall (or short), their child was almost always not as tall (or as short).
+
+![](3-regression_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+
+
+---
+
+## Regression to the mean
+
+This phenomenon is known as **regression to the mean.** This describes the phenomenon in which an random variable produces an extreme score on a first measurement, but a lower score on a second measurement. 
+
+.pull-left[
+We can see this in the standardized regression equation:
+
+`$$\hat{Y_i} = r_{xy}(X_i) + e_i$$`
+In that the slope coefficient can never be greater than 1. 
+
+]
+
+.pull-right[
+![](images/quincunx.png)
+]
+
+---
+
+## Regression to the mean
+
+This can be a threat to internal validity if interventions are applied based on first measurement scores. 
+
+.pull-left[
+![](3-regression_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+--
+
+.pull-right[
+![](3-regression_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+]
+
+---
+
+class: inverse
+
+## Next time... 
+
+Statistical inferences with regression
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -2,4 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
+<<<<<<< HEAD
 labs/.DS_Store
+=======
+
+# ignore macOS organizational files
+.DS_Store
+
+# ignore word temporary files
+~$*
+>>>>>>> ed29f47f99740b233e61ca33f5ec6a683d064ec0
