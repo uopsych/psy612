@@ -139,7 +139,7 @@ Choices that individuals make in the voting booth, such as whether to support a 
 
 Below is an image of the output from a regression analysis, using their data: `republican` is a measure of support for the republican party; `ebola` is an index of the number of searches for Ebola on Google. Each observation was a day leading up to the national election. (Note, if this image does not load, you may need to download it from GitHub and save it in the same location as your homework file.)
 
-There are some missing values in the output, labeled with red letters. Complete the output by computing the missing values (A-L).
+There are some missing values in the output, labeled with red letters. Complete the output by computing the missing values (A-M).
 
 ![](beall_output.png)
 
