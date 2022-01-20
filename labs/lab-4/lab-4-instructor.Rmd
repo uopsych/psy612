@@ -14,15 +14,16 @@ You will need the Rmd file for today's lab - can download it [here](https://uops
 Before we begin, load the following libraries. Install any of the packages you have not yet installed on your computers.
 
 ```{r}
-# library(rio)           # for importing data
+library(rio)           # for importing data
 # library(pwr)           # for power calculation
 # library(broom)         # for cleaning up output
 # library(sjPlot)        # for tables
-# library(tidyverse)     # for plotting and data wrangling
+library(tidyverse)       # for plotting and data wrangling
 # library(psych)         # for the suite of psych tools (e.g., corr.test)
 # library(ppcor)         # for partial and semi-partial correlations; may need to install
 # library(janitor)       # for cleaning up data names
-# library(scatterplot3d) # this library will allow us to draw 3d plots
+library(scatterplot3d)   # this library will allow us to draw non-interactive 3d plots
+library(car)             # this library will allow us to draw interactive 3d plots
 # library(htmltools)     #
 # library(rlang)
 # library(rgl)
@@ -32,35 +33,45 @@ Before we begin, load the following libraries. Install any of the packages you h
 options(scipen = 999)
 ```
 
-
-
 Import the data set and inspect it. What variables do we have in our data set? What measurement scale is each variable on?
+
 ```{r}
-data <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-4/data_htwtage.csv")
-head(data)
-str(data)
+# import data
+data <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-4/data_htwtage.csv",
+               setclass = "tibble")
+
+# look at the data
+data
 ```
-
-
 
 # Univariate Regression
 
 Let's start with inspecting the relationship between age and weight. 
 
+Visualize the relationship between age and weight. Let's also label the data points with the names of the participant.
 
-Visualize the relationship between age and weight. Let's also label the data points with the name of the participant that data point came from.
 ```{r}
-ggplot(data = data, aes(x = scale(Age), y = scale(Weight))) +
-  geom_point() + 
-  geom_text(aes(label = Name, hjust=0, vjust=0)) + # Label the data points using the names from the Name column of the dataset
-  geom_smooth(method = "lm") +
-  labs(x = "Standardized Age", y = "Standardized Weight", title = "Weight Regressed On Age") +
-  theme(plot.title = element_text(hjust = 0.5)) # Center the title
+ggplot(data    = data, 
+       mapping = aes(x = scale(Age), 
+                     y = scale(Weight))) +
+  geom_point(alpha = .8, 
+             color = "turquoise4") + 
+  geom_text(aes(label = Name, 
+                hjust = -0.1, 
+                vjust = -0.1)) + 
+  geom_smooth(method = "lm", 
+              se     = TRUE,
+              lwd    = 1.5,
+              color  = "turquoise4") +
+  labs(x     = "Standardized Age", 
+       y     = "Standardized Weight", 
+       title = "Weight Regressed On Age") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
+Regress weight on age (i.e., Y = Weight, X1 = Age). Standardize the variables in the model. 
 
-
-Regress weight on age (Y = Weight, X1 = Age). Standardize the variables in the model. 
 ```{r}
 model1 <- lm(scale(Weight) ~ scale(Age), data = data)
 summary(model1)
@@ -68,37 +79,42 @@ summary(model1)
 
 > **Question** What is the relationship between the standardized regression coefficient in a univariate regression model to the zero-order correlation between the predictor and outcome variable?
 
+REMOVE They're identical. REMOVE
 
+> **Question** What's another variable that could help explain the differences between the predicted values and the actual values? In other words, what's another variable that could explain variation in weight that is not explained by age? 
 
-
-
-It looks on our scatterplot like, for instance, Philip is much heavier than expected for their age, and Joyce is much lighter than expected for their age. 
-
-> **Question** What's another variable that could help explain these errors? In other words, what's another variable that could explain variation in weight that is not explained by age? 
-
-
-
+REMOVE Height. REMOVE
 
 # Multiple Regression
 
 Now, let's use both age and height to predict weight.
 
-
 Visualize the relationship between weight, age, and height.
 
 Non-interactive version of a 3D scatterplot.
+
 ```{r 3D Plots using scatterplot3d}
-s3d <- scatterplot3d(scale(data$Age), scale(data$Height), scale(data$Weight), xlab = "Age", ylab = "Height", zlab = "Weight")
+s3d <- scatterplot3d(scale(data$Age), 
+                     scale(data$Height), 
+                     scale(data$Weight), 
+                     xlab = "Age", 
+                     ylab = "Height", 
+                     zlab = "Weight")
+
 model2 <- lm(scale(Weight) ~ scale(Age) + scale(Height), data = data)
+
 s3d$plane3d(model2, lty.box = "solid", col = "blue")
 ```
 
 Interactive version of a 3D scatterplot.
+
 ```{r}
-scatter3d(scale(Weight) ~ scale(Age) + scale(Height), data = data, xlab = "Age", ylab = "Weight", zlab = "Height")
+scatter3d(scale(Weight) ~ scale(Age) + scale(Height), 
+          data = data, 
+          xlab = "Age", 
+          ylab = "Weight", 
+          zlab = "Height")
 ```
-
-
 
 Regress weight on age and height (Y = Weight, X1 = Age, X2 = Height). Standardize the variables in the model.
 ```{r}
