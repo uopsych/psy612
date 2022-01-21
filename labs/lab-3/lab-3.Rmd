@@ -107,6 +107,7 @@ health %>%
 The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
 
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
+#devtools::install_github("wilkelab/ungeviz")
 library(ungeviz)
 library(gganimate)
 library(transformr)
@@ -179,7 +180,7 @@ sjPlot::plot_model()`
 plot_model(model = model,    # name of model object
            type = "pred",    # show predicted values (i.e. regression line)
            show.data = TRUE, # include data points on plot
-           jitter = TRUE)    # add small amount of random variation to  to prevent overlap
+           jitter = FALSE)    # add small amount of random variation to  to prevent overlap
 ```
 
 
@@ -211,19 +212,7 @@ Using this equation, we can plug in our data and solve for the intercept and slo
 
 ## Example 
 
-1. Create the `X` matrix (first column 1s, second column consciousness scores)
-
-```{r}
-x_mat <- health %>% # start with the original data frame
-  mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
-  select(ones, consc) %>% # select only the column of 1's and X variable
-  as.matrix() %>%  # coerce to a matrix
-  unname() # get rid of dimnames 
-
-head(x_mat)
-```
-
-2. Create the **`Y`** matrix (self-reported health scores)
+1. Create the **`Y`** matrix (self-reported health scores)
 
 
 ```{r}
@@ -233,6 +222,18 @@ y_mat <- health %>% # start with the original data frame
   unname() # get rid of dimnames 
 
 head(y_mat)
+```
+
+2. Create the `X` matrix (first column 1s, second column consciousness scores)
+
+```{r}
+x_mat <- health %>% # start with the original data frame
+  mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
+  select(ones, consc) %>% # select only the column of 1's and X variable
+  as.matrix() %>%  # coerce to a matrix
+  unname() # get rid of dimnames 
+
+head(x_mat)
 ```
 
 

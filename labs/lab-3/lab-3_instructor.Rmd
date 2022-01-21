@@ -58,11 +58,26 @@ $$health_i = b_0 + b_1consc_i + e_i$$
 We can run the model in R using the `lm()` function.
 
 ```{r}
-model <- lm(sr_health ~ consc, data = health)
+model <- lm(sr_health ~ consc, data = health) # regression of y on x
 summary(model)
 ```
 
 > **Question:** What do the intercept and slope mean? What do the *p*-values tell us? 
+
+The meaning of regression coefficient test:
+- Is coefficient = 0?
+- does X provide any predictive info?
+- Does X provide any explanatory power regarding the variability of Y?
+- Is the average value different from the best guess (i.e., is Y_bar equal to Y_hat)?
+- Is the regression line not flat?
+- Are X and Y correlated?
+
+Slopt CI: Based on standard error for the slop coefficient. represent our unvertainty (noise) in our estimate of the regression coefficient. Different from (but proportional to) the standard error of the estimate. We can take our estiamte and put confidence regions aroud it to get an estimate of what could be "possible" if we ran the study again. CI_b = b +/- CV(se_b)
+
+omnibus test null hypothesis:
+$$H_0: \rho^2_{Y\hat{Y}} = 0$$
+(where Y_hat is the predictive value from the equation.)
+
 
 ## Confidence intervals
 
@@ -81,6 +96,9 @@ confint(model)
 
 >**Question:** What does these 95% CI for the slope of conscientiousness mean in plain English? 
 
+If we ran the study for a lot of times, 95% of the times the slope will land between these two numbers. 
+
+If I were to repeat this study, an infinite number of times 95% of the time this confidence interval would capture the true population parameter the truth slope estimate overpopulation I can also get a 95% confidence interval around my intercept the same way.
 
 ## Confidence bands
 
@@ -88,7 +106,7 @@ In addition to estimating precision around the our coefficients, we can also est
 
 ```{r}
 model %>% 
-  augment(se_fit = TRUE) %>% 
+  augment(se_fit = TRUE) %>%
   select(sr_health, .fitted, .se.fit) %>% 
   head() 
 ```
@@ -104,10 +122,12 @@ health %>%
   theme_minimal()
 ```
 
+Thinner at mean_x, mean_y, and expanding wider at more extreme values.
 
 The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
 
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
+#devtools::install_github("wilkelab/ungeviz")
 library(ungeviz)
 library(gganimate)
 library(transformr)
@@ -141,6 +161,11 @@ The `predict()` function allows us to get the fitted `Y` values from all 60 cons
 
 ```{r}
 predict(model)
+
+model %>% 
+  augment(se_fit = TRUE) %>%
+  select(.fitted) %>% 
+  head() 
 ```
 
 We can use this information to create "prediction bands". First we will generate our fitted values along with a "prediction interval" (lower and upper bound) for each of these values. 
@@ -171,6 +196,13 @@ new_df %>%
 
 >**Question:** What does the prediction band represent? How does it differ from the confidence band? 
 
+Equation for standard error around predicted values: https://uopsych.github.io/psy612/lectures/5-regression.html#32. Each person get their own se. (confidence band)
+
+Confidence band: Precision of estimate of y. how extreme (i.e flat/steep) the line could be. 95% of the confidence interval. 
+
+Confidence band index the precision of our best guess (estimate of mean). 
+
+Prediction band: https://uopsych.github.io/psy612/lectures/5-regression.html#32. Index the likely value of y for a given x. Combining unknown variability of estimated mean with standard error of the estimate. How much do you expect individual to vary around our best guess. Precison of scores. 
 
 ## Other visualization tools
 
@@ -180,7 +212,7 @@ sjPlot::plot_model()`
 plot_model(model = model,    # name of model object
            type = "pred",    # show predicted values (i.e. regression line)
            show.data = TRUE, # include data points on plot
-           jitter = TRUE)    # add small amount of random variation to  to prevent overlap
+           jitter = FALSE)    # add small amount of random variation to  to prevent overlap
 ```
 
 
@@ -212,19 +244,7 @@ Using this equation, we can plug in our data and solve for the intercept and slo
 
 ## Example 
 
-1. Create the `X` matrix (first column 1s, second column consciousness scores)
-
-```{r}
-x_mat <- health %>% # start with the original data frame
-  mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
-  select(ones, consc) %>% # select only the column of 1's and X variable
-  as.matrix() %>%  # coerce to a matrix
-  unname() # get rid of dimnames 
-
-head(x_mat)
-```
-
-2. Create the **`Y`** matrix (self-reported health scores)
+1. Create the **`Y`** matrix (self-reported health scores)
 
 
 ```{r}
@@ -236,10 +256,25 @@ y_mat <- health %>% # start with the original data frame
 head(y_mat)
 ```
 
+2. Create the `X` matrix (first column 1s, second column consciousness scores)
+
+```{r}
+x_mat <- health %>% # start with the original data frame
+  mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
+  select(ones, consc) %>% # select only the column of 1's and X variable
+  as.matrix() %>%  # coerce to a matrix
+  unname() # get rid of dimnames 
+
+head(x_mat)
+```
+
 
 In matrix algebra, you can't divide by a matrix, so you will need to do some more complicated arithmetic to solve for B (the vector of slope and intercept estimates). You can calculate B with the following formula: 
 
 $$\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
+B is equal to (x-transpose * X ) inverse, x-transpose * Y
+
+take away message: linear regression have a closed form solution
 
 ```{r}
 solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
