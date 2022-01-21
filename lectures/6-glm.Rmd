@@ -37,6 +37,7 @@ knit_hooks$set(output = function(x, options) {
 
 ## Annoucements
 
+* Moving model comparison to a later time
 * Homework 1 due next Friday
 * Updated language on syllabus -- I am an Assisting Employee
 
@@ -44,9 +45,7 @@ knit_hooks$set(output = function(x, options) {
 
 Wrap up univariate regression
 
-- Confidence and prediction bands
-
-- Model comparison
+Confidence and prediction bands
 
 ---
 

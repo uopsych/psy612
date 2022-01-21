@@ -13,6 +13,31 @@ output:
 
 ```{r, echo = F, warning = F, message = F}
 library(tidyverse)
+library(knitr)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+
 ```
 
 ## Last time
@@ -104,43 +129,107 @@ If we're comparing nested models by incrementally adding or subtracting variable
 $$F(p.new, N - 1 - p.all) = \frac {R_{m.2}^2- R_{m.1}^2} {1-R_{m.2}^2} (\frac {N-1-p.all}{p.new})$$
 - can also be written in terms of SSresiduals
 
+
 ---
+
+## Model comparison
+
+- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
+
+- Every test of an omnibus model is implicitly a model comparisons, typically of your fitted model with the nil model (no slopes). This framework allows you to be more flexible and explicit.   
+
+---
+
+```{r}
+fit.1 <- lm(happiness ~ age, 
+            data = happy_d)
+
+fit.0 <- lm(happiness ~ 1,
+            data = happy_d)
+```
+
+
+---
+
+```{r}
+summary(fit.0)
+```
+
+---
+```{r}
+summary(fit.1)
+```
+
+
+---
+```{r}
+anova(fit.0)
+```
+
+```{r}
+anova(fit.1)
+```
+
+```{r}
+anova(fit.1, fit.0)
+```
+
+---
+## Model Comparisons 
+
+- This example of model comparisons is redundant with nil/null hypotheses and coefficient tests of slopes in univariate regression. 
+
+- Let's expand this to the multiple regression case model.
+
+---
+
 ## Model comparisons
-```{r}
-m.1 <- lm(happiness ~ age + gender, data = happy_d)
-m.2 <- lm(happiness ~ age + gender + pets, data = happy_d)
 
-anova(m.1, m.2, mr.model)
+```{r, output.lines = c(1:9)}
+m.2 <- lm(happiness ~ age + gender, data = happy_d)
+m.3 <- lm(happiness ~ age + gender + pets, data = happy_d)
+m.4 <- lm(happiness ~ age + gender + friends + pets, data = happy_d)
+anova(m.2, m.3, m.4)
+```
+
+```{r}
+coef(summary(m.4))
 ```
 
 ---
 ### change in $R^2$
 ```{r}
-summary(m.1)
-```
----
-### change in $R^2$
-```{r, echo = FALSE}
-summary(m.2)
-```
----
-### change in $R^2$
-```{r, echo = FALSE}
-summary(mr.model)
+summary(m.2)$r.squared
+summary(m.3)$r.squared
+summary(m.4)$r.squared
 ```
 
 ---
-```{r}
-anova(m.1, mr.model)
-```
----
+
 ## partitioning the variance
+
 - It doesn't make sense to ask how much variance a variable explains (unless you qualify the association)
 
 $$R_{Y.1234...p}^2 = r_{Y1}^2 + r_{Y(2.1)}^2 + r_{Y(3.21)}^2 + r_{Y(4.321)}^2 + ...$$
 
 - In other words: order matters! 
 
+---
+What if we compare the first (2 predictors) and last model (4 predictors)?
+
+```{r}
+anova(m.2, m.4)
+```
+
+---
+
+Model comparison can thus be very useful for testing the explained variance attributable to a .purple[set] of predictors, not just one. 
+
+For example, if we're interested in explaining variance in cognitive decline, perhaps we build a model comparison testing:
+
+* Set 1: Demographic variables (age, gender, education, income)
+* Set 2: Physical health (exercise, chronic illness, smoking, flossing)
+* Set 3: Social factors (relationship quality, social network size)
 ---
 
 ## Categorical predictors
@@ -184,10 +273,7 @@ The dummy codes are entered as IV's in the regression equation.
 ---
 
 ### Example
-Solomon’s paradox describes the tendency for people to reason more wisely about other people’s
-problems compared to their own. One potential explanation for this paradox is that people tend to view
-other people’s problems from a more psychologically distant perspective, whereas they view their own
-problems from a psychologically immersed perspective. To test this possibility, researchers asked romantically-involved participants to think about a situation in which their partner cheated on them (self condition) or a friend’s partner cheated on their friend (other condition). Participants were also instructed to take a first-person perspective (immersed condition) by using pronouns such as I and me, or a third-person perspective (distanced condition) by using pronouns such as he and her.
+Solomon’s paradox describes the tendency for people to reason more wisely about other people’s problems compared to their own. One potential explanation for this paradox is that people tend to view other people’s problems from a more psychologically distant perspective, whereas they view their own problems from a psychologically immersed perspective. To test this possibility, researchers asked romantically-involved participants to think about a situation in which their partner cheated on them (self condition) or a friend’s partner cheated on their friend (other condition). Participants were also instructed to take a first-person perspective (immersed condition) by using pronouns such as I and me, or a third-person perspective (distanced condition) by using pronouns such as he and her.
 
 ```{r, results = 'hide', message = F}
 library(here)
