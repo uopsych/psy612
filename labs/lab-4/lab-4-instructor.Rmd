@@ -17,19 +17,11 @@ Before we begin, load the following libraries. Install any of the packages you h
 
 ```{r}
 library(rio)           # for importing data
-# library(pwr)           # for power calculation
-# library(broom)         # for cleaning up output
-# library(sjPlot)        # for tables
-library(tidyverse)       # for plotting and data wrangling
-# library(psych)         # for the suite of psych tools (e.g., corr.test)
+library(tidyverse)     # for plotting and data wrangling
 library(ppcor)         # for calculating partial and semi-partial correlations
 library(janitor)       # for cleaning up data names
-library(scatterplot3d)   # this library will allow us to draw non-interactive 3d plots
-library(car)             # this library will allow us to draw interactive 3d plots
-# library(htmltools)     #
-# library(rlang)
-# library(rgl)
-# library(car)
+library(scatterplot3d) # this library will allow us to draw non-interactive 3d plots
+library(car)           # this library will allow us to draw interactive 3d plots
 
 # suppress scientific notation
 options(scipen = 999)
