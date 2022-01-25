@@ -283,10 +283,10 @@ summary(mod.1)
 ```
 
 ---
-```{r, highlight.output = 5}
-t.test(traffic.risk ~ tx, data = traffic)
-```
 
+```{r, highlight.output = 5}
+t.test(traffic.risk ~ tx, data = traffic, var.equal = T)
+```
 
 ---
 ## Statistical Inference

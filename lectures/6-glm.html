@@ -385,24 +385,24 @@ summary(mod.1)
 
 ---
 
+
 ```r
-t.test(traffic.risk ~ tx, data = traffic)
+t.test(traffic.risk ~ tx, data = traffic, var.equal = T)
 ```
 
 ```
 ## 
-## 	Welch Two Sample t-test
+## 	Two Sample t-test
 ## 
 ## data:  traffic.risk by tx
-*## t = 4.9088, df = 214.41, p-value = 1.814e-06
+*## t = 4.9394, df = 268, p-value = 1.381e-06
 ## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
 ## 95 percent confidence interval:
-##  0.2879201 0.6742914
+##  0.2893360 0.6728755
 ## sample estimates:
 ## mean in group 0 mean in group 1 
 ##        2.650641        2.169535
 ```
-
 
 ---
 ## Statistical Inference

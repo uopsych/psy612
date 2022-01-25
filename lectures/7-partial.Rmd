@@ -15,7 +15,12 @@ output:
 knitr::opts_chunk$set(message = F, warning = F)
 library(tidyverse)
 ```
+## Annoucements
 
+* Homework due on Friday
+* No matrix algebra (enjoy with Elliot)
+
+---
 
 ## Today
 
