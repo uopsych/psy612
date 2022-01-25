@@ -272,93 +272,111 @@ The intercept adjusts the location of the regression line to ensure that it runs
 
 ## Example
 
-[Gallup](https://news.gallup.com/poll/350486/record-high-support-same-sex-marriage.aspx) has been tracking support for same-sex marriage since 1996. They provide data for the `percent` of respondents who agree with the statement, "Do you think marriages between same-sex couples should or should not be recognized by the law as valid, with the same rights as traditional marriages?"
 
 
-```r
-gallup = read_csv(here("data/gallup_marriage.csv"))
-describe(gallup[,c("year", "percent")], fast = T)
-```
-
-```
-##         vars  n    mean    sd  min  max range   se
-## year       1 25 2011.08  6.26 1996 2021    25 1.25
-## percent    2 25   50.72 11.39   27   70    43 2.28
-```
 
 ```r
-cor(gallup$year, gallup$percent)
+library(gapminder)
+gapminder = gapminder %&gt;% filter(year == 2007 &amp; continent == "Asia") %&gt;% 
+  mutate(log_gdp = log(gdpPercap))
+glimpse(gapminder)
 ```
 
 ```
-## [1] 0.9611824
+## Rows: 33
+## Columns: 7
+## $ country   &lt;fct&gt; "Afghanistan", "Bahrain", "Bangladesh", "Cambodia", "China",…
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
+## $ year      &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, …
+## $ lifeExp   &lt;dbl&gt; 43.828, 75.635, 64.062, 59.723, 72.961, 82.208, 64.698, 70.6…
+## $ pop       &lt;int&gt; 31889923, 708573, 150448339, 14131858, 1318683096, 6980412, …
+## $ gdpPercap &lt;dbl&gt; 974.5803, 29796.0483, 1391.2538, 1713.7787, 4959.1149, 39724…
+## $ log_gdp   &lt;dbl&gt; 6.882007, 10.302131, 7.237961, 7.446456, 8.508983, 10.589735…
+```
+
+```r
+describe(gapminder[,c("log_gdp", "lifeExp")], fast = T)
+```
+
+```
+##         vars  n  mean   sd   min   max range   se
+## log_gdp    1 33  8.74 1.24  6.85 10.76  3.91 0.22
+## lifeExp    2 33 70.73 7.96 43.83 82.60 38.77 1.39
+```
+
+```r
+cor(gapminder$log_gdp, gapminder$lifeExp)
+```
+
+```
+## [1] 0.8003474
 ```
 
 ---
 
-If we regress percent onto year:
+If we regress lifeExp onto log_gdp:
 
 
 ```r
-r = cor(gallup$year, gallup$percent)
-m_year = mean(gallup$year)
-m_percent = mean(gallup$percent)
-s_year = sd(gallup$year)
-s_percent = sd(gallup$percent)
+r = cor(gapminder$log_gdp, gapminder$lifeExp)
+m_log_gdp = mean(gapminder$log_gdp)
+m_lifeExp = mean(gapminder$lifeExp)
+s_log_gdp = sd(gapminder$log_gdp)
+s_lifeExp = sd(gapminder$lifeExp)
 
-b1 = r*(s_percent/s_year)
+b1 = r*(s_lifeExp/s_log_gdp)
 ```
 
 ```
-## [1] 1.748766
+## [1] 5.157259
 ```
 
 ```r
-b0 = m_percent - b1*m_year
+b0 = m_lifeExp - b1*m_log_gdp
 ```
 
 ```
-## [1] -3466.188
+## [1] 25.65011
 ```
 
 
-How will this change if we regress year onto percent?
+How will this change if we regress GDP onto life expectancy?
 
 ---
 
 
 ```r
-(b1 = r*(s_percent/s_year))
+(b1 = r*(s_lifeExp/s_log_gdp))
 ```
 
 ```
-## [1] 1.748766
-```
-
-```r
-(b0 = m_percent - b1*m_year)
-```
-
-```
-## [1] -3466.188
-```
-
-
-
-```r
-(b1 = r*(s_year/s_percent))
-```
-
-```
-## [1] 0.5282992
+## [1] 5.157259
 ```
 
 ```r
-(b0 = m_year - b1*m_percent)
+(b0 = m_lifeExp - b1*m_log_gdp)
 ```
 
 ```
-## [1] 1984.285
+## [1] 25.65011
+```
+
+
+
+```r
+(b1 = r*(s_log_gdp/s_lifeExp))
+```
+
+```
+## [1] 0.1242047
+```
+
+```r
+(b0 = m_log_gdp - b1*m_lifeExp)
+```
+
+```
+## [1] -0.04405086
 ```
 
 ---
@@ -366,29 +384,29 @@ How will this change if we regress year onto percent?
 
 
 ```r
-fit.1 &lt;- lm(percent ~ year, data = gallup)
+fit.1 &lt;- lm(lifeExp ~ log_gdp, data = gapminder)
 summary(fit.1)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = percent ~ year, data = gallup)
+## lm(formula = lifeExp ~ log_gdp, data = gapminder)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -7.0826 -2.3289  0.4248  2.4199  5.4051 
+## -17.314  -1.650  -0.040   3.428   8.370 
 ## 
 ## Coefficients:
-##               Estimate Std. Error t value           Pr(&gt;|t|)    
-## (Intercept) -3466.1878   210.5071  -16.47 0.0000000000000319 ***
-## year            1.7488     0.1047   16.71 0.0000000000000234 ***
+##             Estimate Std. Error t value     Pr(&gt;|t|)    
+## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
+## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 3.209 on 23 degrees of freedom
-## Multiple R-squared:  0.9239,	Adjusted R-squared:  0.9206 
-## F-statistic: 279.1 on 1 and 23 DF,  p-value: 0.00000000000002344
+## Residual standard error: 4.851 on 31 degrees of freedom
+## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
+## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
 ```
 
 ???
@@ -416,14 +434,14 @@ head(model_info)
 
 ```
 ## # A tibble: 6 × 8
-##   percent  year .fitted .resid   .hat .sigma .cooksd .std.resid
-##     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
-## 1      70  2021    68.1  1.93  0.145    3.25 0.0359       0.651
-## 2      67  2020    66.3  0.681 0.125    3.28 0.00366      0.227
-## 3      63  2019    64.6 -1.57  0.107    3.26 0.0160      -0.518
-## 4      67  2018    62.8  4.18  0.0910   3.15 0.0933       1.37 
-## 5      64  2017    61.1  2.93  0.0773   3.22 0.0378       0.950
-## 6      61  2016    59.3  1.68  0.0658   3.26 0.0103       0.540
+##   lifeExp log_gdp .fitted .resid   .hat .sigma .cooksd .std.resid
+##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+## 1    43.8    6.88    61.1 -17.3  0.101    3.63 0.796       -3.76 
+## 2    75.6   10.3     78.8  -3.15 0.0802   4.89 0.0199      -0.676
+## 3    64.1    7.24    63.0   1.08 0.0765   4.93 0.00224      0.233
+## 4    59.7    7.45    64.1  -4.33 0.0646   4.86 0.0294      -0.923
+## 5    73.0    8.51    69.5   3.43 0.0314   4.89 0.00836      0.718
+## 6    82.2   10.6     80.3   1.94 0.100    4.92 0.00994      0.422
 ```
 
 
@@ -432,15 +450,15 @@ describe(model_info, fast = T)
 ```
 
 ```
-##            vars  n    mean    sd     min     max range   se
-## percent       1 25   50.72 11.39   27.00   70.00 43.00 2.28
-## year          2 25 2011.08  6.26 1996.00 2021.00 25.00 1.25
-## .fitted       3 25   50.72 10.94   24.35   68.07 43.72 2.19
-## .resid        4 25    0.00  3.14   -7.08    5.41 12.49 0.63
-## .hat          5 25    0.08  0.06    0.04    0.28  0.24 0.01
-## .sigma        6 25    3.21  0.09    2.89    3.28  0.39 0.02
-## .cooksd       7 25    0.05  0.09    0.00    0.43  0.43 0.02
-## .std.resid    8 25    0.02  1.02   -2.26    1.88  4.14 0.20
+##            vars  n  mean   sd    min   max range   se
+## lifeExp       1 33 70.73 7.96  43.83 82.60 38.77 1.39
+## log_gdp       2 33  8.74 1.24   6.85 10.76  3.91 0.22
+## .fitted       3 33 70.73 6.37  60.98 81.16 20.19 1.11
+## .resid        4 33  0.00 4.77 -17.31  8.37 25.68 0.83
+## .hat          5 33  0.06 0.03   0.03  0.11  0.08 0.00
+## .sigma        6 33  4.84 0.23   3.63  4.93  1.30 0.04
+## .cooksd       7 33  0.04 0.14   0.00  0.80  0.80 0.02
+## .std.resid    8 33  0.00 1.02  -3.76  1.77  5.53 0.18
 ```
 
 ???
@@ -453,7 +471,7 @@ Point out the average of the residuals is 0, just like average deviation from th
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = year, y = .fitted)) +
+model_info %&gt;% ggplot(aes(x = log_gdp, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") +
   scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -465,7 +483,7 @@ model_info %&gt;% ggplot(aes(x = year, y = .fitted)) +
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = year, y = .resid)) +
+model_info %&gt;% ggplot(aes(x = log_gdp, y = .resid)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
 ```
@@ -478,7 +496,7 @@ model_info %&gt;% ggplot(aes(x = year, y = .resid)) +
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = percent, y = .fitted)) +
+model_info %&gt;% ggplot(aes(x = lifeExp, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -491,7 +509,7 @@ model_info %&gt;% ggplot(aes(x = percent, y = .fitted)) +
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = percent, y = .resid)) +
+model_info %&gt;% ggplot(aes(x = lifeExp, y = .resid)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 25)
 ```

@@ -32,69 +32,63 @@ class: center, middle, inverse, title-slide
 
 ---
 
+[Gallup](https://news.gallup.com/poll/350486/record-high-support-same-sex-marriage.aspx) has been tracking support for same-sex marriage since 1996. They provide data for the `percent` of respondents who agree with the statement, "Do you think marriages between same-sex couples should or should not be recognized by the law as valid, with the same rights as traditional marriages?"
+
 
 ```r
-library(gapminder)
-gapminder = gapminder %&gt;% filter(year == 2007 &amp; continent == "Asia") %&gt;% 
-  mutate(log_gdp = log(gdpPercap))
-glimpse(gapminder)
+gallup = read_csv(here("data/gallup_marriage.csv"))
+psych::describe(gallup[,c("year","percent")], fast = T)
 ```
 
 ```
-## Rows: 33
-## Columns: 7
-## $ country   &lt;fct&gt; "Afghanistan", "Bahrain", "Bangladesh", "Cambodia", "China",…
-## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
-## $ year      &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, …
-## $ lifeExp   &lt;dbl&gt; 43.828, 75.635, 64.062, 59.723, 72.961, 82.208, 64.698, 70.6…
-## $ pop       &lt;int&gt; 31889923, 708573, 150448339, 14131858, 1318683096, 6980412, …
-## $ gdpPercap &lt;dbl&gt; 974.5803, 29796.0483, 1391.2538, 1713.7787, 4959.1149, 39724…
-## $ log_gdp   &lt;dbl&gt; 6.882007, 10.302131, 7.237961, 7.446456, 8.508983, 10.589735…
+##         vars  n    mean    sd  min  max range   se
+## year       1 25 2011.08  6.26 1996 2021    25 1.25
+## percent    2 25   50.72 11.39   27   70    43 2.28
 ```
 
 
 ```r
-cor(gapminder$log_gdp, gapminder$lifeExp)
+cor(gallup$year, gallup$percent)
 ```
 
 ```
-## [1] 0.8003474
+## [1] 0.9611824
 ```
 
 ---
 
 
 ```r
-mod = lm(lifeExp ~ log_gdp, data = gapminder)
+mod = lm(percent ~ year, data = gallup)
 summary(mod)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## lm(formula = percent ~ year, data = gallup)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -17.314  -1.650  -0.040   3.428   8.370 
+## -7.0826 -2.3289  0.4248  2.4199  5.4051 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value     Pr(&gt;|t|)    
-## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
-## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+##               Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept) -3466.1878   210.5071  -16.47 0.0000000000000319 ***
+## year            1.7488     0.1047   16.71 0.0000000000000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.851 on 31 degrees of freedom
-## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
-## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+## Residual standard error: 3.209 on 23 degrees of freedom
+## Multiple R-squared:  0.9239,	Adjusted R-squared:  0.9206 
+## F-statistic: 279.1 on 1 and 23 DF,  p-value: 0.00000000000002344
 ```
 
 ---
 
 
 ```r
-gapminder %&gt;% ggplot(aes(x = log_gdp, y = lifeExp)) + geom_point() + 
+gallup %&gt;% ggplot(aes(x = year, y = percent)) + geom_point() + 
   geom_smooth(method = "lm", se = F)
 ```
 
@@ -102,7 +96,7 @@ gapminder %&gt;% ggplot(aes(x = log_gdp, y = lifeExp)) + geom_point() +
 
 ???
 
-Prediction: can predict for another country here, so long as it has X in range
+Talk about prediction here
 
 ---
 
@@ -113,23 +107,23 @@ glimpse(model_info)
 ```
 
 ```
-## Rows: 33
+## Rows: 25
 ## Columns: 8
-## $ lifeExp    &lt;dbl&gt; 43.828, 75.635, 64.062, 59.723, 72.961, 82.208, 64.698, 70.…
-## $ log_gdp    &lt;dbl&gt; 6.882007, 10.302131, 7.237961, 7.446456, 8.508983, 10.58973…
-## $ .fitted    &lt;dbl&gt; 61.14241, 78.78087, 62.97815, 64.05342, 69.53314, 80.26412,…
-## $ .resid     &lt;dbl&gt; -17.31440645, -3.14587188, 1.08384831, -4.33041614, 3.42785…
-## $ .hat       &lt;dbl&gt; 0.10099050, 0.08018112, 0.07650934, 0.06457760, 0.03140215,…
-## $ .sigma     &lt;dbl&gt; 3.633249, 4.894628, 4.926826, 4.862899, 4.889954, 4.916913,…
-## $ .cooksd    &lt;dbl&gt; 0.79594884967, 0.01992817309, 0.00223925933, 0.02940651673,…
-## $ .std.resid &lt;dbl&gt; -3.764431939, -0.676182383, 0.232501753, -0.922995812, 0.71…
+## $ percent    &lt;dbl&gt; 70, 67, 63, 67, 64, 61, 58, 60, 55, 54, 53, 53, 50, 48, 53,…
+## $ year       &lt;dbl&gt; 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2015, 2014, 2013,…
+## $ .fitted    &lt;dbl&gt; 68.06776, 66.31899, 64.57022, 62.82146, 61.07269, 59.32393,…
+## $ .resid     &lt;dbl&gt; 1.93224379, 0.68100953, -1.57022472, 4.17854103, 2.92730678…
+## $ .hat       &lt;dbl&gt; 0.14470548, 0.12465952, 0.10674157, 0.09095165, 0.07728975,…
+## $ .sigma     &lt;dbl&gt; 3.250688, 3.277393, 3.261890, 3.145209, 3.216093, 3.260170,…
+## $ .cooksd    &lt;dbl&gt; 0.03586103820, 0.00366372785, 0.01601579081, 0.09331068531,…
+## $ .std.resid &lt;dbl&gt; 0.65109113, 0.22683099, -0.51773909, 1.36574269, 0.94967121…
 ```
 
 ---
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = log_gdp, y = .fitted)) +
+model_info %&gt;% ggplot(aes(x = year, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") +
   scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -140,7 +134,7 @@ model_info %&gt;% ggplot(aes(x = log_gdp, y = .fitted)) +
 
 
 ```r
-model_info %&gt;% ggplot(aes(x = lifeExp, y = .fitted)) +
+model_info %&gt;% ggplot(aes(x = percent, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -287,29 +281,29 @@ To the extent that we can generate different predicted values of Y based on the 
 ## Example
 
 ```r
-fit.1 = lm(lifeExp ~ log_gdp, data = gapminder)
+fit.1 = lm(percent ~ year, data = gallup)
 summary(fit.1) 
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## lm(formula = percent ~ year, data = gallup)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -17.314  -1.650  -0.040   3.428   8.370 
+## -7.0826 -2.3289  0.4248  2.4199  5.4051 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value     Pr(&gt;|t|)    
-## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
-## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+##               Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept) -3466.1878   210.5071  -16.47 0.0000000000000319 ***
+## year            1.7488     0.1047   16.71 0.0000000000000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.851 on 31 degrees of freedom
-*## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
-## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+## Residual standard error: 3.209 on 23 degrees of freedom
+*## Multiple R-squared:  0.9239,	Adjusted R-squared:  0.9206 
+## F-statistic: 279.1 on 1 and 23 DF,  p-value: 0.00000000000002344
 ```
 
 ```r
@@ -317,7 +311,7 @@ summary(fit.1)$r.squared
 ```
 
 ```
-## [1] 0.6405559
+## [1] 0.9238716
 
 NA
 NA
@@ -343,11 +337,11 @@ The correlation between X and Y is:
 
 
 ```r
-cor(gapminder$log_gdp, gapminder$lifeExp, use = "pairwise")
+cor(gallup$year, gallup$percent, use = "pairwise")
 ```
 
 ```
-## [1] 0.8003474
+## [1] 0.9611824
 ```
 
 --
@@ -356,11 +350,11 @@ If we square the correlation, we get:
 
 
 ```r
-cor(gapminder$log_gdp, gapminder$lifeExp)^2
+cor(gallup$year, gallup$percent)^2
 ```
 
 ```
-## [1] 0.6405559
+## [1] 0.9238716
 ```
 
 Ta da!
@@ -371,7 +365,7 @@ summary(fit.1)$r.squared
 ```
 
 ```
-## [1] 0.6405559
+## [1] 0.9238716
 ```
 
 ---
@@ -399,11 +393,11 @@ also:
 
 
 ```r
-sd(gapminder$lifeExp)
+sd(gallup$percent)
 ```
 
 ```
-## [1] 7.963724
+## [1] 11.38537
 ```
 
 ```r
@@ -411,15 +405,15 @@ summary(fit.1)$r.squared
 ```
 
 ```
-## [1] 0.6405559
+## [1] 0.9238716
 ```
 
 ```r
-sd(gapminder$lifeExp)*sqrt(1-summary(fit.1)$r.squared)
+sd(gallup$percent)*sqrt(1-summary(fit.1)$r.squared)
 ```
 
 ```
-## [1] 4.774544
+## [1] 3.141381
 ```
 
 ```r
@@ -427,7 +421,7 @@ sd(model_info$.resid)
 ```
 
 ```
-## [1] 4.774544
+## [1] 3.141381
 ```
 
 ---
@@ -456,22 +450,22 @@ We can use residuals to estimate true score error. Note that this formula will l
 ```
 ## 
 ## Call:
-## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## lm(formula = percent ~ year, data = gallup)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -17.314  -1.650  -0.040   3.428   8.370 
+## -7.0826 -2.3289  0.4248  2.4199  5.4051 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value     Pr(&gt;|t|)    
-## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
-## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+##               Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept) -3466.1878   210.5071  -16.47 0.0000000000000319 ***
+## year            1.7488     0.1047   16.71 0.0000000000000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-*## Residual standard error: 4.851 on 31 degrees of freedom
-## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
-## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+*## Residual standard error: 3.209 on 23 degrees of freedom
+## Multiple R-squared:  0.9239,	Adjusted R-squared:  0.9206 
+## F-statistic: 279.1 on 1 and 23 DF,  p-value: 0.00000000000002344
 ```
 ---
 
@@ -483,7 +477,7 @@ summary(fit.1)$sigma
 ```
 
 ```
-## [1] 4.850941
+## [1] 3.208945
 ```
 
 ```r
@@ -491,7 +485,7 @@ sd(model_info$.resid)
 ```
 
 ```
-## [1] 4.774544
+## [1] 3.141381
 ```
 
 Note: these are not the same!
@@ -598,10 +592,10 @@ anova(fit.1)
 ```
 ## Analysis of Variance Table
 ## 
-## Response: lifeExp
-##           Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
-## log_gdp    1 1299.99 1299.99  55.244 0.00000002263 ***
-## Residuals 31  729.48   23.53                          
+## Response: percent
+##           Df  Sum Sq Mean Sq F value              Pr(&gt;F)    
+## year       1 2874.20  2874.2  279.12 0.00000000000002344 ***
+## Residuals 23  236.84    10.3                                
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -616,22 +610,22 @@ summary(fit.1)
 ```
 ## 
 ## Call:
-## lm(formula = lifeExp ~ log_gdp, data = gapminder)
+## lm(formula = percent ~ year, data = gallup)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -17.314  -1.650  -0.040   3.428   8.370 
+## -7.0826 -2.3289  0.4248  2.4199  5.4051 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value     Pr(&gt;|t|)    
-## (Intercept)  25.6501     6.1234   4.189     0.000216 ***
-## log_gdp       5.1573     0.6939   7.433 0.0000000226 ***
+##               Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept) -3466.1878   210.5071  -16.47 0.0000000000000319 ***
+## year            1.7488     0.1047   16.71 0.0000000000000234 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.851 on 31 degrees of freedom
-## Multiple R-squared:  0.6406,	Adjusted R-squared:  0.629 
-*## F-statistic: 55.24 on 1 and 31 DF,  p-value: 0.00000002263
+## Residual standard error: 3.209 on 23 degrees of freedom
+## Multiple R-squared:  0.9239,	Adjusted R-squared:  0.9206 
+*## F-statistic: 279.1 on 1 and 23 DF,  p-value: 0.00000000000002344
 ```
 
 
@@ -657,10 +651,10 @@ anova(fit.1)
 ```
 ## Analysis of Variance Table
 ## 
-## Response: lifeExp
-##           Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
-## log_gdp    1 1299.99 1299.99  55.244 0.00000002263 ***
-*## Residuals 31  729.48   23.53                          
+## Response: percent
+##           Df  Sum Sq Mean Sq F value              Pr(&gt;F)    
+## year       1 2874.20  2874.2  279.12 0.00000000000002344 ***
+*## Residuals 23  236.84    10.3                                
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```

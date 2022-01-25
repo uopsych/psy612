@@ -323,52 +323,54 @@ $$\Large b_0 = \bar{Y} - b_1\bar{X}$$
 
 ## Example
 
-[Gallup](https://news.gallup.com/poll/350486/record-high-support-same-sex-marriage.aspx) has been tracking support for same-sex marriage since 1996. They provide data for the `percent` of respondents who agree with the statement, "Do you think marriages between same-sex couples should or should not be recognized by the law as valid, with the same rights as traditional marriages?"
+
 
 ```{r, message = F, warning = F}
-gallup = read_csv(here("data/gallup_marriage.csv"))
-describe(gallup[,c("year", "percent")], fast = T)
-cor(gallup$year, gallup$percent)
+library(gapminder)
+gapminder = gapminder %>% filter(year == 2007 & continent == "Asia") %>% 
+  mutate(log_gdp = log(gdpPercap))
+describe(gapminder[,c("log_gdp", "lifeExp")], fast = T)
+cor(gapminder$log_gdp, gapminder$lifeExp)
 ```
 
 ---
 
-If we regress percent onto year:
+If we regress lifeExp onto log_gdp:
 
 ```{r, echo = c(1:7, 9)}
-r = cor(gallup$year, gallup$percent)
-m_year = mean(gallup$year)
-m_percent = mean(gallup$percent)
-s_year = sd(gallup$year)
-s_percent = sd(gallup$percent)
+r = cor(gapminder$log_gdp, gapminder$lifeExp)
+m_log_gdp = mean(gapminder$log_gdp)
+m_lifeExp = mean(gapminder$lifeExp)
+s_log_gdp = sd(gapminder$log_gdp)
+s_lifeExp = sd(gapminder$lifeExp)
 
-b1 = r*(s_percent/s_year)
+b1 = r*(s_lifeExp/s_log_gdp)
 b1
-b0 = m_percent - b1*m_year
+b0 = m_lifeExp - b1*m_log_gdp
 b0
 ```
 
 
-How will this change if we regress year onto percent?
+How will this change if we regress GDP onto life expectancy?
 
 ---
 
 ```{r}
-(b1 = r*(s_percent/s_year))
-(b0 = m_percent - b1*m_year)
+(b1 = r*(s_lifeExp/s_log_gdp))
+(b0 = m_lifeExp - b1*m_log_gdp)
 ```
 
 
 ```{r}
-(b1 = r*(s_year/s_percent))
-(b0 = m_year - b1*m_percent)
+(b1 = r*(s_log_gdp/s_lifeExp))
+(b0 = m_log_gdp - b1*m_lifeExp)
 ```
 
 ---
 ## In `R`
 
 ```{r}
-fit.1 <- lm(percent ~ year, data = gallup)
+fit.1 <- lm(lifeExp ~ log_gdp, data = gapminder)
 summary(fit.1)
 ```
 
@@ -383,7 +385,7 @@ summary(fit.1)
 
 
 ```{r, echo=FALSE, cache=TRUE, message = F}
-ggplot(gallup, aes(x=year, y=percent)) +
+ggplot(gapminder, aes(x=log_gdp, y=lifeExp)) +
     geom_point() +    
     geom_smooth(method=lm,   # Add linear regression line
                 se=FALSE) +
@@ -413,7 +415,7 @@ Point out the average of the residuals is 0, just like average deviation from th
 ### The relationship between $X_i$ and $\hat{Y_i}$
 
 ```{r, fig.width=8, fig.height = 6}
-model_info %>% ggplot(aes(x = year, y = .fitted)) +
+model_info %>% ggplot(aes(x = log_gdp, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") +
   scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -422,7 +424,7 @@ model_info %>% ggplot(aes(x = year, y = .fitted)) +
 ### The relationship between $X_i$ and $e_i$
 
 ```{r, fig.width=8, fig.height = 6}
-model_info %>% ggplot(aes(x = year, y = .resid)) +
+model_info %>% ggplot(aes(x = log_gdp, y = .resid)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("X") + scale_y_continuous("e") + theme_bw(base_size = 30)
 ```
@@ -432,7 +434,7 @@ model_info %>% ggplot(aes(x = year, y = .resid)) +
 ### The relationship between $Y_i$ and $\hat{Y_i}$
 
 ```{r, fig.width=8, fig.height = 6}
-model_info %>% ggplot(aes(x = percent, y = .fitted)) +
+model_info %>% ggplot(aes(x = lifeExp, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -442,7 +444,7 @@ model_info %>% ggplot(aes(x = percent, y = .fitted)) +
 ### The relationship between $Y_i$ and $e_i$
 
 ```{r, fig.width=8, fig.height = 6}
-model_info %>% ggplot(aes(x = percent, y = .resid)) +
+model_info %>% ggplot(aes(x = lifeExp, y = .resid)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous("e") + theme_bw(base_size = 25)
 ```

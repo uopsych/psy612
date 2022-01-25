@@ -31,34 +31,34 @@ library(here)
 
 ---
 
+[Gallup](https://news.gallup.com/poll/350486/record-high-support-same-sex-marriage.aspx) has been tracking support for same-sex marriage since 1996. They provide data for the `percent` of respondents who agree with the statement, "Do you think marriages between same-sex couples should or should not be recognized by the law as valid, with the same rights as traditional marriages?"
+
 ```{r}
-library(gapminder)
-gapminder = gapminder %>% filter(year == 2007 & continent == "Asia") %>% 
-  mutate(log_gdp = log(gdpPercap))
-glimpse(gapminder)
+gallup = read_csv(here("data/gallup_marriage.csv"))
+psych::describe(gallup[,c("year","percent")], fast = T)
 ```
 
 ```{r}
-cor(gapminder$log_gdp, gapminder$lifeExp)
+cor(gallup$year, gallup$percent)
 ```
 
 ---
 
 ```{r}
-mod = lm(lifeExp ~ log_gdp, data = gapminder)
+mod = lm(percent ~ year, data = gallup)
 summary(mod)
 ```
 
 ---
 
 ```{r}
-gapminder %>% ggplot(aes(x = log_gdp, y = lifeExp)) + geom_point() + 
+gallup %>% ggplot(aes(x = year, y = percent)) + geom_point() + 
   geom_smooth(method = "lm", se = F)
 ```
 
 ???
 
-Prediction: can predict for another country here, so long as it has X in range
+Talk about prediction here
 
 ---
 
@@ -70,7 +70,7 @@ glimpse(model_info)
 ---
 
 ```{r}
-model_info %>% ggplot(aes(x = log_gdp, y = .fitted)) +
+model_info %>% ggplot(aes(x = year, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") +
   scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -78,7 +78,7 @@ model_info %>% ggplot(aes(x = log_gdp, y = .fitted)) +
 ---
 
 ```{r, fig.width=8, fig.height = 6}
-model_info %>% ggplot(aes(x = lifeExp, y = .fitted)) +
+model_info %>% ggplot(aes(x = percent, y = .fitted)) +
   geom_point() + geom_smooth(se = F, method = "lm") + 
   scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
 ```
@@ -97,11 +97,11 @@ model_info %>% ggplot(aes(x = .fitted, y = .resid)) +
 
 ```{r, echo = F, fig.width = 9, fig.height = 5}
 source(here("lectures/functions/spring_geom.R"))
-model_info %>% ggplot(aes(x = log_gdp,  y = lifeExp)) +
+model_info %>% ggplot(aes(x = year,  y = percent)) +
   geom_point() +
   scale_x_log10() +
   geom_smooth(method = "lm", se = F) +
-  geom_spring(aes(xend = log_gdp, yend = .fitted,
+  geom_spring(aes(xend = year, yend = .fitted,
                   tension = abs(.resid)),
               diameter = .25) +
   scale_tension_continuous(range = c(.1, 2)) +
@@ -252,7 +252,7 @@ d1.f %>%
 ## Example
 ```{r highlight.output = 17}
 
-fit.1 = lm(lifeExp ~ log_gdp, data = gapminder)
+fit.1 = lm(percent ~ year, data = gallup)
 summary(fit.1) 
 summary(fit.1)$r.squared
 
@@ -265,7 +265,7 @@ summary(fit.1)$r.squared
 The correlation between X and Y is: 
 
 ```{r}
-cor(gapminder$log_gdp, gapminder$lifeExp, use = "pairwise")
+cor(gallup$year, gallup$percent, use = "pairwise")
 ```
 
 --
@@ -273,7 +273,7 @@ cor(gapminder$log_gdp, gapminder$lifeExp, use = "pairwise")
 If we square the correlation, we get:
 
 ```{r}
-cor(gapminder$log_gdp, gapminder$lifeExp)^2
+cor(gallup$year, gallup$percent)^2
 ```
 
 Ta da!
@@ -306,10 +306,10 @@ $$\large  s_{residual} = {s_{Y}\sqrt{(1- R^2)}}$$
 ### standard deviation of the residuals
 
 ```{r}
-sd(gapminder$lifeExp)
+sd(gallup$percent)
 summary(fit.1)$r.squared
 
-sd(gapminder$lifeExp)*sqrt(1-summary(fit.1)$r.squared)
+sd(gallup$percent)*sqrt(1-summary(fit.1)$r.squared)
 sd(model_info$.resid)
 ```
 
