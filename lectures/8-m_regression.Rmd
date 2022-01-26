@@ -56,15 +56,17 @@ $$\large \hat{Y} = b_0 + b_1X_1 + b_2X_2 + \dots+b_kX_k$$
 
 - regression coefficients are "partial" regression coefficients  
 
-  - predicted change in $Y$ for a 1 unit change in $X$, *holding all other predictors constant* 
+  - predicted change in $Y$ for a 1 unit change in $X$, .purple[holding all other predictors constant]
   
-  - similar to semi-partial correlation -- represents part of each $X$
+  - similar in interpretation to semi-partial correlation -- represents contribution to all of Y from unique part of each $X$
+  
+  - same statistical test as partial correlation -- unique variance of $Y$ explained by unique variance of each $X$
 
 ---
 
 ## example
 ```{r, message=FALSE}
-library(here)
+library(here); library(tidyverse)
 stress.data = read.csv(here("data/stress.csv")) %>% select(-group)
 library(psych)
 describe(stress.data, fast = T)
@@ -75,11 +77,17 @@ round(cor(stress.data),2)
 
 ## example
 
-```{r, output.lines = c(9:19)}
+```{r, output.lines = c(9:13)}
 mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
 summary(mr.model)
 ```
 
+
+```{r}
+# partial correlation tests
+with(stress.data, ppcor::pcor.test(Stress, Support, Anxiety))
+with(stress.data, ppcor::pcor.test(Stress, Anxiety, Support))
+```
 ???
 
 If a univariate regression is estimating the best-fit line, what is this estimating?
@@ -123,7 +131,7 @@ $$b_{2}^* = \frac{r_{Y2}-r_{Y1}r_{12}}{1-r_{12}^2}$$
 
 ---
 
-## Relationships between partial, semi- and b*  
+## Relationships between partial, semi- and $b*$  
 
 (Standardized) Regression coefficients, partial correlations, and semi-partial correlations are all ways to represent the relationship between two variables while taking into account a third (or more!) variables. 
 
@@ -131,7 +139,7 @@ $$b_{2}^* = \frac{r_{Y2}-r_{Y1}r_{12}}{1-r_{12}^2}$$
 
 Note, however, that the calculations differ between the three effect sizes. These effect sizes are not synonymous and often yield different answers. 
 
-  - if predictors are not correlated, $r$,  sr $(r_{Y(1.2)})$ and b* are equal 
+  - if predictors are not correlated, $r$,  $sr$ $(r_{Y(1.2)})$ and $b*$ are equal 
 
 .small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and [usually indicative of some multicollinearity](http://www.statmodel.com/download/Joreskog.pdf).]
 ---
@@ -211,49 +219,6 @@ summary(mr.model)
 ![](images/control.gif)
 
 Taken from [@nickchk](https://twitter.com/nickchk)
-
----
-
-## Matrix algebra
-
-As we add variables to our model, the calculation of coefficient estimates using correlations and partial correlations gets more complicated. We'll only consider the formulas for the case of multiple regression with two variables, because as we move to three or more, these formulas become unreadable, although our interpretations are the same. 
-
-But the matrix algebra calculations for coefficients remain the same. 
-
----
-
-## Matrix algebra
-
-.pull-left[
-
-### Univariate regression
-
-$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
-Where $\mathbf{X}$ is an $n \times 2$ matrix, where the first column is composed of 1's and the second column are participant's scores on X.
-]
-
-.pull-left[
-
-### Mutiple regression
-
-$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$
-
-Where $\mathbf{X}$ is an $n \times (k+1)$ matrix, where the first column is composed of 1's and the columns 2-(k+1) are participant's scores on k IV's $(X_1...X_{K})$.
-]
-
----
-
-```{r}
-X.mat = cbind(1,stress.data[,c("Anxiety", "Support")])
-X.mat = as.matrix(X.mat)
-
-y.mat = as.matrix(stress.data[,c("Stress")])
-
-solve(t(X.mat) %*% X.mat) %*% t(X.mat) %*% y.mat
-
-coef(mr.model)
-```
-
 
 ---
 
@@ -352,6 +317,25 @@ $$b_{1}^* = \frac{r_{Y1}-r_{Y2}r_{12}}{1-r_{12}^2}$$
 ```{r, highlight.output = 19}
 summary(mr.model)
 ```
+---
+
+## ANOVA
+
+The omnibus test uses all SS associated with predictors.
+
+```{r, highlight.output = 5:6}
+anova(mr.model)
+```
+```{r, echo = F}
+aov_mod = anova(mr.model)
+ss_model = sum(aov_mod$`Sum Sq`[1:2])
+ms_model = ss_model/2
+Fstat = ms_model/aov_mod$`Mean Sq`[3]
+```
+
+$$SS_{\text{model}} = `r round(ss_model,2)`$$
+$$MS_{\text{model}} = \frac{SS_{\text{model}}}{df_{\text{model}}} = `r round(ms_model,2)`$$
+$$F_{\text{model}} = \frac{MS_{\text{model}}}{MS_{\text{residual}}} = `r round(Fstat,2)`$$
 ---
 
 ## ANOVA

@@ -36,16 +36,18 @@ class: center, middle, inverse, title-slide
 
 - regression coefficients are "partial" regression coefficients  
 
-  - predicted change in `\(Y\)` for a 1 unit change in `\(X\)`, *holding all other predictors constant* 
+  - predicted change in `\(Y\)` for a 1 unit change in `\(X\)`, .purple[holding all other predictors constant]
   
-  - similar to semi-partial correlation -- represents part of each `\(X\)`
+  - similar in interpretation to semi-partial correlation -- represents contribution to all of Y from unique part of each `\(X\)`
+  
+  - same statistical test as partial correlation -- unique variance of `\(Y\)` explained by unique variance of each `\(X\)`
 
 ---
 
 ## example
 
 ```r
-library(here)
+library(here); library(tidyverse)
 stress.data = read.csv(here("data/stress.csv")) %&gt;% select(-group)
 library(psych)
 describe(stress.data, fast = T)
@@ -88,15 +90,29 @@ summary(mr.model)
 ## (Intercept) -0.31587    0.85596  -0.369         0.712792    
 ## Support      0.40618    0.05115   7.941 0.00000000000149 ***
 ## Anxiety      0.25609    0.06740   3.799         0.000234 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ...
 ```
 
+
+
+```r
+# partial correlation tests
+with(stress.data, ppcor::pcor.test(Stress, Support, Anxiety))
+```
+
+```
+##   estimate              p.value statistic   n gp  Method
+## 1 0.595083 0.000000000001489791  7.940572 118  1 pearson
+```
+
+```r
+with(stress.data, ppcor::pcor.test(Stress, Anxiety, Support))
+```
+
+```
+##    estimate      p.value statistic   n gp  Method
+## 1 0.3339479 0.0002335689  3.799305 118  1 pearson
+```
 ???
 
 If a univariate regression is estimating the best-fit line, what is this estimating?
@@ -111,7 +127,7 @@ library(visreg)
 visreg2d(mr.model,"Support", "Anxiety", plot.type = "persp")
 ```
 
-![](8-m_regression_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](8-m_regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -142,7 +158,7 @@ $$\large \text{minimize} \sum (Y-\hat{Y})^2 $$
 
 ---
 
-## Relationships between partial, semi- and b*  
+## Relationships between partial, semi- and `\(b*\)`  
 
 (Standardized) Regression coefficients, partial correlations, and semi-partial correlations are all ways to represent the relationship between two variables while taking into account a third (or more!) variables. 
 
@@ -150,7 +166,7 @@ $$\large \text{minimize} \sum (Y-\hat{Y})^2 $$
 
 Note, however, that the calculations differ between the three effect sizes. These effect sizes are not synonymous and often yield different answers. 
 
-  - if predictors are not correlated, `\(r\)`,  sr `\((r_{Y(1.2)})\)` and b* are equal 
+  - if predictors are not correlated, `\(r\)`,  `\(sr\)` `\((r_{Y(1.2)})\)` and `\(b*\)` are equal 
 
 .small[*Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and [usually indicative of some multicollinearity](http://www.statmodel.com/download/Joreskog.pdf).]
 ---
@@ -291,64 +307,6 @@ summary(mr.model)
 ![](images/control.gif)
 
 Taken from [@nickchk](https://twitter.com/nickchk)
-
----
-
-## Matrix algebra
-
-As we add variables to our model, the calculation of coefficient estimates using correlations and partial correlations gets more complicated. We'll only consider the formulas for the case of multiple regression with two variables, because as we move to three or more, these formulas become unreadable, although our interpretations are the same. 
-
-But the matrix algebra calculations for coefficients remain the same. 
-
----
-
-## Matrix algebra
-
-.pull-left[
-
-### Univariate regression
-
-`$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$`
-Where `\(\mathbf{X}\)` is an `\(n \times 2\)` matrix, where the first column is composed of 1's and the second column are participant's scores on X.
-]
-
-.pull-left[
-
-### Mutiple regression
-
-`$$(\mathbf{X'X})^{-1} \mathbf{X'y}=\mathbf{b}$$`
-
-Where `\(\mathbf{X}\)` is an `\(n \times (k+1)\)` matrix, where the first column is composed of 1's and the columns 2-(k+1) are participant's scores on k IV's `\((X_1...X_{K})\)`.
-]
-
----
-
-
-```r
-X.mat = cbind(1,stress.data[,c("Anxiety", "Support")])
-X.mat = as.matrix(X.mat)
-
-y.mat = as.matrix(stress.data[,c("Stress")])
-
-solve(t(X.mat) %*% X.mat) %*% t(X.mat) %*% y.mat
-```
-
-```
-##               [,1]
-## 1       -0.3158660
-## Anxiety  0.2560870
-## Support  0.4061785
-```
-
-```r
-coef(mr.model)
-```
-
-```
-## (Intercept)     Support     Anxiety 
-##  -0.3158660   0.4061785   0.2560870
-```
-
 
 ---
 
@@ -496,6 +454,33 @@ summary(mr.model)
 ## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
 *## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
 ```
+---
+
+## ANOVA
+
+The omnibus test uses all SS associated with predictors.
+
+
+```r
+anova(mr.model)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Stress
+##            Df  Sum Sq Mean Sq F value          Pr(&gt;F)    
+*## Support     1 113.151 113.151  49.028 0.0000000001807 ***
+*## Anxiety     1  33.314  33.314  14.435       0.0002336 ***
+## Residuals 115 265.407   2.308                            
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+`$$SS_{\text{model}} = 146.46$$`
+`$$MS_{\text{model}} = \frac{SS_{\text{model}}}{df_{\text{model}}} = 73.23$$`
+`$$F_{\text{model}} = \frac{MS_{\text{model}}}{MS_{\text{residual}}} = 31.73$$`
 ---
 
 ## ANOVA
