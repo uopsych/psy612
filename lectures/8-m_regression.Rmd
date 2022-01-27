@@ -37,7 +37,8 @@ knit_hooks$set(output = function(x, options) {
   hook_output(x, options)
 })
 
-knitr::opts_chunk$set(message = FALSE) # suppress messages
+knitr::opts_chunk$set(message = FALSE, 
+                      warning = FALSE) # suppress messages
 ```
 
 ## Last time
@@ -67,10 +68,10 @@ $$\large \hat{Y} = b_0 + b_1X_1 + b_2X_2 + \dots+b_kX_k$$
 ## example
 ```{r, message=FALSE}
 library(here); library(tidyverse)
-stress.data = read.csv(here("data/stress.csv")) %>% select(-group)
+support_df = read.csv(here("data/support.csv")) 
 library(psych)
-describe(stress.data, fast = T)
-round(cor(stress.data),2)
+describe(support_df, fast = T)
+round(cor(support_df),2)
 ```
 
 ---
@@ -78,15 +79,15 @@ round(cor(stress.data),2)
 ## example
 
 ```{r, output.lines = c(9:13)}
-mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
 
 ```{r}
 # partial correlation tests
-with(stress.data, ppcor::pcor.test(Stress, Support, Anxiety))
-with(stress.data, ppcor::pcor.test(Stress, Anxiety, Support))
+with(support_df, ppcor::pcor.test(relationship, receive_support, give_support))
+with(support_df, ppcor::pcor.test(relationship, give_support, receive_support))
 ```
 ???
 
@@ -98,7 +99,7 @@ If a univariate regression is estimating the best-fit line, what is this estimat
 ```{r}
 library(visreg)
 
-visreg2d(mr.model,"Support", "Anxiety", plot.type = "persp")
+visreg2d(mr.model,"receive_support", "give_support", plot.type = "persp")
 
 ```
 
@@ -158,13 +159,13 @@ $$\large \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}}$$
 ---
 
 ```{r}
-stress.data = stress.data %>%
-  mutate(z_anxiety = scale(Anxiety),
-         z_support = scale(Support),
-         z_stress = scale(Stress))
+support_df = support_df %>%
+  mutate(z_give_support = scale(give_support),
+         z_receive_support = scale(receive_support),
+         z_relationship = scale(relationship))
 
-mod0 = lm(z_stress ~ z_anxiety + z_support, 
-          data = stress.data)
+mod0 = lm(z_relationship ~ z_give_support + z_receive_support, 
+          data = support_df)
 
 round(coef(mod0),3)
 ```
@@ -172,18 +173,18 @@ round(coef(mod0),3)
 .pull-left[
 ```{r, message=F, warning = F, echo = 2:4}
 library(ppcor)
-spcor.test(x = stress.data$Stress, 
-           y = stress.data$Anxiety, 
-           z = stress.data$Support)$estimate
+spcor.test(x = support_df$relationship, 
+           y = support_df$give_support, 
+           z = support_df$receive_support)$estimate
 ```
 ]
 
 .pull-right[
 
 ```{r, message=F, warning = F}
-pcor.test(x = stress.data$Stress, 
-          y = stress.data$Anxiety, 
-          z = stress.data$Support)$estimate
+pcor.test(x = support_df$relationship, 
+          y = support_df$give_support, 
+          z = support_df$receive_support)$estimate
 ```
 
 ]
@@ -201,14 +202,14 @@ $$b_{0} = \bar{Y} - b_{1}\bar{X_{1}} - b_{2}\bar{X_{2}}$$
 ---
 
 ```{r, highlight.output = 11}
-mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
 ---
 
 ```{r, highlight.output = 12:13}
-mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
@@ -222,10 +223,122 @@ Taken from [@nickchk](https://twitter.com/nickchk)
 
 ---
 
+## Compare the slopes
+
+```{r, output.lines = c(9:12), highlight.output = 5}
+un.model <- lm(relationship ~ give_support,           data = support_df)
+summary(un.model)
+```
+```{r, output.lines = c(9:13), highlight.output = 6}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+---
+
+```{r}
+library(sjPlot)
+plot_model(un.model, type = "pred", terms = c("give_support")) + ylim(4.5, 7.5)
+```
+
+---
+
+```{r}
+library(sjPlot)
+plot_model(mr.model, type = "pred", terms = c("give_support")) + ylim(4.5, 7.5)
+```
+
+---
+
+```{r, echo = F}
+library(broom)
+fitted_un = augment(un.model) %>% mutate(model = "univariate")
+fitted_mr = augment(mr.model) %>% mutate(model = "multiple")
+
+fitted_un %>% full_join(fitted_mr) %>% 
+  ggplot(aes(x = give_support, y = relationship)) +
+  geom_point(alpha = .3) +
+  #geom_point(aes(y = .fitted, color = model)) +
+  ggpubr::theme_pubclean()
+```
+
+---
+
+```{r, echo = F}
+fitted_un %>% full_join(fitted_mr) %>% 
+  ggplot(aes(x = give_support, y = relationship)) +
+  geom_point(alpha = .3) +
+  geom_point(aes(y = .fitted, color = model)) +
+  ggpubr::theme_pubclean()
+```
+
+---
+
+### Predictions: univariate model
+
+```{r, echo = F}
+newdf = expand.grid( #every possible combination
+  give_support = seq(
+    min(support_df$give_support),
+    max(support_df$give_support),
+    length = 100),
+  receive_support = c(5, 7, 9)
+)
+
+newdf$pred_un = predict(un.model, newdata = newdf)
+newdf$pred_mr = predict(mr.model, newdata = newdf)
+
+newdf = mutate(newdf, receive_support = paste("receive_support =", receive_support))
+
+newdf %>% ggplot(aes(x = give_support, y = pred_un)) +
+  geom_line() +
+  facet_wrap(~receive_support) +
+  ylim(4.5, 7.5) +
+  labs(x = "Give Support", y = "Expected Relationship Quality") +
+  theme_bw()
+```
+
+---
+
+### Predictions: multiple regression model
+
+```{r, echo = F}
+
+newdf %>% ggplot(aes(x = give_support, y = pred_mr)) +
+  geom_line() +
+  facet_wrap(~receive_support) +
+  ylim(4.5, 7.5) +
+  labs(x = "Give Support", y = "Expected Relationship Quality") +
+  theme_bw()
+```
+
+---
+
+```{r}
+plot_model(mr.model, type = "pred", 
+           terms = c("give_support", "receive_support[meansd]"))
+```
+
+---
+
+Even though the slope of one predictor, `give_support`, is less steep (accounting for less variance), the model overall captures more of the variability in Y (relationship quality).
+
+```{r, output.lines = 16:18}
+un.model <- lm(relationship ~ give_support, data = support_df)
+summary(un.model)
+```
+
+```{r, output.lines = 17:19}
+mr.model <- lm(relationship ~ give_support + receive_support, data = support_df)
+summary(mr.model)
+```
+
+---
+
 ## Estimating model fit
 
 ```{r, highlight.output = 18}
-mr.model <- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
@@ -233,9 +346,9 @@ summary(mr.model)
 
 ```{r}
 library(broom); library(scales)
-stress.data1 = augment(mr.model)
-stress.data1 %>%
-  ggplot(aes(x = Stress, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(Stress), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (Stress)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
+support_df1 = augment(mr.model)
+support_df1 %>%
+  ggplot(aes(x = relationship, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(relationship), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (relationship)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
 ```
 
 
@@ -292,7 +405,6 @@ $$\Large {SS_{residual}} = (1- R^2){SS_{Y}}$$
   - Think back to sampling error. If the population correlation, $\rho$, is 0, will your sample estimate always be 0? 
 
 - Adjusted/Shrunken $R^2$ takes into account the number of predictors in your model  
-
 
 ---
 

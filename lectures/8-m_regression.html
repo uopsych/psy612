@@ -48,29 +48,27 @@ class: center, middle, inverse, title-slide
 
 ```r
 library(here); library(tidyverse)
-stress.data = read.csv(here("data/stress.csv")) %&gt;% select(-group)
+support_df = read.csv(here("data/support.csv")) 
 library(psych)
-describe(stress.data, fast = T)
+describe(support_df, fast = T)
 ```
 
 ```
-##         vars   n  mean    sd  min    max  range   se
-## id         1 118 59.50 34.21 1.00 118.00 117.00 3.15
-## Anxiety    2 118  7.61  2.49 0.70  14.64  13.94 0.23
-## Stress     3 118  5.18  1.88 0.62  10.32   9.71 0.17
-## Support    4 118  8.73  3.28 0.02  17.34  17.32 0.30
+##                 vars  n mean   sd  min  max range   se
+## give_support       1 78 4.99 1.07 2.77 7.43  4.66 0.12
+## receive_support    2 78 7.88 0.85 5.81 9.68  3.87 0.10
+## relationship       3 78 5.85 0.86 3.27 7.97  4.70 0.10
 ```
 
 ```r
-round(cor(stress.data),2)
+round(cor(support_df),2)
 ```
 
 ```
-##            id Anxiety Stress Support
-## id       1.00    0.08  -0.05   -0.03
-## Anxiety  0.08    1.00  -0.05   -0.55
-## Stress  -0.05   -0.05   1.00    0.52
-## Support -0.03   -0.55   0.52    1.00
+##                 give_support receive_support relationship
+## give_support            1.00            0.39         0.36
+## receive_support         0.39            1.00         0.45
+## relationship            0.36            0.45         1.00
 ```
 
 ---
@@ -79,17 +77,17 @@ round(cor(stress.data),2)
 
 
 ```r
-mr.model &lt;- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model &lt;- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
 ```
 ...
 ## Coefficients:
-##             Estimate Std. Error t value         Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369         0.712792    
-## Support      0.40618    0.05115   7.941 0.00000000000149 ***
-## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+## receive_support  0.37216    0.11078   3.359  0.00123 **
+## give_support     0.17063    0.08785   1.942  0.05586 . 
 ...
 ```
 
@@ -97,21 +95,21 @@ summary(mr.model)
 
 ```r
 # partial correlation tests
-with(stress.data, ppcor::pcor.test(Stress, Support, Anxiety))
+with(support_df, ppcor::pcor.test(relationship, receive_support, give_support))
 ```
 
 ```
-##   estimate              p.value statistic   n gp  Method
-## 1 0.595083 0.000000000001489791  7.940572 118  1 pearson
+##    estimate     p.value statistic  n gp  Method
+## 1 0.3616442 0.001230843  3.359301 78  1 pearson
 ```
 
 ```r
-with(stress.data, ppcor::pcor.test(Stress, Anxiety, Support))
+with(support_df, ppcor::pcor.test(relationship, give_support, receive_support))
 ```
 
 ```
-##    estimate      p.value statistic   n gp  Method
-## 1 0.3339479 0.0002335689  3.799305 118  1 pearson
+##   estimate    p.value statistic  n gp  Method
+## 1 0.218838 0.05585914  1.942271 78  1 pearson
 ```
 ???
 
@@ -124,7 +122,7 @@ If a univariate regression is estimating the best-fit line, what is this estimat
 ```r
 library(visreg)
 
-visreg2d(mr.model,"Support", "Anxiety", plot.type = "persp")
+visreg2d(mr.model,"receive_support", "give_support", plot.type = "persp")
 ```
 
 ![](8-m_regression_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
@@ -186,32 +184,32 @@ Note, however, that the calculations differ between the three effect sizes. Thes
 
 
 ```r
-stress.data = stress.data %&gt;%
-  mutate(z_anxiety = scale(Anxiety),
-         z_support = scale(Support),
-         z_stress = scale(Stress))
+support_df = support_df %&gt;%
+  mutate(z_give_support = scale(give_support),
+         z_receive_support = scale(receive_support),
+         z_relationship = scale(relationship))
 
-mod0 = lm(z_stress ~ z_anxiety + z_support, 
-          data = stress.data)
+mod0 = lm(z_relationship ~ z_give_support + z_receive_support, 
+          data = support_df)
 
 round(coef(mod0),3)
 ```
 
 ```
-## (Intercept)   z_anxiety   z_support 
-##       0.000       0.339       0.710
+##       (Intercept)    z_give_support z_receive_support 
+##             0.000             0.212             0.367
 ```
 
 .pull-left[
 
 ```r
-spcor.test(x = stress.data$Stress, 
-           y = stress.data$Anxiety, 
-           z = stress.data$Support)$estimate
+spcor.test(x = support_df$relationship, 
+           y = support_df$give_support, 
+           z = support_df$receive_support)$estimate
 ```
 
 ```
-## [1] 0.2844005
+## [1] 0.1953065
 ```
 ]
 
@@ -219,13 +217,13 @@ spcor.test(x = stress.data$Stress,
 
 
 ```r
-pcor.test(x = stress.data$Stress, 
-          y = stress.data$Anxiety, 
-          z = stress.data$Support)$estimate
+pcor.test(x = support_df$relationship, 
+          y = support_df$give_support, 
+          z = support_df$receive_support)$estimate
 ```
 
 ```
-## [1] 0.3339479
+## [1] 0.218838
 ```
 
 ]
@@ -244,60 +242,60 @@ pcor.test(x = stress.data$Stress,
 
 
 ```r
-mr.model &lt;- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model &lt;- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
+## lm(formula = relationship ~ receive_support + give_support, data = support_df)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+##      Min       1Q   Median       3Q      Max 
+## -2.26837 -0.40225  0.07701  0.42147  1.76074 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value         Pr(&gt;|t|)    
-*## (Intercept) -0.31587    0.85596  -0.369         0.712792    
-## Support      0.40618    0.05115   7.941 0.00000000000149 ***
-## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+*## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+## receive_support  0.37216    0.11078   3.359  0.00123 **
+## give_support     0.17063    0.08785   1.942  0.05586 . 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
+## Residual standard error: 0.7577 on 75 degrees of freedom
+## Multiple R-squared:  0.2416,	Adjusted R-squared:  0.2214 
+## F-statistic: 11.95 on 2 and 75 DF,  p-value: 0.00003128
 ```
 
 ---
 
 
 ```r
-mr.model &lt;- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model &lt;- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
+## lm(formula = relationship ~ receive_support + give_support, data = support_df)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+##      Min       1Q   Median       3Q      Max 
+## -2.26837 -0.40225  0.07701  0.42147  1.76074 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value         Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369         0.712792    
-*## Support      0.40618    0.05115   7.941 0.00000000000149 ***
-*## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+*## receive_support  0.37216    0.11078   3.359  0.00123 **
+*## give_support     0.17063    0.08785   1.942  0.05586 . 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
+## Residual standard error: 0.7577 on 75 degrees of freedom
+## Multiple R-squared:  0.2416,	Adjusted R-squared:  0.2214 
+## F-statistic: 11.95 on 2 and 75 DF,  p-value: 0.00003128
 ```
 
 ---
@@ -310,34 +308,150 @@ Taken from [@nickchk](https://twitter.com/nickchk)
 
 ---
 
+## Compare the slopes
+
+
+```r
+un.model &lt;- lm(relationship ~ give_support,           data = support_df)
+summary(un.model)
+```
+
+```
+...
+## Coefficients:
+##              Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)   4.42369    0.43882  10.081 0.00000000000000117 ***
+*## give_support  0.28681    0.08605   3.333             0.00133 ** 
+...
+```
+
+```r
+mr.model &lt;- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+```
+...
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+## receive_support  0.37216    0.11078   3.359  0.00123 **
+*## give_support     0.17063    0.08785   1.942  0.05586 . 
+...
+```
+
+---
+
+
+```r
+library(sjPlot)
+plot_model(un.model, type = "pred", terms = c("give_support")) + ylim(4.5, 7.5)
+```
+
+![](8-m_regression_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+library(sjPlot)
+plot_model(mr.model, type = "pred", terms = c("give_support")) + ylim(4.5, 7.5)
+```
+
+![](8-m_regression_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+
+---
+
+![](8-m_regression_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+
+![](8-m_regression_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+---
+
+### Predictions: univariate model
+
+![](8-m_regression_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+
+---
+
+### Predictions: multiple regression model
+
+![](8-m_regression_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+plot_model(mr.model, type = "pred", 
+           terms = c("give_support", "receive_support[meansd]"))
+```
+
+![](8-m_regression_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+
+Even though the slope of one predictor, `give_support`, is less steep (accounting for less variance), the model overall captures more of the variability in Y (relationship quality).
+
+
+```r
+un.model &lt;- lm(relationship ~ give_support, data = support_df)
+summary(un.model)
+```
+
+```
+...
+## Residual standard error: 0.8073 on 76 degrees of freedom
+## Multiple R-squared:  0.1275,	Adjusted R-squared:  0.1161 
+## F-statistic: 11.11 on 1 and 76 DF,  p-value: 0.001329
+...
+```
+
+
+```r
+mr.model &lt;- lm(relationship ~ give_support + receive_support, data = support_df)
+summary(mr.model)
+```
+
+```
+...
+## Residual standard error: 0.7577 on 75 degrees of freedom
+## Multiple R-squared:  0.2416,	Adjusted R-squared:  0.2214 
+## F-statistic: 11.95 on 2 and 75 DF,  p-value: 0.00003128
+...
+```
+
+---
+
 ## Estimating model fit
 
 
 ```r
-mr.model &lt;- lm(Stress ~ Support + Anxiety, data = stress.data)
+mr.model &lt;- lm(relationship ~ receive_support + give_support, data = support_df)
 summary(mr.model)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
+## lm(formula = relationship ~ receive_support + give_support, data = support_df)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+##      Min       1Q   Median       3Q      Max 
+## -2.26837 -0.40225  0.07701  0.42147  1.76074 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value         Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369         0.712792    
-## Support      0.40618    0.05115   7.941 0.00000000000149 ***
-## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+## receive_support  0.37216    0.11078   3.359  0.00123 **
+## give_support     0.17063    0.08785   1.942  0.05586 . 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-*## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
+## Residual standard error: 0.7577 on 75 degrees of freedom
+*## Multiple R-squared:  0.2416,	Adjusted R-squared:  0.2214 
+## F-statistic: 11.95 on 2 and 75 DF,  p-value: 0.00003128
 ```
 
 ---
@@ -345,12 +459,12 @@ summary(mr.model)
 
 ```r
 library(broom); library(scales)
-stress.data1 = augment(mr.model)
-stress.data1 %&gt;%
-  ggplot(aes(x = Stress, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(Stress), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (Stress)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
+support_df1 = augment(mr.model)
+support_df1 %&gt;%
+  ggplot(aes(x = relationship, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(relationship), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (relationship)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
 ```
 
-![](8-m_regression_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](8-m_regression_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -407,7 +521,6 @@ We haven't changed our method of decomposing variance from the univariate model
 
 - Adjusted/Shrunken `\(R^2\)` takes into account the number of predictors in your model  
 
-
 ---
 
 ## Adjusted R-squared, `\(\text{Adj } R^2\)`
@@ -436,23 +549,23 @@ summary(mr.model)
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
+## lm(formula = relationship ~ receive_support + give_support, data = support_df)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+##      Min       1Q   Median       3Q      Max 
+## -2.26837 -0.40225  0.07701  0.42147  1.76074 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value         Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369         0.712792    
-## Support      0.40618    0.05115   7.941 0.00000000000149 ***
-## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+## receive_support  0.37216    0.11078   3.359  0.00123 **
+## give_support     0.17063    0.08785   1.942  0.05586 . 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-*## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
+## Residual standard error: 0.7577 on 75 degrees of freedom
+## Multiple R-squared:  0.2416,	Adjusted R-squared:  0.2214 
+*## F-statistic: 11.95 on 2 and 75 DF,  p-value: 0.00003128
 ```
 ---
 
@@ -468,19 +581,19 @@ anova(mr.model)
 ```
 ## Analysis of Variance Table
 ## 
-## Response: Stress
-##            Df  Sum Sq Mean Sq F value          Pr(&gt;F)    
-*## Support     1 113.151 113.151  49.028 0.0000000001807 ***
-*## Anxiety     1  33.314  33.314  14.435       0.0002336 ***
-## Residuals 115 265.407   2.308                            
+## Response: relationship
+##                 Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+*## receive_support  1 11.553 11.5528 20.1253 0.0000257 ***
+*## give_support     1  2.166  2.1655  3.7724   0.05586 .  
+## Residuals       75 43.053  0.5740                      
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 
-`$$SS_{\text{model}} = 146.46$$`
-`$$MS_{\text{model}} = \frac{SS_{\text{model}}}{df_{\text{model}}} = 73.23$$`
-`$$F_{\text{model}} = \frac{MS_{\text{model}}}{MS_{\text{residual}}} = 31.73$$`
+`$$SS_{\text{model}} = 13.72$$`
+`$$MS_{\text{model}} = \frac{SS_{\text{model}}}{df_{\text{model}}} = 6.86$$`
+`$$F_{\text{model}} = \frac{MS_{\text{model}}}{MS_{\text{residual}}} = 11.95$$`
 ---
 
 ## ANOVA
@@ -495,11 +608,11 @@ anova(mr.model)
 ```
 ## Analysis of Variance Table
 ## 
-## Response: Stress
-##            Df  Sum Sq Mean Sq F value          Pr(&gt;F)    
-*## Support     1 113.151 113.151  49.028 0.0000000001807 ***
-*## Anxiety     1  33.314  33.314  14.435       0.0002336 ***
-## Residuals 115 265.407   2.308                            
+## Response: relationship
+##                 Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+*## receive_support  1 11.553 11.5528 20.1253 0.0000257 ***
+*## give_support     1  2.166  2.1655  3.7724   0.05586 .  
+## Residuals       75 43.053  0.5740                      
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -515,23 +628,23 @@ summary(mr.model)
 ```
 ## 
 ## Call:
-## lm(formula = Stress ~ Support + Anxiety, data = stress.data)
+## lm(formula = relationship ~ receive_support + give_support, data = support_df)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+##      Min       1Q   Median       3Q      Max 
+## -2.26837 -0.40225  0.07701  0.42147  1.76074 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value         Pr(&gt;|t|)    
-## (Intercept) -0.31587    0.85596  -0.369         0.712792    
-*## Support      0.40618    0.05115   7.941 0.00000000000149 ***
-*## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+##                 Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)      2.07212    0.81218   2.551  0.01277 * 
+*## receive_support  0.37216    0.11078   3.359  0.00123 **
+*## give_support     0.17063    0.08785   1.942  0.05586 . 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.519 on 115 degrees of freedom
-## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
-## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
+## Residual standard error: 0.7577 on 75 degrees of freedom
+## Multiple R-squared:  0.2416,	Adjusted R-squared:  0.2214 
+## F-statistic: 11.95 on 2 and 75 DF,  p-value: 0.00003128
 ```
 
 ---
@@ -583,9 +696,9 @@ ols_vif_tol(mr.model)
 ```
 
 ```
-##   Variables Tolerance      VIF
-## 1   Support  0.701857 1.424792
-## 2   Anxiety  0.701857 1.424792
+##         Variables Tolerance      VIF
+## 1 receive_support 0.8450326 1.183386
+## 2    give_support 0.8450326 1.183386
 ```
 
 Why are tolerance values identical here?
