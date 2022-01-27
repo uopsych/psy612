@@ -31,6 +31,8 @@ navbar:
         href: labs/lab-2/lab-2.html
       - text: "3-Univariate Regression & GLM"
         href: labs/lab-3/lab-3.html
+      - text: "4-Multiple regression"
+        href: labs/lab-4/lab-4.html
     - text: Homework
       href: homework.html
     - text: Final Project
