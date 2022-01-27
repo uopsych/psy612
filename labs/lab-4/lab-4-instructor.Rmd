@@ -3,12 +3,11 @@ title: "Multiple Regression"
 output: html_document
 editor_options: 
   chunk_output_type: console
-  markdown: 
-    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = FALSE)
 ```
 
 You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-4/lab4.Rmd).
@@ -20,8 +19,8 @@ library(rio)           # for importing data
 library(tidyverse)     # for plotting and data wrangling
 library(ppcor)         # for calculating partial and semi-partial correlations
 library(janitor)       # for cleaning up data names
-library(scatterplot3d) # this library will allow us to draw non-interactive 3d plots
-library(car)           # this library will allow us to draw interactive 3d plots
+library(scatterplot3d) # for drawing non-interactive 3d plots
+library(car)           # for drawing interactive 3d plots
 
 # suppress scientific notation
 options(scipen = 999)
@@ -31,7 +30,15 @@ Import the data set and inspect it. What variables do we have in our data set? W
 
 ```{r}
 # import data
-data <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-4/data/data_htwtage.csv",
+data <- import(file     = paste("https://raw.githubusercontent.com",
+                                "uopsych",
+                                "psy612",
+                                "master",
+                                "labs",
+                                "lab-4",
+                                "data",
+                                "data_htwtage.csv",
+                                sep = "/"),
                setclass = "tibble") %>%
   clean_names()
   
@@ -50,15 +57,15 @@ Visualize the relationship between `age` and `weight`. Let's also label the data
 ggplot(data    = data, 
        mapping = aes(x = scale(age), 
                      y = scale(weight))) +
-  geom_point(alpha = .8, 
-             color = "red3") + 
-  geom_text(aes(label = name, 
-                hjust = -0.1, 
-                vjust = -0.1)) + 
   geom_smooth(method = "lm", 
               se     = TRUE,
               lwd    = 1.5,
               color  = "turquoise4") +
+  geom_text(aes(label = name, 
+                hjust = -0.1, 
+                vjust = -0.1)) + 
+  geom_point(alpha = .8, 
+             color = "red3") + 
   labs(x     = "Standardized Age", 
        y     = "Standardized Weight", 
        title = "Weight Regressed On Age") +
@@ -72,6 +79,10 @@ Regress `weight` on `age`. Standardize the variables in the model. Save the mode
 model_1 <- lm(scale(weight) ~ scale(age), data = data)
 summary(model_1)
 ```
+
+The results provide us with the following model:
+
+$$W_i = .00 + .74A_i + \epsilon_i$$
 
 > **Question** What is the relationship between the standardized regression coefficient in a univariate regression model to the zero-order correlation between the predictor and outcome variable?
 
@@ -94,18 +105,25 @@ summary(model_2)
 
 The results provide us with the following model:
 
-$$W_i = 0 + .08A_i + .81H_i + \epsilon_i$$
+$$W_i = .00 + .08A_i + .81H_i + \epsilon_i$$
+
+> **Question** How does the regression coefficient corresponding to `age` differ in `model_2` compared to in `model_1`?
+
+REMOVE It is substantially smaller. REMOVE
 
 We can visualize the relationship among `weight`, `age`, and `height` using a 3D scatterplot. We can create a non-interactive version of a 3D scatterplot using the `scatterplot3d()` function from the `{scatterplot3d}` package.
 
 ```{r 3D Plots using scatterplot3d}
-s3d <- scatterplot3d(scale(data$age), 
-                     scale(data$height), 
-                     scale(data$weight), 
+s3d <- scatterplot3d(x     = scale(data$age), 
+                     y     = scale(data$height), 
+                     z     = scale(data$weight), 
+                     # labels
                      xlab  = "Age", 
                      ylab  = "Height", 
                      zlab  = "Weight",
-                     color = "red3")
+                     color = "red3",
+                     # point shapes
+                     pch   = 20)
 
 s3d$plane3d(model_2, lty.box = "solid", col = "turquoise4")
 ```
@@ -113,20 +131,22 @@ s3d$plane3d(model_2, lty.box = "solid", col = "turquoise4")
 We can also create an interactive version of a 3D scatterplot using the `scatter3d()` function from the `{car}` package.
 
 ```{r}
-scatter3d(scale(weight) ~ scale(age) + scale(height), 
-          data = data, 
-          xlab = "Age", 
-          ylab = "Weight", 
-          zlab = "Height")
+scatter3d(formula     = scale(weight) ~ scale(age) + scale(height), 
+          data        = data, 
+          # labels
+          xlab        = "Age", 
+          ylab        = "Weight", 
+          zlab        = "Height",
+          # colours
+          point.col    = "red3",
+          surface.col  = "turquoise4",
+          neg.res.col  = "darkorange1", 
+          pos.res.col  = "darkorange1",
+          axis.col     = rep("black", 3),
+          # animation
+          revolutions = 1.50,
+          speed       = 0.25)
 ```
-
-> **Question** How does the regression coefficient corresponding to `age` differ in `model_2` compared to in `model_1`?
-
-REMOVE It is substantially smaller. REMOVE
-
-> **Question** How does the regression coefficient corresponding to `age` in `model_2` compare to the zero-order correlation between `age` and `weight`?
-
-REMOVE It is substantially smaller. REMOVE
 
 # Partial Regression Coefficients
 
@@ -151,7 +171,7 @@ model_3 <- lm(scale(age) ~ scale(height), data = data)
 2.  Store the part of `age` that is unrelated to `height` in a new column in `data` called `age_resid`.
 
 ```{r}
-data$age_resid <- model_3$residuals
+data$age_resid <- resid(model_3)
 ```
 
 3.  Regress `weight` on the part of `age` that is unrelated to `height` (i.e., `data$age_resid`). Don't forget to standardize `weight` to stay consistent with how we ran the multiple regression model earlier. Store the model in an object called `model_4`.
@@ -172,7 +192,7 @@ REMOVE It's the same thing REMOVE
 
 > **Question** Which type of correlation is the partial regression coefficient conceptually most similar to?
 
-REMOVE I'm not sure... REMOVE
+REMOVE Semi-partial correlations REMOVE
 
 # Short Detour: The Relationship Between the Standardized Regression Coefficient and Semi-Partial Correlations
 
@@ -186,9 +206,7 @@ Let's see that this correlation is equal to the semi-partial correlation by calc
 
 # Semi-Partial Correlations
 
-Given X1, X2, and Y, the semi-partial correlation between X1 and Y
-(controlling for X2) is the correlation between the part of X1 that is
-not related to X2 and Y:
+Given X1, X2, and Y, the semi-partial correlation between X1 and Y (controlling for X2) is the correlation between the part of X1 that is not related to X2 and Y:
 
 $$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{\sqrt{1-r_{X1X2}^2}}$$
 
@@ -242,9 +260,16 @@ partial_cor <- pcor.test(
 partial_cor
 ```
 
-> **Question** What's the difference conceptually in how we should understand the partial correlation between `weight` and `age` versus the semi-partial correlation between `weight` and `age` controlling for `height`?
+> **Question** What's the difference conceptually in how we should understand the partial correlation between `weight` and `age` and the semi-partial correlation between `weight` and `age`?
 
-REMOVE idk REMOVE
+REMOVE The partial correlation is the association between weight controlling for height and age controlling for height whereas the semi-partial correlation is the association between weight and age controlling for height REMOVE
+
+Is there a way to test if this is true?
+
+```{r}
+cor(resid(lm(weight ~ height, data = data)),
+    resid(lm(age    ~ height, data = data)))
+```
 
 # Significance Testing: The Model Comparison Approach
 
@@ -274,8 +299,10 @@ Let's visualize Model 1.
 
 ```{r}
 ggplot(data = data, aes(x = name, y = weight)) +
-  geom_point() +
-  geom_hline(yintercept = mean(data$weight), color = "red")
+  geom_point(color = "red3") +
+  geom_hline(yintercept = mean(data$weight), 
+             color      = "turquoise4") +
+  theme_bw()
 ```
 
 Now, let's run Model 1 and see how much error is left unaccounted for. Save Model 1 to `model_1`.
@@ -293,10 +320,27 @@ model_1_anova
 
 The Sum of Squares on the *residuals* row corresponds to the SSE. That is, if you were to calculate the distance between each person's actual weight and the weight predicted by the model (in this case, the mean), square those distances, and sum them up, you would get 9,335.7.
 
+Let's visualize Model 2.
+
+```{r}
+s3d <- scatterplot3d(x     = data$age, 
+                     y     = data$height, 
+                     z     = data$weight, 
+                     # labels
+                     xlab  = "Age", 
+                     ylab  = "Height", 
+                     zlab  = "Weight",
+                     color = "red3",
+                     # point shapes
+                     pch   = 20)
+
+s3d$plane3d(model_2, lty.box = "solid", col = "turquoise4")
+```
+
 Now, let's run Model 2 and see how much error is left unaccounted for. Save Model 2 to `model_2`.
 
 ```{r}
-model_2 <- lm(weight ~ age + height, data = data)
+model_2       <- lm(weight ~ age + height, data = data)
 model_2_anova <- anova(model_2)
 model_2_anova
 ```
@@ -335,7 +379,7 @@ REMOVE Age and height explained 77.29% of the variability in weight scores. REMO
 
 > **Question** What is the more familiar term for this value?
 
-REMOVE R-squared. REMOVE
+REMOVE R-squared; coefficient of determination. REMOVE
 
 Look again at our summary output if we run our multiple regression model (i.e., `model_2`) and see how our results map on.
 
@@ -363,7 +407,7 @@ And the alternative hypothesis states:
 
 $$H1: \beta_2 \neq 0$$
 
-Construct Model 1 and Model 2. Store in variables labelled `model_1` and `model_2`, respectively. 
+Construct Model 1 and Model 2. Store in variables labelled `model_1` and `model_2`, respectively.
 
 ```{r}
 model_1 <- lm(weight ~ age, data = data)
@@ -410,13 +454,21 @@ confint(model_2)
 
 # Minihacks
 
-Use the following data set for these minihacks.
+Use the following [data set](https://www.sciencedirect.com/science/article/pii/S0092656621000659) for these minihacks.
 
 ```{r}
-df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-4/data/data_kay2021.csv") %>%
-  janitor::clean_names() # to get things into snake_case
+df <- import(file     = paste("https://raw.githubusercontent.com",
+                                "uopsych",
+                                "psy612",
+                                "master",
+                                "labs",
+                                "lab-4",
+                                "data",
+                                "data_kay2021.csv",
+                                sep = "/"),
+               setclass = "tibble")
 
-head(df)
+data
 ```
 
 # Minihack 1
@@ -424,21 +476,26 @@ head(df)
 Say a researcher is interested in whether there is a relationship between the tendency to believe in conspiracy theories (Y = `conspiracy`) and paranoia (X1 = `paranoia`) when controlling for person's general tendency to have delusions (X2 = `delusions`). Calculate the semi-partial and partial correlations for this scenario. Explain the difference in what the semi-partial versus the partial correlation means.
 
 ```{r}
+#remove
 semi_partial_corr <- spcor.test(
-  x = df$conspiracy, # Y (var of interest 1)
-  y = df$paranoia,  # X1 (var of interest 2 - the one you want residualized)
-  z = df$delusions  # X2 (control variable)
+  x = df$conspiracy, # Y  (var of interest 1)
+  y = df$paranoia,   # X1 (var of interest 2 - the one you want residualized)
+  z = df$delusions   # X2 (control variable)
 )
 
 semi_partial_corr
 
+semi_partial_corr$estimate^2
+
 partial_corr <- pcor.test(
-  x = df$conspiracy, # Y (var of interest 1)
+  x = df$conspiracy, # Y  (var of interest 1)
   y = df$paranoia,   # X1 (var of interest 2)
   z = df$delusions   # X2 (control variable)
 )
 
 partial_corr
+
+partial_corr$estimate^2
 ```
 
 # Minihack 2
@@ -454,7 +511,7 @@ summary(mini2)
 
 Treat the model you ran in minihack 2 as model 1. Make a new model, Model 2, that includes all the predictors in Model 1 plus the desire for uniqueness (`uniqueness`) and the desire for control (`control`).
 
-Perform a model comparison to test whether the variation in the tendency to believe in conspiracy theories is accounted for by a desire for uniqueness and control above and beyond the variation already accounted for by paranoia and delusional ideation. 
+Perform a model comparison to test whether the variation in the tendency to believe in conspiracy theories is accounted for by a desire for uniqueness and control above and beyond the variation already accounted for by paranoia and delusional ideation.
 
 Report the change in SSE between Model 1 and Model 2, the F-statistic with its degrees of freedom, the p-value. Also, calculate R-squared.
 
