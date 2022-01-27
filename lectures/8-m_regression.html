@@ -713,6 +713,110 @@ Why are tolerance values identical here?
 
 - But that's only the case if you add variables unrelated to Y or X; there are some cases in which adding the wrong variables can lead to spurious results. [Stay tuned for the lecture on causal models.]
 
+---
+
+## Suppression
+
+Normally our standardized partial regression coefficients fall between 0 and `\(r_{Y1}\)`. However, it is possible for `\(b^*_{Y1}\)` to be larger than `\(r_{Y1}\)`. We refer to this phenomenon as .purple[suppression.]
+
+* A non-significant `\(r_{Y1}\)` can become a significant `\(b^*_{Y1}\)` when additional variables are added to the model.
+
+* A *positive* `\(r_{Y1}\)` can become a *negative* and significant `\(b^*_{Y1}\)`.
+
+---
+
+
+```r
+stress_df = read.csv(here("data/stress.csv")) %&gt;% dplyr::select(-id, -group)
+
+cor(stress_df) %&gt;% round(2)
+```
+
+```
+##         Anxiety Stress Support
+## Anxiety    1.00  -0.05   -0.55
+## Stress    -0.05   1.00    0.52
+## Support   -0.55   0.52    1.00
+```
+
+---
+
+
+```r
+lm(Stress ~ Anxiety, data = stress_df) %&gt;% summary
+```
+
+```
+## 
+## Call:
+## lm(formula = Stress ~ Anxiety, data = stress_df)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -4.580 -1.338  0.130  1.047  4.980 
+## 
+## Coefficients:
+##             Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)  5.45532    0.56017   9.739 &lt;0.0000000000000002 ***
+## Anxiety     -0.03616    0.06996  -0.517               0.606    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.882 on 116 degrees of freedom
+## Multiple R-squared:  0.002297,	Adjusted R-squared:  -0.006303 
+## F-statistic: 0.2671 on 1 and 116 DF,  p-value: 0.6063
+```
+
+---
+
+
+```r
+lm(Stress ~ Anxiety + Support, data = stress_df) %&gt;% summary
+```
+
+```
+## 
+## Call:
+## lm(formula = Stress ~ Anxiety + Support, data = stress_df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.1958 -0.8994 -0.1370  0.9990  3.6995 
+## 
+## Coefficients:
+##             Estimate Std. Error t value         Pr(&gt;|t|)    
+## (Intercept) -0.31587    0.85596  -0.369         0.712792    
+## Anxiety      0.25609    0.06740   3.799         0.000234 ***
+## Support      0.40618    0.05115   7.941 0.00000000000149 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.519 on 115 degrees of freedom
+## Multiple R-squared:  0.3556,	Adjusted R-squared:  0.3444 
+## F-statistic: 31.73 on 2 and 115 DF,  p-value: 0.00000000001062
+```
+
+---
+
+## Suppression
+
+Recall that the partial regression coefficient is calculated:
+
+`$$\large b^*_{Y1.2}=\frac{r_{Y1}-r_{Y2}r_{12}}{1-r^2_{12}}$$`
+
+
+--
+
+Is suppression meaningful? 
+???
+
+Imagine a scenario when X2 and Y are uncorrelated and X2 is correlated with X1.
+
+(Draw Venn diagram of this)
+
+Second part of numerator becomes 0
+Bottom part gets smaller
+Bigger value
 
 ---
 
