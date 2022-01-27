@@ -154,7 +154,9 @@ The regression coefficients corresponding to the predictors in a multiple regres
 
 A new concept that gets introduced when we have multiple predictors in the regression model is *redundancy*, which occurs when the predictors in a multiple regression model are correlated (which they often are) and there is overlap in the variability each can account for in the outcome variable. In other words, some of the variability X1 can account for in Y is *redundant* with the variability X2 can account for in Y.
 
+<center>
 ![](https://raw.githubusercontent.com/saralieber/R_Coding/master/venn_diagram_wthtage.PNG)
+</center>
 
 The *partial regression coefficients* that we obtain in the "Estimate" column from the summary output of our multiple regression model account for this redundancy. A partial regression coefficient is the relationship between a predictor variable (X1) and outcome variable (Y) when the relationship between X1 and the other predictor variable(s) in the model has been removed.
 
@@ -454,7 +456,7 @@ confint(model_2)
 
 # Minihacks
 
-Use the following [data set](https://www.sciencedirect.com/science/article/pii/S0092656621000659) for these minihacks.
+Use the data from [Kay (2021)](https://www.sciencedirect.com/science/article/pii/S0092656621000659) for these minihacks.
 
 ```{r}
 df <- import(file     = paste("https://raw.githubusercontent.com",

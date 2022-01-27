@@ -225,11 +225,9 @@ summary(model_1)</code></pre>
 <blockquote>
 <p><strong>Question</strong> What is the relationship between the standardized regression coefficient in a univariate regression model to the zero-order correlation between the predictor and outcome variable?</p>
 </blockquote>
-<p>REMOVE They’re identical. REMOVE</p>
 <blockquote>
 <p><strong>Question</strong> What’s another variable that could help explain the differences between the predicted values and the actual values? In other words, what’s another variable that could explain variation in <code>weight</code> that is not explained by <code>age</code>?</p>
 </blockquote>
-<p>REMOVE Height. REMOVE</p>
 </div>
 <div id="multiple-regression" class="section level1">
 <h1>Multiple Regression</h1>
@@ -242,7 +240,6 @@ summary(model_2)</code></pre>
 <blockquote>
 <p><strong>Question</strong> How does the regression coefficient corresponding to <code>age</code> differ in <code>model_2</code> compared to in <code>model_1</code>?</p>
 </blockquote>
-<p>REMOVE It is substantially smaller. REMOVE</p>
 <p>We can visualize the relationship among <code>weight</code>, <code>age</code>, and <code>height</code> using a 3D scatterplot. We can create a non-interactive version of a 3D scatterplot using the <code>scatterplot3d()</code> function from the <code>{scatterplot3d}</code> package.</p>
 <pre class="r"><code>s3d &lt;- scatterplot3d(x     = scale(data$age), 
                      y     = scale(data$height), 
@@ -288,15 +285,15 @@ s3d$plane3d(model_2, lty.box = &quot;solid&quot;, col = &quot;turquoise4&quot;)<
 <ol style="list-style-type: decimal">
 <li>Regress <code>age</code> on <code>height</code>. Standardize the variables. Store the model in an object called <code>model_3</code></li>
 </ol>
-<pre class="r"><code>model_3 &lt;- lm(scale(age) ~ scale(height), data = data)</code></pre>
+<pre class="r"><code>model_3 &lt;- # your code here</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Store the part of <code>age</code> that is unrelated to <code>height</code> in a new column in <code>data</code> called <code>age_resid</code>.</li>
 </ol>
-<pre class="r"><code>data$age_resid &lt;- resid(model_3)</code></pre>
+<pre class="r"><code>data$age_resid &lt;- # your code here</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Regress <code>weight</code> on the part of <code>age</code> that is unrelated to <code>height</code> (i.e., <code>data$age_resid</code>). Don’t forget to standardize <code>weight</code> to stay consistent with how we ran the multiple regression model earlier. Store the model in an object called <code>model_4</code>.</li>
 </ol>
-<pre class="r"><code>model_4 &lt;- lm(scale(weight) ~ age_resid, data = data)</code></pre>
+<pre class="r"><code>model_4 &lt;- # your code here</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>Examine the final results using the <code>summary()</code> function.</li>
 </ol>
@@ -304,11 +301,9 @@ s3d$plane3d(model_2, lty.box = &quot;solid&quot;, col = &quot;turquoise4&quot;)<
 <blockquote>
 <p><strong>Question</strong> How does the regression coefficient corresponding to the part of <code>age</code> that is unrelated to <code>height</code> in the univariate model (i.e., <code>model_4</code>) predicting <code>weight</code> compare to the regression coefficient corresponding to <code>age</code> in the multiple regression model (i.e., <code>model_2</code>)?</p>
 </blockquote>
-<p>REMOVE It’s the same thing REMOVE</p>
 <blockquote>
 <p><strong>Question</strong> Which type of correlation is the partial regression coefficient conceptually most similar to?</p>
 </blockquote>
-<p>REMOVE Semi-partial correlations REMOVE</p>
 </div>
 <div id="short-detour-the-relationship-between-the-standardized-regression-coefficient-and-semi-partial-correlations" class="section level1">
 <h1>Short Detour: The Relationship Between the Standardized Regression Coefficient and Semi-Partial Correlations</h1>
@@ -360,7 +355,6 @@ partial_cor</code></pre>
 <blockquote>
 <p><strong>Question</strong> What’s the difference conceptually in how we should understand the partial correlation between <code>weight</code> and <code>age</code> and the semi-partial correlation between <code>weight</code> and <code>age</code>?</p>
 </blockquote>
-<p>REMOVE The partial correlation is the association between weight controlling for height and age controlling for height whereas the semi-partial correlation is the association between weight and age controlling for height REMOVE</p>
 <p>Is there a way to test if this is true?</p>
 <pre class="r"><code>cor(resid(lm(weight ~ height, data = data)),
     resid(lm(age    ~ height, data = data)))</code></pre>
@@ -387,9 +381,9 @@ partial_cor</code></pre>
              color      = &quot;turquoise4&quot;) +
   theme_bw()</code></pre>
 <p>Now, let’s run Model 1 and see how much error is left unaccounted for. Save Model 1 to <code>model_1</code>.</p>
-<pre class="r"><code>model_1 &lt;- lm(weight ~ 1, data = data)</code></pre>
+<pre class="r"><code>model_1 &lt;- # your code here</code></pre>
 <p>Let me introduce a new way of looking at the output of a regression analysis, the <code>anova()</code> function. This function gives us the SSE (the amount of unaccounted for error remaining in Model 1).</p>
-<pre class="r"><code>model_1_anova &lt;- anova(model_1)
+<pre class="r"><code>model_1_anova &lt;- # your code here
 model_1_anova</code></pre>
 <p>The Sum of Squares on the <em>residuals</em> row corresponds to the SSE. That is, if you were to calculate the distance between each person’s actual weight and the weight predicted by the model (in this case, the mean), square those distances, and sum them up, you would get 9,335.7.</p>
 <p>Let’s visualize Model 2.</p>
@@ -406,8 +400,8 @@ model_1_anova</code></pre>
 
 s3d$plane3d(model_2, lty.box = &quot;solid&quot;, col = &quot;turquoise4&quot;)</code></pre>
 <p>Now, let’s run Model 2 and see how much error is left unaccounted for. Save Model 2 to <code>model_2</code>.</p>
-<pre class="r"><code>model_2       &lt;- lm(weight ~ age + height, data = data)
-model_2_anova &lt;- anova(model_2)
+<pre class="r"><code>model_2       &lt;- # your code here
+model_2_anova &lt;- # your code here
 model_2_anova</code></pre>
 <p>Look at the residuals row again to get the SSE. The amount of unaccounted for error remaining when we use model 2 is 2,120.1. An improvement from Model 1!</p>
 <p>How much was SSE reduced by using Model 2 instead of Model 1? Save the output to a variable called <code>ssr</code> (i.e., sum of squares reduced).</p>
@@ -420,7 +414,7 @@ ssr</code></pre>
 <div id="model-comparison-in-a-single-step-using-the-anova-function" class="section level2">
 <h2>Model Comparison in a Single Step Using the <code>anova()</code> function</h2>
 <p>We can give both models as arguments to the <code>anova()</code> function to make the model comparison in a single step and test whether the reduction in SSE is significant. Save the results of the model comparison to an object called <code>model_comparison</code>.</p>
-<pre class="r"><code>model_comparison &lt;- anova(model_1, model_2)
+<pre class="r"><code>model_comparison &lt;- # your code here
 model_comparison</code></pre>
 <p>Let’s also calculate how much we reduced the amount of unaccounted for error using Model 2 compared to Model 1 as a proportion of the total amount of unaccounted for error we started with in Model 1. Save the output to a variable called <code>per</code> (i.e., proportion_error_reduced).</p>
 <pre class="r"><code>per &lt;- (model_1_sse - model_2_sse) / model_1_sse
@@ -428,11 +422,9 @@ per</code></pre>
 <blockquote>
 <p><strong>Question</strong> What does this proportional reduction in error mean?</p>
 </blockquote>
-<p>REMOVE Age and height explained 77.29% of the variability in weight scores. REMOVE</p>
 <blockquote>
 <p><strong>Question</strong> What is the more familiar term for this value?</p>
 </blockquote>
-<p>REMOVE R-squared; coefficient of determination. REMOVE</p>
 <p>Look again at our summary output if we run our multiple regression model (i.e., <code>model_2</code>) and see how our results map on.</p>
 <pre class="r"><code>summary(model_2)</code></pre>
 <p>The statistics given at the bottom of the summary output correspond to a test of the significance of the <em>overall model</em> i.e., the <em>omnibus test</em>.</p>
@@ -450,10 +442,10 @@ per</code></pre>
 <p>And the alternative hypothesis states:</p>
 <p><span class="math display">\[H1: \beta_2 \neq 0\]</span></p>
 <p>Construct Model 1 and Model 2. Store in variables labelled <code>model_1</code> and <code>model_2</code>, respectively.</p>
-<pre class="r"><code>model_1 &lt;- lm(weight ~ age, data = data)
-model_2 &lt;- lm(weight ~ age + height, data = data)</code></pre>
+<pre class="r"><code>model_1 &lt;- # your code here
+model_2 &lt;- # your code here</code></pre>
 <p>Compare the models using the <code>anova()</code> function. Save the results of the model comparison to an object called <code>model_comparison</code>.</p>
-<pre class="r"><code>model_comparison &lt;- anova(model_1, model_2)
+<pre class="r"><code>model_comparison &lt;- # your code here
 model_comparison</code></pre>
 <p>Compute <span class="math inline">\(R^2\)</span>.</p>
 <pre class="r"><code>r_squared &lt;- model_comparison$`Sum of Sq`[2] / model_comparison$RSS[1]
@@ -487,44 +479,19 @@ data</code></pre>
 <div id="minihack-1" class="section level1">
 <h1>Minihack 1</h1>
 <p>Say a researcher is interested in whether there is a relationship between the tendency to believe in conspiracy theories (Y = <code>conspiracy</code>) and paranoia (X1 = <code>paranoia</code>) when controlling for person’s general tendency to have delusions (X2 = <code>delusions</code>). Calculate the semi-partial and partial correlations for this scenario. Explain the difference in what the semi-partial versus the partial correlation means.</p>
-<pre class="r"><code>#remove
-semi_partial_corr &lt;- spcor.test(
-  x = df$conspiracy, # Y  (var of interest 1)
-  y = df$paranoia,   # X1 (var of interest 2 - the one you want residualized)
-  z = df$delusions   # X2 (control variable)
-)
-
-semi_partial_corr
-
-semi_partial_corr$estimate^2
-
-partial_corr &lt;- pcor.test(
-  x = df$conspiracy, # Y  (var of interest 1)
-  y = df$paranoia,   # X1 (var of interest 2)
-  z = df$delusions   # X2 (control variable)
-)
-
-partial_corr
-
-partial_corr$estimate^2</code></pre>
+<pre class="r"><code># your code here</code></pre>
 </div>
 <div id="minihack-2" class="section level1">
 <h1>Minihack 2</h1>
 <p>Run a multiple regression predicting the tendency to believe in conspiracy theories (Y = <code>conspiracy</code>) from paranoia (X1 = <code>paranoia</code>) and delusional ideation (X2 = <code>delusions</code>). Interpret the meaning of the regression coefficients in your output.</p>
-<pre class="r"><code>mini2 &lt;- lm(conspiracy ~ paranoia + delusions, data = df)
-summary(mini2)</code></pre>
+<pre class="r"><code># your code here</code></pre>
 </div>
 <div id="minihack-3" class="section level1">
 <h1>Minihack 3</h1>
 <p>Treat the model you ran in minihack 2 as model 1. Make a new model, Model 2, that includes all the predictors in Model 1 plus the desire for uniqueness (<code>uniqueness</code>) and the desire for control (<code>control</code>).</p>
 <p>Perform a model comparison to test whether the variation in the tendency to believe in conspiracy theories is accounted for by a desire for uniqueness and control above and beyond the variation already accounted for by paranoia and delusional ideation.</p>
 <p>Report the change in SSE between Model 1 and Model 2, the F-statistic with its degrees of freedom, the p-value. Also, calculate R-squared.</p>
-<pre class="r"><code>mini3 &lt;- lm(conspiracy ~ paranoia + delusions + uniqueness + control, data = df)
-comparison &lt;- anova(mini2, mini3)
-comparison
-
-r_squared &lt;- comparison$`Sum of Sq`[2]/comparison$RSS[1]
-r_squared</code></pre>
+<pre class="r"><code># your code here</code></pre>
 </div>
 
 
