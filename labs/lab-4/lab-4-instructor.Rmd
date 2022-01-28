@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       eval = FALSE)
 ```
 
-You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-4/lab4.Rmd).
+You will need the Rmd file for today's lab-can download it [here](https://uopsych.github.io/psy612/labs/lab-4/lab4.Rmd).
 
 Before we begin, load the following libraries. Install any of the packages you have not yet installed on your computers.
 
@@ -113,7 +113,7 @@ REMOVE It is substantially smaller. REMOVE
 
 We can visualize the relationship among `weight`, `age`, and `height` using a 3D scatterplot. We can create a non-interactive version of a 3D scatterplot using the `scatterplot3d()` function from the `{scatterplot3d}` package.
 
-```{r 3D Plots using scatterplot3d}
+```{r}
 s3d <- scatterplot3d(x     = scale(data$age), 
                      y     = scale(data$height), 
                      z     = scale(data$weight), 
@@ -155,7 +155,9 @@ The regression coefficients corresponding to the predictors in a multiple regres
 A new concept that gets introduced when we have multiple predictors in the regression model is *redundancy*, which occurs when the predictors in a multiple regression model are correlated (which they often are) and there is overlap in the variability each can account for in the outcome variable. In other words, some of the variability X1 can account for in Y is *redundant* with the variability X2 can account for in Y.
 
 <center>
+
 ![](https://raw.githubusercontent.com/saralieber/R_Coding/master/venn_diagram_wthtage.PNG)
+
 </center>
 
 The *partial regression coefficients* that we obtain in the "Estimate" column from the summary output of our multiple regression model account for this redundancy. A partial regression coefficient is the relationship between a predictor variable (X1) and outcome variable (Y) when the relationship between X1 and the other predictor variable(s) in the model has been removed.
@@ -325,18 +327,18 @@ The Sum of Squares on the *residuals* row corresponds to the SSE. That is, if yo
 Let's visualize Model 2.
 
 ```{r}
-s3d <- scatterplot3d(x     = data$age, 
-                     y     = data$height, 
-                     z     = data$weight, 
-                     # labels
-                     xlab  = "Age", 
-                     ylab  = "Height", 
-                     zlab  = "Weight",
-                     color = "red3",
-                     # point shapes
-                     pch   = 20)
-
-s3d$plane3d(model_2, lty.box = "solid", col = "turquoise4")
+scatter3d(formula     = weight ~ age + height, 
+          data        = data, 
+          # labels
+          xlab        = "Age", 
+          ylab        = "Weight", 
+          zlab        = "Height",
+          # colours
+          point.col    = "red3",
+          surface.col  = "turquoise4",
+          neg.res.col  = "darkorange1", 
+          pos.res.col  = "darkorange1",
+          axis.col     = rep("black", 3))
 ```
 
 Now, let's run Model 2 and see how much error is left unaccounted for. Save Model 2 to `model_2`.
@@ -515,7 +517,7 @@ Treat the model you ran in minihack 2 as model 1. Make a new model, Model 2, tha
 
 Perform a model comparison to test whether the variation in the tendency to believe in conspiracy theories is accounted for by a desire for uniqueness and control above and beyond the variation already accounted for by paranoia and delusional ideation.
 
-Report the change in SSE between Model 1 and Model 2, the F-statistic with its degrees of freedom, the p-value. Also, calculate R-squared.
+Report the change in SSE between Model 1 and Model 2, the F-statistic with its degrees of freedom, the p-value. Also, calculate $R^2$.
 
 ```{r}
 mini3 <- lm(conspiracy ~ paranoia + delusions + uniqueness + control, data = df)
