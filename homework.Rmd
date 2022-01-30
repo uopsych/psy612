@@ -17,11 +17,11 @@ Homework assignments will appear here. You'll be able to access the assignment, 
 - [Download all files here.](homework/homework-1.zip)
 
 
-<!-- ### [**Homework 2**](homework/homework-2.html) -->
+### [**Homework 2**](homework/homework-2.html)
 
-<!-- **Due February 18, 9am** -->
+**Due February 18, 9am**
 
-<!-- - [Download all files here.](homework/homework-2.zip) -->
+- [Download all files here.](homework/homework-2.zip)
 
 <!-- ### [**Homework 3**](homework/homework-3.html) -->
 
