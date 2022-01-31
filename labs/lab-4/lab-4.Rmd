@@ -439,12 +439,6 @@ And also notice the correspondence in the p-values.
 model_comparison$`Pr(>F)`[2]
 ```
 
-Finally, we may also want confidence intervals around our regression coefficients.
-
-```{r}
-confint(model_2)
-```
-
 # Minihacks
 
 Use the data from [Kay (2021)](https://www.sciencedirect.com/science/article/pii/S0092656621000659) for these minihacks.

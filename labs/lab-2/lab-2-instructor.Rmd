@@ -456,6 +456,12 @@ REMOVE: At zero conscientiousness, self-reported health is estimated to be 1.66.
 
 REMOVE: For every one-unit increase in conscientiousness, self-reported health increases by .49 units.
 
+We can get the confidence intervals around those coefficients by using the `confint` function from the `{stats}` package.
+
+```{r, eval = FALSE}
+confint(model)
+```
+
 #### Getting standardized coefficients
 
 You probably recall that these are called the *unstandardized* coefficients. We can also get the standardized coefficients. Standardized regression coefficients, often notated as $\beta$, are just the regression coefficients after the variables have been *standardized* or *Z-scored*. To obtain them, we need to z-score our data with `scale()` before we run the `lm()` function. One really cool thing is that we can do it in the `lm()` call:
@@ -523,7 +529,11 @@ Let's see what happens when we tidy our model:
 tidy(model)
 ```
 
-You can see it produces a dataframe containing the model coefficients and their significance tests.
+You can see it produces a dataframe containing the model coefficients and their significance tests. If you also want to get the confidence intervals around those coefficients, you simply need to add the argument `conf.int = TRUE`:
+
+```{r, eval = FALSE}
+tidy(model, conf.int = TRUE)
+```
 
 ### `glance()`
 
