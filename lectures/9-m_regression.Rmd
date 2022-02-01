@@ -1,5 +1,5 @@
 ---
-title: 'Multiple Regression II'
+title: 'Lecture 9: Multiple Regression II'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -42,6 +42,8 @@ knitr::opts_chunk$set(message = FALSE) # suppress messages
 
 ## Some clarifications after HW1
 
+* one- vs two-tailed tests
+
 * standard error of the estimate $(s_{Y|X})$ should be compared to original $s_Y$
 
 * Markdown formatting -- do not add `#` outside of code chunks
@@ -62,7 +64,8 @@ knitr::opts_chunk$set(message = FALSE) # suppress messages
 
 * Tolerance
 * Hierarchical regression/model comparison
-* Categorical predictors
+
+* A note about the schedule
 
 ---
 
