@@ -133,163 +133,11 @@ rotate %>%
 The groups differ in their sample sizes, which can easily occur with free random assignment.  There are advantages to equal sample sizes, so researchers often restrict random assignment to insure equal sample sizes across Groups.
 
 Hard to tell if the variability in the four groups is homogeneous. 
----
-
-
-## Categorical predictors
-
-One of the benefits of using regression (instead of partial correlations) is that it can handle both continuous and categorical predictors and allows for using both in the same model.
-
-Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them (i.e., nominal and ordinal variables) and ascribe meaningful numbers that allow for us to calculate meaningful statistics. 
-
-You can choose just about any numbers to represent your categorical variable. However, there are several commonly used methods that result in very useful statistics. 
-
----
-
-## Dummy coding
-
-In dummy coding, one group is selected to be a reference group. From your single nominal variable with *K* levels, $K-1$ dummy code variables are created; for each new dummy code variable, one of the non-reference groups is assigned 1; all other groups are assigned 0.
-
-.pull-left[
-| Occupation | D1 | D2 |
-|:----------:|:--:|:--:|
-|Engineer | 0 | 0 |
-|Teacher | 1 | 0 |
-|Doctor | 0 | 1 |
-
-The dummy codes are entered as IV's in the regression equation.
-]
-
---
-
-.pull-right[
-|Person | Occupation | D1 | D2 |
-|:-----|:----------:|:--:|:--:|
-|Billy |Engineer | 0 | 0 |
-|Susan |Teacher | 1 | 0 |
-|Michael |Teacher | 1 | 0 |
-|Molly |Engineer | 0 | 0 |
-|Katie |Doctor | 0 | 1 |
-
-]
-
-
-
----
-
-Let's apply dummy coding to our example data. We'll have to pick one of the groups to be our .purple[reference] group, and then all other groups will have their own dummy code.
-
-```{r}
-rotate = rotate %>%
-  mutate(dummy_2 = ifelse(Group == 2, 1, 0),
-         dummy_3 = ifelse(Group == 3, 1, 0),
-         dummy_4 = ifelse(Group == 4, 1, 0)) 
-
-rotate %>% 
-  select(ID, Group,
-         matches("dummy")) %>%
-  kable() %>% kable_classic()
-
-```
-
----
-
-```{r}
-mod.1 = lm(Time ~ dummy_2 + dummy_3 + dummy_4, data = rotate)
-summary(mod.1)
-```
-
----
-
-### Interpreting coefficients
-
-When working with dummy codes, the intercept can be interpreted as the mean of the reference group.
-
-$$\begin{aligned} 
-\hat{Y} &= b_0 + b_1D_2 + b_2D_3 + b_3D_2 \\
-\hat{Y} &= b_0 + b_1(0) + b_2(0) + b_3(0) \\
-\hat{Y} &= b_0 \\
-\hat{Y} &= \bar{Y}_{\text{Reference}}
-\end{aligned}$$
-
-What do each of the slope coefficients mean?
-
----
-
-From this equation, we can get the mean of every single group.
-
-```{r}
-newdata = data.frame(dummy_2 = c(0,1,0,0),
-                     dummy_3 = c(0,0,1,0),
-                     dummy_4 = c(0,0,0,1))
-predict(mod.1, newdata = newdata, se.fit = T)
-```
----
-
-And the test of the coefficient represents the significance test of each group to the reference. This is an independent-samples *t*-test*.
-
-The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
-
-```{r, output.lines = c(10:14)}
-summary(mod.1)
-```
-
-What if you wanted to compare groups 2 and 3?
-
-\* .small[Except for a few crucial differences: the standard error and degrees of freedom use all the data in the model, including those in groups 3 and 4.]
-
-???
-
-```{r}
-rotate %>% 
-  filter(Group %in% c(1,2)) %>% 
-  t.test(Time ~ Group, data = ., var.equal = T)
-```
-
-
----
-
-```{r}
-rotate = rotate %>%
-  mutate(dummy_1 = ifelse(Group == 1, 1, 0),
-         dummy_3 = ifelse(Group == 3, 1, 0),
-         dummy_4 = ifelse(Group == 4, 1, 0)) 
-mod.2 = lm(Time ~ dummy_1 + dummy_3 + dummy_4, data = rotate)
-summary(mod.2)
-```
-
----
-
-In all multiple regression models, we have to consider the correlations between the IVs, as highly correlated variables make it more difficult to detect significance of a particular X. One useful way to conceptualize the relationship between any two variables is "Does knowing someone's score on $X_1$ affect my guess for their score on $X_2$?"
-
-Are dummy codes associated with a categorical predictor correlated or uncorrelated?
-
---
-
-```{r}
-cor(rotate[,grepl("dummy", names(rotate))], use = "pairwise")
-library(olsrr)
-ols_vif_tol(mod.1)
-```
-
----
-
-### Omnibus test
-
-```{r, highlight.output = 20:21}
-summary(mod.1)
-```
----
-
-### Omnibus test
-```{r, highlight.output = 20:21}
-summary(mod.2)
-```
 
 ---
 class: inverse
 
-## Testing group differences in the ANOVA framework
+# Testing group differences in the ANOVA framework
 
 ---
 ### Hypothesis
@@ -629,6 +477,177 @@ A single adjusted per-test a would be used with the Bonferroni procedure: .05/6 
 ```{r}
 emmeans(fit_1, pairwise ~ Group_lab, adjust = "holm")
 ```
+
+---
+
+class: inverse
+
+# ANOVA is regression
+
+---
+## Categorical predictors
+
+One of the benefits of using regression (instead of partial correlations) is that it can handle both continuous and categorical predictors and allows for using both in the same model.
+
+Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them (i.e., nominal and ordinal variables) and ascribe meaningful numbers that allow for us to calculate meaningful statistics. 
+
+You can choose just about any numbers to represent your categorical variable. However, there are several commonly used methods that result in very useful statistics. 
+
+---
+
+## Dummy coding
+
+In dummy coding, one group is selected to be a reference group. From your single nominal variable with *K* levels, $K-1$ dummy code variables are created; for each new dummy code variable, one of the non-reference groups is assigned 1; all other groups are assigned 0.
+
+.pull-left[
+| Occupation | D1 | D2 |
+|:----------:|:--:|:--:|
+|Engineer | 0 | 0 |
+|Teacher | 1 | 0 |
+|Doctor | 0 | 1 |
+
+The dummy codes are entered as IV's in the regression equation.
+]
+
+--
+
+.pull-right[
+|Person | Occupation | D1 | D2 |
+|:-----|:----------:|:--:|:--:|
+|Billy |Engineer | 0 | 0 |
+|Susan |Teacher | 1 | 0 |
+|Michael |Teacher | 1 | 0 |
+|Molly |Engineer | 0 | 0 |
+|Katie |Doctor | 0 | 1 |
+
+]
+
+
+
+---
+
+Let's apply dummy coding to our example data. We'll have to pick one of the groups to be our .purple[reference] group, and then all other groups will have their own dummy code.
+
+```{r}
+rotate = rotate %>%
+  mutate(dummy_2 = ifelse(Group == 2, 1, 0),
+         dummy_3 = ifelse(Group == 3, 1, 0),
+         dummy_4 = ifelse(Group == 4, 1, 0)) 
+
+rotate %>% 
+  select(ID, Group,
+         matches("dummy")) %>%
+  kable() %>% kable_classic()
+
+```
+
+---
+
+```{r}
+mod.1 = lm(Time ~ dummy_2 + dummy_3 + dummy_4, data = rotate)
+summary(mod.1)
+```
+
+---
+
+### Interpreting coefficients
+
+When working with dummy codes, the intercept can be interpreted as the mean of the reference group.
+
+$$\begin{aligned} 
+\hat{Y} &= b_0 + b_1D_2 + b_2D_3 + b_3D_2 \\
+\hat{Y} &= b_0 + b_1(0) + b_2(0) + b_3(0) \\
+\hat{Y} &= b_0 \\
+\hat{Y} &= \bar{Y}_{\text{Reference}}
+\end{aligned}$$
+
+What do each of the slope coefficients mean?
+
+---
+
+From this equation, we can get the mean of every single group.
+
+```{r}
+newdata = data.frame(dummy_2 = c(0,1,0,0),
+                     dummy_3 = c(0,0,1,0),
+                     dummy_4 = c(0,0,0,1))
+predict(mod.1, newdata = newdata, se.fit = T)
+```
+---
+
+And the test of the coefficient represents the significance test of each group to the reference. This is an independent-samples *t*-test*.
+
+The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
+
+```{r, output.lines = c(10:14)}
+summary(mod.1)
+```
+
+What if you wanted to compare groups 2 and 3?
+
+\* .small[Except for a few crucial differences: the standard error and degrees of freedom use all the data in the model, including those in groups 3 and 4.]
+
+???
+
+```{r}
+rotate %>% 
+  filter(Group %in% c(1,2)) %>% 
+  t.test(Time ~ Group, data = ., var.equal = T)
+```
+
+
+---
+
+```{r}
+rotate = rotate %>%
+  mutate(dummy_1 = ifelse(Group == 1, 1, 0),
+         dummy_3 = ifelse(Group == 3, 1, 0),
+         dummy_4 = ifelse(Group == 4, 1, 0)) 
+mod.2 = lm(Time ~ dummy_1 + dummy_3 + dummy_4, data = rotate)
+summary(mod.2)
+```
+
+---
+
+In all multiple regression models, we have to consider the correlations between the IVs, as highly correlated variables make it more difficult to detect significance of a particular X. One useful way to conceptualize the relationship between any two variables is "Does knowing someone's score on $X_1$ affect my guess for their score on $X_2$?"
+
+Are dummy codes associated with a categorical predictor correlated or uncorrelated?
+
+--
+
+```{r}
+cor(rotate[,grepl("dummy", names(rotate))], use = "pairwise")
+library(olsrr)
+ols_vif_tol(mod.1)
+```
+
+---
+
+### Omnibus test
+
+```{r, highlight.output = 20:21}
+summary(mod.1)
+```
+---
+
+### Omnibus test
+```{r, highlight.output = 20:21}
+summary(mod.2)
+```
+
+---
+```{r, output.lines = 20:21}
+summary(mod.1)
+```
+
+```{r, output.lines = 20:21}
+summary(mod.2)
+```
+
+```{r}
+anova(fit_1)
+```
+
 
 ---
 
