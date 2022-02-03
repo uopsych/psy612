@@ -17,9 +17,8 @@ library(rio)       # for importing data
 library(tidyverse) # for dplyr, ggplot2, ETC
 library(gridExtra) # for plotting multiple figures side-by-side
 library(broom)     # for extracting residuals and outlier indices
-# library(sjPlot)
-# library(olsrr)
-# library(car)
+library(olsrr)     # for creating a standardized residual chart
+library(sjPlot)    # for the function plot_model
 ```
 
 # Import the Data
@@ -27,32 +26,37 @@ library(broom)     # for extracting residuals and outlier indices
 We'll be working with several versions of a dataset that includes participants' scores on happiness and extraversion. Each version has modified the data to represent one of the violations of the assumptions underlying linear regression.
 
 ```{r}
-df1 <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_raw.csv") %>%
+df1 <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_raw.csv",
+              setclass = "tibble") %>%
   janitor::clean_names()
 
-df2 <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_nl.csv") %>%
+df2 <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_nl.csv",
+              setclass = "tibble") %>%
   janitor::clean_names()
 
-df3 <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_nne.csv") %>%
+df3 <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_nne.csv",
+              setclass = "tibble") %>%
   janitor::clean_names()
 
-df4 <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_het.csv") %>%
+df4 <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_het.csv",
+              setclass = "tibble") %>%
   janitor::clean_names()
 
-df5 <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_out.txt") %>% 
+df5 <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_out.csv",
+              setclass = "tibble") %>%
   janitor::clean_names()
 
-df6 <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_mc.csv") %>%
+df6 <- import(file     = "https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_mc.csv",
+              setclass = "tibble") %>%
   janitor::clean_names()
 ```
 
 # Inspect the Data
 
-The same variables (mostly) are contained in each dataset. Let's inspect just the `df1` dataset.
+The same variables (mostly) are contained in each dataset. Let's inspect just `df1`.
 
 ```{r}
-head(df1)
-str(df1)
+df1
 ```
 
 # Visualize Each Dataset
@@ -140,7 +144,7 @@ Listed below are a number of issues that violate one or more of the assumptions 
 
 -   Examine the distribution of the residuals
 
--   Examine a QQ-plot
+-   Examine a Q-Q plot
 
 3.  Heteroscedasticity
 
@@ -186,7 +190,7 @@ plot(model1)
 Now, let's focus just on examining the plot of the fitted values by the residuals, which is the first plot.
 
 ```{r}
-par(mfrow = c(2, 1))
+par(mfrow = c(1, 1))
 plot(model1, 1)
 ```
 
@@ -212,9 +216,7 @@ model4_aug <- augment(model4)
 model5_aug <- augment(model5)
 ```
 
-Let's check whether the residuals are normally distributed for `model1`. First, we'll use a density plot with a normal distribution overlaid on top to easily compare the two.
-
-Density Plot
+Let's check whether the residuals are normally distributed for `model1`. First, we'll use a density plot with a normal distribution overlaid on top to easily compare the two:
 
 ```{r}
 ggplot(data = model1_aug, aes(x = .resid)) + 
@@ -226,39 +228,34 @@ ggplot(data = model1_aug, aes(x = .resid)) +
   theme_minimal()
 ```
 
-Next, let's use a Q-Q plot.
-
-QQ-Plot
+Next, let's use a Q-Q plot:
 
 ```{r}
-# graphics.off() # Returns the plotting dimensions back to the default
-
 ggplot(model1) +
-  stat_qq(aes(sample = .stdresid)) + # Plot a qq-plot
-  geom_abline() + # Add a diagonal line
+  stat_qq(aes(sample = .stdresid)) +
+  geom_abline() + 
   theme_minimal()
 ```
 
-A QQ-plot plots the quantiles of a reference distribution (in this case, the normal distribution) on the x-axis by the quantiles of the residuals on the y-axis. If your residuals come from a normal distribution, the percentage of data lying between any two points should approximate the percentage of data lying between any two points on a normal distribution.
+A Q-Q plot plots the quantiles of a reference distribution (in this case, the normal distribution) on the x-axis by the quantiles of the residuals on the y-axis. If your residuals come from a normal distribution, the percentage of data lying between any two points should approximate the percentage of data lying between any two points on a normal distribution.
 
-When the points on a QQ-plot are close to lying on the diagonal line (with a slope of 1) the residuals are approximately normally distributed.
+When the points on a Q-Q plot are close to lying on the diagonal line (with a slope of 1) the residuals are approximately normally distributed.
 
 Now, do the same thing, but this time let's examine whether we have violated the assumption of normally distributed residuals for `model3`.
 
 Obtain a density plot of the residuals from `model3`:
 
-# YOU HAVE UPDATED UP TO HERE. 
-
 ```{r}
 ggplot(data = model3_aug, aes(x = .resid)) + 
   geom_density(fill = "purple") +
-  stat_function(linetype = 2, fun = dnorm, # add normal curve
-                args = list(mean = mean(model3_aug$.resid), # define mean and sd
-                            sd = sd(model3_aug$.resid)))+
+  stat_function(linetype = 2, 
+                fun      = dnorm,
+                args     = list(mean = mean(model3_aug$.resid), 
+                                sd   = sd(model3_aug$.resid)))+
   theme_minimal()
 ```
 
-Obtain a Q-Q plot for model 3:
+Obtain a Q-Q plot for `model3`:
 
 ```{r}
 ggplot(model3) +
@@ -267,59 +264,52 @@ ggplot(model3) +
   theme_minimal()
 ```
 
-### Q3
-
 > **Question: Do the errors appear to be approximately normally distributed?**
 
 # Checking for heteroscedasticity
 
-The plot of the fitted values by the residuals for a model can also be used to check whether the assumption of homogeneity of variance has been met, aka whether error variance appears to be approximately the same across all values fitted by the model.
+The plot of the fitted values by the residuals for a model can also be used to check whether the assumption of homogeneity of variance has been met (i.e., whether error variance appears to be approximately the same across all values fitted by the model).
 
-Let's check for heteroscedasticity by examining the plot of the fitted values vs. residuals for model1.
+Let's check for heteroscedasticity by examining the plot of the fitted values vs. residuals for `model1`.
 
 ```{r}
 plot(model1, 1)
 ```
 
-Now, heck for heteroscedasticity by examining the plot of the fitted values vs. residuals for model4.
+Now, check for heteroscedasticity by examining the plot of the fitted values vs. residuals for `model4`.
 
 ```{r}
 plot(model4, 1)
 ```
 
-### Q4
-
-> **Question: Does the amount of variability in the residuals seem to differ across the model's fitted values for either of these models (aka, is there evidence of heteroscedasticity)?**
+> **Question: Does the amount of variability in the residuals seem to differ across the model's fitted values for either of these models? In other words, is there evidence of heteroscedasticity?**
 
 # Checking for non-independence among errors
 
-One way to check for non-independence among errors is to examine whether the errors have a non-random (aka, systematic) relationship with a variable they shouldn't, such as ID number (which indicates the order in which participants participated in the study), season, month, etc.
+One way to check for non-independence among errors is to examine whether the errors have a non-random (i.e., systematic) relationship with a variable they shouldn't, such as ID number. In this case, ID represents the order in which participants participated.
 
-Let's check whether we have violated the assumption of independence of errors by plotting residuals against ID numbers for model 1.
+Let's check whether we have violated the assumption of independence of errors by plotting residuals against ID numbers for `model1`.
 
 ```{r}
-model1_aug$ID <- c(1:nrow(model1_aug)) # Add a column of ID numbers to the object containing the model residuals
+model1_aug$id <- df1$id
 
-ggplot(data = model1_aug, 
-       aes(x=ID, y = .resid)) + 
+ggplot(data = model1_aug, aes(x = id, y = .resid)) + 
   geom_point() +  
   geom_smooth(se = F) +
   geom_hline(yintercept = 0)
 ```
 
-Repeat the same thing, but this time testing the independence of errors assumption for model 2.
+Repeat the same thing, but this time testing the independence of errors assumption for `model4`.
 
 ```{r}
-model4_aug$ID <- c(1:nrow(model4_aug))
+model4_aug$id <- df4$id
 
 ggplot(data = model4_aug, 
-       aes(x=ID, y = .resid)) + 
+       aes(x=id, y = .resid)) + 
   geom_point() +  
   geom_smooth(se = F) +
   geom_hline(yintercept = 0)
 ```
-
-### Q5
 
 > **Question: Does there appear to be a relationship between ID number and the residuals for either model above?**
 
@@ -331,7 +321,7 @@ The presence of outliers means a few values could be having a disproportionate i
 
 One way of visually seeing potential outliers for a single variable is by using a boxplot.
 
-Let's obtain a boxplot of the happiness outcome variable from the dataset called df5.
+Let's obtain a boxplot of the happiness outcome variable from the dataset called `df5`.
 
 ```{r}
 ggplot(df5) +
@@ -342,9 +332,9 @@ ggplot(df5) +
 
 The outer edges of the boxplot correspond to the first and third quartiles (the values partitioning where the middle 50% of the data is located).
 
-The upper whisker extends from the top edge of the boxplot to the largest value no further than 1.5 \* IQR from the edge (recall that IQR is the distance from the first to the third quartile). The lower whisker extends from the lower edge of the boxplot to the smallest value that is smallest value that is no further than 1.5 \* IQR from the edge Data points beyond these are considered outliers.
+The upper whisker extends from the top edge of the boxplot to the largest value no further than 1.5 \* IQR from the edge (recall that IQR is the distance from the first to the third quartile). The lower whisker extends from the lower edge of the boxplot to the smallest value that is smallest value that is no further than 1.5 \* IQR from the edge. Data points beyond these are considered outliers.
 
-To determine the value of the potential outliers, you can use boxplot.stats(). The value(s) underneath \$out are scores on the variable that landed more extreme than the boxplot's whiskers.
+To determine the value of the potential outliers, you can use the function `boxplot.stats()`. The value(s) underneath `$out` are scores on the variable that landed more extreme than the boxplot's whiskers.
 
 ```{r}
 boxplot.stats(df5$happiness)
@@ -353,9 +343,7 @@ boxplot.stats(df5$happiness)
 Let's find out who in the original dataset this value corresponds to.
 
 ```{r}
-df5$ID <- c(1:nrow(df5)) # Add a column of ID numbers
-
-df5[df5$happiness == 32,] # Use indexing [row, column] to grab the row for the person whose score on happiness is equal to the value of the outlier
+df5[df5$happiness == 32,]
 ```
 
 Not all outliers determined in this way necessarily need to be removed from or changed in the dataset. Use your knowledge of your field, the methods used, and how extreme the outlier is to determine if it should be addressed. You can also examine the mean of your variable with and without the outlier present to gauge how strong of an influence it is having.
@@ -364,171 +352,178 @@ Not all outliers determined in this way necessarily need to be removed from or c
 
 You can also have multivariate outliers, which are outliers because they are far away from the values predicted by your linear regression model *or* they have an undue influence on the fit of the model.
 
-One straightforward way to visually inspect the data for multivariate outliers is to use bi-variate scatterplots for each combination of outcome and predictor.
+One straightforward way to visually inspect the data for multivariate outliers is to use bivariate scatterplots for each combination of outcome and predictor.
 
-Let's look again at the scatterplot of the relationship between extraversion in happiness from df5.
+Let's look again at the scatterplot of the relationship between `extraversion` and `happiness` for `df5`.
 
 ```{r}
-scatter5 <- ggplot(data = df5, aes(x = extraversion, y = happiness)) +
-  geom_point() + 
-  geom_smooth(method = "lm") +
-  labs(x = "Extraversion", y = "Happiness", title = "df5") +
-  theme(plot.title = element_text(hjust = 0.5))
-
 scatter5
 ```
 
-### Q6
-
 > **Question: Do there appear to be any multivariate outliers in the scatterplot?**
 
-We can get a quantitative measure of the *distance* of points from the regression model using either 1) Standardized residuals or 2) Studentized residuals.
+We can get a quantitative measure of the *distance* of points from the regression model using either 1) standardized residuals or 2) studentized residuals.
 
-# Standardized Residuals
+### Standardized Residuals
 
 Standardized residuals are the raw residuals put into standardized units by dividing by the residual standard error.
 
-Plot
+We can plot the standardized residuals by using the `ols_plot_resid_stand()` function from the `{olsrr}` package.
 
 ```{r}
 ols_plot_resid_stand(model5)
 ```
 
-Values
+We can also look at the standardized residuals stored in `model5_aug`:
 
 ```{r}
-model5_aug$ID <- c(1:nrow(model5_aug))
+model5_aug$id <- df5$id
 
 model5_aug %>% 
-  arrange(desc(abs(.std.resid)))%>% # Arrange the dataset by highest to lowest standardized residuals
-  head(n = 20)
+  arrange(desc(abs(.std.resid)))
 ```
 
-One standard I have seen is that standardized residuals greater than +/- 2 are worth inspecting further.
+One standard I have seen is that standardized residuals greater than $\pm2$ are worth inspecting further.
 
-# Studentized Residuals
+### Studentized Residuals
 
-Studentized residuals are calculatd by fitting a regression model, deleting each point one at a time, and calculating the distance between that data point and the fitted value from the model fit without it, standardized.
+Studentized residuals are calculated by deleting data points from a dataset one by one, fitting models with the new datasets, and calculating the standardized distance between the deleted data points and the predicted values for the models without the data points.
 
-Plot
+Let's plot the studentized residuals by using the `ols_plot_resid_stud()` function from the `olsrr` package.
 
 ```{r}
 ols_plot_resid_stud(model5)
+
+# if the above doesn't work for you, try this
+data.frame(id = seq_along(rstudent(model5)),
+           rs = rstudent(model5)) %>%
+  ggplot(aes(x = id, y = rs, label = id)) +
+  geom_hline(yintercept = c(-3, 3), color = "red") +
+  geom_bar(width  = 0.25, 
+           stat   = "identity", 
+           colour = "turquoise4",
+           fill   = "turquoise4") +
+  geom_text(hjust   = -0.2, 
+            nudge_x = 0.05, 
+            size    = 2, 
+            na.rm   = TRUE) +
+  xlab("Observation") + 
+  ylab("Deleted Studentized Residuals") + 
+  ggtitle("Studentized Residuals Plot") +
+  theme_bw()
+  
 ```
 
-Values
+We can also view the studentized residuals by using the `rstudent()` function from `{stats}` package.
 
 ```{r}
 studentized_resids <- rstudent(model5)
 sort(desc(abs(studentized_resids)))
 ```
 
-One standard I have seen is that studentized residuals greater than +/- 3 are worth inspecting further.
+One standard I have seen is that studentized residuals greater than $\pm3$ are worth inspecting further.
+
+### Measures of influence
 
 Another way of examining whether outliers are present and should be dealt with is by measuring their *influence* on the regression model. Three measures you can use to measure influence of a data point on the regression model are 1) Cook's Distance, 2) DFFITS, and 3) DFBETAS
 
-# Cook's Distance
+#### Cook's Distance
 
-Summarizes how much the regression model would change if you removed a particular value (measures the difference between the regression coefficients obtained from the full dataset to the regression coefficients that would be obtained if you deleted that particular value).
+Cook's Distance summarizes how much the regression model would change if you removed a particular value. In other words, it represents the difference between the regression coefficients obtained from the full dataset and the regression coefficients that would be obtained if you deleted that particular value.
 
-Plot
+We can plot the Cook's Distances using the `ols_plot_cooksd_chart()` function from the `{olsrr}` package:
 
 ```{r}
 ols_plot_cooksd_chart(model5)
 ```
 
-Values
+We can also view the individual Cook's Distance in `model5_aug`:
 
 ```{r}
 model5_aug %>% 
-  arrange(desc(abs(.cooksd)))%>% # Arrange the dataset by highest to lowest Cook's D
-  head(n = 20)
+  select(id, .cooksd) %>%
+  arrange(desc(abs(.cooksd))) 
 ```
 
 One standard I have seen is that Cook's D values greater than 3 times the average Cook's D values are worth investigating.
 
-#DFBETAS
+#### DFBETAS
 
 DFBETA measures the difference in each parameter estimate with and without a particular point being included in the data.
 
-Plot
+We can visualize this by using the `ols_plot_dfbetas()` function from the `{olsrr}` package:
 
 ```{r}
 ols_plot_dfbetas(model5)
 ```
 
-Value
+We can also view the individual values by using the `dfbeta` function from the `{stats}` package:
 
 ```{r}
 dfbetas <- dfbeta(model5)
-sort(desc(abs(dfbetas)))
+
+sort(desc(abs(dfbetas[,1])))
+sort(desc(abs(dfbetas[,2])))
 ```
 
-One standard I have seen is that DFBETAS larger than 2/sqrt(n) should be investigated as potential outliers.
+One standard I have seen is that DFBETAS larger than $\frac{2}{\sqrt{n}}$ should be investigated as potential outliers.
 
-# DFFITS
+#### DFFITS
 
 DFFITS measure the difference in the model's fitted values with and without a particular point being included in the data.
 
-Plot
+We can visualize this by using the `ols_plot_dffits()` function from the `{olsrr}` package:
 
 ```{r}
 ols_plot_dffits(model5)
 ```
 
-Values
+We can also view the individual values by using the `dffits` function from the `{stats}` package:
 
 ```{r}
 dffits <- dffits(model5)
 sort(desc(abs(dffits)))
 ```
 
-One standard I have seen is that DFFITS larger than 2∗(p+1)/√(n−p−1) should be investigated as potential outliers (n = number of observations, p = number of predictors including the intercept).
-
-# Using sjPlot to easily obtain Regression Diagnostic Plots
-
-Lastly, there is another handy function called plot_model() in the sjPlot package that is another option for easily obtaining a variety of regression diagnostic plots.
-
-Within the plot_model() function, provide the argument type = "diag" in order to obtain the regression diagnostics plots.
-
-```{r}
-plot_model(model5, type = "diag")
-```
+One standard I have seen is that DFFITS larger than $2 \times \frac{p+1}{\sqrt{n−p−1}}$ should be investigated as potential outliers (n = number of observations, p = number of predictors including the intercept).
 
 # Checking for multicollinearity
 
 Multicollinearity occurs when one or more predictors in our model are highly correlated.
 
-One way we can check this before we even run our model is to look at the zero-order correlations between variables. The df6 dataset contains two predictor variables. Let's investigate the correlation between them.
+One way we can check this before we even run our model is to look at the zero-order correlations between variables. The `df6` dataset contains two predictor variables. Let's investigate the correlation between them.
 
 ```{r}
-head(df6)
-cor(df6$extraversion, df6$social_engagement)
+cor(df6)
 ```
 
-Extraversion and social engagement appear to be VERY highly correlated (r = 0.96)!
+The variables `extraversion` and `social_engagement` appear to be VERY highly correlated (*r* = 0.96)!
 
-#VIF (Variance Inflation Factor) / Tolerance
+## Tolerance & Variance Inflation Factor (VIF)
 
-Recall two measures of multicollinearity that we have, tolerance and VIF, where
+Recall the two measures of multicollinearity that we discussed in lecture: tolerance and VIF.
 
 Tolerance is: $$1 - R_{12}^2$$
 
-And VIF (variance inflation factor) is $$1/Tolerance$$
+And VIF is $$\frac{1}{Tolerance}$$
 
-Let's run a model with two predictors using df6. We'll predict happiness from both extraversion and social engagement, two predictors that sound like they have the potential to be correlated.
+Let's run a model with two predictors using `df6`. We'll predict `happiness` from both `extraversion` and `social_engagement`.
 
 ```{r}
 model6 <- lm(happiness ~ extraversion + social_engagement, data = df6)
 ```
 
-When there are multiple predictors in a model, the output of the plot_model() function will also provide a plot of VIFs.
+When there are multiple predictors in a model, the output of the `plot_model()` function from the `{sjPlots}` package function will provide a plot of VIFs (as well as a number of other useful plots).
 
 ```{r}
+# for just the vif plot
+plot_model(model6, type = "diag")[1]
+
+# for all of the useful plots
 plot_model(model6, type = "diag")
 ```
 
-Values
+We can also examine the tolerance and VIF values by using the `ols_vif_tol()` function from the `{olsrr}` package. 
 
 ```{r}
 ols_vif_tol(model6)
@@ -538,13 +533,15 @@ Either a *low* tolerance (below 0.20 is one standard I have seen) or a *high* VI
 
 # Minihack 1
 
-Load the bfi dataset from the psych package (this is done for you below, in case you haven't loaded a dataset from a package).
-
-First, create a model regressing age on the 5 items for Conscientiousness (labeled C1, C2, C3, C4, and C5).
+Load the `bfi` dataset from the `{psych}` package (this is done for you below, in case you haven't loaded a dataset from a package).
 
 ```{r}
 data(bfi, package = "psych")
+```
 
+First, create a model regressing age on the 5 items for `Conscientiousness` (labeled `C1`, `C2`, `C3`, `C4`, and `C5`).
+
+```{r}
 model <- lm(age ~ C1 + C2 + C3 + C4 + C5, data = bfi) 
 ```
 
@@ -562,8 +559,6 @@ model %>%
 Next, check if the errors are normally distributed using a plot.
 
 ```{r}
-# multiple options here. I'll use plot_model and just grab the 3rd plot,
-# which has the distribution of the resdiuals
 plot_model(model, type = "diag")[[3]]
 ```
 
@@ -572,8 +567,8 @@ plot_model(model, type = "diag")[[3]]
 Using the `df5` data from above, run a regression model with and without the outliers we identified.
 
 ```{r}
-model_w_out <- lm(happiness ~ extraversion, data = df_out)
-model_no_out <- df_out[-c(134, 149, 161, 165), ] %>% 
+model_w_out  <- lm(happiness ~ extraversion, data = df5)
+model_no_out <- df5[-c(134, 149, 161, 165), ] %>% 
   lm(happiness ~ extraversion, data = .)
 ```
 
@@ -581,10 +576,15 @@ Compare the output of the two models. How similar/different are they? What value
 
 # Minihack 3
 
-Using the fitness data from the olsrr package (loaded for you below), regress `runtime` on `weight`, `restpulse`, `runpulse`, and `maxpulse`.
+For this Minihack, use the `fitness` data from the `{olsrr}` package (loaded for you below).
 
 ```{r}
-data("fitness") # load data
+data("fitness")
+```
+
+Regress `runtime` on `weight`, `restpulse`, `runpulse`, and `maxpulse`.
+
+```{r}
 model_3 <- lm(runtime ~ weight + restpulse + runpulse + maxpulse, data = fitness)
 ```
 
