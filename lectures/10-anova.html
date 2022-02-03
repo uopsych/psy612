@@ -137,10 +137,10 @@ rotate %&gt;%
   summarize(N = n(),
             Mean = mean(Time, na.rm = T),
             SD = sd(Time, na.rm = T)) %&gt;%
-  kable(., digits = 2) %&gt;% kable_styling()
+  kable(., digits = 2) %&gt;% kable_classic()
 ```
 
-&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:left;"&gt; Group_lab &lt;/th&gt;
@@ -240,10 +240,10 @@ rotate = rotate %&gt;%
 rotate %&gt;% 
   select(ID, Group,
          matches("dummy")) %&gt;%
-  kable() %&gt;% kable_styling()
+  kable() %&gt;% kable_classic()
 ```
 
-&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:right;"&gt; ID &lt;/th&gt;
@@ -1732,7 +1732,7 @@ predict(mod.1, newdata = newdata, se.fit = T)
 ```
 ---
 
-And the test of the coefficient represents the significance test of each group to the reference. This is an independent-samples *t*-test.
+And the test of the coefficient represents the significance test of each group to the reference. This is an independent-samples *t*-test*.
 
 The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
 
@@ -1752,6 +1752,32 @@ summary(mod.1)
 ```
 
 What if you wanted to compare groups 2 and 3?
+
+\* .small[Except for a few crucial differences: the standard error and degrees of freedom use all the data in the model, including those in groups 3 and 4.]
+
+???
+
+
+```r
+rotate %&gt;% 
+  filter(Group %in% c(1,2)) %&gt;% 
+  t.test(Time ~ Group, data = ., var.equal = T)
+```
+
+```
+## 
+## 	Two Sample t-test
+## 
+## data:  Time by Group
+## t = 14.908, df = 97, p-value &lt; 0.00000000000000022
+## alternative hypothesis: true difference in means between group 1 and group 2 is not equal to 0
+## 95 percent confidence interval:
+##  164.0083 214.3845
+## sample estimates:
+## mean in group 1 mean in group 2 
+##        542.0426        352.8462
+```
+
 
 ---
 
@@ -1807,6 +1833,18 @@ cor(rotate[,grepl("dummy", names(rotate))], use = "pairwise")
 ## dummy_3 -0.3193826  1.0000000 -0.3360108 -0.2986370
 ## dummy_4 -0.3696439 -0.3360108  1.0000000 -0.3456336
 ## dummy_1 -0.3285292 -0.2986370 -0.3456336  1.0000000
+```
+
+```r
+library(olsrr)
+ols_vif_tol(mod.1)
+```
+
+```
+##   Variables Tolerance      VIF
+## 1   dummy_2 0.6415506 1.558723
+## 2   dummy_3 0.6591865 1.517021
+## 3   dummy_4 0.6337648 1.577872
 ```
 
 ---
@@ -1907,7 +1945,7 @@ for G groups and `\(N_k\)` participants within groups.
 In analysis of variance, we will be interested in the numerator of this variance equation, known as the total sum of squares:
 
 `$$\large SS_{tot} = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$`
-It's worth noting that this is just a more complicated way of expressing total sums of squares, but in a way that will be useful for thinking about how we partition sums of squares later. 
+.small[It's worth noting that this is just a more complicated way of expressing `\(SS_Y\)`, which we've been using all term, but in a way that will be useful for thinking about how we partition sums of squares later.]
 
 ---
 
@@ -2011,7 +2049,7 @@ As the treatment effect gets larger, the `\(F\)` statistic departs from 1.00. If
 
 ---
 
-![](10-anova_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](10-anova_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 
 `\(F\)`-distributions are one-tailed tests. Recall that we're interested in how far away our test statistic from the null `\((F = 1).\)`
 
@@ -2076,7 +2114,89 @@ anova(fit_1)
 We know the means are not equal, but the particular source of the inequality is not revealed by the `\(F\)` test.
 
 One simple way to determine what is behind the significant `\(F\)` test is to compare each Group to all other Groups.
+
 ---
+
+These comparisons take the general form of t-tests, but note some extensions:
+
+* the pooled variance estimate comes from `\(SS_{\text{residual}}\)`, meaning it pulls information from all groups
+* the degrees of freedom for the _t_-test is `\(N-k\)`, so using all data
+
+
+```r
+anova(fit_1)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
+## Residuals 196  872288    4450                                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+
+
+`\(\hat{\sigma}_p = \sqrt{\frac{SS_{\text{residual}}}{N-k}} = \sqrt{\frac{872287.58}{200 - 4}} = 66.71\)`  
+
+---
+
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Group_lab &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; N &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Mean &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SD &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control
+Predict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 47 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No control
+Predict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 352.85 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 67.98 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control
+Unpredict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 379.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 71.85 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No control
+Unpredict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 265.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 68.68 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+
+To test the pairwise comparison, we use the old formulas for the [independent samples _t_-test](https://uopsych.github.io/psy611/lectures/16-independent_samples.html), except with this estimate of pooled sd and DF based on total N.
+
+`\(\sigma_{D} = \hat{\sigma}_p\sqrt{\frac{1}{N_1} + \frac{1}{N_2}} = 66.71 \sqrt{\frac{1}{47} + \frac{1}{52}}  = 13.43\)`
+
+
+`\(t = \frac{M_1-M_2}{\sigma_D} = \frac{542.04 - 352.85 }{13.43} = 14.09\)`
+---
+
 
 
 ```r
@@ -2105,39 +2225,35 @@ emmeans(fit_1, pairwise ~ Group_lab, adjust = "none")
 ```
 
 
-
 ---
 These pairwise comparisons can quickly grow in number as the number of Groups increases.  With 4 (k) Groups, we have k(k-1)/2 = 6 possible pairwise comparisons.
-
----
 
 As the number of groups in the ANOVA grows, the number of possible pairwise comparisons increases dramatically. 
 
 
-![](10-anova_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](10-anova_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
 
 ---
 
-As the number of significance tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increases.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we don’t make a Type I error for just one test is:
+As the number of tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increases.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we **don’t** make a Type I error for one test is:
 
-`$$\large P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$`
-The probability that we don't make a Type I error for two tests is (note the reason we assume independence):
+`$$P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$`
+The probability that we don't make a Type I error for two tests is:
 
-`$$\large P(\text{No Type I}, 2 \text{ test}) = (1-\alpha)(1-\alpha)$$`
----
+`$$P(\text{No Type I}, 2 \text{ test}) = (1-\alpha)(1-\alpha)$$`
+
 For C tests, the probability that we make **no** Type I errors is
 
-`$$\large P(\text{No Type I}, C \text{ tests}) = (1-\alpha)^C$$`
+`$$P(\text{No Type I}, C \text{ tests}) = (1-\alpha)^C$$`
 We can then use the following to calculate the probability that we make one or more Type I errors in a collection of C independent tests.
 
-`$$\large P(\text{At least one Type I}, C \text{ tests}) = 1-(1-\alpha)^C$$`
-As the number of comparisons grows, the inflation of the Type I error rate can be substantial.
+`$$P(\text{At least one Type I}, C \text{ tests}) = 1-(1-\alpha)^C$$`
 
 ---
 
 The Type I error inflation that accompanies multiple comparisons motivates the large number of "correction" procedures that have been developed.
 
-![](10-anova_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+![](10-anova_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -2197,58 +2313,7 @@ The Holm procedure does not make a constant adjustment to each per-test `\(\alph
 
 ---
 
-&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:right;"&gt; Original p value &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Rank &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Rank x p &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Holm &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0023 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0012 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0450 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0470 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0530 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
----
-
-&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:right;"&gt; Original p value &lt;/th&gt;
@@ -2346,7 +2411,7 @@ Assumptions and diagnostics
 &lt;!-- coef(summary(lm(Time~Group, data = rotate))) --&gt;
 &lt;!-- ```} --&gt;
 &lt;!-- contrasts(rotate$Group) = contr.treatment(n = 4, base = 3) --&gt;
-&lt;!-- coef(summary(lm(Time~Group, data = rotate))) %&gt;% kable(., digits = c(2,2,2,3)) %&gt;% kable_styling() --&gt;
+&lt;!-- coef(summary(lm(Time~Group, data = rotate))) %&gt;% kable(., digits = c(2,2,2,3)) %&gt;% kable_classic() --&gt;
 &lt;!-- ``` --&gt;
 
 &lt;!-- You're not restricted to simple dummy coding. Choosing another variant of contrast codes allows you to test more specific hypotheses. There are some common coding schemes.  --&gt;
@@ -2359,7 +2424,7 @@ Assumptions and diagnostics
 
 &lt;!-- ```{r, results='asis'} --&gt;
 &lt;!-- contrasts(rotate$Group) = contr.sum(n = 4) --&gt;
-&lt;!-- coef(summary(lm(Time~Group, data = rotate))) %&gt;% kable(., digits = c(2,2,2,3)) %&gt;% kable_styling() --&gt;
+&lt;!-- coef(summary(lm(Time~Group, data = rotate))) %&gt;% kable(., digits = c(2,2,2,3)) %&gt;% kable_classic() --&gt;
 &lt;!-- ``` --&gt;
 
 &lt;!-- --- --&gt;
