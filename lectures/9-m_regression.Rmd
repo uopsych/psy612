@@ -127,7 +127,7 @@ ols_vif_tol(mr.model)
 
 Why are tolerance values identical here?
 
----   
+---
 
 ## Suppression
 
