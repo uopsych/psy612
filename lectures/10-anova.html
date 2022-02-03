@@ -184,9 +184,498 @@ Unpredict &lt;/td&gt;
 The groups differ in their sample sizes, which can easily occur with free random assignment.  There are advantages to equal sample sizes, so researchers often restrict random assignment to insure equal sample sizes across Groups.
 
 Hard to tell if the variability in the four groups is homogeneous. 
+
+---
+class: inverse
+
+# Testing group differences in the ANOVA framework
+
+---
+### Hypothesis
+
+Unlike regression, the ANOVA framework has a single hypothesis test. This is equivalent to the omnibus test of a multiple regression model.
+
+.pull-left[
+### Regression
+
+`$$H_0: \rho^2_{Y\hat{Y}} = 0$$`
+`$$H_1: \rho^2_{Y\hat{Y}} &gt; 0$$`
+]
+
+.pull-left[
+### ANOVA
+
+`$$H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4$$`
+`$$H_1: \text{Not that } \mu_1 = \mu_2 = \mu_3 = \mu_4$$`
+This can occur in quite a number of ways.
+]
+
+---
+
+The total variability of all of the data, regardless of group membership, can be expressed as:
+
+`$$\large Var(Y) = \frac{1}{N}\sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$`
+
+for G groups and `\(N_k\)` participants within groups. 
+
+In analysis of variance, we will be interested in the numerator of this variance equation, known as the total sum of squares:
+
+`$$\large SS_{tot} = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$`
+.small[It's worth noting that this is just a more complicated way of expressing `\(SS_Y\)`, which we've been using all term, but in a way that will be useful for thinking about how we partition sums of squares later.]
+
+---
+
+We already know from regression that the deviation of a score from the grand mean is the sum of two independent parts. In regression these parts are the deviation of the actual score from the predicted score, and  the deviation of the predicted value from the grand mean. 
+
+`$$\large Y_{i}-\bar{Y} = (Y_{i}-\hat{Y}_i) + (\hat{Y} - \bar{Y}_i)$$`
+
+In ANOVA, this holds true, but we express these relationships by referring to each Y within a group, and instead of "predicted value" we talk about group means. So now the parts are the deviation of the score from its group mean, and the deviation of that group mean from the grand mean. Why do we substitute "group mean" for "predicted value"?
+
+`$$\large Y_{ik}-\bar{Y} = (Y_{ik}-\bar{Y}_k) + (\bar{Y}_k - \bar{Y})$$`
+--
+
+In other words, each deviation score has a within-group part and a between-group part. These separate parts can be squared and summed, giving rise to two other sums of squares. 
+
+---
+One part, the within-groups sum of squares, represents squared deviations of scores around the group means:
+
+`$$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2$$`
+The other, the between-groups sum of squares, represents deviations of the group means around the grand mean:
+
+`$$\large SS_b = \sum_{k=1}^GN_k(\bar{Y}_{k}-\bar{Y})^2$$`
+How do these compare the sums of squares we are familiar with in regression?
+
+---
+Sums of squares are central to ANOVA.  They are the building blocks that represent different sources of variability in a research design. They are additive, meaning that the `\(SS_{tot}\)` can be partitioned, or divided, into independent parts.
+
+The total sum of squares is the sum of the between-groups sum of squares and the within-groups sum of squares. 
+
+`$$\large SS_{tot} = SS_b + SS_w$$`
+The relative magnitude of sums of squares, especially in more complex designs, provides a way of identifying particularly large and important sources of variability.
+---
+
+If the null hypothesis is true, then variability among the means should be consistent with the variability of the data.
+
+We know that relationship already:
+`$$\large \hat{\sigma}^2_{\bar{Y}} = \frac{\hat{\sigma}^2_{Y}}{N}$$`
+In other words, if we have an estimate of the variance of the means, we can transform that into an estimate of the variance of the scores, provided the only source of mean variability is sampling variability (the null hypothesis).
+
+`$$\large N\hat{\sigma}^2_{\bar{Y}} = \hat{\sigma}^2_Y$$`
+---
+
+The `\(SS_w\)` is qualitatively giving us information that is similar to 
+
+`$$\large \hat{\sigma}^2_Y$$`
+The `\(SS_b\)` is qualitatively giving us information that is similar to 
+`$$\large N\hat{\sigma}^2_{\bar{Y}}$$`
+
+These are arrived at separately, but under the null hypothesis they should be estimates of the same thing.  The only reason that `\(SS_b\)` would be larger than expected is if there are systematic differences among the mean, perhaps created by experimental manipulations.
+
+We need a formal way to make the comparison.
+
+---
+
+Because the sums of squares are numerators of variance estimates, we can divide each by their respective degrees of freedom to get variance estimates that, under the null hypothesis, should be approximately the same.
+
+These variance estimates are known as mean squares:
+.pull-left[
+`$$\large MS_w = \frac{SS_w}{df_w}$$`
+`$$\large df_w = N-G$$`
+]
+.pull-right[
+`$$\large MS_b = \frac{SS_b}{df_b}$$`
+`$$\large df_b = G-1$$`
+]
+
+How are these degrees of freedom determined?
+
+---
+ANOVA assumes homogeneity of group variances.  Under that assumption, the separate group variances are pooled to provide a single estimate of within-group variability.
+
+`$$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2 = \sum_{k=1}^G(N_k-1)\hat{\sigma}^2_k$$`
+The degrees of freedom are likewise pooled:
+
+`$$\large df_w = N-G=(N_1-1)+(N_2-1)+\dots+(N_G-1)$$`
+Where have we seen similar pooling?
+
+---
+
+If data are normally distributed, then the variance is `\(\chi^2\)` distributed.  The ratio of two `\(\chi^2\)` distributed variables is F distributed.
+
+In analysis of variance, the ratio of the mean squares (variance estimates) is symbolized by `\(F\)` and has a sampling distribution that is `\(F\)` distributed with degrees of freedom equal to `\(df_b\)` and `\(df_w\)`.  That sampling distribution is used to determine if an obtained `\(F\)` statistic is unusual enough to reject the null hypothesis.
+
+`$$\large F = \frac{MS_b}{MS_w}$$`
+---
+
+`$$\large F = \frac{MS_b}{MS_w}$$`
+
+If the null hypothesis is true, `\(F\)` has an expected value of approximately 1.00 (the numerator and denominator are estimates of the same variability). 
+
+If the null hypothesis is false, the numerator will be larger than the denominator because systematic, between-group differences contribute to the variance of the means, but not to the variance within groups (ideally).  If `\(F\)` is "large enough," we will reject the null hypothesis as a reasonable description of the obtained variability. 
+
+---
+
+The `\(F\)` statistic can be viewed as follows:
+
+`$$\large F = \frac{\hat{Q} + \hat{\sigma}^2}{\hat{\sigma}^2}$$`
+
+The extra term in the numerator (Q) is the treatment effect that, if present, increases variability among the means but does not affect the variability of scores within a group (treatment is a constant within any group).
+
+As the treatment effect gets larger, the `\(F\)` statistic departs from 1.00. If it departs enough, we claim F to be rare or unusual under the null and reject the null. The `\(F\)` probability density distribution tells us how rare or unusual a particular `\(F\)` statistic happens to be.  The shape of the `\(F\)` distribution is defined by its parameters, `\(df_b\)` and `\(df_w\)`.
+
+---
+
+![](10-anova_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+`\(F\)`-distributions are one-tailed tests. Recall that we're interested in how far away our test statistic from the null `\((F = 1).\)`
+
+---
+
+ANOVA for the sample data:
+
+
+```r
+fit_1 = lm(Time ~ Group_lab, data = rotate)
+anova(fit_1)
+```
+
+```
+...
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
+## Residuals 196  872288    4450                                  
+...
+```
+
+The `\(F\)` statistic is highly unusual in the `\(F\)` distribution, assuming the null hypothesis is true.  We reject the null hypothesis.
+
+Note: how does the output above compare to this output? 
+
+
+```r
+fit_1.1 = lm(Time ~ Group, data = rotate)
+anova(fit_1.1)
+```
+
+```
+...
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group       1 1613798 1613798  253.85 &lt; 0.00000000000000022 ***
+## Residuals 198 1258741    6357                                  
+...
+```
+
+
+---
+
+```r
+fit_1 = lm(Time ~ Group_lab, data = rotate)
+anova(fit_1)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
+## Residuals 196  872288    4450                                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+We know the means are not equal, but the particular source of the inequality is not revealed by the `\(F\)` test.
+
+One simple way to determine what is behind the significant `\(F\)` test is to compare each Group to all other Groups.
+
+---
+
+These comparisons take the general form of t-tests, but note some extensions:
+
+* the pooled variance estimate comes from `\(SS_{\text{residual}}\)`, meaning it pulls information from all groups
+* the degrees of freedom for the _t_-test is `\(N-k\)`, so using all data
+
+
+```r
+anova(fit_1)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
+## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
+## Residuals 196  872288    4450                                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+
+
+`\(\hat{\sigma}_p = \sqrt{\frac{SS_{\text{residual}}}{N-k}} = \sqrt{\frac{872287.58}{200 - 4}} = 66.71\)`  
+
+---
+
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Group_lab &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; N &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Mean &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SD &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control
+Predict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 47 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No control
+Predict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 352.85 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 67.98 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control
+Unpredict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 379.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 71.85 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No control
+Unpredict &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 265.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 68.68 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+
+To test the pairwise comparison, we use the old formulas for the [independent samples _t_-test](https://uopsych.github.io/psy611/lectures/16-independent_samples.html), except with this estimate of pooled sd and DF based on total N.
+
+`\(\sigma_{D} = \hat{\sigma}_p\sqrt{\frac{1}{N_1} + \frac{1}{N_2}} = 66.71 \sqrt{\frac{1}{47} + \frac{1}{52}}  = 13.43\)`
+
+
+`\(t = \frac{M_1-M_2}{\sigma_D} = \frac{542.04 - 352.85 }{13.43} = 14.09\)`
 ---
 
 
+
+```r
+library(emmeans)
+emmeans(fit_1, pairwise ~ Group_lab, adjust = "none")
+```
+
+```
+## $emmeans
+##   Group_lab            emmean   SE  df lower.CL upper.CL
+##  Control\nPredict         542 9.73 196      523      561
+##  No control\nPredict      353 9.25 196      335      371
+##  Control\nUnpredict       379 9.94 196      359      399
+##  No control\nUnpredict    266 8.91 196      248      284
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##    contrast                                  estimate   SE  df t.ratio p.value
+##  Control\nPredict - No control\nPredict         189.2 13.4 196  14.091  &lt;.0001
+##  Control\nPredict - Control\nUnpredict          163.0 13.9 196  11.715  &lt;.0001
+##  Control\nPredict - No control\nUnpredict       276.1 13.2 196  20.918  &lt;.0001
+##  No control\nPredict - Control\nUnpredict       -26.2 13.6 196  -1.929  0.0552
+##  No control\nPredict - No control\nUnpredict     86.9 12.8 196   6.761  &lt;.0001
+##  Control\nUnpredict - No control\nUnpredict     113.1 13.4 196   8.466  &lt;.0001
+```
+
+
+---
+These pairwise comparisons can quickly grow in number as the number of Groups increases.  With 4 (k) Groups, we have k(k-1)/2 = 6 possible pairwise comparisons.
+
+As the number of groups in the ANOVA grows, the number of possible pairwise comparisons increases dramatically. 
+
+
+![](10-anova_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+
+As the number of tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increases.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we **don’t** make a Type I error for one test is:
+
+`$$P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$`
+The probability that we don't make a Type I error for two tests is:
+
+`$$P(\text{No Type I}, 2 \text{ test}) = (1-\alpha)(1-\alpha)$$`
+
+For C tests, the probability that we make **no** Type I errors is
+
+`$$P(\text{No Type I}, C \text{ tests}) = (1-\alpha)^C$$`
+We can then use the following to calculate the probability that we make one or more Type I errors in a collection of C independent tests.
+
+`$$P(\text{At least one Type I}, C \text{ tests}) = 1-(1-\alpha)^C$$`
+
+---
+
+The Type I error inflation that accompanies multiple comparisons motivates the large number of "correction" procedures that have been developed.
+
+![](10-anova_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+---
+
+Multiple comparisons, each tested with `\(\alpha_{per-test}\)`, increases the family-wise `\(\alpha\)` level. 
+
+`$$\large \alpha_{family-wise} = 1 - (1-\alpha_{per-test})^C$$`
+Šidák showed that the family-wise a could be controlled to a desired level (e.g., .05) by changing the `\(\alpha_{per-test}\)` to:
+
+`$$\large \alpha_{per-wise} = 1 - (1-\alpha_{family-wise})^{\frac{1}{C}}$$`
+Bonferroni (and Dunn, and others) suggested this simple approximation: 
+
+`$$\large \alpha_{per-test} = \frac{\alpha_{family-wise}}{C}$$`
+
+This is typically called the Bonferroni correction and is very often used even though better alternatives are available. 
+
+---
+
+
+```r
+emmeans(fit_1, pairwise ~ Group_lab, adjust = "bonferroni")
+```
+
+```
+## $emmeans
+##   Group_lab            emmean   SE  df lower.CL upper.CL
+##  Control\nPredict         542 9.73 196      523      561
+##  No control\nPredict      353 9.25 196      335      371
+##  Control\nUnpredict       379 9.94 196      359      399
+##  No control\nUnpredict    266 8.91 196      248      284
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##    contrast                                  estimate   SE  df t.ratio p.value
+##  Control\nPredict - No control\nPredict         189.2 13.4 196  14.091  &lt;.0001
+##  Control\nPredict - Control\nUnpredict          163.0 13.9 196  11.715  &lt;.0001
+##  Control\nPredict - No control\nUnpredict       276.1 13.2 196  20.918  &lt;.0001
+##  No control\nPredict - Control\nUnpredict       -26.2 13.6 196  -1.929  0.3312
+##  No control\nPredict - No control\nUnpredict     86.9 12.8 196   6.761  &lt;.0001
+##  Control\nUnpredict - No control\nUnpredict     113.1 13.4 196   8.466  &lt;.0001
+## 
+## P value adjustment: bonferroni method for 6 tests
+```
+
+
+---
+
+The Bonferroni procedure is conservative. Other correction procedures have been developed that control family-wise Type I error at .05 but that are more powerful than the Bonferroni procedure.  The most common one is the Holm procedure.
+
+The Holm procedure does not make a constant adjustment to each per-test `\(\alpha\)`. Instead it makes adjustments in stages depending on the relative size of each pairwise p-value.
+
+1. Rank order the p-values from largest to smallest.
+2. Start with the smallest p-value. Multiply it by its rank.
+3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the adjusted p-value of next smallest rank, keep it. Otherwise replace with the previous step adjusted p-value.
+4.  Repeat Step 3 for the remaining p-values.
+5. Judge significance of each new p-value against `\(\alpha = .05\)`.
+
+---
+
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; Original p value &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Rank &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Rank x p &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Holm &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0023 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0138 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0138 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0012 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0060 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0138 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0450 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0470 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1410 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0530 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1060 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+A single adjusted per-test a would be used with the Bonferroni procedure: .05/6 = .0083. We would compare each original p-value to this new criterion and claim as significant only those that are less. Or, we could multiply the original p-values by 6 and judge them against a =.05.
+
+---
+
+
+```r
+emmeans(fit_1, pairwise ~ Group_lab, adjust = "holm")
+```
+
+```
+## $emmeans
+##   Group_lab            emmean   SE  df lower.CL upper.CL
+##  Control\nPredict         542 9.73 196      523      561
+##  No control\nPredict      353 9.25 196      335      371
+##  Control\nUnpredict       379 9.94 196      359      399
+##  No control\nUnpredict    266 8.91 196      248      284
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##    contrast                                  estimate   SE  df t.ratio p.value
+##  Control\nPredict - No control\nPredict         189.2 13.4 196  14.091  &lt;.0001
+##  Control\nPredict - Control\nUnpredict          163.0 13.9 196  11.715  &lt;.0001
+##  Control\nPredict - No control\nUnpredict       276.1 13.2 196  20.918  &lt;.0001
+##  No control\nPredict - Control\nUnpredict       -26.2 13.6 196  -1.929  0.0552
+##  No control\nPredict - No control\nUnpredict     86.9 12.8 196   6.761  &lt;.0001
+##  Control\nUnpredict - No control\nUnpredict     113.1 13.4 196   8.466  &lt;.0001
+## 
+## P value adjustment: holm method for 6 tests
+```
+
+---
+
+class: inverse
+
+# ANOVA is regression
+
+---
 ## Categorical predictors
 
 One of the benefits of using regression (instead of partial correlations) is that it can handle both continuous and categorical predictors and allows for using both in the same model.
@@ -1910,217 +2399,29 @@ summary(mod.2)
 *```
 
 ---
-class: inverse
 
-## Testing group differences in the ANOVA framework
+```r
+summary(mod.1)
+```
 
----
-### Hypothesis
-
-Unlike regression, the ANOVA framework has a single hypothesis test. This is equivalent to the omnibus test of a multiple regression model.
-
-.pull-left[
-### Regression
-
-`$$H_0: \rho^2_{Y\hat{Y}} = 0$$`
-`$$H_1: \rho^2_{Y\hat{Y}} &gt; 0$$`
-]
-
-.pull-left[
-### ANOVA
-
-`$$H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4$$`
-`$$H_1: \text{Not that } \mu_1 = \mu_2 = \mu_3 = \mu_4$$`
-This can occur in quite a number of ways.
-]
-
----
-
-The total variability of all of the data, regardless of group membership, can be expressed as:
-
-`$$\large Var(Y) = \frac{1}{N}\sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$`
-
-for G groups and `\(N_k\)` participants within groups. 
-
-In analysis of variance, we will be interested in the numerator of this variance equation, known as the total sum of squares:
-
-`$$\large SS_{tot} = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y})^2$$`
-.small[It's worth noting that this is just a more complicated way of expressing `\(SS_Y\)`, which we've been using all term, but in a way that will be useful for thinking about how we partition sums of squares later.]
-
----
-
-We already know from regression that the deviation of a score from the grand mean is the sum of two independent parts. In regression these parts are the deviation of the actual score from the predicted score, and  the deviation of the predicted value from the grand mean. 
-
-`$$\large Y_{i}-\bar{Y} = (Y_{i}-\hat{Y}_i) + (\hat{Y} - \bar{Y}_i)$$`
-
-In ANOVA, this holds true, but we express these relationships by referring to each Y within a group, and instead of "predicted value" we talk about group means. So now the parts are the deviation of the score from its group mean, and the deviation of that group mean from the grand mean. Why do we substitute "group mean" for "predicted value"?
-
-`$$\large Y_{ik}-\bar{Y} = (Y_{ik}-\bar{Y}_k) + (\bar{Y}_k - \bar{Y})$$`
---
-
-In other words, each deviation score has a within-group part and a between-group part. These separate parts can be squared and summed, giving rise to two other sums of squares. 
-
----
-One part, the within-groups sum of squares, represents squared deviations of scores around the group means:
-
-`$$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2$$`
-The other, the between-groups sum of squares, represents deviations of the group means around the grand mean:
-
-`$$\large SS_b = \sum_{k=1}^GN_k(\bar{Y}_{k}-\bar{Y})^2$$`
-How do these compare the sums of squares we are familiar with in regression?
-
----
-Sums of squares are central to ANOVA.  They are the building blocks that represent different sources of variability in a research design. They are additive, meaning that the `\(SS_{tot}\)` can be partitioned, or divided, into independent parts.
-
-The total sum of squares is the sum of the between-groups sum of squares and the within-groups sum of squares. 
-
-`$$\large SS_{tot} = SS_b + SS_w$$`
-The relative magnitude of sums of squares, especially in more complex designs, provides a way of identifying particularly large and important sources of variability.
----
-
-If the null hypothesis is true, then variability among the means should be consistent with the variability of the data.
-
-We know that relationship already:
-`$$\large \hat{\sigma}^2_{\bar{Y}} = \frac{\hat{\sigma}^2_{Y}}{N}$$`
-In other words, if we have an estimate of the variance of the means, we can transform that into an estimate of the variance of the scores, provided the only source of mean variability is sampling variability (the null hypothesis).
-
-`$$\large N\hat{\sigma}^2_{\bar{Y}} = \hat{\sigma}^2_Y$$`
----
-
-The `\(SS_w\)` is qualitatively giving us information that is similar to 
-
-`$$\large \hat{\sigma}^2_Y$$`
-The `\(SS_b\)` is qualitatively giving us information that is similar to 
-`$$\large N\hat{\sigma}^2_{\bar{Y}}$$`
-
-These are arrived at separately, but under the null hypothesis they should be estimates of the same thing.  The only reason that `\(SS_b\)` would be larger than expected is if there are systematic differences among the mean, perhaps created by experimental manipulations.
-
-We need a formal way to make the comparison.
-
----
-
-Because the sums of squares are numerators of variance estimates, we can divide each by their respective degrees of freedom to get variance estimates that, under the null hypothesis, should be approximately the same.
-
-These variance estimates are known as mean squares:
-.pull-left[
-`$$\large MS_w = \frac{SS_w}{df_w}$$`
-`$$\large df_w = N-G$$`
-]
-.pull-right[
-`$$\large MS_b = \frac{SS_b}{df_b}$$`
-`$$\large df_b = G-1$$`
-]
-
-How are these degrees of freedom determined?
-
----
-ANOVA assumes homogeneity of group variances.  Under that assumption, the separate group variances are pooled to provide a single estimate of within-group variability.
-
-`$$\large SS_w = \sum_{k=1}^G\sum_{i=1}^{N_k}(Y_{ik}-\bar{Y}_k)^2 = \sum_{k=1}^G(N_k-1)\hat{\sigma}^2_k$$`
-The degrees of freedom are likewise pooled:
-
-`$$\large df_w = N-G=(N_1-1)+(N_2-1)+\dots+(N_G-1)$$`
-Where have we seen similar pooling?
-
----
-
-If data are normally distributed, then the variance is `\(\chi^2\)` distributed.  The ratio of two `\(\chi^2\)` distributed variables is F distributed.
-
-In analysis of variance, the ratio of the mean squares (variance estimates) is symbolized by `\(F\)` and has a sampling distribution that is `\(F\)` distributed with degrees of freedom equal to `\(df_b\)` and `\(df_w\)`.  That sampling distribution is used to determine if an obtained `\(F\)` statistic is unusual enough to reject the null hypothesis.
-
-`$$\large F = \frac{MS_b}{MS_w}$$`
----
-
-`$$\large F = \frac{MS_b}{MS_w}$$`
-
-If the null hypothesis is true, `\(F\)` has an expected value of approximately 1.00 (the numerator and denominator are estimates of the same variability). 
-
-If the null hypothesis is false, the numerator will be larger than the denominator because systematic, between-group differences contribute to the variance of the means, but not to the variance within groups (ideally).  If `\(F\)` is "large enough," we will reject the null hypothesis as a reasonable description of the obtained variability. 
-
----
-
-The `\(F\)` statistic can be viewed as follows:
-
-`$$\large F = \frac{\hat{Q} + \hat{\sigma}^2}{\hat{\sigma}^2}$$`
-
-The extra term in the numerator (Q) is the treatment effect that, if present, increases variability among the means but does not affect the variability of scores within a group (treatment is a constant within any group).
-
-As the treatment effect gets larger, the `\(F\)` statistic departs from 1.00. If it departs enough, we claim F to be rare or unusual under the null and reject the null. The `\(F\)` probability density distribution tells us how rare or unusual a particular `\(F\)` statistic happens to be.  The shape of the `\(F\)` distribution is defined by its parameters, `\(df_b\)` and `\(df_w\)`.
-
----
-
-![](10-anova_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
-
-`\(F\)`-distributions are one-tailed tests. Recall that we're interested in how far away our test statistic from the null `\((F = 1).\)`
-
----
-
-ANOVA for the sample data:
+```
+...
+## F-statistic: 149.8 on 3 and 196 DF,  p-value: &lt; 0.00000000000000022
+NA
+...
+```
 
 
 ```r
-fit_1 = lm(Time ~ Group_lab, data = rotate)
-anova(fit_1)
+summary(mod.2)
 ```
 
 ```
 ...
-## Analysis of Variance Table
-## 
-## Response: Time
-##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
-## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
-## Residuals 196  872288    4450                                  
+## F-statistic: 149.8 on 3 and 196 DF,  p-value: &lt; 0.00000000000000022
+NA
 ...
 ```
-
-The `\(F\)` statistic is highly unusual in the `\(F\)` distribution, assuming the null hypothesis is true.  We reject the null hypothesis.
-
-Note: how does the output above compare to this output? 
-
-
-```r
-fit_1.1 = lm(Time ~ Group, data = rotate)
-anova(fit_1.1)
-```
-
-```
-...
-## Response: Time
-##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
-## Group       1 1613798 1613798  253.85 &lt; 0.00000000000000022 ***
-## Residuals 198 1258741    6357                                  
-...
-```
-
-
----
-
-```r
-fit_1 = lm(Time ~ Group_lab, data = rotate)
-anova(fit_1)
-```
-
-```
-## Analysis of Variance Table
-## 
-## Response: Time
-##            Df  Sum Sq Mean Sq F value                Pr(&gt;F)    
-## Group_lab   3 2000252  666751  149.82 &lt; 0.00000000000000022 ***
-## Residuals 196  872288    4450                                  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-We know the means are not equal, but the particular source of the inequality is not revealed by the `\(F\)` test.
-
-One simple way to determine what is behind the significant `\(F\)` test is to compare each Group to all other Groups.
-
----
-
-These comparisons take the general form of t-tests, but note some extensions:
-
-* the pooled variance estimate comes from `\(SS_{\text{residual}}\)`, meaning it pulls information from all groups
-* the degrees of freedom for the _t_-test is `\(N-k\)`, so using all data
 
 
 ```r
@@ -2138,260 +2439,6 @@ anova(fit_1)
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-
-
-
-`\(\hat{\sigma}_p = \sqrt{\frac{SS_{\text{residual}}}{N-k}} = \sqrt{\frac{872287.58}{200 - 4}} = 66.71\)`  
-
----
-
-&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt; Group_lab &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; N &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Mean &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; SD &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Control
-Predict &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 47 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 542.04 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 57.11 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; No control
-Predict &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 352.85 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 67.98 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Control
-Unpredict &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 379.04 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 71.85 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; No control
-Unpredict &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 265.98 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 68.68 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-
-
-
-To test the pairwise comparison, we use the old formulas for the [independent samples _t_-test](https://uopsych.github.io/psy611/lectures/16-independent_samples.html), except with this estimate of pooled sd and DF based on total N.
-
-`\(\sigma_{D} = \hat{\sigma}_p\sqrt{\frac{1}{N_1} + \frac{1}{N_2}} = 66.71 \sqrt{\frac{1}{47} + \frac{1}{52}}  = 13.43\)`
-
-
-`\(t = \frac{M_1-M_2}{\sigma_D} = \frac{542.04 - 352.85 }{13.43} = 14.09\)`
----
-
-
-
-```r
-library(emmeans)
-emmeans(fit_1, pairwise ~ Group_lab, adjust = "none")
-```
-
-```
-## $emmeans
-##   Group_lab            emmean   SE  df lower.CL upper.CL
-##  Control\nPredict         542 9.73 196      523      561
-##  No control\nPredict      353 9.25 196      335      371
-##  Control\nUnpredict       379 9.94 196      359      399
-##  No control\nUnpredict    266 8.91 196      248      284
-## 
-## Confidence level used: 0.95 
-## 
-## $contrasts
-##    contrast                                  estimate   SE  df t.ratio p.value
-##  Control\nPredict - No control\nPredict         189.2 13.4 196  14.091  &lt;.0001
-##  Control\nPredict - Control\nUnpredict          163.0 13.9 196  11.715  &lt;.0001
-##  Control\nPredict - No control\nUnpredict       276.1 13.2 196  20.918  &lt;.0001
-##  No control\nPredict - Control\nUnpredict       -26.2 13.6 196  -1.929  0.0552
-##  No control\nPredict - No control\nUnpredict     86.9 12.8 196   6.761  &lt;.0001
-##  Control\nUnpredict - No control\nUnpredict     113.1 13.4 196   8.466  &lt;.0001
-```
-
-
----
-These pairwise comparisons can quickly grow in number as the number of Groups increases.  With 4 (k) Groups, we have k(k-1)/2 = 6 possible pairwise comparisons.
-
-As the number of groups in the ANOVA grows, the number of possible pairwise comparisons increases dramatically. 
-
-
-![](10-anova_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
-
----
-
-As the number of tests grows, and assuming the null hypothesis is true, the probability that we will make one or more Type I errors increases.  To approximate the magnitude of the problem, we can assume that the multiple pairwise comparisons are independent. The probability that we **don’t** make a Type I error for one test is:
-
-`$$P(\text{No Type I}, 1 \text{ test}) = 1-\alpha$$`
-The probability that we don't make a Type I error for two tests is:
-
-`$$P(\text{No Type I}, 2 \text{ test}) = (1-\alpha)(1-\alpha)$$`
-
-For C tests, the probability that we make **no** Type I errors is
-
-`$$P(\text{No Type I}, C \text{ tests}) = (1-\alpha)^C$$`
-We can then use the following to calculate the probability that we make one or more Type I errors in a collection of C independent tests.
-
-`$$P(\text{At least one Type I}, C \text{ tests}) = 1-(1-\alpha)^C$$`
-
----
-
-The Type I error inflation that accompanies multiple comparisons motivates the large number of "correction" procedures that have been developed.
-
-![](10-anova_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
-
----
-
-Multiple comparisons, each tested with `\(\alpha_{per-test}\)`, increases the family-wise `\(\alpha\)` level. 
-
-`$$\large \alpha_{family-wise} = 1 - (1-\alpha_{per-test})^C$$`
-Šidák showed that the family-wise a could be controlled to a desired level (e.g., .05) by changing the `\(\alpha_{per-test}\)` to:
-
-`$$\large \alpha_{per-wise} = 1 - (1-\alpha_{family-wise})^{\frac{1}{C}}$$`
-Bonferroni (and Dunn, and others) suggested this simple approximation: 
-
-`$$\large \alpha_{per-test} = \frac{\alpha_{family-wise}}{C}$$`
-
-This is typically called the Bonferroni correction and is very often used even though better alternatives are available. 
-
----
-
-
-```r
-emmeans(fit_1, pairwise ~ Group_lab, adjust = "bonferroni")
-```
-
-```
-## $emmeans
-##   Group_lab            emmean   SE  df lower.CL upper.CL
-##  Control\nPredict         542 9.73 196      523      561
-##  No control\nPredict      353 9.25 196      335      371
-##  Control\nUnpredict       379 9.94 196      359      399
-##  No control\nUnpredict    266 8.91 196      248      284
-## 
-## Confidence level used: 0.95 
-## 
-## $contrasts
-##    contrast                                  estimate   SE  df t.ratio p.value
-##  Control\nPredict - No control\nPredict         189.2 13.4 196  14.091  &lt;.0001
-##  Control\nPredict - Control\nUnpredict          163.0 13.9 196  11.715  &lt;.0001
-##  Control\nPredict - No control\nUnpredict       276.1 13.2 196  20.918  &lt;.0001
-##  No control\nPredict - Control\nUnpredict       -26.2 13.6 196  -1.929  0.3312
-##  No control\nPredict - No control\nUnpredict     86.9 12.8 196   6.761  &lt;.0001
-##  Control\nUnpredict - No control\nUnpredict     113.1 13.4 196   8.466  &lt;.0001
-## 
-## P value adjustment: bonferroni method for 6 tests
-```
-
-
----
-
-The Bonferroni procedure is conservative. Other correction procedures have been developed that control family-wise Type I error at .05 but that are more powerful than the Bonferroni procedure.  The most common one is the Holm procedure.
-
-The Holm procedure does not make a constant adjustment to each per-test `\(\alpha\)`. Instead it makes adjustments in stages depending on the relative size of each pairwise p-value.
-
-1. Rank order the p-values from largest to smallest.
-2. Start with the smallest p-value. Multiply it by its rank.
-3. Go to the next smallest p-value. Multiply it by its rank. If the result is larger than the adjusted p-value of next smallest rank, keep it. Otherwise replace with the previous step adjusted p-value.
-4.  Repeat Step 3 for the remaining p-values.
-5. Judge significance of each new p-value against `\(\alpha = .05\)`.
-
----
-
-&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:right;"&gt; Original p value &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Rank &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Rank x p &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Holm &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0023 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.0138 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.0138 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0012 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.0060 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.0138 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0450 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0470 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.1410 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.0530 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.1060 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.1800 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2100 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-A single adjusted per-test a would be used with the Bonferroni procedure: .05/6 = .0083. We would compare each original p-value to this new criterion and claim as significant only those that are less. Or, we could multiply the original p-values by 6 and judge them against a =.05.
-
----
-
-
-```r
-emmeans(fit_1, pairwise ~ Group_lab, adjust = "holm")
-```
-
-```
-## $emmeans
-##   Group_lab            emmean   SE  df lower.CL upper.CL
-##  Control\nPredict         542 9.73 196      523      561
-##  No control\nPredict      353 9.25 196      335      371
-##  Control\nUnpredict       379 9.94 196      359      399
-##  No control\nUnpredict    266 8.91 196      248      284
-## 
-## Confidence level used: 0.95 
-## 
-## $contrasts
-##    contrast                                  estimate   SE  df t.ratio p.value
-##  Control\nPredict - No control\nPredict         189.2 13.4 196  14.091  &lt;.0001
-##  Control\nPredict - Control\nUnpredict          163.0 13.9 196  11.715  &lt;.0001
-##  Control\nPredict - No control\nUnpredict       276.1 13.2 196  20.918  &lt;.0001
-##  No control\nPredict - Control\nUnpredict       -26.2 13.6 196  -1.929  0.0552
-##  No control\nPredict - No control\nUnpredict     86.9 12.8 196   6.761  &lt;.0001
-##  Control\nUnpredict - No control\nUnpredict     113.1 13.4 196   8.466  &lt;.0001
-## 
-## P value adjustment: holm method for 6 tests
-```
 
 ---
 
