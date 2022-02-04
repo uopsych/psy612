@@ -22,7 +22,7 @@ options(scipen = 999)
 
 # Purpose
 
-Today's lab will focus on one-way ANOVA. We will start with the traditional way like Sarah did in class on Thursday. However, the majority of the lab time afterwards will focus on running an ANOVA as a linear regression with a categorical predictor. Though we haven't talked about it yet, the content will be covered in next week's class.
+Today's lab will focus on one-way ANOVA. We will start with the traditional way like Sarah did in class on Thursday. However, the majority of the lab time afterwards will focus on running an ANOVA as a linear regression with a categorical predictor. Though we haven't talked about it yet, the content will be covered in detail during next week's class.
 
 Be sure to have the following packages loaded:
 
@@ -30,6 +30,7 @@ Be sure to have the following packages loaded:
 library(tidyverse) # for plotting and data wrangling
 library(rio) # for importing data
 library(psych) # for descriptives
+library(emmeans) # for t-tests
 ```
 
 # Research scenario
@@ -69,9 +70,9 @@ R thinks that `group` is an integer, so we need to make it into a factor in orde
 NOTE: You want to provide labels in the same order as the levels of the factor, so in this case we want them in the order `CBT`, `Psychotherapy`, and `Control` (see above). 
 
 ```{r}
-depression <- depression %>% 
+depression = depression %>% 
   mutate(group = factor(group,
-                            labels = c("CBT", "Psychotherapy", "Control"))) # order matters here! 
+                        labels = c("CBT", "Psychotherapy", "Control"))) # order matters here! 
 ```
 
 Look at the structure of the data again. Now it's clear that `group` is a factor variable with the correct levels. 
@@ -79,7 +80,6 @@ Look at the structure of the data again. Now it's clear that `group` is a factor
 ```{r}
 str(depression)
 ```
-
 
 ## Descriptives
 
@@ -128,6 +128,9 @@ depression %>%
              y = avg_depress)) +
   geom_bar(stat = "identity",
            fill = "cornflowerblue") +
+  geom_point(data = depression, 
+             aes(x = group, y = depress),
+             position = 'jitter')+
   theme_minimal()+
   labs(y = "Average depression score",
        x = NULL,
@@ -152,21 +155,23 @@ depression %>%
 
 # Traditional ANOVA
 
-We have just reviewed in detail how to do an ANOVA within a linear regression framework. We will briefly review how to generate a traditional ANOVA table, though this will give us the same information we already got from our regression model. 
+We will briefly review how to generate a traditional ANOVA table.
 
-To get an ANOVA table, you can use`stats::aov()` and provide it with the same information you would pass to `lm()`, namely a formula (e.g. `IV ~ DV`) and the `data`. Again, make sure that the categorical IV is a factor. 
+To get an ANOVA table, you can use the same `lm()` as regression, and use `anova()` to get the ANOVA summary table. Importantly, you want to make sure that the categorical IV is a factor. 
 
 
 ```{r}
-model_anova <- aov(depress ~ group, data = depression)
-summary(model_anova)
+model_anova <- lm(depress ~ group, data = depression)
+anova(model_anova)
 ```
 
-To calculate pairwise comparisons between group levels, use `pairwise.t.test()`. This function takes arguments `x` (the outcome variable), `g` (the grouping variable) an `p.adjust.method` (e.g. "bonferroni" or "holm").
+To calculate pairwise comparisons between group levels, use `emmeans::emmeans()`. This function takes an `lm()` output, an equation that indicates we want to perform pairwise t-tests (`pairwise`) on the left, and the IV (`group`) on the right, as well as an `adjust` (e.g. "bonferroni" or "holm").
 
 
 ```{r}
-pairwise.t.test(x = depression$depress, g = depression$group, p.adjust.method = "none")
+
+emmeans(model_anova, pairwise ~ group, adjust = "none")
+
 ```
 
 Since we are running a lot of test, we need to correct for multiple comparisons so that we don't have an inflated type I error rate.
@@ -175,7 +180,9 @@ Since we are running a lot of test, we need to correct for multiple comparisons 
 * Bonferroni correction:multiplies the p-values by the number of comparisons.
 
 ```{r}
-pairwise.t.test(x = depression$depress, g = depression$group, p.adjust.method = "bonferroni")
+
+emmeans(model_anova, pairwise ~ group, adjust = "bonferroni")
+
 ```
 
 * Holm correction: 
@@ -190,21 +197,24 @@ pairwise.t.test(x = depression$depress, g = depression$group, p.adjust.method = 
 
 
 ```{r}
-pairwise.t.test(x = depression$depress, g = depression$group, p.adjust.method = "holm")
+
+emmeans(model_anova, pairwise ~ group, adjust = "holm")
+
 ```
 
 >**Question:** What difference do you notice about the Bonferroni vs. Holm correction? 
+
+Bonferroni tends to have higher p-values, which indicates it's a more conservative test. Bonferroni also leads to higher chance of type II error (not detecting the effect when there is one.)
 
 ***
 
 # Regression with categorical predictors
 
-
-
+We have just reviewed how to do generate a traditional ANOVA table. We will next talk about how to perform ANOVA within a linear regression framework, though this will give us the same information we already got from our regression model. 
 
 ## Dummy coding
 
-In regression, categorical predictors with more than two levels are broken up into more than one predictor. This actually happens under the hood in R when our independent variable is a factor. Let's see what happens when we put `group` as the predictor in our model:
+In regression, categorical predictors with more than two levels are broken up into more than one predictor. This actually happens under the hood in R when our independent variable is a factor. Let's put `group` as the predictor in our model as before:
 
 
 ```{r}
@@ -234,6 +244,11 @@ $$Depression_i = 7.20 -3.80psychotherapy + 2.60control$$
 
 >**Question:** Determine the mean depression score of each group.
 
+7.2: CBT
+7.2 - 3.8 = 3.4: psychotherapy
+7.2 + 2.6 = 9.8: control
+
+can use `describeBy(depression$depress, depression$group, mat = TRUE)` to check.
 
 Now, let's revisit the output.
 ```{r}
@@ -242,8 +257,11 @@ summary(model_default)
 ```
 >**Question:** Interpret the intercept. What does a significant p-value signify?
 
+mean of CBT is significantly different from 0.
+
 >**Question:** Interpret the slopes. What do the significant p-values signify?
 
+The differences between psychotherapy and control are significantly different from the mean of CBT.
 
 Let's imagine that we have the following (more intuitive) research questions:
 
@@ -280,8 +298,11 @@ summary(model_dummy1)
 
 >**Question:** What does the intercept mean? What do the slopes mean?
 
+mean of the control group; slopes are the differences from the control group.
+
 >**Question:** What does the F test tell us?
  
+ Whether any mean is different from any other mean. 
 
 ### Method 2: Contrast Matrix
 
@@ -358,40 +379,9 @@ model_dummy3 <- lm(depress ~ group_relevel, data = depression)
 summary(model_dummy3)
 ```
 
-## Deviation coding
+## Other coding schemes
 
-Instead of dummy coding, we can other types of coding, like **deviation coding** (also called "effects coding") to compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). In R, we do this in basically the same way as dummy coding, but just change the values we use to set the codes. 
-
-**NOTE: This will change how we interpret our coefficients!**. When using effects coding, the intercept represents the grand mean. The coefficients of each of the effect-coded variables is equal to the difference between the mean of the group coded 1 and the grand mean. 
-
-With effects coding, the reference group will end up being coded with all `-1`'s.
- 
-Let's imagine our research questions are as follows: Is CBT effective compared to the overall sample? Is Psychotherapy effective compared to the overall sample?
-
-We'll create our contrast matrix of effects codes in a very similar way to how we made our dummy codes. The only difference is that this time we will use `contr.sum()`, again telling it the number of levels of our grouping factor (`n = 3`)
-
-
-```{r}
-contr.sum(n = 3)
-```
-
-And as before with dummy codes, we overwrite the default contrast matrix with our effect codes.
-
-```{r}
-contrasts(depression$group) <- contr.sum(n = 3)
-```
-
-Run the linear model with effects coding
-
-```{r}
-model_ec <- lm(depress ~ group, data = depression) 
-summary(model_ec)
-```
-
-
->**Question:** What does the intercept mean? The slopes? 
-
-There are many other coding schemes besides dummy and deviation coding. You can read more about that [here](https://stats.idre.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/){target="_blank"}. 
+There are many other coding schemes besides dummy coding, such as and **deviation coding** (also known as "effects coding"), which can compare individual group means to the overall mean of the dependent variable (i.e. the grand mean). You can read more about that [here](https://stats.idre.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/){target="_blank"}. 
 
 ***
 
@@ -449,8 +439,8 @@ depression_drug %>%
 * Run an omnibus ANOVA test to determine whether there is a relationship between `drug` and `depression`. What does this tell you? 
 
 ```{r}
-anova_drug <- aov(depression ~ drug, data = depression_drug)
-summary(anova_drug)
+anova_drug <- lm(depression ~ drug, data = depression_drug)
+anova(anova_drug)
 ```
 
 At least one group was different than another group in depression level.
@@ -474,8 +464,10 @@ summary(model_drug)
 * Conduct pairwise comparisons for `depression` scores across all levels of `drug`. Use a correction method to account for multiple comparisons. 
 
 ```{r}
-pairwise.t.test(x = depression_drug$depression, g = depression_drug$drug, p.adjust.method = "none")
 
-pairwise.t.test(x = depression_drug$depression, g = depression_drug$drug, p.adjust.method = "bonferroni")
+emmeans(model_drug, pairwise ~ drug, adjust = "bonferroni")
+
+emmeans(model_drug, pairwise ~ drug, adjust = "holm")
+
 ```
 
