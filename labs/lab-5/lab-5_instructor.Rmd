@@ -210,7 +210,7 @@ Bonferroni tends to have higher p-values, which indicates it's a more conservati
 
 # Regression with categorical predictors
 
-We have just reviewed how to do generate a traditional ANOVA table. We will next talk about how to perform ANOVA within a linear regression framework, though this will give us the same information we already got from our regression model. 
+We have just reviewed how to do generate a traditional ANOVA table. We will next talk about how to perform ANOVA within a linear regression framework. This will give us the same information we already got from our regression model, and something more!
 
 ## Dummy coding
 
@@ -221,6 +221,10 @@ In regression, categorical predictors with more than two levels are broken up in
 model_default <- lm(depress ~ group, data = depression) 
 summary(model_default)
 ```
+
+>**Question:** What does the F test tell us?
+ 
+ Whether any mean is different from any other mean. 
 
 Here is our regression equation:
 
@@ -299,10 +303,6 @@ summary(model_dummy1)
 >**Question:** What does the intercept mean? What do the slopes mean?
 
 mean of the control group; slopes are the differences from the control group.
-
->**Question:** What does the F test tell us?
- 
- Whether any mean is different from any other mean. 
 
 ### Method 2: Contrast Matrix
 

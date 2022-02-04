@@ -210,7 +210,7 @@ emmeans(model_anova, pairwise ~ group, adjust = "holm")
 
 # Regression with categorical predictors
 
-We have just reviewed how to do generate a traditional ANOVA table. We will next talk about how to perform ANOVA within a linear regression framework, though this will give us the same information we already got from our regression model. 
+We have just reviewed how to do generate a traditional ANOVA table. We will next talk about how to perform ANOVA within a linear regression framework. This will give us the same information we already got from our regression model, and something more!
 
 ## Dummy coding
 
@@ -221,6 +221,9 @@ In regression, categorical predictors with more than two levels are broken up in
 model_default <- lm(depress ~ group, data = depression) 
 summary(model_default)
 ```
+
+>**Question:** What does the F test tell us?
+ 
 
 Here is our regression equation:
 
@@ -290,8 +293,6 @@ summary(model_dummy1)
 
 >**Question:** What does the intercept mean? What do the slopes mean?
 
->**Question:** What does the F test tell us?
- 
 ### Method 2: Contrast Matrix
 
 Now we're going use another method to create our dummy codes by creating a contrast matrix. When we pass a factor to `lm()` it uses a contrast matrix under the hood. Although R creates the contrast matrix automatically with certain default assumptions, you can set it yourself if you have a specific set of codes in mind (which we do).
@@ -415,8 +416,6 @@ What pattern do you notice in the data?
 ```{r}
 
 ```
-
-At least one group was different than another group in depression level.
 
 * Using your preferred method of dummy coding, test whether there is a significant difference between depression scores for each drug group (`low`, `medium`, `high`) and the `none` group. Interpret all model coefficients.
 
