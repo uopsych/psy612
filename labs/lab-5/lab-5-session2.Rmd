@@ -22,7 +22,7 @@ options(scipen = 999)
 
 # Purpose
 
-Today's lab will focus on one-way ANOVA. You can download the rmarkdown file [here](lab-5.Rmd). We will start with the traditional way like Sara did in class on Thursday. However, the majority of the lab time afterwards will focus on running an ANOVA as a linear regression with a categorical predictor. Though we haven't talked about it yet, the content will be covered in detail during next week's class.
+Today's lab will focus on one-way ANOVA. We will start with the traditional way like Sara did in class on Thursday. However, the majority of the lab time afterwards will focus on running an ANOVA as a linear regression with a categorical predictor. Though we haven't talked about it yet, the content will be covered in detail during next week's class.
 
 Be sure to have the following packages loaded:
 
@@ -204,7 +204,7 @@ emmeans(model_anova, pairwise ~ group, adjust = "holm")
 
 >**Question:** What difference do you notice about the Bonferroni vs. Holm correction? 
 
-Bonferroni tends to have higher p-values, which indicates it's a more conservative test. Bonferroni also leads to higher chance of type II error (not detecting the effect when there is one.)
+
 
 ***
 
@@ -224,7 +224,6 @@ summary(model_default)
 
 >**Question:** What does the F test tell us?
  
- Whether any mean is different from any other mean. 
 
 Here is our regression equation:
 
@@ -248,12 +247,6 @@ $$Depression_i = 7.20 -3.80psychotherapy + 2.60control$$
 
 >**Question:** Determine the mean depression score of each group.
 
-7.2: CBT
-7.2 - 3.8 = 3.4: psychotherapy
-7.2 + 2.6 = 9.8: control
-
-can use `describeBy(depression$depress, depression$group, mat = TRUE)` to check.
-
 Now, let's revisit the output.
 ```{r}
 model_default <- lm(depress ~ group, data = depression) 
@@ -261,11 +254,9 @@ summary(model_default)
 ```
 >**Question:** Interpret the intercept. What does a significant p-value signify?
 
-mean of CBT is significantly different from 0.
 
 >**Question:** Interpret the slopes. What do the significant p-values signify?
 
-The differences between psychotherapy and control are significantly different from the mean of CBT.
 
 Let's imagine that we have the following (more intuitive) research questions:
 
@@ -301,8 +292,6 @@ summary(model_dummy1)
 ```
 
 >**Question:** What does the intercept mean? What do the slopes mean?
-
-mean of the control group; slopes are the differences from the control group.
 
 ### Method 2: Contrast Matrix
 
@@ -401,36 +390,22 @@ depression_drug <- import("https://raw.githubusercontent.com/uopsych/psy612/mast
 
 Recreate the following table.
 
+![](images/depression_table.png)
 
 ```{r}
-depression_drug <- depression_drug %>% 
-  mutate(drug = factor(drug, 
-                       levels = c("none", "low", "medium", "high")))
 
-depression_drug %>% 
-  group_by(drug) %>%
-  summarize(mean = mean(depression, na.rm = TRUE),
-            sd = sd(depression, na.rm = TRUE),
-            n = n()) %>% 
-  knitr::kable(digits = 2) 
 ```
-
-![](images/depression_table.png)
-<br> 
 
 Recreate the following boxplot.
 
 ![](images/depression_boxplot.png)
 
-What pattern do you notice in the data? 
-
 ```{r}
-depression_drug %>% 
-  ggplot(aes(drug, depression)) + 
-  geom_boxplot() + 
-  theme_minimal() + 
-  labs(x = "Drug", y = "Depression")
+
 ```
+
+
+What pattern do you notice in the data? 
 
 ***
 
@@ -439,22 +414,13 @@ depression_drug %>%
 * Run an omnibus ANOVA test to determine whether there is a relationship between `drug` and `depression`. What does this tell you? 
 
 ```{r}
-anova_drug <- lm(depression ~ drug, data = depression_drug)
-anova(anova_drug)
-```
 
-At least one group was different than another group in depression level.
+```
 
 * Using your preferred method of dummy coding, test whether there is a significant difference between depression scores for each drug group (`low`, `medium`, `high`) and the `none` group. Interpret all model coefficients.
 
 ```{r}
-depression_drug <- depression_drug %>% 
-  mutate(drug = factor(drug, levels = c("none", "low", "medium", "high")))
 
-contrasts(depression_drug$drug) <- contr.treatment(n = 4, base = 1)  
-
-model_drug <- lm(depression ~ drug, data  = depression_drug)
-summary(model_drug)
 ```
 
 ***
@@ -465,9 +431,6 @@ summary(model_drug)
 
 ```{r}
 
-emmeans(model_drug, pairwise ~ drug, adjust = "bonferroni")
-
-emmeans(model_drug, pairwise ~ drug, adjust = "holm")
-
 ```
+
 
