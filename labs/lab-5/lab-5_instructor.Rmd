@@ -22,7 +22,7 @@ options(scipen = 999)
 
 # Purpose
 
-Today's lab will focus on one-way ANOVA. We will start with the traditional way like Sarah did in class on Thursday. However, the majority of the lab time afterwards will focus on running an ANOVA as a linear regression with a categorical predictor. Though we haven't talked about it yet, the content will be covered in detail during next week's class.
+Today's lab will focus on one-way ANOVA. We will start with the traditional way like Sara did in class on Thursday. However, the majority of the lab time afterwards will focus on running an ANOVA as a linear regression with a categorical predictor. Though we haven't talked about it yet, the content will be covered in detail during next week's class.
 
 Be sure to have the following packages loaded:
 
