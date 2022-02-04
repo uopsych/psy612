@@ -119,7 +119,7 @@ scatter6 <- ggplot(data = df6, aes(x = extraversion, y = happiness)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Let's look at them side-by-side by using the `grid.arrange` function from the `{gridExtra}` package.
+Let's look at them side-by-side by using the `grid.arrange()` function from the `{gridExtra}` package.
 
 ```{r}
 grid.arrange(scatter1, 
@@ -127,7 +127,8 @@ grid.arrange(scatter1,
              scatter3, 
              scatter4, 
              scatter5, 
-             scatter6)
+             scatter6,
+             nrow = 2)
 ```
 
 > **Question: Do you notice any potential issues from any of these scatterplots that we used to represent the data so far?**
@@ -304,8 +305,7 @@ Repeat the same thing, but this time testing the independence of errors assumpti
 ```{r}
 model4_aug$id <- df4$id
 
-ggplot(data = model4_aug, 
-       aes(x=id, y = .resid)) + 
+ggplot(data = model4_aug, aes(x = id, y = .resid)) + 
   geom_point() +  
   geom_smooth(se = F) +
   geom_hline(yintercept = 0)
@@ -411,7 +411,6 @@ data.frame(id = seq_along(rstudent(model5)),
   ylab("Deleted Studentized Residuals") + 
   ggtitle("Studentized Residuals Plot") +
   theme_bw()
-  
 ```
 
 We can also view the studentized residuals by using the `rstudent()` function from `{stats}` package.
@@ -449,7 +448,7 @@ One standard I have seen is that Cook's D values greater than 3 times the averag
 
 #### DFBETAS
 
-DFBETA measures the difference in each parameter estimate with and without a particular point being included in the data.
+DFBETA (AKA difference in betas) measures the difference in each parameter estimate with and without a particular point being included in the data.
 
 We can visualize this by using the `ols_plot_dfbetas()` function from the `{olsrr}` package:
 
@@ -470,7 +469,7 @@ One standard I have seen is that DFBETAS larger than $\frac{2}{\sqrt{n}}$ should
 
 #### DFFITS
 
-DFFITS measure the difference in the model's fitted values with and without a particular point being included in the data.
+DFFITS (AKA difference in fits) measure the difference in the model's fitted values with and without a particular point being included in the data.
 
 We can visualize this by using the `ols_plot_dffits()` function from the `{olsrr}` package:
 
@@ -523,7 +522,7 @@ plot_model(model6, type = "diag")[1]
 plot_model(model6, type = "diag")
 ```
 
-We can also examine the tolerance and VIF values by using the `ols_vif_tol()` function from the `{olsrr}` package. 
+We can also examine the tolerance and VIF values by using the `ols_vif_tol()` function from the `{olsrr}` package.
 
 ```{r}
 ols_vif_tol(model6)
