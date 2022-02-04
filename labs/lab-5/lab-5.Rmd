@@ -165,6 +165,8 @@ model_anova <- lm(depress ~ group, data = depression)
 anova(model_anova)
 ```
 
+>**Question:** What does the F test tell us?
+
 To calculate pairwise comparisons between group levels, use `emmeans::emmeans()`. This function takes an `lm()` output, an equation that indicates we want to perform pairwise t-tests (`pairwise`) on the left, and the IV (`group`) on the right, as well as an `adjust` (e.g. "bonferroni" or "holm").
 
 
@@ -221,9 +223,6 @@ In regression, categorical predictors with more than two levels are broken up in
 model_default <- lm(depress ~ group, data = depression) 
 summary(model_default)
 ```
-
->**Question:** What does the F test tell us?
- 
 
 Here is our regression equation:
 

@@ -448,8 +448,6 @@ At least one group was different than another group in depression level.
 * Using your preferred method of dummy coding, test whether there is a significant difference between depression scores for each drug group (`low`, `medium`, `high`) and the `none` group. Interpret all model coefficients.
 
 ```{r}
-depression_drug <- depression_drug %>% 
-  mutate(drug = factor(drug, levels = c("none", "low", "medium", "high")))
 
 contrasts(depression_drug$drug) <- contr.treatment(n = 4, base = 1)  
 
