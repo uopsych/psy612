@@ -40,6 +40,12 @@ knit_hooks$set(output = function(x, options) {
 knitr::opts_chunk$set(message = FALSE) # suppress messages
 ```
 
+## Annoucements
+
+* No class next Thursday (Feb 17)
+* Lecture recorded Tuesday evening (5pm, Feb 15)
+
+---
 
 ### Today...
 
