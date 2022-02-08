@@ -122,7 +122,7 @@ aug_2<- augment(model.2)
 ggplot(aug_2, aes(x = Support, y = Anxiety)) +
   geom_segment(aes(xend = Support, yend = .fitted), alpha = .2) +  # alpha to fade lines
   geom_point() +
-  geom_point(aes(y = .fitted), shape = 1) +
+  geom_point(aes(y = .fitted, color = Stress)) +
   scale_y_continuous(limits = c(-10, 15)) +
   labs(caption = "Two predictor: Anxiety ~ Support + Stress") + 
   theme_bw(base_size = 20)

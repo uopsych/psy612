@@ -1,15 +1,22 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Causal models</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Causal models
+
 ---
-title: 'Causal models'
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    css: [default, rladies, rladies-fonts, "my-theme.css"]
-    incremental: true
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
----
+
 
 ## Correlation does not imply
 
@@ -123,23 +130,26 @@ DAG models are _qualitative descriptions_ of your theory. This tool is used befo
 ### Basic structures
 
 * Boxes or circles represent constructs in a causal model: **nodes**.
-* Arrows represent relationships. A &rarr; B
+* Arrows represent relationships. A &amp;rarr; B
 
 * Relationships can follow any functional form (linear, polynomial, sinusoidal, etc.) 
 
 * DAGs only allow single-headed arrows; constructs cannot cause each other, nor can you cycle from a construct back to itself.
 
-  * A &rlarr; B is not allowed; A &larr; U &rarr; B is
+  * A &amp;rlarr; B is not allowed; A &amp;larr; U &amp;rarr; B is
   * Constructs cannot cause themselves, so no feedback loops.  
   
 ---
 
-```{r, message=F}
+
+```r
 library(ggdag)
 
 dag.obj = dagify(B ~ A)
 ggdag(dag.obj)
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -158,13 +168,14 @@ ggdag(dag.obj)
 
 Chains have the structure 
 
-A &rarr; B &rarr; C.
+A &amp;rarr; B &amp;rarr; C.
 
 Chains can transmit associations from the node at the beginning to the node at the end, meaning that you will find a correlation between A and C. These associations represent *real* causal relationships. 
 
 **B mediates the influence of A on C.**
 
-```{r chain-plot, eval = F}
+
+```r
 dag.obj = dagify(edu ~ iq,
                  income ~ edu)
 ggdag(dag.obj) +
@@ -179,9 +190,7 @@ ggdag(dag.obj) +
 The correlation between IQ and income would be significant and meaningful.
 ]
 
-```{r, ref.label="chain-plot", echo = F}
-
-```
+![](13-dag_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
 
 
 
@@ -192,14 +201,15 @@ The correlation between IQ and income would be significant and meaningful.
 
 Forks have the structure 
 
-A &larr; B &rarr; C.
+A &amp;larr; B &amp;rarr; C.
 
 Forks can transmit associations but they are not causal. They are the structure most relevant for the phenomenon of confounding.
 
 **B is a confound of A and C.**
 
 
-```{r fork-plot, eval = F}
+
+```r
 dag.obj = dagify(edu ~ iq,
                  income ~ iq)
 ggdag(dag.obj) + 
@@ -214,9 +224,7 @@ ggdag(dag.obj) +
 The correlation between education and income would be significant but not meaningful.
 ]
 
-```{r, ref.label="fork-plot", echo = F}
-
-```
+![](13-dag_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
 
 
 
@@ -226,13 +234,14 @@ The correlation between education and income would be significant but not meanin
 
 Inverted forks have the structure 
 
-A &rarr; B &larr; C.
+A &amp;rarr; B &amp;larr; C.
 
 Inverted forks cannot transmit associations. In other words, if this is the true causal structure, there won't be a correlation between A and C. 
 
 **B is a collider of A and C.**
 
-```{r ifork-plot, eval = F}
+
+```r
 dag.obj = dagify(income ~ edu,
                  income ~ iq) 
 ggdag(dag.obj) +
@@ -246,9 +255,7 @@ ggdag(dag.obj) +
 The correlation between education and IQ would not be significant and meaningful.
 ]
 
-```{r, ref.label="ifork-plot", echo = F}
-
-```
+![](13-dag_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
 
 
 
@@ -258,12 +265,14 @@ The correlation between education and IQ would not be significant and meaningful
 
 In reality, the causal pathways between the constructs in your model will be very complex. 
 
-```{r complex, eval = F}
+
+```r
 dag.obj = dagify(gpa ~ iq,
                  edu ~ gpa + iq, 
                  income ~ edu + iq)
 ```
-```{r, eval = F}
+
+```r
 ggdag(dag.obj) +
   geom_dag_node(color = "grey") +
   geom_dag_text(color = "black") +
@@ -271,16 +280,9 @@ ggdag(dag.obj) +
 ```
 ---
 
-```{r, ref.label="complex", echo = F}
 
-```
 
-```{r, echo = F}
-ggdag(dag.obj) +
-  geom_dag_node(color = "grey") +
-  geom_dag_text(color = "black") +
-  theme_bw()
-```
+![](13-dag_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
 
 
 
@@ -303,7 +305,8 @@ Importantly, we don't need to control for variables that causes just X and not Y
 ---
 
 
-```{r open, eval = F, highlight.code = 8}
+
+```r
 dag.obj = dagify(gpa ~ iq,
                  edu ~ gpa + iq, 
                  income ~ edu + iq, 
@@ -317,19 +320,20 @@ ggdag_paths(dag.obj)+
 
 ---
 
-```{r ref.label = "open", echo = F, fig.width=10}
-
-```
+![](13-dag_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 
 What should I control for?
 
 ---
 
-```{r, fig.width=10}
+
+```r
 ggdag_adjustment_set(dag.obj)+
   geom_dag_text(color = "black") +
   theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -337,7 +341,7 @@ Confounds open "back-doors" between variables that act like causal pathways, but
 
 Based on the causal structure I hypothesized last slide, if I want to estimate how much education causes income, I should control for intelligence, but I don't need to control for grades. 
 
-$$\large \hat{\text{Income}} = b_0 + b_1(\text{Education}) + b_2(\text{Intelligence}) + e$$
+`$$\large \hat{\text{Income}} = b_0 + b_1(\text{Education}) + b_2(\text{Intelligence}) + e$$`
 
 ---
 
@@ -355,11 +359,12 @@ Let's return to the other two types of paths, chains and inverted forks.
 
 Chains represent mediation; the effect of construct A on C is *through* construct B.
 
-Intelligence &rarr; Educational attainment &rarr; Income
+Intelligence &amp;rarr; Educational attainment &amp;rarr; Income
 
 What happens if we control for a mediating variable, like education?
 
-```{r}
+
+```r
 dag.obj = dagify(edu ~ iq,
                  income ~ edu,
                  exposure = "iq", 
@@ -369,19 +374,25 @@ dag.obj = dagify(edu ~ iq,
 ---
 
 .pull-left[
-```{r}
+
+```r
 ggdag_dseparated(dag.obj) +
   geom_dag_text(color = "black") +
   theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 ]
 .pull-right[
-```{r}
+
+```r
 ggdag_dseparated(dag.obj, 
                  controlling_for = "edu") +
   geom_dag_text(color = "black") +
   theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -390,11 +401,12 @@ Controlling for mediators removes the association of interest from the model -- 
 
 Inverted forks also teach us what not to control for: colliders. A **collider** for a pair of constructs is any third construct that is caused by both constructs in the pair. Controlling for (or conditioning on) these variables introduces bias into your estimates. 
 
-Intelligence &rarr; Income attainment &larr; Educational
+Intelligence &amp;rarr; Income attainment &amp;larr; Educational
 
 What happens if we control for the collider?
 
-```{r}
+
+```r
 dag.obj = dagify(income ~ iq,
                  income ~ edu,
                  exposure = "iq", 
@@ -405,19 +417,25 @@ dag.obj = dagify(income ~ iq,
 ---
 
 .pull-left[
-```{r}
+
+```r
 ggdag_dseparated(dag.obj) +
   geom_dag_text(color = "black") +
   theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 ]
 .pull-right[
-```{r}
+
+```r
 ggdag_dseparated(dag.obj, 
                  controlling_for = "income") +
   geom_dag_text(color = "black") +
   theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -429,7 +447,8 @@ ggdag_dseparated(dag.obj,
 
 Missing data or restricted range problems arise in collider bias.
 
-```{r}
+
+```r
 dag.obj = dagify(c ~ x,
                  c ~ y,
                  labels = c("x" = "Respitory Disease",
@@ -456,13 +475,16 @@ This will extend to not just controlling for constructs, but estimating interact
 
 ]
 .pull-right[
-```{r}
+
+```r
 ggdag_dseparated(dag.obj, 
                  controlling_for = "c", 
                  text = FALSE, 
                  use_labels = "label") +
   theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 ]
 
 .small[Sackett et al. (1979)]
@@ -475,7 +497,8 @@ A health researcher is interested in studying the relationship between dieting a
 
 ---
 
-```{r}
+
+```r
 dag.obj = dagify(diet ~ wi,
                  wf ~ diet + wi,
                  loss ~ wi + wf,
@@ -485,31 +508,27 @@ dag.obj = dagify(diet ~ wi,
 
 ---
 
-```{r, fig.width=10}
+
+```r
 ggdag_adjustment_set(dag.obj) + theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
 What should be controlled here?
 
-```{r, fig.width = 10, echo = F}
-dag.obj = dagify(
-  X ~ A,
-  B ~ A + D,
-  E ~ X + D,
-  C ~ B,
-  Y ~ E,
-  exposure = "X", outcome = "Y"
-)
-ggdag(dag.obj)
-```
+![](13-dag_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 ---
 
 
-```{r, fig.width=10}
+
+```r
 ggdag_adjustment_set(dag.obj) + theme_bw()
 ```
+
+![](13-dag_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 ---
 There is a **strong** assumption of DAG models, and that it's that no relevant variables have been omitted from the graph and that causal pathways have been correctly specified. This is a tall order, and potentially impossible to meet. Moreover, two different researchers may reasonably disagree with what the true model looks like. 
 
@@ -519,9 +538,7 @@ It's your responsibility to decide for yourself what you think the model is, pro
 
 ---
 
-```{r, echo = F, out.width = 5}
-knitr::include_graphics("images/rohrer_tweet.png")
-```
+&lt;img src="images/rohrer_tweet.png" width="5" /&gt;
 
 ---
 
@@ -531,3 +548,126 @@ class: inverse
 
 Interactions (moderators)
 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
