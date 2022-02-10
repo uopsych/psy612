@@ -205,7 +205,7 @@ plot(model1, 1)
 Let's also examine the plot for `model_2`.
 
 ```{r}
-plot(model2, 1)
+# your code here
 ```
 
 > **Question: Do you see a pattern in either of these plots that suggest the presence of a non-linear trend between extraversion and happiness that is not captured by the linear model?**
@@ -254,22 +254,13 @@ Now, do the same thing, but this time let's examine whether we have violated the
 Obtain a density plot of the residuals from `model3`:
 
 ```{r}
-ggplot(data = model3_aug, aes(x = .resid)) + 
-  geom_density(fill = "purple") +
-  stat_function(linetype = 2, 
-                fun      = dnorm,
-                args     = list(mean = mean(model3_aug$.resid), 
-                                sd   =   sd(model3_aug$.resid)))+
-  theme_minimal()
+# your code here
 ```
 
 Obtain a Q-Q plot for `model3`:
 
 ```{r}
-ggplot(model3) +
-  geom_abline(color = "turquoise4") + 
-  stat_qq(aes(sample = .stdresid), color = "darkorchid4", alpha = .50) +
-  theme_minimal()
+# your code here
 ```
 
 > **Question: Do the errors appear to be approximately normally distributed?**
@@ -287,7 +278,7 @@ plot(model1, 1)
 Now, check for heteroscedasticity by examining the plot of the fitted values vs. residuals for `model4`.
 
 ```{r}
-plot(model4, 1)
+# your code here
 ```
 
 > **Question: Does the amount of variability in the residuals seem to differ across the model's fitted values for either of these models? In other words, is there evidence of heteroscedasticity?**
@@ -310,12 +301,7 @@ ggplot(data = model1_aug, aes(x = id, y = .resid)) +
 Repeat the same thing, but this time testing the independence of errors assumption for `model4`.
 
 ```{r}
-model4_aug$id <- df4$id
-
-ggplot(data = model4_aug, aes(x = id, y = .resid)) + 
-  geom_point() +  
-  geom_smooth(se = F) +
-  geom_hline(yintercept = 0)
+# your code here
 ```
 
 > **Question: Does there appear to be a relationship between ID number and the residuals for either model above?**
@@ -541,39 +527,25 @@ data(bfi, package = "psych")
 First, create a model regressing age on the 5 items for `Conscientiousness` (labeled `C1`, `C2`, `C3`, `C4`, and `C5`). Asign the object to a variable called `model`.
 
 ```{r}
-model <- lm(age ~ C1 + C2 + C3 + C4 + C5, data = bfi) 
+# your code here
 ```
 
 Next, use `augment()` on the model. Save the output to variable called `model_aug`.
 
 ```{r}
-model_aug <- augment(model)
+# your code here
 ```
 
 Next, check if the data meet the homoscedasticity assumption.
 
 ```{r}
-ggplot(data = model_aug, aes(x = .fitted, y = .resid)) +
-  geom_point() +
-  theme_minimal() +
-  geom_hline(yintercept = 0, color = "red")
+# your code here
 ```
 
 Next, check if the errors are normally distributed using a plot.
 
 ```{r}
-ggplot(data = model_aug, aes(x = .resid)) + 
-  geom_density(fill = "purple") + 
-  stat_function(linetype = 2, 
-                fun      = dnorm, 
-                args     = list(mean = mean(model_aug$.resid), 
-                                sd   =   sd(model_aug$.resid))) +
-  theme_minimal()
-
-ggplot(model) +
-  geom_abline(color = "turquoise4") + 
-  stat_qq(aes(sample = .stdresid), color = "darkorchid4", alpha = .50) +
-  theme_minimal()
+# your code here
 ```
 
 # Minihack 2
@@ -581,12 +553,7 @@ ggplot(model) +
 Using `df5`, run a regression model with and without the outliers we identified.
 
 ```{r}
-model_y_out <- lm(happiness ~ extraversion, data = df5)
-model_n_out <- df5[-c(134, 149, 161, 165), ] %>% 
-  lm(happiness ~ extraversion, data = .)
-
-model_y_out
-model_n_out
+# your code here
 ```
 
 Compare the output of the two models. How similar/different are they? What values change?
@@ -602,12 +569,11 @@ data(fitness, package = "olsrr")
 Regress `runtime` on `weight`, `restpulse`, `runpulse`, and `maxpulse`.
 
 ```{r}
-model <- lm(runtime ~ weight + restpulse + runpulse + maxpulse, data = fitness)
+# your code here
 ```
 
 Check the multicollinearity of predictors. Is multicollinearity at a tolerable level?
 
 ```{r}
-model %>% 
-  ols_vif_tol()
+# your code here
 ```
