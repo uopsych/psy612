@@ -1,5 +1,5 @@
 ---
-title: "Lab 6"
+title: "Regression Diagnostics"
 date: "2/9/2021"
 output: html_document
 editor_options: 
