@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       eval = FALSE)
 ```
 
-You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-6/lab-6.Rmd).
+You will need the Rmd file for today's lab - you can download it [here](https://uopsych.github.io/psy612/labs/lab-6/lab-6.Rmd).
 
 # Load Libraries
 
