@@ -18,7 +18,7 @@ library(rio)       # for importing data
 library(tidyverse) # for dplyr, ggplot2, ETC
 library(gridExtra) # for plotting multiple figures side-by-side
 library(broom)     # for extracting residuals and outlier indices
-library(olsrr)     # for creating a standardized residual chart
+library(olsrr)     # for creating outlier pltos
 library(psych)     # for calculating mahalanobis distance
 
 # suppress scientific notation
@@ -244,7 +244,7 @@ curve(dnorm(x,
       add = TRUE)
 ```
 
-Next, let's use a Q-Q plot. We can create a Q-Q plot by using the `stat_qq()` function in the `{ggplot2}` package. 
+Next, let's use a Q-Q plot. We can create a Q-Q plot by using the `stat_qq()` function in the `{ggplot2}` package.
 
 ```{r}
 ggplot(model1) +
@@ -267,7 +267,7 @@ ggplot(data = model3_aug, aes(x = .resid)) +
   stat_function(linetype = 2, 
                 fun      = dnorm,
                 args     = list(mean = mean(model3_aug$.resid), 
-                                sd   = sd(model3_aug$.resid)))+
+                                sd   =   sd(model3_aug$.resid)))+
   theme_minimal()
 ```
 
@@ -389,20 +389,6 @@ scatter5
 ```
 
 > **Question: Do there appear to be any multivariate outliers in the scatterplot?**
-
-### Measures of Leverage
-
-Leverage tells us how far observed values are from mean values for a set of IVs (centroid).
-
-#### Mahalanobis Distance
-
-We can describe the leverage for a given value by calculating its Mahalanobis Distance, which reflects the distance between that point and the center of a distribution in multivariate space.
-
-To calculate Mahalanobis Distance, we can use the `outlier()` function from the `{psych}` package.
-
-```{r}
-outlier(df6[, c("extraversion", "social_engagement")])
-```
 
 ### Measures of Distance
 
