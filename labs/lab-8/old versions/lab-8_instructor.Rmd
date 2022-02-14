@@ -1,0 +1,706 @@
+---
+title: "Lab 8: Factorial ANOVA"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# suppress scientific notation
+options(scipen = 999)
+```
+
+
+# Purpose
+Factorial ANOVA refers to a special case of the general linear model in which there is an interaction of two or more categorical variables (i.e. *factors*). A factorial design is used when there is an interest in how two or more variables (or factors) affect some outcomes variable. Rather than conduct separate one-way ANOVAs for each factor, they are all included in one analysis. Today we will review how to run factorial ANOVA models in R and how to interpret and visualize the results. 
+
+
+1. [Research scenario](#scenario)
+2. [Tables of means](#means)
+3. [Running the model](#model)
+4. [Plotting](#plotting)
+5. [Simple effects](#simple)
+
+Be sure to have the following packages installed and loaded:
+
+```{r lab-8-instructor-1, message=FALSE}
+library(tidyverse) # for plotting and data wrangling
+library(rio) # for importing data
+library(psych) # for descriptives
+library(lsr) # for eta squared functions
+library(emmeans) # for marginal means and simple effects
+library(sjPlot) # for plotting model results 
+library(apaTables) # for tables of means
+library(car) # for testing model assumptions
+library(broom) # for tidying model output
+```
+
+***
+
+# Research scenario{#scenario}
+
+* Based on subjects' self-reports of rejection sensitivity (N = 80), a researcher divides subjects into two equal groups (low RS and high RS).  Whereas half of the subjects in each group interact with a partner who displays a happy emotional expression during the interaction, the other half of the subjects in each group interact with a partner who displays a neutral emotional expression during the interaction.  After the interaction, subjects are asked to rate the statement, "My interaction partner likes me", on a scale from 1 (strongly disagree) to 7 (strongly agree).
+
+>**Question:** What type of factorial ANOVA design is this?  
+
+>**Answer:** This represents a 2 x 2 factorial ANOVA.
+
+## Data
+
+* Import the data
+
+```{r lab-8-instructor-2}
+reject <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-8/data/reject.csv")
+```
+
+<br>
+
+* Check out the data
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-3, eval=FALSE}
+str(reject)
+```
+
+##### Output
+
+```{r lab-8-instructor-4, echo=FALSE, ref.label='lab-8-instructor-3'}
+```
+
+####
+<br>
+
+* Look at the first few rows
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-5, eval=FALSE}
+head(reject)
+```
+
+##### Output
+
+```{r lab-8-instructor-6, echo=FALSE, ref.label='lab-8-instructor-5'}
+```
+
+####
+<br>
+
+* It looks like `rs` and `partner` are both being read in as character variables. Let's go ahead and change those to factors.
+
+```{r lab-8-instructor-7}
+reject <- reject %>% 
+  mutate(rs = as.factor(rs),
+         partner = as.factor(partner))
+```
+
+<br>
+
+* Check the structure again. Notice that by default R orders factor levels alphabetically. In our case, this means that `High` will be the reference group of rejection sensitivity and `Happy` will be the reference group of interaction partner's emotional expression. However, it might be more intuitive to have `Low` and `Neutral` be the reference groups, respectively. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-8, eval=FALSE}
+str(reject)
+```
+
+##### Output
+
+```{r lab-8-instructor-9, echo=FALSE, ref.label='lab-8-instructor-8'}
+```
+
+####
+<br>
+
+* To accomplish this, we can simply re-order the levels of our factor variables with `fct_relevel()`.
+
+```{r lab-8-instructor-10}
+# manually specify order of factor levels
+reject <- reject %>% 
+  mutate(rs = fct_relevel(rs, c("Low", "High")), 
+         partner = fct_relevel(partner, c("Neutral", "Happy")))
+```
+
+<br>
+
+* To make sure this work, check the structure again.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-11, eval=FALSE}
+str(reject)
+```
+
+##### Output
+
+```{r lab-8-instructor-12, echo=FALSE, ref.label='lab-8-instructor-11'}
+```
+
+####
+<br>
+
+* Do we have a balanced design?
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-13, eval=FALSE}
+reject %>%
+  group_by(rs, partner) %>% 
+  summarize(n = n())
+```
+
+##### Output
+
+```{r lab-8-instructor-14, echo=FALSE, ref.label='lab-8-instructor-13'}
+```
+
+####
+<br>
+
+***
+
+# Tables of means{#means}
+
+## Using `summarize()`
+
+* We'll create 4 tables of means:
+
+1. cell means (i.e., for each combination of the two factors)
+2. marginal means for interaction partner (averaged across levels of rejection sensitivity)
+3. marginal means for RS (averaged across levels of interaction partner)
+4. grand mean (averaged across both rejection sensitivity and interaction partner)
+
+### Cell Means
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-15, eval=FALSE}
+reject %>%
+  group_by(rs, partner) %>% 
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(NA, NA, 2, 2, 2),
+             caption = "Cell Means & SD")
+```
+
+##### Output
+
+```{r lab-8-instructor-16, echo=FALSE, ref.label='lab-8-instructor-15'}
+```
+
+####
+<br>
+
+### Marginal Means: Interaction Partner
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-17, eval=FALSE}
+reject %>%
+  group_by(partner) %>% # instead of grouping by both factors, we just group by interaction partner
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(NA, 2, 2, 2),
+             caption = "Marginal Means & SD for Interaction Partner")
+```
+
+##### Output
+
+```{r lab-8-instructor-18, echo=FALSE, ref.label='lab-8-instructor-17'}
+```
+
+####
+<br>
+
+### Marginal Means: Rejection Sensitivity
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-19, eval=FALSE}
+reject %>%
+  group_by(rs) %>% # just group by rs for this one
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(NA, 2, 2, 2),
+             caption = "Marginal Means & SD for Rejection Sensitivity")
+```
+
+##### Output
+
+```{r lab-8-instructor-20, echo=FALSE, ref.label='lab-8-instructor-19'}
+```
+
+####
+<br>
+
+### Grand Mean
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-21, eval=FALSE}
+reject %>% # note that we don't need group_by for this one
+  summarize(mean = mean(liking, na.rm = TRUE),
+            sd = sd(liking, na.rm = TRUE)) %>% 
+knitr::kable(digits = c(2, 2, 2),
+             caption = "Grand Mean")
+```
+
+##### Output
+
+```{r lab-8-instructor-22, echo=FALSE, ref.label='lab-8-instructor-21'}
+```
+
+####
+<br>
+
+## An easier way
+
+* The `apa.2way.table()` function from `{apaTables}` is a much more convenient way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV's and DV are and specify `show.marginal.means = TRUE`. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-23, eval=FALSE}
+apa.2way.table(iv1 = rs, 
+               iv2 = partner, 
+               dv = liking, 
+               data = reject,
+               show.marginal.means = TRUE)
+```
+
+##### Output
+
+```{r lab-8-instructor-24, echo=FALSE, ref.label='lab-8-instructor-23'}
+```
+
+####
+<br>
+
+* An added plus is that you can easily export these tables to word (see `?apa.2way.table`).
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-25, eval=FALSE}
+apa.2way.table(iv1 = rs,
+               iv2 = partner,
+               dv = liking,
+               data = reject,
+               show.marginal.means = TRUE,
+               table.number = 1,
+               filename = here::here("/labs/lab-8/images/means.doc")) # example file path
+```
+
+##### Output
+
+<center>
+![](images/means.png)
+</center>
+
+####
+<br>
+
+* Remember, a **main effect** is the effect of one IV on the DV completely ignoring the other variable(s).
+
+<br>
+
+>**Question:** Which means are being compared in the main effect of rejection sensitivity?
+
+>**Answer:** marginal means for low (5.78) and high (4.13) levels of rejection sensitivity
+
+>**Question:** Which means are being compared in the main effect of interaction partner?
+
+>**Answer:** Marginal means for neutral partner (3.68) and happy partner (6.22) 
+
+>**Question:**  Which means are involved in the interaction?
+
+>**Answer:** the cell means
+
+*** 
+
+# Running the model{#model}
+
+* Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability.
+
+<br>
+
+* We can specify the factorial ANOVA model using `lm()` the same way we specified 
+
+```{r lab-8-instructor-26}
+model <- lm(liking ~ rs * partner, data = reject) 
+```
+
+* We can look at the regression coefficients from the model. However, in the case of factorial ANOVA, these are less useful to interpret. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-27, eval=FALSE}
+summary(model)
+```
+
+##### Output
+
+```{r lab-8-instructor-28, echo=FALSE, ref.label='lab-8-instructor-27'}
+```
+
+####
+<br>
+
+## ANOVA table
+
+* Instead, we will focus on the ANOVA table output. We can get this using `anova()`.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-29, eval=FALSE}
+anova(model)
+```
+
+##### Output
+
+```{r lab-8-instructor-30, echo=FALSE, ref.label='lab-8-instructor-29'}
+```
+
+####
+<br>
+
+>**Question:** Is there a main effect of rejection sensitivity on perceived liking? 
+
+>**Answer:** Yes, BUT it depends on the interaction partner
+
+>**Question:** Is there a main effect of interaction partner on perceived liking? 
+
+>**Answer:** Yes, BUT it depends on the perceiver's rejection sensitivity 
+
+>**Question:** Is there an interaction between rejection sensitivity and interaction partner? 
+
+>**Answer:** Yes
+
+* We can tidy the ANOVA table output with `broom::tidy()`
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-31, eval=FALSE}
+anova(model) %>% 
+  broom::tidy()
+```
+
+##### Output
+
+```{r lab-8-instructor-32, echo=FALSE, ref.label='lab-8-instructor-31'}
+```
+
+####
+<br>
+
+* `apaTables::apa.aov.table()` will generate an APA-formatted comprehensive ANOVA table for you
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-34, eval = FALSE}
+# might need to have the {MBESS} package installed to use this function
+# install.packages("MBESS")
+
+apa.aov.table(lm_output = model,
+              conf.level = .95)
+```
+
+##### Output
+
+```{r lab-8-instructor-35, echo=FALSE, ref.label='lab-8-instructor-34'}
+```
+
+####
+<br>
+
+* This also allows you to output tables to Word. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-36, eval=FALSE}
+apa.aov.table(lm_output = model,
+              conf.level = .95,
+              table.number = 2,
+              filename = here::here("/labs/lab-8/images/anova_table.doc"))
+```
+
+##### Output
+
+<center>
+![](images/anova_table.png)
+</center>
+
+####
+<br>
+
+## Checking assumptions
+
+* You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.
+
+<br>
+
+* Homogeneity of variance, for example, can be tested using Levene's test, instead of examining a plot.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-37, eval=FALSE}
+car::leveneTest(liking ~ rs * partner, data = reject)
+```
+
+##### Output
+
+```{r lab-8-instructor-38, echo=FALSE, ref.label='lab-8-instructor-37'}
+```
+
+####
+<br>
+
+>**Question:** Have we met the homogeneity of variance assumption?
+
+>**Answer:** Yes
+
+## Effect size
+
+* All of the effects in the ANOVA are statistically significant, but how big are they? An effect size, $\eta^2$, provides a simple way of indexing effect magnitude for ANOVA designs. You can think of it the same way as $R^2$ (proportion of variance explained).
+
+<br>
+
+* To calculate $\eta^2$, we'll use  `etaSquared` from `{lsr}` (the companion package to your textbook). 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-39, eval=FALSE}
+lsr::etaSquared(model)
+```
+
+##### Output
+
+```{r lab-8-instructor-40, echo=FALSE, ref.label='lab-8-instructor-39'}
+```
+
+####
+<br>
+
+>**Question:** What does partial eta squared represent? Why might be prefer partial eta squared over eta squared? 
+
+>**Answer:** One argument against eta squared is that its magnitude depends in part on the magnitude of the other effects in the design. Partial eta squared pretends the other effects do not exist, comparing only to residual variability. 
+
+***
+
+# Plotting{#plotting}
+
+## Main effects 
+
+### Main effect of rejection sensitivity
+
+* Remember that main effects correspond to differences in margial means. To plot main effects, we can use `sjPlot::plot_model()`. As usual, the first argument will be the fitted model object. Because we want to plot marginal means, we specify `type = emm` (which stands for "estimated marginal means"). Lastly, because we want to plot the main effect for just rejection sensitivty, we will only specify `terms  = "rs"`. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-41, eval=FALSE}
+# main effect of rejection sensitivity
+plot_model(model, type = "emm", terms = "rs") 
+```
+
+##### Output
+
+```{r lab-8-instructor-42, echo=FALSE, ref.label='lab-8-instructor-41'}
+```
+
+####
+<br>
+
+* Note the warning when plotting this main effect: "Results may be misleading due to involvement in interactions". As we've already discussed, we have to be careful in interpreting main effects when there is also a significant interaction. For example, in this case, we would say that there clearly is a main effect of rejection sensitivity (mean liking is higher for low compared to high rejection sensitivity), BUT this effect depends on the emotional expression of the interaction partner because the interaction between these variables is significant. 
+
+<br>
+
+### Main effect of interaction partner
+
+* Now, to plot the main effect of interaction partner, all we need to change is `terms = "partner"`. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-41.1, eval=FALSE}
+# main effect of rejection sensitivity
+plot_model(model, type = "emm", terms = "partner") 
+```
+
+##### Output
+
+```{r lab-8-instructor-42.1, echo=FALSE, ref.label='lab-8-instructor-41.1'}
+```
+
+####
+<br>
+
+
+## Interaction
+
+* Now, to visualize the interaction between rejection sensitivity and interaction partner, we will still use `plot_model`, but instead of plotting estimated marginal means, we will tell it to plot predicted values using `type = "pred"`. Since the interaction involves both variables, we will also specify `terms = c("rs", "partner")`. 
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-43, eval=FALSE}
+# plot the interaction 
+plot_model(model, type = "pred", terms = c("rs", "partner"))
+```
+
+##### Output
+
+```{r lab-8-instructor-44, echo=FALSE, ref.label='lab-8-instructor-43'}
+```
+
+####
+<br>
+
+* Switch how the interaction is visualized by switching the order of `terms`.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-45, eval=FALSE}
+# switch the order of the terms
+plot_model(model, type = "pred", terms = c("partner", "rs"))
+```
+
+##### Output
+
+```{r lab-8-instructor-46, echo=FALSE, ref.label='lab-8-instructor-45'}
+```
+
+####
+<br>
+
+* The following ggplot code will generate a bar plot version of the interaction plot. The `emmeans()` function at the beginning calculates cell means (more on this below).
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-45.1, eval=FALSE}
+emmeans(model, specs = c("partner", "rs")) %>% 
+  broom::tidy() %>% 
+  ggplot(aes(x = rs, y = estimate, fill = partner)) + 
+  geom_bar(stat = "identity", 
+           position = "dodge", 
+           alpha = 0.7) + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), 
+                width = 0.20, 
+                position = position_dodge(0.9)) +
+  labs(title = "Effects of Rejection Sensitivity and Interaction Partner Expression \non Perceived Liking",
+       x = "Rejection Sensitivity",
+       y = "Perceived liking") +
+  guides(fill=guide_legend(title = "Partner's Expression")) + 
+  theme_minimal()
+```
+
+##### Output
+
+```{r lab-8-instructor-46.1, echo=FALSE, ref.label='lab-8-instructor-45.1'}
+```
+
+####
+<br>
+
+***
+
+# Simple effects{#simple}
+
+* Since we had a significant interaction above, we should look at the *simple* main effects. Recall that simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
+
+<br> 
+
+* We'll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We'll use the `{emmeans}` package, which Sara will go over more in lecture next week. 
+
+<br>
+
+* To get simple effects, we combine the `emmeans()` function with the `contrast()` function (both from `{emmeans}`). `emmeans()` works by passing it a model and then specifying which variables you're looking at. Then, we pass that along to `contrast()`, which can give us a variety of different contrasts. If we want simple effects for interaction partner expression at each level of rejection sensitivity we can use `by = "rs"` and `simple = "partner"`.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-47, eval=FALSE}
+model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
+  contrast(by = "rs", # by is the variable we are looking at each level of
+           simple = "partner") # simple is what we want simple effects of.
+```
+
+##### Output
+
+```{r lab-8-instructor-48, echo=FALSE, ref.label='lab-8-instructor-47'}
+```
+
+####
+<br>
+
+* The output has two lines per simple effect, which just shows you what it looks like in either direction (note that they are equivalent), so you would just pick the direction that makes the most sense. 
+
+<br>
+
+* Now let's look at simple effects for rejection sensitivity at each level of partner expression.
+
+#### {.tabset .tabset-fade .tabset-pills}
+
+##### Code
+
+```{r lab-8-instructor-48, eval=FALSE}
+model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
+  contrast(by = "partner", # by is the variable we are looking at each level of
+           simple = "rs") # simple is what we want simple effects of.
+```
+
+##### Output
+
+```{r lab-8-instructor-49, echo=FALSE, ref.label='lab-8-instructor-48'}
+```
+
+####
+<br>
