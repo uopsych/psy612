@@ -231,63 +231,6 @@ ggscatter(data = health,              # name of data.frame
 
 ***
 
-# Regression with matrix algebra
-
-Consider the following matrix algebra equation:
-
-$$\mathbf{Y} = \mathbf{XB}$$
-In this equation:
-1. `Y` is a nx1 matrix of outcome variable values from the dataset (e.g., health scores) <br>
-2. `X` is a nx2 matrix. The first column is filled with `1`s and the second column is the predictor variable values from the dataset (e.g., consciousness scores) <br>
-3. `B` is a 2x1 matrix containing our estimates of the intercept and slope. <br> 
-Using this equation, we can plug in our data and solve for the intercept and slope estimates.
-
-## Example 
-
-1. Create the **`Y`** matrix (self-reported health scores)
-
-
-```{r}
-y_mat <- health %>% # start with the original data frame
-  select(sr_health) %>% # select just the Y variable
-  as.matrix() %>% # coerce to a matrix
-  unname() # get rid of dimnames 
-
-head(y_mat)
-```
-
-2. Create the `X` matrix (first column 1s, second column consciousness scores)
-
-```{r}
-x_mat <- health %>% # start with the original data frame
-  mutate(ones = rep(1, nrow(.))) %>% # create a column of 1's to represent the intercept
-  select(ones, consc) %>% # select only the column of 1's and X variable
-  as.matrix() %>%  # coerce to a matrix
-  unname() # get rid of dimnames 
-
-head(x_mat)
-```
-
-
-In matrix algebra, you can't divide by a matrix, so you will need to do some more complicated arithmetic to solve for B (the vector of slope and intercept estimates). You can calculate B with the following formula: 
-
-$$\mathbf{B} = (\mathbf{X'X})^{-1} \mathbf{X'Y}$$
-B is equal to (x-transpose * X ) inverse, x-transpose * Y
-
-take away message: linear regression have a closed form solution
-
-```{r}
-solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
-```
-
-Let's check our work:
-
-```{r}
-model$coefficients
-```
-
-***
-
 # The General Linear Model
 
 We just saw that regression works "under the hood" by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara mentioned in class, this matrix algebra equation works for *any* type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models...
@@ -358,65 +301,7 @@ summary(regression)
 
 # Minihacks
 
-## Minihack 1: Matrix algebra
-
-Load the following data from Fox and Guyer’s (1978) anonymity and cooperation study. In the study, twenty groups of four participants each played 30 trials of the the prisoner’s dilemma game. The number of cooperative choices (`cooperation`) made by each group were scored out of 120 (i.e., cooperative choices made by 4 participants over 30 trials). The groups either made decisions publicly or privately (`condition`).
-
-```{r}
-guyer <- carData::Guyer
-```
-
-Use matrix algebra to manually calculate the intercept and slope for the regression equation:
-
-$$cooperation_i = b_0 + b_1condition_i + e_i$$
-1. Dummy code the condition (public = 0 and anonymous = 1).
-
-```{r}
-guyer <-  guyer %>% 
-  mutate(condition = case_when(condition == "public" ~ 0,
-                               condition == "anonymous" ~ 1))
-```
-
-2. Create the `X` matrix.
-
-```{r}
-x_mat <- guyer %>% 
-  mutate(ones = rep(1, nrow(.))) %>% 
-  select(ones, condition) %>% 
-  as.matrix() %>%  
-  unname() 
-
-head(x_mat)
-```
-
-3. Create the `Y` matrix.
-
-```{r}
-y_mat <- guyer %>% 
-  select(cooperation) %>% 
-  as.matrix() %>% 
-  unname() 
-
-head(y_mat)
-```
-
-4. Solve for the `B` matrix.
-
-```{r}
-solve(t(x_mat) %*% x_mat) %*% (t(x_mat) %*% y_mat)
-```
-
-
-5. Confirm your results using the `lm()` function.
-
-```{r}
-model <- lm(cooperation ~ condition, data = guyer)
-model$coefficients 
-```
-
-***
-
-## Minihack 2: Prediction and confidence bands
+## Minihack 1: Prediction and confidence bands
 
 Using the `mtcars` dataset, create a scatterplot of cyl (x-axis) and mpg (y-axis) that includes both a prediction band and a confidence band.
 
@@ -456,7 +341,7 @@ mtcars_n %>%
 
 ***
 
-## Minihack 3: Confidence intervals
+## Minihack 2: Confidence intervals
 
 For this minihack, we will refer back to the example about conscientiousness and health. We used `confint()` to calculate the 95% CI for our regression coefficients. Your job is start with the model output, stored as a list object (see below), and extract the relevant pieces of information to calculate the 95% CI around the intercept and slope.
 
