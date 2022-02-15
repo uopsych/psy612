@@ -31,6 +31,8 @@ navbar:
         href: lectures/11_12-diagnostics.html
       - text: "13-DAG models"
         href: lectures/13-dag.html
+      - text: "14-Interactions"
+        href: lectures/14-interactions.html
     - text: Labs
       menu:
       - text: "1-Correlations"
