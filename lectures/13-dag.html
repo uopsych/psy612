@@ -18,6 +18,18 @@ class: center, middle, inverse, title-slide
 ---
 
 
+## Annoucements
+
+* Recording Lecture 14 tonight (5pm, Zoom only)
+
+* Homework #2 due Friday
+
+* Time to find data for your final project
+  * 3 continuous variables
+  * 1 categorical variable
+
+---
+
 ## Correlation does not imply
 
 --
@@ -28,8 +40,13 @@ causation
 
 always?
 
----
+--
 
+It's true that presence of a correlation is not sufficient to demonstrate causality. However, this axiom has been overgeneralized to the point where psychologists refuse to acknowledge any observational work as indicative of causal models. This ignores a rich history of modeling work that demonstrated that -- under certain assumptions -- correlational work can uncover the real causal mechanisms.  
+
+Moreover, the causal modeling tradition informs even analyses which are not necessarily interested in proving causation. 
+
+---
 ## Karl Pearson (1857-1936)
 
 - Francis Galton demonstrates that one phenomenon -- regression to the mean -- is not caused by external factors, but merely the result of natural chance variation.
@@ -290,17 +307,17 @@ ggdag(dag.obj) +
 
 ## Confounding
 
-DAG models are most useful for psychological scientists thinking about which variables to include in a regression model. Recall that one of the uses of regression is to statisically control for variables when estimating the relationship between an X and Y in our research question. Which variables should we be statistically controlling for?
+DAG models are most useful for psychological scientists thinking about which variables to include in a regression model. Recall that one of the uses of regression is to statistically control for variables when estimating the relationship between an X and Y in our research question. Which variables should we be statistically controlling for?
 
 ---
 
 ## Confounding
 
-We can see with DAG models that we should be controlling for constructs create forks, or a construct that causes both our X and Y variable. These constructs are known as **confounds**, or constructs that represent common causes of our variables of interest. 
+We can see with DAG models that we should be controlling for constructs create forks, or a construct that causes both our X and Y variable. These constructs are known as .purple[confounds], or constructs that represent common causes of our variables of interest. 
 
 We may also want to control for variables that cause Y but are unrelated to X, as this can increase power by reducing unexplained variance in Y (think about SS).
 
-Importantly, we don't need to control for variables that causes just X and not Y.
+Importantly, we probably do not want for variables that causes just X and not Y.
 
 ---
 
@@ -349,7 +366,7 @@ Based on the causal structure I hypothesized last slide, if I want to estimate h
 
 We can see with forks that controlling for confounds improves our ability to correctly estimate causal relationships. So controlling for things is good...
 
-Except the other thing that DAGs should teach us is that controlling for the wrong things can dramatically hurt our ability to estimate true causal relationships and can create spurious correlations, or open up new associations that don't represent true causal pathways. 
+Except the other thing that DAGs should teach us is that controlling for the wrong things can dramatically hurt our ability to estimate true causal relationships and can create .purple[spurious correlations], or open up new associations that don't represent true causal pathways. 
 
 Let's return to the other two types of paths, chains and inverted forks. 
 
@@ -399,7 +416,7 @@ ggdag_dseparated(dag.obj,
 
 Controlling for mediators removes the association of interest from the model -- you may be removing the variance you most want to study!
 
-Inverted forks also teach us what not to control for: colliders. A **collider** for a pair of constructs is any third construct that is caused by both constructs in the pair. Controlling for (or conditioning on) these variables introduces bias into your estimates. 
+Inverted forks also teach us what not to control for: colliders. A .purple[collider] for a pair of constructs is any third construct that is caused by both constructs in the pair. Controlling for (or conditioning on) these variables introduces bias into your estimates. 
 
 Intelligence &amp;rarr; Income attainment &amp;larr; Educational
 
@@ -493,7 +510,7 @@ ggdag_dseparated(dag.obj,
 
 ## Example
 
-A health researcher is interested in studying the relationship between dieting and weight loss. She collects a sample of participants, mesaures their weight, and then asks whether they are on a diet. She returns to these participants two months later and assess weight again. What should the researcher control when assessing the relationship between dieting and weight loss?
+A health researcher is interested in studying the relationship between dieting and weight loss. She collects a sample of participants, measures their weight, and then asks whether they are on a diet. She returns to these participants two months later and measures their final weight and how much weight they lost. What should the researcher control when assessing the relationship between dieting and weight loss?
 
 ---
 
@@ -515,9 +532,11 @@ ggdag_adjustment_set(dag.obj) + theme_bw()
 
 ![](13-dag_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
+The researcher should control for the initial weight (fork/third variable), but not the final weight (chain/mediator).
+
 ---
 
-What should be controlled here?
+The researcher is studying the association between X and Y. What should be controlled?
 
 ![](13-dag_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 ---
@@ -538,7 +557,7 @@ It's your responsibility to decide for yourself what you think the model is, pro
 
 ---
 
-&lt;img src="images/rohrer_tweet.png" width="5" /&gt;
+&lt;img src="images/rohrer_tweet.png" width="50%" /&gt;
 
 ---
 

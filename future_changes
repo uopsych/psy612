@@ -73,16 +73,9 @@ lab-4.html
 
 lab-5.html
 
-  * no changes needed
+  * something weird happened with data in 2022 -- check that it makes sense and maybe consider fixing to make the example make sense.
+    * shuffle groups
 
-9-m_regression.html
-
-  * I already updated the example 
-
-10-m_regression.html
-
-  * don't use factorial design for example
-  * liked interpreting coefficents when controlling for variables
   
 11/12-diagnostics.html
 

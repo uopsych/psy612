@@ -268,11 +268,11 @@ Good statistics cannot overcome poor measurement and bad theory
 
 ## 3) Model
 
-### Endogeniety 
+### Endogeneity 
 
 2. "Under control" and your coefficient is no longer interpretable
 
-.purple[Endogeniety] is when your your error term is associated with an IV. 
+.purple[Endogeneity] is when your your error term is associated with an IV. 
 
 - Typically when you leave out an important IV.  
 
@@ -284,7 +284,7 @@ Underestimates $R^2$
 
 ## 3) Model
 
-### Endogeniety 
+### Endogeneity 
 
 ```{r, message = F, fig.width = 10, fig.height = 5}
 ggplot(aug_1, aes(x = Support, y = .resid)) +
@@ -479,7 +479,7 @@ library(broom)
 
   + Calculate the variance inflation factor of each term (if you have two or more) to help check for correctly specified models.
   
-  + Graph residuals by predictors to check for endogeniety.
+  + Graph residuals by predictors to check for Endogeneity.
   
   + Graph residuals by fitted values to check for homoscedasticity.
   
