@@ -104,15 +104,15 @@ To calculate *simple slopes*, you calculate the regression equation at specific 
 
 When condition = 0 (there isn't a shredder - you could get caught if you cheat)
 
-Claimed = 6.04  + 1.12Condition- .45Honesty
-Claimed = 6.04 + 1.12(0) - .45Honesty
-Claimed = 6.04 - .45Honesty
+$$Claimed = 6.04  + 1.12Condition- .45Honesty$$
+$$Claimed = 6.04 + 1.12(0) - .45Honesty$$
+$$Claimed = 6.04 - .45Honesty$$
 
 When condition = 1 (there is a shredder - you can't get caught if you cheat)
 
-Claimed = 6.04  + 1.12Condition- .45Honesty
-Claimed = 6.04 + 1.12(1) - .45Honesty
-Claimed = 7.16 - .45Honesty
+$$Claimed = 6.04  + 1.12Condition- .45Honesty$$
+$$Claimed = 6.04 + 1.12(1) - .45Honesty$$
+$$Claimed = 7.16 - .45Honesty$$
 
 > Question: now calculate the "simple slopes" when honesty = 0, honesty = 2, and honesty = 3
 
@@ -159,16 +159,16 @@ Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
 
 Shredder = 0 (There isn't a shredder - you could get caught if you cheat)
 
-Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
-Claimed = 7.27 -.85Honesty -1.18(0) + .77Honesty*(0)
-Claimed = 7.27 -.85Honesty
+$$Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder$$
+$$Claimed = 7.27 -.85Honesty -1.18(0) + .77Honesty*(0)$$
+$$Claimed = 7.27 -.85Honesty$$
 
 
 Shredder = 1 (There is a shredder - you can't get caught if you cheat)
 
-Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
-Claimed = 7.27 -.85Honesty -1.18(1) + .77Honesty*(1)
-Claimed = 6.09 -.08Honesty
+$$Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder$$
+$$Claimed = 7.27 -.85Honesty -1.18(1) + .77Honesty*(1)$$
+$$Claimed = 6.09 -.08Honesty$$
 
 ## Visualizing simple slopes
 
@@ -214,7 +214,7 @@ For this section, uncomment and run this code. Take some time to look at these r
 
 # Centering
 
-One thing you may have noticed while interpreting output is that we sometimes said "when honesty = 0." However, for this example, honesty cannot be 0 since the scale goes from 1 to 5, making the interpretations less meaningful. Instead, we can mean center honesty. Here are two ways to center:
+One thing you may have noticed while interpreting output is that we sometimes said "when honesty = 0." However, for this example, honesty cannot be 0 since the scale goes from 1 to 5, making the interpretations less meaningful. Instead, we can mean center honesty. 
 
 ```{r}
 # data <- data %>%

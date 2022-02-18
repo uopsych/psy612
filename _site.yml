@@ -47,6 +47,8 @@ navbar:
         href: labs/lab-5/lab-5.html
       - text: "6-Regression Diagnostics"
         href: labs/lab-6/lab-6.html
+      - text: "7-Continuous x Categorical Interactions"
+        href: labs/lab-7/lab-7.html        
     - text: Homework
       href: homework.html
     - text: Final Project

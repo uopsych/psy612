@@ -59,7 +59,16 @@ data <- data %>% mutate(condition = factor(condition,
   - Calculate descriptives for the variables `honesty` and `claimed_solved`, grouped by `condition`
   
 ```{r}
-#Your code here
+str(data)
+head(data)
+
+data %>% summarise(m_honesty = mean(honesty),
+                   m_solved = mean(claimed_solved))
+
+data %>% 
+  group_by(condition) %>% 
+  summarise(m_honesty = mean(honesty),
+                   m_solved = mean(claimed_solved))
 ```
 
 # Simple regression
@@ -103,6 +112,7 @@ summary(model_b)
 ```
 
 $$\hat{Claimed} = 6.04  + 1.12Condition- .45Honesty $$
+
 > Question: interpret the model coefficients and R^2.
 
 > Answers: 
@@ -119,32 +129,41 @@ To calculate *simple slopes*, you calculate the regression equation at specific 
 
 When condition = 0 (there isn't a shredder - you could get caught if you cheat)
 
-Claimed = 6.04  + 1.12Condition- .45Honesty
-Claimed = 6.04 + 1.12(0) - .45Honesty
-Claimed = 6.04 - .45Honesty
+$$Claimed = 6.04  + 1.12Condition- .45Honesty$$
+$$Claimed = 6.04 + 1.12(0) - .45Honesty$$
+$$Claimed = 6.04 - .45Honesty$$
 
 When condition = 1 (there is a shredder - you can't get caught if you cheat)
 
-Claimed = 6.04  + 1.12Condition- .45Honesty
-Claimed = 6.04 + 1.12(1) - .45Honesty
-Claimed = 7.16 - .45Honesty
+$$Claimed = 6.04  + 1.12Condition- .45Honesty$$
+$$Claimed = 6.04 + 1.12(1) - .45Honesty$$
+$$Claimed = 7.16 - .45Honesty$$
+
 
 When honesty = 0
 
 Claimed = 6.04  + 1.12Condition- .45Honesty
+
 Claimed = 6.04 + 1.12Condition - .45(0)
+
 Claimed = 6.04 + 1.12Condition
+
 
 When honesty = 1
 
 Claimed = 6.04  + 1.12Condition- .45Honesty
+
 Claimed = 6.04 + 1.12Condition - .45(1)
+
 Claimed = 5.59 + 1.12Condition
+
 
 When honesty = 2
 
 Claimed = 6.04  + 1.12Condition- .45Honesty
+
 Claimed = 6.04 + 1.12Condition - .45(5)
+
 Claimed = 5.14 + 1.12Condition
 
 ## Plotting
@@ -205,16 +224,16 @@ condition*honesty: the difference between slopes in the shredder vs. non-shredde
 
 Shredder = 0 (There isn't a shredder - you could get caught if you cheat)
 
-Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
-Claimed = 7.27 -.85Honesty -1.18(0) + .77Honesty*(0)
-Claimed = 7.27 -.85Honesty
+$$Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder$$
+$$Claimed = 7.27 -.85Honesty -1.18(0) + .77Honesty*(0)$$
+$$Claimed = 7.27 -.85Honesty$$
 
 
 Shredder = 1 (There is a shredder - you can't get caught if you cheat)
 
-Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder
-Claimed = 7.27 -.85Honesty -1.18(1) + .77Honesty*(1)
-Claimed = 6.09 -.08Honesty
+$$Claimed = 7.27 -.85Honesty -1.18Shredder + .77Honesty*Shredder$$
+$$Claimed = 7.27 -.85Honesty -1.18(1) + .77Honesty*(1)$$
+$$Claimed = 6.09 -.08Honesty$$
 
 ## Visualizing simple slopes
 
@@ -249,12 +268,18 @@ emtrends(model_c, ~condition, var = "honesty")
 
 > What is this testing? What can you conclude?
 
-```{r}
+em: estimated marginal.
+give me trends at different levels of the variable condition. Estimating the slope of honesty. 
 
+categories including non-shredder and shredder, and the slope are -0.85 and -0.08, respectively. Based on the CL, we can tell whether the slope is significantly different from 0. In here, non-shredder is significant. There is an effect of honesty in the non-shredder condition, but there is no effect of honesty in shredder condition. 
+
+```{r}
 emtrends(model_c, pairwise~condition, var = "honesty")
 ```
 
 > What is this testing? What can you conclude?
+
+Whether the two slopes different from each other. The test of the difference between two slopes. Also it is exactly the same as the previous interaction term in model_c.
 
 ```{r}
 mylist <- list(honesty=c(1,2,3,4,5), condition=c("Non-shredder","Shredder"))
@@ -266,10 +291,14 @@ contrast(combinations, "pairwise", by = "honesty")
 
 > What is this testing? What can you conclude?
 
+combinations: give the mean for the particular combination.
+
+the differences between two means grouped by the same honesty variable. 
+e.g. when honesty equals 1, the differences of means between non-shredder and shredder condition is not significantly different. Honesty has a significant effect on the number of problem solved when honesty is at 3, 4, and 5. 
 
 # Centering
 
-One thing you may have noticed while interpreting output is that we sometimes said "when honesty = 0." However, for this example, honesty cannot be 0 since the scale goes from 1 to 5, making the interpretations less meaningful. Instead, we can mean center honesty. Here are two ways to center:
+One thing you may have noticed while interpreting output is that we sometimes said "when honesty = 0." However, for this example, honesty cannot be 0 since the scale goes from 1 to 5, making the interpretations less meaningful. Instead, we can mean center honesty. 
 
 ```{r}
 data <- data %>%
@@ -288,7 +317,6 @@ summary(model_d)
 > Question: now, how can we interpret the intercept?
 
 ```{r}
-
 summary(model_c)
 ```
 
