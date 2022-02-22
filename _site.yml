@@ -33,6 +33,8 @@ navbar:
         href: lectures/13-dag.html
       - text: "14-Interactions"
         href: lectures/14-interactions.html
+      - text: "15-Interactions II"
+        href: lectures/15-interactions.html
     - text: Labs
       menu:
       - text: "1-Correlations"

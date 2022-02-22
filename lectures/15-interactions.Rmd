@@ -11,6 +11,13 @@ output:
       countIncrementalSlides: false
 ---
 
+## Notes re: HW#2
+
+* Hierarchical models
+* VIF/endogeneity
+
+---
+
 ## Last time...
 
 Introduction to interactions with one categorical and one continuous predictor
@@ -160,6 +167,7 @@ What is this plotting?
 
 
 ```{r, results = 'hide', message = F, warning = F, fig.width = 10, fig.height = 4}
+library(sjPlot)
 plot_model(imodel, type = "pred", terms = c("Support", "Anxiety[mean]"))
 ```
 
@@ -200,10 +208,13 @@ Put values of the moderator in argument `mdrt.values`!
 ## Testing simple slopes
 
 ```{r, message = F}
-library(reghelper)
+library(emmeans)
 
 anx.vals = list(Anxiety = c(5,6,7))
-simple_slopes(imodel, levels = anx.vals)
+simple_slopes = emtrends(imodel, var = "Support", ~Anxiety, at = anx.vals)
+simple_slopes
+
+test(simple_slopes)
 ```
 
 ---
@@ -217,7 +228,8 @@ anx.vals = list(Anxiety = c(m.anx - s.anx,
                             m.anx,
                             m.anx + s.anx))
 
-simple_slopes(imodel, levels = anx.vals)
+simple_slopes = emtrends(imodel, var = "Support", ~Anxiety, at = anx.vals)
+test(simple_slopes)
 ```
 
 ---
@@ -232,6 +244,41 @@ The test of the interaction coefficient is equivalent to the test of the differe
 ```{r,highlight.output = 5}
 coef(summary(imodel))
 ```
+
+---
+
+Or you can use the `emmeans` package.
+
+```{r, highlight=3}
+simple_slopes = emtrends(imodel, var = "Support", 
+                         pairwise~Anxiety, 
+                         at = anx.vals, adjust = "none")
+simple_slopes
+```
+
+---
+
+Perhaps you noted that the t-statistic and p-values are the same... The OLS model constrains the change in slope to be equal equivalent across values of the moderator.
+
+```{r, echo = F}
+anx.vals_all = list(Anxiety = seq(min(stress.data$Anxiety),
+                                  max(stress.data$Anxiety),
+                                  length = 1000))
+
+simple_slopes_all = emtrends(imodel, var = "Support", 
+                         ~Anxiety, 
+                         at = anx.vals_all)
+simple_slopes_all %>% 
+  as_tibble() %>% 
+  ggplot(aes(x = Anxiety, y = Support.trend)) +
+  geom_ribbon(aes(ymin = lower.CL, ymax = upper.CL),
+              alpha = .3) +
+  geom_line() +
+  geom_hline(aes(yintercept = 0), linetype = "dashed") +
+  labs(x = "Anxiety", y = "Support slope") +
+  ggpubr::theme_pubr()
+```
+
 
 ---
 
