@@ -43,7 +43,7 @@ knit_hooks$set(output = function(x, options) {
 knitr::opts_chunk$set(message = FALSE) # suppress messages
 ```
 
-The interaction of two or more categorical variables in a general linear model is formally known as **Factorial ANOVA**.
+The interaction of two or more categorical variables in a general linear model is formally known as .purple[Factorial ANOVA] .
 
 A factorial design is used when there is an interest in how two or more variables (or factors) affect the outcome. 
 
@@ -147,9 +147,9 @@ kable(mean.summary, digits = 2) %>%
   kable_styling() %>% 
   group_rows(start_row = 1, end_row = 3) 
 ```
-The **marginal mean differences** correspond to main effects. They tell us what impact a particular factor has, ignoring the impact of the other factor. 
+The .purple[marginal mean differences] correspond to main effects. They tell us what impact a particular factor has, ignoring the impact of the other factor. 
 
-The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine **conditional mean differences**. 
+The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine .purple[simple main effects], sometimes called conditional effects. 
 
 ---
 
@@ -220,23 +220,6 @@ Does noise condition affect failure time?
 
 ### Interactions are symmetrical
 
-```{r, echo = F, results = 'asis', message = F, warning = F}
-kable(mean.summary, digits = 2) %>% 
-  kable_styling() %>% 
-  group_rows(start_row = 1, end_row = 3) %>%
-  row_spec(1, background = "#EECACA") %>%
-  row_spec(2, background = "#B2D4EB") %>%
-  row_spec(3, background = "#FFFFC5") %>%
-  row_spec(4, background = "grey", color = "white") %>%
-  column_spec(5, background = "white")
-```
-
-Are the marginal mean differences for speed condition a good representation of what is happening within each of the noise conditions?
-
-If not, then we would need to say that the speed condition effect depends upon (is conditional on) noise condition.  
-
-
----
 
 .left-column[
 .small[
@@ -248,7 +231,7 @@ An interaction.]
 
 ]
 
-```{r, message = F, warning = F, fig.width = 7, fig.height = 8.5, echo = F}
+```{r, message = F, warning = F, fig.width = 7, fig.height = 7, echo = F}
 model.data %>% ggplot(aes(x = group, y = predicted, fill = as.factor(x))) +
   geom_bar(stat = "identity", position = position_dodge(width = .8), color = "black", width = .7) +
   geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = .3, position = position_dodge(width = .8)) +
@@ -350,24 +333,10 @@ $$
 
 As was true for the simpler one-way ANOVA, we will partition the total variability in the data matrix into two basic parts. 
 
-One part will represent variability **within groups**.  This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions). 
+One part will represent variability .purple[within groups] .  This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions). 
 
-The other part will be **between-group variability**.  This part will include variability due to experimental conditions.  We will further partition this between-group variability into parts due to the two main effects and the interaction.
+The other part will be .purple[between-group variability] .  This part will include variability due to experimental conditions.  We will further partition this between-group variability into parts due to the two main effects and the interaction.
 
----
-
-### Variability 
-
-
-$$
-\begin{aligned}
-\large SS_{\text{total}} &= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{...})^2 \\
-\large SS_{\text{Within}} &= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
-\large SS_R &= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
-SS_C &= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
-\large SS_{RC} &= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
-\end{aligned}
-$$
 ---
 
 ### Variability 
@@ -388,7 +357,7 @@ $$
 ### Variability 
 
 
-If the design is balanced (equal cases in all conditions), then:
+If the design is balanced (equal observations in all conditions), then:
 
 $$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$
 
@@ -620,7 +589,7 @@ The Speed main effect accounts for 8 to 9 times as much variance in the outcome 
 ### $\eta^2$
 
 .pull-left[
-**If the design is balanced:**
+.purple[If the design is balanced:]
 
 There is no overlap among the independent variables. They are uncorrelated.
 
@@ -719,25 +688,27 @@ The $MS_{within}$ is common to all calculations if homogeneity of variances is m
 anova(fit)
 ```
 ---
+
+To get individual cell means, we ask for all combinations of our two predictor variables:
+
 ```{r, message = F}
 library(emmeans)
-(time_rg = ref_grid(fit))
-summary(time_rg)
+emmeans(fit, ~Noise*Speed)
 ```
 
 ---
-The lsmeans( ) function produces marginal and cell means along with their confidence intervals. These are the marginal means for the Noise main effect.
+The emmeans( ) function can also produce marginal and cell means along with their confidence intervals. These are the marginal means for the Noise main effect.
 
 ```{r}
-noise_lsm = emmeans::lsmeans(time_rg, "Noise")
-noise_lsm
+noise_emm = emmeans(fit, ~Noise)
+noise_emm
 ```
 
 
 ---
 
 
-In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't give it all of M, it will choose every possible value.
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, .purple[at specific values of M] . If you don't give it all of M, it will choose every possible value.
 
 .pull-left[
 ```{r pred2.plot, message = F, eval = F}
@@ -758,7 +729,7 @@ plot_model(fit, type = "pred",
 ]
 ---
 
-In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, .purple[at specific values of M] . If you don't specify levels of M, it will choose the lowest possible value.
 
 `type = "pred"` gives you cell means.
 
@@ -780,7 +751,7 @@ plot_model(fit, type = "pred",
 
 ]---
 
-In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, **at specific values of M**. If you don't specify levels of M, it will choose the lowest possible value.
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, .purple[at specific values of M] . If you don't specify levels of M, it will choose the lowest possible value.
 
 `type = "pred"` gives you cell means.
 
@@ -807,7 +778,7 @@ plot_model(fit, type = "pred",
 
 ---
 
-In `sjPlot()`, estimated marginal means are the expected value of Y given all possible values of X, **ignoring M**. 
+In `sjPlot()`, estimated marginal means are the expected value of Y given all possible values of X, .purple[ignoring M] . 
 
 `type = "emm"` gives you marginal means.
 
@@ -865,9 +836,9 @@ pooled_sd = sqrt(MS_error)
 ### Cohen's D
 
 ```{r}
-(noise_df = as.data.frame(noise_lsm))
+(noise_df = as.data.frame(noise_emm))
 
-(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+(d_none_control = diff(noise_df[c(1,2), "emmean"])/pooled_sd)
 ```
 
 ---
@@ -946,9 +917,9 @@ An independent samples t-test. We can use the Cohen's D value for any pairwise c
 ---
 
 ```{r}
-(noise_df = as.data.frame(noise_lsm))
+(noise_df = as.data.frame(noise_emm))
 
-(d_none_control = diff(noise_df[c(1,2), "lsmean"])/pooled_sd)
+(d_none_control = diff(noise_df[c(1,2), "emmean"])/pooled_sd)
 pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
 ```
 
@@ -958,9 +929,9 @@ pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
 
 Interpretation of the main effects and interaction in a factorial design will usually require follow-up comparisons.  These need to be conducted at the level of the effect.
 
-Interpretation of a main effect requires comparisons among the **marginal means**.
+Interpretation of a main effect requires comparisons among the .purple[marginal means] .
 
-Interpretation of the interaction requires comparisons among the **cell means**.
+Interpretation of the interaction requires comparisons among the .purple[cell means] .
 
 The `emmeans` package makes these comparisons very easy to conduct.
 
@@ -969,8 +940,7 @@ The `emmeans` package makes these comparisons very easy to conduct.
 Marginal means comparisons
 
 ```{r}
-noise_lsm = emmeans::lsmeans(time_rg, c("Noise"))
-pairs(noise_lsm, adjust = "holm")
+emmeans(fit, pairwise~Noise, adjust = "holm")
 ```
 
 ---
@@ -978,8 +948,7 @@ pairs(noise_lsm, adjust = "holm")
 Cell means comparisons
 
 ```{r}
-all_lsm = emmeans::lsmeans(time_rg, c("Noise", "Speed"))
-pairs(all_lsm, adjust = "holm")
+emmeans(fit, pairwise~Noise*Speed, adjust = "holm")
 ```
 
 ---
@@ -1091,8 +1060,6 @@ lsr::etaSquared(fit_1, type = 1)
 
 Type II sums of squares are commonly used but also a bit more complex to understand.  
 
-An approximately true description is that an effect is allocated the proportion of variance in the outcome that is unshared with effects at a similar or lower level.
-
 A technically correct description is that a target effect is allocated the proportion of variance in the outcome that is unshared with other effects that do not contain the target.
 
 ---
@@ -1104,28 +1071,24 @@ The A x B interaction is allocated the proportion of variance that is accounted 
 
 There is no convenient way to illustrate this in a Venn diagram.
 
+<!-- --- -->
+
+<!-- ### Sums of Squares -->
+
+<!-- Let R(·) represent the residual sum of squares for a model, so for example R(A,B,AB) is -->
+<!-- the residual sum of squares fitting the whole model, R(A) is the residual sum of squares  -->
+<!-- fitting just the main effect of A.  -->
+
+<!-- | Effect | Type I            | Type II           | Type III            | -->
+<!-- |--------|-------------------|-------------------|---------------------| -->
+<!-- | A      | R(1)-R(A)         | R(B)-R(A,B)       | R(B,A:B)-R(A,B,A:B) | -->
+<!-- | B      | R(A)-R(A,B)       | R(A)-R(A,B)       | R(A,A:B)-R(A,B,A:B) | -->
+<!-- | A:B    | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B)   | -->
+
 ---
 
 ### Sums of Squares
 
-Let R(·) represent the residual sum of squares for a model, so for example R(A,B,AB) is
-the residual sum of squares fitting the whole model, R(A) is the residual sum of squares 
-fitting just the main effect of A. 
-
-| Effect | Type I            | Type II           | Type III            |
-|--------|-------------------|-------------------|---------------------|
-| A      | R(1)-R(A)         | R(B)-R(A,B)       | R(B,A:B)-R(A,B,A:B) |
-| B      | R(A)-R(A,B)       | R(A)-R(A,B)       | R(A,A:B)-R(A,B,A:B) |
-| A:B    | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B)   |
-
----
-
-### Sums of Squares
-
-Let R(·) represent the residual sum of squares for a model, so for example R(A,B,AB) is
-the residual sum of squares fitting the whole model, R(A) is the residual sum of squares 
-fitting just the main effect of A, and R(1) is the residual sum of squares fitting just the
-mean. 
 
 | Effect | Type I            | Type II           | Type III            |
 |--------|-------------------|-------------------|---------------------|
@@ -1166,16 +1129,18 @@ Factorial ANOVA is the method by which we can examine whether two (or more) cate
 .pull-left[
 #### Factorial ANOVA
 
-Interaction tests whether there are differences in differences.
+Interaction tests whether there are differences in mean  differences.
 
-A main effect is the effect of one IV on the DV **ignoring the other variable(s)**.
+A .purple[(marginal) main effect] is the effect of IV1 on the DV ignoring IV2.
+
+A .purple[simple main effect] is the effect of IV1 on the DV at a specific level of IV2
 ]
 .pull-right[
 #### Regression
 
-Interaction tests whether slope or difference in means changes. 
+Interaction tests whether differences in slopes. 
 
-A conditional effect is the effect of IV on the DV **assuming all the other variables are 0**.
+A .purple[simple slope] is the effect of IV1 on the DV assuming IV2 is a specific value.
 ]
 
 ---

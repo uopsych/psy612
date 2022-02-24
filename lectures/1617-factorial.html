@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Factorial ANOVA</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Factorial ANOVA
+
+---
+
+
+class:inverse
+## Factorial ANOVA
+
+
+
+The interaction of two or more categorical variables in a general linear model is formally known as .purple[Factorial ANOVA] .
+
+A factorial design is used when there is an interest in how two or more variables (or factors) affect the outcome. 
+
+* Rather than conduct separate one-way ANOVAs for each factor, they are all included in one analysis. 
+
+* The unique and important advantage to a factorial ANOVA over separate one-way ANOVAs is the ability to examine interactions.
+
+
+---
+
+
+
+.pull-left[
+The example data are from a simulated study in which 180 participants performed an eye-hand coordination task in which they were required to keep a mouse pointer on a red dot that moved in a circular motion.  
+]
+.pull-right[
+![](images/dot.jpg)
+]
+
+The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second.  The second factor was noise condition: no noise, controllable noise, and uncontrollable noise.  The design was balanced. 
+
+---
+
+### Marginal means
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Regardless of noise condition, does speed of the moving dot affect performance?
+
+---
+
+### Marginal means
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Regardless of dot speed, does noise condition affect performance?
+
+
+---
+
+### Marginal means
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+The .purple[marginal mean differences] correspond to main effects. They tell us what impact a particular factor has, ignoring the impact of the other factor. 
+
+The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine .purple[simple main effects], sometimes called conditional effects. 
+
+---
+
+
+### Mean differences
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white !important;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #EECACA !important;background-color: white !important;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #B2D4EB !important;background-color: white !important;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: #FFFFC5 !important;background-color: white !important;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;color: white !important;background-color: grey !important;background-color: white !important;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Are the marginal mean differences for noise condition a good representation of what is happening within each of the dot speed conditions?
+
+If not, then we would need to say that the noise condition effect depends upon (is conditional on) dot speed.  We would have an interaction between noise condition and dot speed condition.
+
+---
+
+
+![](1617-factorial_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+
+The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition. 
+
+---
+
+### Interpretation of interactions
+
+The presence of an interaction qualifies any main effect conclusions, leading to "yes, but" or "it depends" kinds of inferences.
+
+.pull-left[
+
+![](1617-factorial_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+]
+
+.pull-right[
+
+Does noise condition affect failure time? 
+
+"Yes, but the magnitude of the effect is strongest for the medium speed condition, weaker for the fast speed condition, and mostly absent for the slow speed condition."
+]
+
+---
+
+### Interactions are symmetrical
+
+
+.left-column[
+.small[
+The speed condition means are clearly different in each noise condition, but the pattern of those differences is not the same. 
+
+The marginal speed condition means do not represent well the means in each noise condition.
+
+An interaction.]
+
+]
+
+![](1617-factorial_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+---
+
+### Null Hypotheses
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{2.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{3.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+The two main effects and the interaction represent three independent questions we can ask about the data. We have three null hypotheses to test.
+
+One null hypothesis refers to the marginal row means.
+
+$$
+`\begin{aligned}
+\large H_0&amp;: \mu_{1.} = \mu_{2.} = \dots = \mu_{R.}\\
+H_1&amp;: \text{Not true that }\mu_{1.} = \mu_{2.} = \dots = \mu_{R.}
+\end{aligned}`
+$$
+
+---
+
+### Null Hypotheses
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{2.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{3.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+We can state this differently (it will make stating the interaction null hypothesis easier when we get to it).
+
+$$
+`\begin{aligned}
+\large \alpha_r&amp;= \mu_{r.} - \mu_{..} \\
+\large H_0&amp;: \alpha_1 = \alpha_2 = \dots = \alpha_R = 0\\
+H_1&amp;: \text{At least one }\alpha_r \neq 0
+\end{aligned}`
+$$
+
+---
+
+### Null Hypotheses
+
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{2.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{3.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+The main effect for dot speed (column marginal means) can be stated similarly:
+
+
+$$
+`\begin{aligned}
+\large \beta_c&amp;= \mu_{.c} - \mu_{..} \\
+\large H_0&amp;: \beta_1 = \beta_2 = \dots = \beta_C = 0\\
+H_1&amp;: \text{At least one }\beta_c \neq 0
+\end{aligned}`
+$$
+
+---
+
+### Null Hypothesis
+
+
+| | Slow | Medium | Fast | Marginal |
+|:-|:-:|:-:|:-:|:-:|
+| No Noise |             `\(\mu_{11}\)` | `\(\mu_{12}\)` | `\(\mu_{13}\)` | `\(\mu_{1.}\)` |
+| Controllable Noise |   `\(\mu_{21}\)` | `\(\mu_{22}\)` | `\(\mu_{23}\)` | `\(\mu_{2.}\)` |
+| Uncontrollable Noise | `\(\mu_{31}\)` | `\(\mu_{32}\)` | `\(\mu_{33}\)` | `\(\mu_{3.}\)` |
+| Marginal | `\(\mu_{.1}\)` | `\(\mu_{.2}\)` | `\(\mu_{.3}\)` | `\(\mu_{..}\)` |
+
+The interaction null hypothesis can then be stated as follows:
+
+$$
+`\begin{aligned}
+\large (\alpha\beta)_{rc}&amp;= \mu_{rc} - \alpha_r - \beta_c  - \mu_{..} \\
+\large H_0&amp;: (\alpha\beta)_{11} = (\alpha\beta)_{12} = \dots = (\alpha\beta)_{RC} = 0\\
+H_1&amp;: \text{At least one }(\alpha\beta)_{rc} \neq 0
+\end{aligned}`
+$$
+---
+
+### Variability 
+
+As was true for the simpler one-way ANOVA, we will partition the total variability in the data matrix into two basic parts. 
+
+One part will represent variability .purple[within groups] .  This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions). 
+
+The other part will be .purple[between-group variability] .  This part will include variability due to experimental conditions.  We will further partition this between-group variability into parts due to the two main effects and the interaction.
+
+---
+
+### Variability 
+
+
+$$
+`\begin{aligned}
+\large SS_{\text{total}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{...})^2 \\
+\large SS_{\text{Within}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
+\large SS_R &amp;= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
+SS_C &amp;= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
+\large SS_{RC} &amp;= N\sum_{r=1}^R\sum_{c=1}^C(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\end{aligned}`
+$$
+---
+
+
+### Variability 
+
+
+If the design is balanced (equal observations in all conditions), then:
+
+`$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$`
+
+`\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+$$
+`\begin{aligned}
+\large df_R &amp;= R-1 \\
+\large df_C &amp;= C-1 \\
+\large df_{RxC} &amp;= (R-1)(C-1) \\
+\large df_{within} &amp;= N-G \\
+&amp;= N-(R-1)-(C-1)-[(R-1)(C-1)]-1\\
+&amp;= df_{total} - df_{R} - df_C - df_{RxC}
+\end{aligned}`
+$$
+
+---
+
+### Variability 
+
+If the design is balanced (equal cases in all conditions), then:
+
+`$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$`
+
+`\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+
+.pull-left[
+$$
+`\begin{aligned}
+\large MS_R &amp;= \frac{SS_R}{df_R} \\
+\large MS_C &amp;= \frac{SS_C}{df_C} \\
+\large MS_{RxC} &amp;= \frac{SS_{RxC}}{df_{RxC}} \\
+\large MS_{within} &amp;= \frac{SS_{within}}{df_{within}} \\
+\end{aligned}`
+$$
+]
+
+.pull-right[
+
+Each mean square is a variance estimate.  `\(MS_{within}\)`  is the pooled estimate of the within-groups variance.  It represents only random or residual variation.  `\(MS_R\)`, `\(MS_C\)`, and `\(MS_{RxC}\)` also contain random variation, but include systematic variability too.
+
+]
+
+---
+
+### F-statistics 
+
+
+If the design is balanced (equal cases in all conditions), then:
+
+`$$\large SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}$$`
+
+`\(df\)`, `\(MS\)`, and `\(F\)` ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.
+
+.pull-left[
+$$
+`\begin{aligned}
+\large F_R &amp;= \frac{MS_R}{MS_{within}} \\
+\\
+\large F_C &amp;= \frac{MS_C}{MS_{within}} \\
+\\
+\large F_{RxC} &amp;= \frac{MS_{RxC}}{MS_{within}} \\
+\end{aligned}`
+$$
+
+]
+
+.pull-right[
+If the null hypotheses are true, these ratios will be ~1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).
+]
+
+---
+
+### Degrees of freedom
+
+The degrees of freedom for the different F ratios might not be the same. Different degrees of freedom define different theoretical F density distributions for determining what is an unusual value under the null hypothesis.
+
+
+Which is to say, you might get the same F-ratio for two different tests, but they could have different p-values, if they represent different numbers of groups. 
+
+---
+
+### Interpretation of significance tests
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Interpretation?
+
+--
+All three null hypotheses are rejected.  This only tells us that systemic differences among the means are present; follow-up comparisons are necessary to determine the nature of the differences. 
+---
+
+### Interpretation of significance tests
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Both main effects and the interaction are significant.
+
+The significant interaction qualifies the main effects:
+
+- The magnitude of the speed main effect varies across the noise conditions.
+
+- The magnitude of the noise main effect varies across the speed conditions.
+
+---
+
+### Visualizing main effects and interactions
+
+Different combinations of main effects and interactions yield different shapes when plotted. An important skill is recognizing how plots will change based on the presence or absence of specific effects. 
+
+Main effects are tests of differences in means; a significant main effect will yield a difference -- the mean of Group 1 will be different than the mean of Group 2, for example.
+
+Interactions are tests of the differences of differences of means -- is the difference between Group 1 and Group 2 different in Condition A than that difference is in Condition B, for example.
+
+---
+
+### Visualizing main effects and interactions
+
+![](1617-factorial_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+???
+No effect of A
+Main effect of B
+No interaction
+---
+
+### Visualizing main effects and interactions
+
+![](1617-factorial_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+???
+Main effect of A
+Main effect of B
+Interaction
+---
+
+### Visualizing main effects and interactions
+
+![](1617-factorial_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+???
+No effect of A
+No effect of B
+Interaction
+---
+
+### Visualizing main effects and interactions
+
+How would you plot....
+
+* A main effect of A, no main effect of B, and no interaction?
+* A main effect of A, a main effect of B, and no interaction?
+* No main effect of A, a main effect of B, and an interaction?
+
+---
+
+## Effect size
+
+All of the effects in the ANOVA are statistically significant, but how big are they?  An effect size, `\(\eta^2\)`, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.
+
+`$$\large \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}$$`
+If the design is balanced...
+
+`$$\large SS_{\text{total}} = SS_{\text{speed}} + SS_{\text{noise}}+SS_{\text{speed:noise}}+SS_{\text{within}}$$`
+---
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Source &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SS &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; `\(\eta^2\)` &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; `\(\text{partial }\eta^2\)` &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Speed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2805871.4 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.56 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Noise &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 341315.2 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.06 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Speed:Noise &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 295719.7 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Residuals &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2192938.9 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+The Speed main effect accounts for 8 to 9 times as much variance in the outcome as the Noise main effect and the Speed x Noise interaction.
+
+---
+
+![](images/eta_sq.jpg)
+---
+
+### `\(\eta^2\)`
+
+.pull-left[
+.purple[If the design is balanced:]
+
+There is no overlap among the independent variables. They are uncorrelated.
+
+The variance accounted for by any effect is unique. There is no ambiguity about the source of variance accounted for in the outcome.
+
+The sum of the `\(\eta^2\)` for effects and residual is 1.00.
+]
+
+.pull-right[
+![](images/eta_sq.jpg)
+]
+
+---
+
+### `\(\eta^2\)`
+
+One argument against `\(\eta^2\)` is that its magnitude depends in part on the magnitude of the other effects in the design. If the amount of variability due to Noise or Speed x Noise changes, so to does the effect size for Speed.
+
+`$$\large \eta^2_{\text{speed}} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{noise}} + SS_{\text{speed:noise}}+ SS_{\text{within}}}$$`
+
+An alternative is to pretend the other effects do not exist and reference the effect sum of squares to residual variability.
+
+`$$\large \text{partial }\eta^2_{\text{speed}} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{within}}}$$`
+---
+
+### `\(\eta^2\)`
+
+One rationale for partial `\(\eta^2\)` is that the residual variability represents the expected variability in the absence of any treatments or manipulations.  The presence of any treatments or manipulations only adds to total variability.  Viewed from that perspective, residual variability is a sensible benchmark against which to judge any effect.
+
+`$$\large \text{partial }\eta^2_{\text{effect}} = \frac{SS_{\text{effect}}}{SS_{\text{effect}} + SS_{\text{within}}}$$`
+
+Partial `\(\eta^2\)` is sometimes described as the expected effect size in a study in which the effect in question is the only effect present.
+
+---
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Source &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SS &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; `\(\eta^2\)` &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; `\(\text{partial }\eta^2\)` &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Speed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2805871.4 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.56 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Noise &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 341315.2 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.06 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Speed:Noise &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 295719.7 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Residuals &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2192938.9 &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;width: 10em; "&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Partial `\(\eta^2\)` will be larger than `\(\eta^2\)` if the ignored effects account for any variability.
+
+The sum of partial `\(\eta^2\)` does not have a meaningful interpretation.
+
+---
+
+### Differences in means
+
+In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Noise &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Slow &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Medium &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Fast &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Marginal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="5" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; None &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 525.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 329.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 495.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Controllable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 576.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 492.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 452.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; Uncontrollable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 594.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 304.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 389.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Marginal &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 440.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 294.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 445.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+These means will be based on different sample sizes, which has an impact on the width of the confidence interval.
+
+---
+
+### Precision
+
+If the homogeneity of variances assumption holds, a common estimate of score variability `\((MS_{within})\)` underlies all of the confidence intervals. 
+
+`$$\large SE_{mean} = \sqrt{\frac{MS_{within}}{N}}$$`
+
+`$$\large CI_{mean} = Mean \pm t_{df_{within}, \alpha = .05}\sqrt{\frac{MS_{within}}{N}}$$`
+
+The sample size, `\(N\)`, depends on how many cases are aggregated to create the mean.
+
+The `\(MS_{within}\)` is common to all calculations if homogeneity of variances is met.  The degrees of freedom for `\(MS_{within}\)` determine the value of `\(t\)` to use.
+---
+
+
+```r
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+---
+
+To get individual cell means, we ask for all combinations of our two predictor variables:
+
+
+```r
+library(emmeans)
+emmeans(fit, ~Noise*Speed)
+```
+
+```
+##  Noise          Speed  emmean   SE  df lower.CL upper.CL
+##  None           Slow      631 25.3 171      581      681
+##  Controllable   Slow      577 25.3 171      527      627
+##  Uncontrollable Slow      594 25.3 171      544      644
+##  None           Medium    525 25.3 171      475      575
+##  Controllable   Medium    493 25.3 171      443      543
+##  Uncontrollable Medium    305 25.3 171      255      355
+##  None           Fast      329 25.3 171      279      379
+##  Controllable   Fast      287 25.3 171      237      337
+##  Uncontrollable Fast      268 25.3 171      218      318
+## 
+## Confidence level used: 0.95
+```
+
+---
+The emmeans( ) function can also produce marginal and cell means along with their confidence intervals. These are the marginal means for the Noise main effect.
+
+
+```r
+noise_emm = emmeans(fit, ~Noise)
+noise_emm
+```
+
+```
+##  Noise          emmean   SE  df lower.CL upper.CL
+##  None              495 14.6 171      466      524
+##  Controllable      452 14.6 171      423      481
+##  Uncontrollable    389 14.6 171      360      418
+## 
+## Results are averaged over the levels of: Speed 
+## Confidence level used: 0.95
+```
+
+
+---
+
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, .purple[at specific values of M] . If you don't give it all of M, it will choose every possible value.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", "Speed")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+]
+---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, .purple[at specific values of M] . If you don't specify levels of M, it will choose the lowest possible value.
+
+`type = "pred"` gives you cell means.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+]---
+
+In `sjPlot()`, predicted values are the expected value of Y given all possible values of X, .purple[at specific values of M] . If you don't specify levels of M, it will choose the lowest possible value.
+
+`type = "pred"` gives you cell means.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "pred", 
+           terms = c("Noise", 
+                     "Speed[Fast]")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+]
+
+
+
+---
+
+In `sjPlot()`, estimated marginal means are the expected value of Y given all possible values of X, .purple[ignoring M] . 
+
+`type = "emm"` gives you marginal means.
+
+.pull-left[
+
+```r
+library(sjPlot)
+plot_model(fit, type = "emm", 
+           terms = c("Noise")) + 
+  theme_sjplot(base_size = 20) + 
+  theme(legend.position = "bottom")
+```
+
+]
+
+.pull-left[
+![](1617-factorial_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+]
+---
+
+### Precision
+
+A reminder that comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means. 
+
+
+$$
+`\begin{aligned}
+\large SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{within}}{N}}\\
+\large SE_{\text{mean difference}} &amp;= \sqrt{MS_{within}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
+\large SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{within}}{N}} \\
+\end{aligned}`
+$$
+---
+
+### Cohen's D
+
+`\(\eta^2\)` is useful for comparing the relative effect sizes of one factor to another. If you want to compare the differences between groups, Cohen's d is the more appropriate metric. Like in a t-test, you'll divide the differences in means by the pooled standard deviation. The pooled variance estimate is the `\(MS_{\text{error}}\)`
+
+
+```r
+fit = lm(Time ~ Speed*Noise, data = Data)
+anova(fit)[,"Mean Sq"]
+```
+
+```
+## [1] 1402935.71  170657.62   73929.93   12824.20
+```
+
+```r
+MS_error = anova(fit)[,"Mean Sq"][4]
+```
+
+So to get the pooled standard deviation:
+
+
+```r
+pooled_sd = sqrt(MS_error)
+```
+
+---
+
+### Cohen's D
+
+
+```r
+(noise_df = as.data.frame(noise_emm))
+```
+
+```
+##            Noise   emmean       SE  df lower.CL upper.CL
+## 1           None 495.0976 14.61974 171 466.2392 523.9560
+## 2   Controllable 452.2079 14.61974 171 423.3495 481.0663
+## 3 Uncontrollable 389.0759 14.61974 171 360.2175 417.9343
+```
+
+```r
+(d_none_control = diff(noise_df[c(1,2), "emmean"])/pooled_sd)
+```
+
+```
+## [1] -0.3787367
+```
+
+---
+
+## Power
+
+
+The likelihood of finding an effect *if the effect actually exists.* Power gets larger as we:
+* increase our sample size
+* reduce (error) variance
+* raise our Type I error rate
+* study larger effects
+
+
+---
+
+
+```
+## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## "none")` instead.
+```
+
+![](1617-factorial_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+
+---
+
+## Power (omnibus test)
+
+When calculating power for the omnibus test, use the expected multiple `\(R^2\)` value to calculate an effect size:
+
+`$$\large f^2 = \frac{R^2}{1-R^2}$$`
+
+---
+
+### Power (omnibus test)
+
+
+```r
+R2 = .10
+(f = R2/(1-R2))
+```
+
+```
+## [1] 0.1111111
+```
+
+```r
+library(pwr)
+pwr.f2.test(u = 3, # number of predictors in the model
+            f2 = f, 
+            sig.level = .05, #alpha
+            power =.90) # desired power
+```
+
+```
+## 
+##      Multiple regression power calculation 
+## 
+##               u = 3
+##               v = 127.5235
+##              f2 = 0.1111111
+##       sig.level = 0.05
+##           power = 0.9
+```
+
+`v` is the denominator df of freedom, so the number of participants needed is v + p + 1.
+
+---
+
+### Power for pairwise comparisons
+
+The comparison of two cell means is analogous to what test?
+
+--
+
+An independent samples t-test. We can use the Cohen's D value for any pairwise comparison to examine power.
+
+---
+
+
+```r
+(noise_df = as.data.frame(noise_emm))
+```
+
+```
+##            Noise   emmean       SE  df lower.CL upper.CL
+## 1           None 495.0976 14.61974 171 466.2392 523.9560
+## 2   Controllable 452.2079 14.61974 171 423.3495 481.0663
+## 3 Uncontrollable 389.0759 14.61974 171 360.2175 417.9343
+```
+
+```r
+(d_none_control = diff(noise_df[c(1,2), "emmean"])/pooled_sd)
+```
+
+```
+## [1] -0.3787367
+```
+
+```r
+pwr.t.test(d = d_none_control, sig.level = .05, power = .90)
+```
+
+```
+## 
+##      Two-sample t test power calculation 
+## 
+##               n = 147.4716
+##               d = 0.3787367
+##       sig.level = 0.05
+##           power = 0.9
+##     alternative = two.sided
+## 
+## NOTE: n is number in *each* group
+```
+
+---
+
+### Follow-up comparisons
+
+Interpretation of the main effects and interaction in a factorial design will usually require follow-up comparisons.  These need to be conducted at the level of the effect.
+
+Interpretation of a main effect requires comparisons among the .purple[marginal means] .
+
+Interpretation of the interaction requires comparisons among the .purple[cell means] .
+
+The `emmeans` package makes these comparisons very easy to conduct.
+
+---
+
+Marginal means comparisons
+
+
+```r
+emmeans(fit, pairwise~Noise, adjust = "holm")
+```
+
+```
+## $emmeans
+##  Noise          emmean   SE  df lower.CL upper.CL
+##  None              495 14.6 171      466      524
+##  Controllable      452 14.6 171      423      481
+##  Uncontrollable    389 14.6 171      360      418
+## 
+## Results are averaged over the levels of: Speed 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast                      estimate   SE  df t.ratio p.value
+##  None - Controllable               42.9 20.7 171   2.074  0.0395
+##  None - Uncontrollable            106.0 20.7 171   5.128  &lt;.0001
+##  Controllable - Uncontrollable     63.1 20.7 171   3.053  0.0052
+## 
+## Results are averaged over the levels of: Speed 
+## P value adjustment: holm method for 3 tests
+```
+
+---
+
+Cell means comparisons
+
+
+```r
+emmeans(fit, pairwise~Noise*Speed, adjust = "holm")
+```
+
+```
+## $emmeans
+##  Noise          Speed  emmean   SE  df lower.CL upper.CL
+##  None           Slow      631 25.3 171      581      681
+##  Controllable   Slow      577 25.3 171      527      627
+##  Uncontrollable Slow      594 25.3 171      544      644
+##  None           Medium    525 25.3 171      475      575
+##  Controllable   Medium    493 25.3 171      443      543
+##  Uncontrollable Medium    305 25.3 171      255      355
+##  None           Fast      329 25.3 171      279      379
+##  Controllable   Fast      287 25.3 171      237      337
+##  Uncontrollable Fast      268 25.3 171      218      318
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast                                    estimate   SE  df t.ratio p.value
+##  None Slow - Controllable Slow                   54.1 35.8 171   1.509  1.0000
+##  None Slow - Uncontrollable Slow                 36.3 35.8 171   1.013  1.0000
+##  None Slow - None Medium                        105.4 35.8 171   2.944  0.0553
+##  None Slow - Controllable Medium                138.0 35.8 171   3.854  0.0026
+##  None Slow - Uncontrollable Medium              326.1 35.8 171   9.106  &lt;.0001
+##  None Slow - None Fast                          301.4 35.8 171   8.418  &lt;.0001
+##  None Slow - Controllable Fast                  343.5 35.8 171   9.592  &lt;.0001
+##  None Slow - Uncontrollable Fast                362.6 35.8 171  10.124  &lt;.0001
+##  Controllable Slow - Uncontrollable Slow        -17.8 35.8 171  -0.496  1.0000
+##  Controllable Slow - None Medium                 51.4 35.8 171   1.435  1.0000
+##  Controllable Slow - Controllable Medium         84.0 35.8 171   2.344  0.2627
+##  Controllable Slow - Uncontrollable Medium      272.1 35.8 171   7.597  &lt;.0001
+##  Controllable Slow - None Fast                  247.4 35.8 171   6.908  &lt;.0001
+##  Controllable Slow - Controllable Fast          289.4 35.8 171   8.082  &lt;.0001
+##  Controllable Slow - Uncontrollable Fast        308.5 35.8 171   8.615  &lt;.0001
+##  Uncontrollable Slow - None Medium               69.2 35.8 171   1.931  0.6615
+##  Uncontrollable Slow - Controllable Medium      101.7 35.8 171   2.841  0.0707
+##  Uncontrollable Slow - Uncontrollable Medium    289.8 35.8 171   8.093  &lt;.0001
+##  Uncontrollable Slow - None Fast                265.2 35.8 171   7.405  &lt;.0001
+##  Uncontrollable Slow - Controllable Fast        307.2 35.8 171   8.579  &lt;.0001
+##  Uncontrollable Slow - Uncontrollable Fast      326.3 35.8 171   9.111  &lt;.0001
+##  None Medium - Controllable Medium               32.6 35.8 171   0.910  1.0000
+##  None Medium - Uncontrollable Medium            220.7 35.8 171   6.162  &lt;.0001
+##  None Medium - None Fast                        196.0 35.8 171   5.473  &lt;.0001
+##  None Medium - Controllable Fast                238.1 35.8 171   6.648  &lt;.0001
+##  None Medium - Uncontrollable Fast              257.1 35.8 171   7.180  &lt;.0001
+##  Controllable Medium - Uncontrollable Medium    188.1 35.8 171   5.252  &lt;.0001
+##  Controllable Medium - None Fast                163.4 35.8 171   4.564  0.0002
+##  Controllable Medium - Controllable Fast        205.5 35.8 171   5.738  &lt;.0001
+##  Controllable Medium - Uncontrollable Fast      224.6 35.8 171   6.271  &lt;.0001
+##  Uncontrollable Medium - None Fast              -24.7 35.8 171  -0.689  1.0000
+##  Uncontrollable Medium - Controllable Fast       17.4 35.8 171   0.486  1.0000
+##  Uncontrollable Medium - Uncontrollable Fast     36.5 35.8 171   1.018  1.0000
+##  None Fast - Controllable Fast                   42.0 35.8 171   1.174  1.0000
+##  None Fast - Uncontrollable Fast                 61.1 35.8 171   1.707  0.9867
+##  Controllable Fast - Uncontrollable Fast         19.1 35.8 171   0.533  1.0000
+## 
+## P value adjustment: holm method for 36 tests
+```
+
+---
+
+## Assumptions
+
+You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.
+
+Homogeneity of variance, for example, can be tested using Levene's test, instead of examining a plot.
+
+
+```r
+library(car)
+leveneTest(Time ~ Speed*Noise, data = Data)
+```
+
+```
+## Levene's Test for Homogeneity of Variance (center = median)
+##        Df F value Pr(&gt;F)
+## group   8  0.5879  0.787
+##       171
+```
+
+---
+
+## Unbalanced designs
+
+If designs are balanced, then the main effects and interpretation effects are independent/orthogonal. In other words, knowing what condition a case is in on Variable 1 will not make it any easier to guess what condition they were part of in Variable 2. 
+
+However, if your design is unbalanced, the main effects and interaction effect are partly confounded. 
+
+
+
+
+```r
+table(Data2$Level, Data2$Noise)
+```
+
+```
+##       
+##        Controllable Uncontrollable
+##   Soft           10             30
+##   Loud           20             20
+```
+
+---
+
+### Sums of Squares
+
+.pull-left[
+In a Venn diagram, the overlap represents the variance shared by the variables. Now there is variance accounted for in the outcome (Time) that cannot be unambiguously attributed to just one of the predictors There are several options for handling the ambiguous regions.]
+.pull-right[
+![](images/eta_sq_unbalanced.jpg)
+]
+---
+
+### Sums of Squares (III)
+
+.pull-left[
+![](images/eta_sq_unbalanced_iii.jpg)]
+
+.pull-right[
+There are three basic ways that overlapping variance accounted for in the outcome can be handled.  These are known as Type I, Type II, and Type III sums of squares. 
+
+Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable.  Effects can only account for the unique variance that they share with the outcome. This is the default in many other statistical programs, including SPSS and SAS.
+]
+
+---
+
+### Sums of Squares (I)
+
+.pull-left[
+Type I sums of squares allocates the overlapping variance according to some priority rule.  All of the variance is claimed, but the rule needs to be justified well or else suspicions about p-hacking are likely.  The rule might be based on theory or causal priority or methodological argument.
+]
+
+.pull-right[
+![](images/eta_sq_unbalanced_i.jpg)]
+
+---
+
+### Sums of Squares (I)
+If a design is quite unbalanced, different orders of effects can produce quite different results.
+
+
+```r
+fit_1 = aov(Time ~ Noise + Level, data = Data2)
+summary(fit_1)
+```
+
+```
+##             Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
+## Noise        1  579478  579478   41.78 0.00000000844 ***
+## Level        1  722588  722588   52.10 0.00000000032 ***
+## Residuals   77 1067848   13868                          
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+lsr::etaSquared(fit_1, type = 1)
+```
+
+```
+##          eta.sq eta.sq.part
+## Noise 0.2445144   0.3517689
+## Level 0.3049006   0.4035822
+```
+
+---
+### Sums of Squares (I)
+If a design is quite unbalanced, different orders of effects can produce quite different results.
+
+
+```r
+fit_1 = aov(Time ~ Level + Noise, data = Data2)
+summary(fit_1)
+```
+
+```
+##             Df  Sum Sq Mean Sq F value            Pr(&gt;F)    
+## Level        1 1035872 1035872   74.69 0.000000000000586 ***
+## Noise        1  266194  266194   19.20 0.000036815466646 ***
+## Residuals   77 1067848   13868                              
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+lsr::etaSquared(fit_1, type = 1)
+```
+
+```
+##          eta.sq eta.sq.part
+## Level 0.4370927   0.4924002
+## Noise 0.1123222   0.1995395
+```
+
+---
+### Sums of Squares (II)
+
+Type II sums of squares are commonly used but also a bit more complex to understand.  
+
+A technically correct description is that a target effect is allocated the proportion of variance in the outcome that is unshared with other effects that do not contain the target.
+
+---
+### Sums of Squares (II)
+
+In an A x B design, the A effect is the proportion of variance that is accounted for by A after removing the variance accounted for by B.
+
+The A x B interaction is allocated the proportion of variance that is accounted for by A x B after removing the variance accounted for by A and B.
+
+There is no convenient way to illustrate this in a Venn diagram.
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ### Sums of Squares --&gt;
+
+&lt;!-- Let R(·) represent the residual sum of squares for a model, so for example R(A,B,AB) is --&gt;
+&lt;!-- the residual sum of squares fitting the whole model, R(A) is the residual sum of squares  --&gt;
+&lt;!-- fitting just the main effect of A.  --&gt;
+
+&lt;!-- | Effect | Type I            | Type II           | Type III            | --&gt;
+&lt;!-- |--------|-------------------|-------------------|---------------------| --&gt;
+&lt;!-- | A      | R(1)-R(A)         | R(B)-R(A,B)       | R(B,A:B)-R(A,B,A:B) | --&gt;
+&lt;!-- | B      | R(A)-R(A,B)       | R(A)-R(A,B)       | R(A,A:B)-R(A,B,A:B) | --&gt;
+&lt;!-- | A:B    | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B) | R(A,B)-R(A,B,A:B)   | --&gt;
+
+---
+
+### Sums of Squares
+
+
+| Effect | Type I            | Type II           | Type III            |
+|--------|-------------------|-------------------|---------------------|
+| A      | SS(A)        | SS(A&amp;#124;B)       | SS(A&amp;#124;B,AB) |
+| B      | SS(B&amp;#124;A)       | SS(B&amp;#124;A)       | SS(B&amp;#124;A,AB) |
+| A:B    | SS(AB&amp;#124;A,B)    | SS(AB&amp;#124;A,B)    | SS(AB&amp;#124;A,B)   |
+
+---
+
+The `aov( )` function in R produces Type I sums of squares. The `Anova( )` function from the car package provides Type II and Type III sums of squares.
+
+These work as expected provided the predictors are factors.
+
+
+```r
+Anova(aov(fit), type = "II")
+```
+
+```
+## Anova Table (Type II tests)
+## 
+## Response: Time
+##              Sum Sq  Df  F value                Pr(&gt;F)    
+## Speed       2805871   2 109.3975 &lt; 0.00000000000000022 ***
+## Noise        341315   2  13.3075           0.000004252 ***
+## Speed:Noise  295720   4   5.7649             0.0002241 ***
+## Residuals   2192939 171                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+
+---
+
+All of the between-subjects variance is accounted for by an effect in Type I sums of squares.  The sums of squares for each effect and the residual will equal the total sum of squares.
+
+For Type II and Type III sums of squares, the sums of squares for effects and residual will be less than the total sum of squares. Some variance (in the form of SS) goes unclaimed.
+
+The highest order effect (assuming standard ordering) has the same SS in all three models.
+
+When a design is balanced, Type I, II, and III sums of squares are equivalent.
+
+---
+
+## Summary (and Regression)
+
+Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability. 
+
+---
+
+.pull-left[
+#### Factorial ANOVA
+
+Interaction tests whether there are differences in mean  differences.
+
+A .purple[(marginal) main effect] is the effect of IV1 on the DV ignoring IV2.
+
+A .purple[simple main effect] is the effect of IV1 on the DV at a specific level of IV2
+]
+.pull-right[
+#### Regression
+
+Interaction tests whether differences in slopes. 
+
+A .purple[simple slope] is the effect of IV1 on the DV assuming IV2 is a specific value.
+]
+
+---
+
+
+
+.pull-left[
+#### Factorial ANOVA
+
+
+```r
+anova(fit)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Time
+##              Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+## Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+## Noise         2  341315  170658  13.3075           0.000004252 ***
+## Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+## Residuals   171 2192939   12824                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+]
+.pull-right[
+#### Regression
+
+
+```r
+summary(fit)
+```
+
+```
+## 
+## Call:
+## lm(formula = Time ~ Speed * Noise, data = Data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -316.23  -70.82    4.99   79.87  244.40 
+## 
+## Coefficients:
+##                                 Estimate Std. Error t value
+## (Intercept)                       630.72      25.32  24.908
+## SpeedMedium                      -105.44      35.81  -2.944
+## SpeedFast                        -301.45      35.81  -8.418
+## NoiseControllable                 -54.05      35.81  -1.509
+## NoiseUncontrollable               -36.28      35.81  -1.013
+## SpeedMedium:NoiseControllable      21.48      50.64   0.424
+## SpeedFast:NoiseControllable        12.01      50.64   0.237
+## SpeedMedium:NoiseUncontrollable  -184.39      50.64  -3.641
+## SpeedFast:NoiseUncontrollable     -24.84      50.64  -0.490
+##                                             Pr(&gt;|t|)    
+## (Intercept)                     &lt; 0.0000000000000002 ***
+## SpeedMedium                                  0.00369 ** 
+## SpeedFast                         0.0000000000000149 ***
+## NoiseControllable                            0.13305    
+## NoiseUncontrollable                          0.31243    
+## SpeedMedium:NoiseControllable                0.67201    
+## SpeedFast:NoiseControllable                  0.81287    
+## SpeedMedium:NoiseUncontrollable              0.00036 ***
+## SpeedFast:NoiseUncontrollable                0.62448    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 113.2 on 171 degrees of freedom
+## Multiple R-squared:  0.6109,	Adjusted R-squared:  0.5927 
+## F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 0.00000000000000022
+```
+
+
+]
+
+
+
+---
+
+class: inverse
+
+## Next time...
+
+Powering interactions
+
+Polynomials
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
