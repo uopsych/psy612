@@ -335,7 +335,13 @@ between time spent studying and test performance. Center study time so
 that it is more meaningful.
 
 ```{r}
-#Your code here
+test_perf <- test_perf %>% 
+  mutate(anxiety = factor(anxiety,
+                          levels= c("low", "high")),
+         study_time_c = scale(study_time, scale = FALSE))
+
+model <- lm(data= test_perf, perf ~ anxiety*study_time_c)
+summary(model)
 
 ```
 
@@ -348,7 +354,9 @@ Interpret the model coefficients.
 Visualize the interaction using `sjPlot` or `ggplot`.
 
 ```{r}
-#Your code here
+test_perf %>% 
+ggplot(aes(x= study_time, y = perf, color = anxiety)) + 
+  geom_smooth(method = "lm")
 ```
 
 ------------------------------------------------------------------------
@@ -358,14 +366,14 @@ Visualize the interaction using `sjPlot` or `ggplot`.
 Test whether each simple slope is significantly different from 0.
 
 ```{r}
-#Your code here
+emtrends(model, ~anxiety, var = "study_time_c")
 ```
 
 Test whether the simple slopes for low anxiety and high anxiety are
 significantly different from each other.
 
 ```{r}
-#Your code here
+emtrends(model, pairwise~anxiety, var = "study_time_c")
 
 ```
 
