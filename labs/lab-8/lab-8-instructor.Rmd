@@ -57,26 +57,46 @@ Dependent Variable: Perceived Liking
 
 With a factorial ANOVA, three different null hypotheses can be tested regarding whether there is 1) a main effect of factor 1, 2) a main effect of factor 2, and 3) an interaction between factor 1 and factor 2.
 
-Null Hypothesis 1 (Main Effect of Rejection Sensitivity):
+Imagine a table with means like the following:
+
+|         |High | Low   | Mean  |
+| ------- |-----| ----- | ----- |
+| Neutral |10   | 10    | 10    |
+| Happy   |10   | 10    | 10    |
+| Mean    |10   | 10    | 10    |
+
+**Null Hypothesis 1** (Main Effect of Rejection Sensitivity):
 $$H_0: \mu_{Low} = \mu_{High}$$
+Another way to state this hypothesis:
+$$\alpha_{Low} = \mu_{Low} - \mu_{all}$$
+$$\alpha_{High} = \mu_{High} - \mu_{all}$$
+$$H_0: \alpha_{Low} = \alpha_{High} = 0$$
 
-
-Null Hypothesis 2 (Main Effect of Partner's Emotional Expression):
+**Null Hypothesis 2** (Main Effect of Partner's Emotional Expression):
 $$H_0: \mu_{Neutral} = \mu_{Happy}$$
+Again, another way to state this hypothesis:
+$$\beta_{Neutral} = \mu_{Neutral} - \mu_{all}$$
+$$\beta_{Happy} = \mu_{Happy} - \mu_{all}$$
+$$H_0: \beta_{Neutral} = \beta_{Happy} = 0$$
 
-
-Null Hypothesis 3 (Interaction Effect):
+**Null Hypothesis 3** (Interaction Effect):
 
 H_0: There is no interaction between rejection sensitivity and partner's emotional expression.
 
+Or, lastly, in another way:
 
-# Import the data
+$$\alpha\beta_{Low+Neutral} = \mu_{Low+Neutral} - \alpha_{Low} - \beta_{Neutral} - \mu_{all}$$
+$$\alpha\beta_{High+Neutral} = \mu_{High+Neutral} - \alpha_{High} - \beta_{Neutral} - \mu_{all}$$
+$$\alpha\beta_{Low+Happy} = \mu_{Low+Happy} - \alpha_{Low} - \beta_{Happy} - \mu_{all}$$
+$$\alpha\beta_{High+Happy} = \mu_{High+Happy} - \alpha_{High} - \beta_{Happy} - \mu_{all}$$
+$$H_0: \alpha\beta_{Low+Neutral} = \alpha\beta_{High+Neutral} = \alpha\beta_{Low+Happy} = \alpha\beta_{High+Happy} = 0$$
+
+# Import & inspect the Data
 
 ```{r lab-8-2}
 reject <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-8/data/reject.csv")
 ```
 
-# Inspect the Data
 ```{r}
 str(reject)
 head(reject)
@@ -121,7 +141,7 @@ Notice that each are being dummy coded. It's very important to be aware of how t
 
 Speaking of regression, note we are going to conduct the analysis using the lm() function. The following is how you could write the factorial ANOVA as the regression equation that we're estimating:
 
-$$Liking_i = \beta_0 + \beta_1DC1_i + \beta_2DC2_i + \beta_3DC1xDC2_i + \epsilon_i$$
+$$Liking_i = \beta_0 + \beta_1Partner_i + \beta_2Liking_i + \beta_3PartnerxLiking_i + \epsilon_i$$
 
 
 # Descriptive Statistics
@@ -135,7 +155,7 @@ reject %>%
 ```
 
 
-## Table of  Means
+## Table of Means
 
 The results of a factorial ANOVA are often represented in a table of means, which contains the means of each combination of conditions (the cell means) and means for the levels of each variable ignoring the other variables (the marginal means).
 
@@ -183,7 +203,7 @@ knitr::kable(digits = c(2, 2, 2),
 ```
 
 
-# Table of Means - An Easier Way
+## Table of Means - An Easier Way
 
 * The apa.2way.table() function from the apaTables package is a much more convenient way to get our cell means and marginal means. This function works for any type of 2-way ANOVA, regardless of the number of levels of your factors, e.g. it would work for a 3 x 3 ANOVA. All you need to do is indicate what the IV's (aka factors) and DV are and specify `show.marginal.means = TRUE`. 
 
@@ -207,10 +227,19 @@ apa.2way.table(iv1 = rs,
                filename = "table_of_means.doc")
 ```
 
+>**Question:** Which means are being compared in the main effect of rejection sensitivity?
 
+
+>**Question:** Which means are being compared in the main effect of interaction partner?
+>**Answer:** Marginal means for neutral partner (3.67) and happy partner (6.22)
+
+>**Question:** Which means are involved in the interaction?
+>**Answer:** all cell means
 
 
 # Conduct the Factorial ANOVA 
+
+Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability.
 
 ```{r}
 model <- lm(liking ~ rs*partner, data = reject)
@@ -218,12 +247,12 @@ model <- lm(liking ~ rs*partner, data = reject)
 # When you include the interaction between two variables using * between them, the main effects of each will also be included
 ```
 
-# Results
+## Results in regression framework
+
 ```{r}
 summary(model)
 ```
 
-#### Q3:
 >**Question:** What do each of the regression coefficient estimates mean? 
 
 
@@ -245,6 +274,7 @@ b2 = 0.45, the predicted change in liking for people when people interacted with
 ```
 
 b3 = 4.20, the difference in how much liking changed moving from low to high on RS when people interacted with a neutral compared to a happy partner
+
 ```{r}
 # When interacting with a neutral partner
 effect_RS_when_neutral <- 1.8-5.55
@@ -257,8 +287,7 @@ effect_RS_when_happy - effect_RS_when_neutral
 ```
 
 
-
-# Getting Factorial ANOVA Results using anova()
+## Getting Factorial ANOVA Results using anova()
 
 Obviously, the means being compared by b1 and b2 do not represent our main effects. The main effect of RS would be a comparison of the marginal means for the low and high conditions. The main effect of partner would be a comparison of the marginal means for the neutral and happy conditions.
 
@@ -274,10 +303,14 @@ anova(model)
 
 Recall the null hypothesis being tested by each row in the ANOVA table.
 
-Null Hypothesis 1 (Main Effect of Rejection Sensitivity):
+### Null Hypothesis 1 (Main Effect of Rejection Sensitivity):
+
 $$H_0: \mu_{Low} = \mu_{High}$$
 
-#### Q3:
+$$\alpha_{Low} = \mu_{Low} - \mu_{all}$$
+$$\alpha_{High} = \mu_{High} - \mu_{all}$$
+$$H_0: \alpha_{Low} = \alpha_{High} = 0$$
+
 >**Question:** Where do we look for variability to examine the effect of rejection sensitivity on liking? 
 
 
@@ -304,8 +337,8 @@ reject %>%
   group_by(rs, partner) %>% 
   summarize(n = n())
 
-
-SS_rs <- 40*((4.125-GM)^2+ (5.775-GM)^2)
+# Calculate SS_rs
+SS_rs <- 2*20*((4.125-GM)^2+ (5.775-GM)^2)
 SS_rs
 
 # Compare to anova() output
@@ -313,10 +346,13 @@ anova(model)
 ```
 
 
-Null Hypothesis 2 (Main Effect of Partner's Emotional Expression):
+### Null Hypothesis 2 (Main Effect of Partner's Emotional Expression):
 $$H_0: \mu_{Neutral} = \mu_{Happy}$$
+Or,
+$$\beta_{Neutral} = \mu_{Neutral} - \mu_{all}$$
+$$\beta_{Happy} = \mu_{Happy} - \mu_{all}$$
+$$H_0: \beta_{Neutral} = \beta_{Happy} = 0$$
 
-#### Q4:
 >**Question:** Where do we look for variability to examine the effect of partner's emotional expression on liking? 
 
 The formula for calculating SS for the effect of the column variable is:
@@ -331,7 +367,8 @@ reject %>%
   summarize(mean = mean(liking, na.rm = TRUE)) %>% 
 knitr::kable(digits = c(NA, 5))
 
-SS_partner <- 40*((6.225-GM)^2 + (3.675-GM)^2)
+# Calculate SS_partner
+SS_partner <- 2*20*((6.225-GM)^2 + (3.675-GM)^2)
 SS_partner
 
 # Compare to anova() output
@@ -340,16 +377,17 @@ anova(model)
 
 
 
-Null Hypothesis 3 (Interaction Effect):
+### Null Hypothesis 3 (Interaction Effect):
 
 H0: There is no interaction between rejection sensitivity and partner's emotional expression.
 
+$$\alpha\beta_{Low+Neutral} = \mu_{Low+Neutral} - \alpha_{Low} - \beta_{Neutral} - \mu_{all}$$
+$$\alpha\beta_{High+Neutral} = \mu_{High+Neutral} - \alpha_{High} - \beta_{Neutral} - \mu_{all}$$
+$$\alpha\beta_{Low+Happy} = \mu_{Low+Happy} - \alpha_{Low} - \beta_{Happy} - \mu_{all}$$
+$$\alpha\beta_{High+Happy} = \mu_{High+Happy} - \alpha_{High} - \beta_{Happy} - \mu_{all}$$
+$$H_0: \alpha\beta_{Low+Neutral} = \alpha\beta_{High+Neutral} = \alpha\beta_{Low+Happy} = \alpha\beta_{High+Happy} = 0$$
 
-#### Q4:
 >**Question:** Where do we look for variability to examine whether there is an interaction between rejection sensitivity and partner's emotional expression?
-
-
-
 
 
 The formula for calculating SS for the effect of the interaction effect is:
@@ -408,8 +446,20 @@ MS_Interaction <- 88.2/1
 
 To finally test each null hypothesis, we need to calculate an F-statistic and either compare that F-statistic to a critical value or examine the probability of obtaining an F-statistic as extreme as the one we obtained if the null hypothesis were true (aka, the p-value).
 
-#### Q5:
 >**Question:** The MS for each term that we calculated above will be the numerator of our F-statistic. What do we use as the denominator?
+
+If interested, this is how you calculate MS_residual/MS_within by hand:
+
+```{r}
+group_mean = reject %>% 
+  group_by(rs, partner) %>% 
+  summarise(m = mean(liking))
+
+full_join(reject, group_mean) %>% 
+  mutate(square_diff = (liking - m)^2) %>% 
+  summarise(sum = sum(square_diff))
+```
+
 
 ```{r}
 MS_within <- 49.1/76
@@ -426,92 +476,7 @@ F_Interaction
 anova(model)
 ```
 
-
-#### Q6:
 >**Question:** What is our conclusion about each of our null hypotheses?
-
-
-
-
-
-# An Alternative Coding Scheme - Contrast Coding
-
-There are a number of different ways of coding categorical predictors in a regression model We've focused largely on dummy coding. One other option is called contrast coding. The rules for contrast coding are:
-
-1. The sum of each set of codes should be equal to zero.
-2. Each pair of codes should have a sum of cross-products equal to zero (which ensures they are orthogonal to, and thus independent of, each other).
-3. The number of contrast codes you can include in the model is equal to the total number of groups minus 1.
-4. It's helpful for interpreting the coefficient estimates to put the codes on a scale of 1 (meaning the span between the contrast codes is equal to 1).
-
-Here's an example:
-
-We have a 2x2 Factorial ANOVA, so there are 4 total conditions. We can include k-1, where k is the number of groups, contrast codes (4-1 = 3). We will create one contrast code for each main effect and one for the interaction effect. 
-
-For coding each of the main effects, we want to code the levels of the variable such that the sum of the codes is equal to zero, as well as make the distance between the codes 1-unit.
-
-What set of codes could we use for rejection sensitivity?
-
-Rejection Sensitivity: Low = ____, High = _____
-
-What about partner's emotional expression?
-
-Partner: Neutral = ____, Happy = _____
-
-
-You don't have to construct the codes for the interaction effect from scratch because R will automatically create them when you include the interaction term in the lm() model. However, to demonstrate, to calculate the interaction codes, you would multiply each pair of codes from the codes of the main effects by each other. You can see this in the following table:
-
-![](https://raw.githubusercontent.com/saralieber/R_Coding/master/contrast_codes.PNG)
-
-
-
-And then, if you've followed the rules of constructing contrast codes, the sum of each pair of contrast codes should be equal to zero. Here's a demonstration of how you would check that:
-
-![](https://raw.githubusercontent.com/saralieber/R_Coding/master/sum_of_cross_products.PNG)
-
-
-
-Let's run the regression analysis again with contrast coded predictor variables to see why it might be worth it to use this more complicated coding scheme.
-
-```{r}
-contrasts(reject$rs) <- c(-0.5, 0.5)
-contrasts(reject$partner) <- c(-0.5, 0.5)
-
-model_CC <- lm(liking ~ rs*partner, data = reject)
-```
-
-Get the summary() output.
-```{r}
-summary(model_CC)
-```
-
-Let's go through the coefficient estimates again to see what each one is testing:
-
-```{r}
-table_of_means
-```
-
-
-b0 = 4.95
-
-b1 = -1.65
-```{r}
-sqrt(F_rs)
-```
-
-b2 = 2.55
-```{r}
-sqrt(F_partner)
-```
-
-b3 = 4.20
-```{r}
-sqrt(F_Interaction)
-```
-
-
-Now, the tests of the coefficient estimates for RS and partner correspond to a test of the main effects of these variables.
-
-
 
 # Effect Sizes (Eta-Squared and Partial Eta-Squared)
 
@@ -523,11 +488,7 @@ etaSquared(model)
 
 >**Question:** What is the difference between eta-squared and partial eta-squared? Do you think one has strengths over the other? 
 
-
-
-
-
-## Visualization
+# Visualization
 Visualizing the results is helpful for understanding your results and interpreting significant (or non-significant) effects. Especially when there is a significant interaction effect, a plot can help illustrate what the interaction effect is.  
 
 
@@ -552,12 +513,7 @@ plot_model(model, type = "emm", terms = c("rs", "partner"))
 
 Switch how the interaction is visualized by switching the order of `terms`.
 
-
-#### Q5:
 >**Question:** How would you describe in a paper what the significant interaction effect means? 
-
-
-
 
 # Simple effects
 
@@ -575,20 +531,14 @@ model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
            simple = "partner") # simple is what we want simple effects of
 ```
 
-#### Q6:
 >**Question:** What do the results of this simple effects analysis show? 
-
-
-
-
 
 * Now let's look at simple effects for rejection sensitivity at each level of partner expression.
 
-```{r lab-8-48, eval=FALSE}
+```{r}
 model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
   contrast(by = "partner", # by is the variable we are looking at each level of
            simple = "rs") # simple is what we want simple effects of
 ```
 
-#### Q7:
 >**Question:** What do the results of this simple effects analysis show? 

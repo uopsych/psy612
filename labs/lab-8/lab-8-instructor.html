@@ -267,7 +267,9 @@ options(scipen = 999)</code></pre>
 </div>
 <div id="research-scenario" class="section level1">
 <h1>Research scenario</h1>
-<p>Based on subjects’ self-reports of rejection sensitivity (N = 80), a researcher divides subjects into two equal groups (low RS and high RS). Whereas half of the subjects in each group interact with a partner who displays a happy emotional expression during the interaction, the other half of the subjects in each group interact with a partner who displays a neutral emotional expression during the interaction. After the interaction, subjects are asked to rate the statement, “My interaction partner likes me”, on a scale from 1 (strongly disagree) to 7 (strongly agree).</p>
+<ul>
+<li>Based on subjects’ self-reports of rejection sensitivity (N = 80), a researcher divides subjects into two equal groups (low RS and high RS). Whereas half of the subjects in each group interact with a partner who displays a happy emotional expression during the interaction, the other half of the subjects in each group interact with a partner who displays a neutral emotional expression during the interaction. After the interaction, subjects are asked to rate the statement, “My interaction partner likes me”, on a scale from 1 (strongly disagree) to 7 (strongly agree).</li>
+</ul>
 <p>Factor 1: Rejection Sensitivity - Low - High</p>
 <p>Factor 2: Partner’s Emotional Expression - Neutral - Happy</p>
 <p>Dependent Variable: Perceived Liking</p>
@@ -559,26 +561,45 @@ table_of_means</code></pre>
 <p><strong>Question:</strong> Which means are being compared in the main effect of rejection sensitivity?</p>
 </blockquote>
 <blockquote>
-<p><strong>Question:</strong> Which means are being compared in the main effect of interaction partner?</p>
+<p><strong>Question:</strong> Which means are being compared in the main effect of interaction partner? <strong>Answer:</strong> Marginal means for neutral partner (3.67) and happy partner (6.22)</p>
 </blockquote>
 <blockquote>
-<p><strong>Question:</strong> Which means are involved in the interaction?</p>
+<p><strong>Question:</strong> Which means are involved in the interaction? <strong>Answer:</strong> all cell means</p>
 </blockquote>
 </div>
 </div>
 <div id="conduct-the-factorial-anova" class="section level1">
 <h1>Conduct the Factorial ANOVA</h1>
 <p>Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability.</p>
-<pre class="r"><code>model &lt;- lm (liking ~ rs*partner, data = reject)</code></pre>
+<pre class="r"><code>model &lt;- lm(liking ~ rs*partner, data = reject)
+
+# When you include the interaction between two variables using * between them, the main effects of each will also be included</code></pre>
 <div id="results-in-regression-framework" class="section level2">
 <h2>Results in regression framework</h2>
+<pre class="r"><code>summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = liking ~ rs * partner, data = reject)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -1.55  -0.55   0.00   0.55   1.45 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)           5.5500     0.1797   30.88 &lt;0.0000000000000002 ***
+## rsHigh               -3.7500     0.2542  -14.75 &lt;0.0000000000000002 ***
+## partnerHappy          0.4500     0.2542    1.77              0.0807 .  
+## rsHigh:partnerHappy   4.2000     0.3595   11.68 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.8038 on 76 degrees of freedom
+## Multiple R-squared:  0.8474, Adjusted R-squared:  0.8414 
+## F-statistic: 140.7 on 3 and 76 DF,  p-value: &lt; 0.00000000000000022</code></pre>
 <blockquote>
 <p><strong>Question:</strong> What do each of the regression coefficient estimates mean?</p>
 </blockquote>
-<p>b0 = 5.55</p>
-<p>b1 = -3.75</p>
-<p>b2 = 0.45</p>
-<p>b3 = 4.20</p>
 <p>It may be helpful to refer back to the table of means.</p>
 <pre class="r"><code>table_of_means</code></pre>
 <pre><code>## 
@@ -594,6 +615,23 @@ table_of_means</code></pre>
 ## 
 ## Note. M and SD represent mean and standard deviation, respectively. 
 ## Marginal indicates the means and standard deviations pertaining to main effects.</code></pre>
+<p>b0 = 5.55, the predicted score for people who score low on RS (low = 0) and interacted with a neutral partner (neutral = 0)</p>
+<p>b1 = -3.75, the predicted change in liking for people who scored high compared to low on RS when people interacted with a neutral partner (neutral = 0)</p>
+<pre class="r"><code>1.8 - 5.55</code></pre>
+<pre><code>## [1] -3.75</code></pre>
+<p>b2 = 0.45, the predicted change in liking for people when people interacted with a happy compared to a neutral partner for people who were low on RS (low = 0)</p>
+<pre class="r"><code>6 - 5.55</code></pre>
+<pre><code>## [1] 0.45</code></pre>
+<p>b3 = 4.20, the difference in how much liking changed moving from low to high on RS when people interacted with a neutral compared to a happy partner</p>
+<pre class="r"><code># When interacting with a neutral partner
+effect_RS_when_neutral &lt;- 1.8-5.55
+
+# When interacting with a happy partner
+effect_RS_when_happy &lt;- 6.45-6
+
+# The difference in differences 
+effect_RS_when_happy - effect_RS_when_neutral</code></pre>
+<pre><code>## [1] 4.2</code></pre>
 </div>
 <div id="getting-factorial-anova-results-using-anova" class="section level2">
 <h2>Getting Factorial ANOVA Results using anova()</h2>
@@ -612,7 +650,8 @@ table_of_means</code></pre>
 <p>Recall the null hypothesis being tested by each row in the ANOVA table.</p>
 <div id="null-hypothesis-1-main-effect-of-rejection-sensitivity" class="section level3">
 <h3>Null Hypothesis 1 (Main Effect of Rejection Sensitivity):</h3>
-<p><span class="math display">\[H_0: \mu_{Low} = \mu_{High}\]</span> <span class="math display">\[\alpha_{Low} = \mu_{Low} - \mu_{all}\]</span> <span class="math display">\[\alpha_{High} = \mu_{High} - \mu_{all}\]</span> <span class="math display">\[H_0: \alpha_{Low} = \alpha_{High} = 0\]</span></p>
+<p><span class="math display">\[H_0: \mu_{Low} = \mu_{High}\]</span></p>
+<p><span class="math display">\[\alpha_{Low} = \mu_{Low} - \mu_{all}\]</span> <span class="math display">\[\alpha_{High} = \mu_{High} - \mu_{all}\]</span> <span class="math display">\[H_0: \alpha_{Low} = \alpha_{High} = 0\]</span></p>
 <blockquote>
 <p><strong>Question:</strong> Where do we look for variability to examine the effect of rejection sensitivity on liking?</p>
 </blockquote>
@@ -776,10 +815,10 @@ knitr::kable(digits = c(NA, NA, 5))</code></pre>
 ## 
 ## Note. M and SD represent mean and standard deviation, respectively. 
 ## Marginal indicates the means and standard deviations pertaining to main effects.</code></pre>
-<pre class="r"><code># Calculate SS_interaction
-SS_Int &lt;- 20*((5.55-5.78-3.67+GM)^2+(1.8-4.12-3.67+GM)^2+(6-5.78-6.22+GM)^2+(6.45-4.12-6.22+GM)^2)
-
-# Compare to anova() output
+<pre class="r"><code>SS_Int &lt;- 20*((5.55-5.78-3.67+GM)^2+(1.8-4.12-3.67+GM)^2+(6-5.78-6.22+GM)^2+(6.45-4.12-6.22+GM)^2)
+SS_Int</code></pre>
+<pre><code>## [1] 88.204</code></pre>
+<pre class="r"><code># Compare to anova() output
 anova(model)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -808,16 +847,33 @@ MS_Interaction &lt;- 88.2/1</code></pre>
 <blockquote>
 <p><strong>Question:</strong> The MS for each term that we calculated above will be the numerator of our F-statistic. What do we use as the denominator?</p>
 </blockquote>
-<pre class="r"><code>F_rs = -99
-F_partner = -99
-F_Interaction = -99
+<p>If interested, this is how you calculate MS_residual/MS_within by hand:</p>
+<pre class="r"><code>group_mean = reject %&gt;% 
+  group_by(rs, partner) %&gt;% 
+  summarise(m = mean(liking))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;rs&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>full_join(reject, group_mean) %&gt;% 
+  mutate(square_diff = (liking - m)^2) %&gt;% 
+  summarise(sum = sum(square_diff))</code></pre>
+<pre><code>## Joining, by = c(&quot;rs&quot;, &quot;partner&quot;)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["sum"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"49.1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>MS_within &lt;- 49.1/76
+MS_within</code></pre>
+<pre><code>## [1] 0.6460526</code></pre>
+<pre class="r"><code>F_rs &lt;- MS_rs/MS_within
+F_partner &lt;- MS_partner/MS_within
+F_Interaction &lt;- MS_Interaction/MS_within
 
 F_rs</code></pre>
-<pre><code>## [1] -99</code></pre>
+<pre><code>## [1] 84.28106</code></pre>
 <pre class="r"><code>F_partner</code></pre>
-<pre><code>## [1] -99</code></pre>
+<pre><code>## [1] 201.2994</code></pre>
 <pre class="r"><code>F_Interaction</code></pre>
-<pre><code>## [1] -99</code></pre>
+<pre><code>## [1] 136.5214</code></pre>
 <pre class="r"><code>anova(model)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -838,9 +894,6 @@ F_rs</code></pre>
 ## rs:partner 0.2740833   0.6423889</code></pre>
 <blockquote>
 <p><strong>Question:</strong> What is the difference between eta-squared and partial eta-squared? Do you think one has strengths over the other?</p>
-</blockquote>
-<blockquote>
-<p><strong>Question:</strong> Sara will go over that on the coming Tuesday’s lecture!</p>
 </blockquote>
 </div>
 <div id="visualization" class="section level1">

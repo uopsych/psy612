@@ -1,0 +1,128 @@
+{\rtf1\ansi\deff0 {\fonttbl {\f0 Times New Roman;}}
+\paperw15840 \paperh12240 \margl1440 \margr1440 \margt1440 \margb1440 \landscape 
+{\pard Table XX \par}
+{\pard  \par}
+{\pard\i Means and standard deviations for liking as a function of a 2(rs) X 2(partner) design\par}
+{\pard  \par}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6731 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9179 
+\pard\sa100\sb100\intbl\qr{ }\cell
+\pard\sa100\sb100\intbl\qc{partner}\cell
+\pard\sa100\sb100\intbl\qc{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{ }\cell
+\pard\sa100\sb100\intbl\qc{Neutral}\cell
+\pard\sa100\sb100\intbl\qc{Happy}\cell
+\pard\sa100\sb100\intbl\qc{Marginal}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3060 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx5508 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7956 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{rs}\cell
+\pard\sa100\sb100\intbl\qc{{\i M}}\cell
+\pard\sa100\sb100\intbl\qc{{\i SD}}\cell
+\pard\sa100\sb100\intbl\qc{{\i M}}\cell
+\pard\sa100\sb100\intbl\qc{{\i SD}}\cell
+\pard\sa100\sb100\intbl\qc{{\i M}}\cell
+\pard\sa100\sb100\intbl\qc{{\i SD}}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3060 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx5508 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7956 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{Low}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{5.55}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{1.05}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{6.00}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{0.73}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{5.78}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{0.92}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{High}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{1.80}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{0.70}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{6.45}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{0.69}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{4.12}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{2.45}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx3060 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx5508 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx7956 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{Marginal}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{3.67}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{2.09}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{6.22}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{0.73}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{ }\cell
+\row
+}
+{\pard \par}{\pard{\i Note.} {\i M} and {\i SD} represent mean and standard deviation, respectively.\par}
+}

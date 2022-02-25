@@ -52,7 +52,9 @@ navbar:
       - text: "6-Regression Diagnostics"
         href: labs/lab-6/lab-6.html
       - text: "7-Continuous x Categorical Interactions"
-        href: labs/lab-7/lab-7-complete.html        
+        href: labs/lab-7/lab-7-complete.html    
+      - text: "8-Factorial ANOVA"
+        href: labs/lab-8/lab-8.html   
     - text: Homework
       href: homework.html
     - text: Final Project
