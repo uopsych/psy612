@@ -1,7 +1,3 @@
-# ignore macOS organizational files
-.DS_Store
-labs/.DS_Store
-
 # History files
 .Rhistory
 .Rapp.history
@@ -41,3 +37,12 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# ignore macOS organizational files
+.DS_Store
+labs/.DS_Store
+
+# ignore lab files appended with "session" (Cam: I create separate lab .Rmds for 
+# each Friday lab session so I can mess with the code without breaking it for 
+# the next lab. I don't want to push these)
+labs/lab-*/lab-*-session-*

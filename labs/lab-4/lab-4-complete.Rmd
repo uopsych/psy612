@@ -1,0 +1,525 @@
+---
+title: "Multiple Regression"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = FALSE)
+```
+
+You will need the Rmd file for today's lab - can download it [here](https://uopsych.github.io/psy612/labs/lab-4/lab-4.Rmd).
+
+Before we begin, load the following libraries. Install any of the packages you have not yet installed on your computers.
+
+```{r}
+library(rio)           # for importing data
+library(tidyverse)     # for plotting and data wrangling
+library(ppcor)         # for calculating partial and semi-partial correlations
+library(janitor)       # for cleaning up data names
+library(scatterplot3d) # for drawing non-interactive 3d plots
+library(car)           # for drawing interactive 3d plots
+
+# suppress scientific notation
+options(scipen = 999)
+```
+
+Import the data set and inspect it. What variables do we have in our data set? What measurement scale is each variable on?
+
+```{r}
+# import data
+data <- import(file     = paste("https://raw.githubusercontent.com",
+                                "uopsych",
+                                "psy612",
+                                "master",
+                                "labs",
+                                "lab-4",
+                                "data",
+                                "data_htwtage.csv",
+                                sep = "/"),
+               setclass = "tibble") %>%
+  clean_names()
+  
+
+# look at the data
+data
+```
+
+# Univariate Regression
+
+Let's start with inspecting the relationship between `age` and `weight`.
+
+Visualize the relationship between `age` and `weight`. Let's also label the data points with the `name` of each participant.
+
+```{r}
+ggplot(data    = data, 
+       mapping = aes(x = scale(age), 
+                     y = scale(weight))) +
+  geom_smooth(method = "lm", 
+              se     = TRUE,
+              lwd    = 1.5,
+              color  = "turquoise4") +
+  geom_text(aes(label = name, 
+                hjust = -0.1, 
+                vjust = -0.1)) + 
+  geom_point(alpha = .8, 
+             color = "red3") + 
+  labs(x     = "Standardized Age", 
+       y     = "Standardized Weight", 
+       title = "Weight Regressed On Age") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Regress `weight` on `age`. Standardize the variables in the model. Save the model to an object called `model_1`.
+
+```{r}
+model_1 <- lm(scale(weight) ~ scale(age), data = data)
+summary(model_1)
+```
+
+The results provide us with the following model:
+
+$$W_i = .00 + .74A_i + \epsilon_i$$
+
+> **Question** What is the relationship between the standardized regression coefficient in a univariate regression model to the zero-order correlation between the predictor and outcome variable?
+
+> **Question** What's another variable that could help explain the differences between the predicted values and the actual values? In other words, what's another variable that could explain variation in `weight` that is not explained by `age`?
+
+# Multiple Regression
+
+Now, let's use both `age` and `height` to predict `weight`.
+
+Regress `weight` on `age` and `height`. Standardize the variables in the model. Save the model to an object called `model_2`.
+
+```{r}
+model_2 <- lm(scale(weight) ~ scale(age) + scale(height), data = data)
+summary(model_2)
+```
+
+The results provide us with the following model:
+
+$$W_i = .00 + .08A_i + .81H_i + \epsilon_i$$
+
+> **Question** How does the regression coefficient corresponding to `age` differ in `model_2` compared to in `model_1`?
+
+We can visualize the relationship among `weight`, `age`, and `height` using a 3D scatterplot. We can create a non-interactive version of a 3D scatterplot using the `scatterplot3d()` function from the `{scatterplot3d}` package.
+
+```{r}
+s3d <- scatterplot3d(x     = scale(data$age), 
+                     y     = scale(data$height), 
+                     z     = scale(data$weight), 
+                     # labels
+                     xlab  = "Age", 
+                     ylab  = "Height", 
+                     zlab  = "Weight",
+                     # point color
+                     color = "red3",
+                     # point shape
+                     pch   = 20)
+
+s3d$plane3d(model_2, lty.box = "solid", col = "turquoise4")
+```
+
+We can also create an interactive version of a 3D scatterplot using the `scatter3d()` function from the `{car}` package.
+
+```{r}
+scatter3d(formula     = scale(weight) ~ scale(age) + scale(height), 
+          data        = data, 
+          # labels
+          xlab        = "Age", 
+          ylab        = "Weight", 
+          zlab        = "Height",
+          # colours
+          point.col    = "red3",
+          surface.col  = "turquoise4",
+          neg.res.col  = "darkorange1", 
+          pos.res.col  = "darkorange1",
+          axis.col     = rep("black", 3),
+          # animation
+          revolutions = 1.50,
+          speed       = 0.25)
+```
+
+# Partial Regression Coefficients
+
+The regression coefficients corresponding to the predictors in a multiple regression model are called *partial regression coefficients*. Let's break down what this term means.
+
+A new concept that gets introduced when we have multiple predictors in the regression model is *redundancy*, which occurs when the predictors in a multiple regression model are correlated (which they often are) and there is overlap in the variability each can account for in the outcome variable. In other words, some of the variability X1 can account for in Y is *redundant* with the variability X2 can account for in Y.
+
+<center>
+
+![](https://raw.githubusercontent.com/saralieber/R_Coding/master/venn_diagram_wthtage.PNG)
+
+</center>
+
+The *partial regression coefficients* that we obtain in the "Estimate" column from the summary output of our multiple regression model account for this redundancy. A partial regression coefficient is the relationship between a predictor variable (X1) and outcome variable (Y) when the relationship between X1 and the other predictor variable(s) in the model has been removed.
+
+Let's walk through the logic of a partial regression coefficient by re-creating the partial regression coefficient corresponding to `age` ($b_1$ = 0.0838) from our multiple regression model above.
+
+# Re-creating the partial regression coefficient for `age`
+
+1.  Regress `age` on `height`. Standardize the variables. Store the model in an object called `model_3`
+
+```{r}
+model_3 <- lm(scale(age) ~ scale(height), data = data)
+```
+
+2.  Store the part of `age` that is unrelated to `height` in a new column in `data` called `age_resid`.
+
+```{r}
+data$age_resid <- resid(model_3)
+```
+
+3.  Regress `weight` on the part of `age` that is unrelated to `height` (i.e., `data$age_resid`). Don't forget to standardize `weight` to stay consistent with how we ran the multiple regression model earlier. Store the model in an object called `model_4`.
+
+```{r}
+model_4 <- lm(scale(weight) ~ age_resid, data = data)
+```
+
+4.  Examine the final results using the `summary()` function.
+
+```{r}
+summary(model_4)
+```
+
+> **Question** How does the regression coefficient corresponding to the part of `age` that is unrelated to `height` in the univariate model (i.e., `model_4`) predicting `weight` compare to the regression coefficient corresponding to `age` in the multiple regression model (i.e., `model_2`)?
+
+> **Question** Which type of correlation is the partial regression coefficient conceptually most similar to?
+
+# Short Detour: The Relationship Between the Standardized Regression Coefficient and Semi-Partial Correlations
+
+If we were to calculate the correlation between `weight` and `age_resid`, it would produce the *semi-partial correlation*.
+
+```{r}
+cor(data$weight, data$age_resid)
+```
+
+Let's see that this correlation is equal to the semi-partial correlation by calculating it below.
+
+# Semi-Partial Correlations
+
+Given X1, X2, and Y, the semi-partial correlation between X1 and Y (controlling for X2) is the correlation between the part of X1 that is not related to X2 and Y:
+
+$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{\sqrt{1-r_{X1X2}^2}}$$
+
+```{r}
+r_yx1  <- cor(data$weight, data$age)
+r_yx2  <- cor(data$weight, data$height)
+r_x1x2 <- cor(data$age,    data$height)
+
+semi_partial <- (r_yx1 - (r_yx2 * r_x1x2)) / (sqrt(1 - (r_x1x2^2)))
+semi_partial
+```
+
+Notice the similarity between the formula for the semi-partial correlation and the formula for the standardized regression coefficient.
+
+## Standardized Regression Coefficient
+
+The equation for calculating the standardized regression coefficient is:
+
+$$\large r_{Y(X1.X2)} = \frac{r_{YX1}-r_{YX2}r_{X1X2}}{1-r_{X1X2}^2}$$
+
+```{r}
+std_regr_coef <- (r_yx1 - (r_yx2 * r_x1x2)) / ((1 - (r_x1x2^2)))
+std_regr_coef
+```
+
+# Semi-Partial and Partial Correlations
+
+You can also use functions in the `{ppcor}` package to calculate semi-partial and partial correlations more quickly.
+
+## Semi-partial Correlation
+
+```{r}
+semi_partial_cor <- spcor.test(
+  x = data$weight, # Y (var of interest 1)
+  y = data$age,    # X1 (var of interest 2 - the one you want residualized)
+  z = data$height  # X2 (control variable)
+)
+
+semi_partial_cor
+
+semi_partial_cor$estimate^2
+```
+
+## Partial Correlation
+
+```{r}
+partial_cor <- pcor.test(
+  x = data$weight, # Y (var of interest 1)
+  y = data$age,    # X1 (var of interest 2)
+  z = data$height  # X2 (control variable)
+)
+
+partial_cor
+
+partial_cor$estimate^2
+```
+
+> **Question** What's the difference conceptually in how we should understand the partial correlation between `weight` and `age` and the semi-partial correlation between `weight` and `age`?
+
+Is there a way to test if `pcor.test` is really only predicting the variation in Y that is not already explained by X2?
+
+```{r}
+cor(resid(lm(weight ~ height, data = data)),
+    resid(lm(age    ~ height, data = data)))
+```
+
+# Significance Testing: The Model Comparison Approach
+
+## Testing the Significance of the Overall Model
+
+A helpful way of framing the null hypothesis we want to test is using the model comparison approach. In this approach, you construct two models. One model represents what you would expect if the null hypothesis was true, and one model represents the alternative hypothesis. The model representing the alternative hypothesis includes the predictor(s) you want to test the significance of. The model representing the null hypothesis does not include these predictor(s). These predictors should be the *only* thing that differs between the two models.
+
+Testing the significance of the overall model (AKA, the omnibus test), means examining whether, as a set, both `age` and `height` account for a significant amount of variation in `weight` scores.
+
+We can test this by comparing two different models:
+
+$$Model 1: W_i = \beta_0 + \epsilon_i$$
+
+$$Model 2: W_i = \beta_0 + \beta_1A_i + \beta_2H_i + \epsilon_i$$
+
+Where the null hypothesis states:
+
+$$H0: \beta_1 = \beta_2 = 0$$
+
+And the alternative hypothesis states:
+
+$$H1: \beta_1 \neq 0 \; \textrm{AND/OR} \; \beta_2 \neq 0 $$
+
+The key to the *model comparison approach* is comparing the amount of unaccounted for error remaining when Model 1 is used compared to when Model 2 is used. Then, we can test whether the difference in the amount of unaccounted for error remaining between the two models is significant.
+
+Let's visualize Model 1.
+
+```{r}
+ggplot(data = data, aes(x = name, y = weight)) +
+  geom_point(color = "red3") +
+  geom_hline(yintercept = mean(data$weight), 
+             color      = "turquoise4") +
+  theme_bw()
+```
+
+Now, let's run Model 1 and see how much error is left unaccounted for. Save Model 1 to `model_1`.
+
+```{r}
+model_1 <- lm(weight ~ 1, data = data)
+```
+
+Let me introduce a new way of looking at the output of a regression analysis, the `anova()` function. This function gives us the SSE (the amount of unaccounted for error remaining in Model 1).
+
+```{r}
+model_1_anova <- anova(model_1)
+model_1_anova
+```
+
+The Sum of Squares on the *residuals* row corresponds to the SSE. That is, if you were to calculate the distance between each person's actual weight and the weight predicted by the model (in this case, the mean), square those distances, and sum them up, you would get 9,335.7.
+
+Let's visualize Model 2.
+
+```{r}
+scatter3d(formula     = weight ~ age + height, 
+          data        = data, 
+          # labels
+          xlab        = "Age", 
+          ylab        = "Weight", 
+          zlab        = "Height",
+          # colours
+          point.col    = "red3",
+          surface.col  = "turquoise4",
+          neg.res.col  = "darkorange1", 
+          pos.res.col  = "darkorange1",
+          axis.col     = rep("black", 3))
+```
+
+Now, let's run Model 2 and see how much error is left unaccounted for. Save Model 2 to `model_2`.
+
+```{r}
+model_2       <- lm(weight ~ age + height, data = data)
+model_2_anova <- anova(model_2)
+model_2_anova
+```
+
+Look at the residuals row again to get the SSE. The amount of unaccounted for error remaining when we use model 2 is 2,120.1. An improvement from Model 1!
+
+How much was SSE reduced by using Model 2 instead of Model 1? Save the output to a variable called `ssr` (i.e., sum of squares reduced).
+
+```{r}
+model_1_sse <- model_1_anova$`Sum Sq`[1]
+model_2_sse <- model_2_anova$`Sum Sq`[3]
+
+ssr <- model_1_sse - model_2_sse
+ssr
+```
+
+## Model Comparison in a Single Step Using the `anova()` function
+
+We can give both models as arguments to the `anova()` function to make the model comparison in a single step and test whether the reduction in SSE is significant. Save the results of the model comparison to an object called `model_comparison`.
+
+```{r}
+model_comparison <- anova(model_1, model_2)
+model_comparison
+```
+
+Let's also calculate how much we reduced the amount of unaccounted for error using Model 2 compared to Model 1 as a proportion of the total amount of unaccounted for error we started with in Model 1. Save the output to a variable called `per` (i.e., proportion_error_reduced).
+
+```{r}
+per <- (model_1_sse - model_2_sse) / model_1_sse
+per
+```
+
+> **Question** What does this proportional reduction in error mean?
+
+> **Question** What is the more familiar term for this value?
+
+Look again at our summary output if we run our multiple regression model (i.e., `model_2`) and see how our results map on.
+
+```{r}
+summary(model_2)
+```
+
+The statistics given at the bottom of the summary output correspond to a test of the significance of the *overall model* i.e., the *omnibus test*.
+
+# Significance Testing: The Model Comparison Approach
+
+## Testing the Significance of Specific Predictor(s)
+
+We can also construct a model comparison to represent the null hypothesis we want to test to see if a specific predictor in the model is significant. Let's do an example testing the significance of Height in our multiple regression model.
+
+$$Model 1: W_i = \beta_0 + \beta_1A_i + \epsilon_i$$
+
+$$Model 2: W_i = \beta_0 + \beta_1A_i + \beta_2H_i + \epsilon_i$$
+
+Where the null hypothesis states:
+
+$$H0: \beta_2 = 0$$
+
+And the alternative hypothesis states:
+
+$$H1: \beta_2 \neq 0$$
+
+Construct Model 1 and Model 2. Store in variables labelled `model_1` and `model_2`, respectively.
+
+```{r}
+model_1 <- lm(weight ~ age, data = data)
+model_2 <- lm(weight ~ age + height, data = data)
+```
+
+Compare the models using the `anova()` function. Save the results of the model comparison to an object called `model_comparison`.
+
+```{r}
+model_comparison <- anova(model_1, model_2)
+model_comparison
+```
+
+Compute $R^2$.
+
+```{r}
+r_squared <- model_comparison$`Sum of Sq`[2] / model_comparison$RSS[1]
+r_squared
+```
+
+Look at summary output from Model 2 again.
+
+```{r}
+summary(model_2)
+```
+
+There's equivalence between what we've done using the model comparison approach and the *t*-test approach that's used to test the significance of the specific predictors in the model in the summary output. Notice what we get if we take the square root of the F-statistic from the model comparison output.
+
+```{r}
+sqrt(model_comparison$F[2])
+```
+
+And also notice the correspondence in the p-values.
+
+```{r}
+model_comparison$`Pr(>F)`[2]
+```
+
+# Minihacks
+
+Use the data from [Kay (2021)](https://www.sciencedirect.com/science/article/pii/S0092656621000659) for these minihacks.
+
+```{r}
+df <- import(file     = paste("https://raw.githubusercontent.com",
+                                "uopsych",
+                                "psy612",
+                                "master",
+                                "labs",
+                                "lab-4",
+                                "data",
+                                "data_kay2021.csv",
+                                sep = "/"),
+               setclass = "tibble")
+
+df
+```
+
+# Minihack 1
+
+Say a researcher is interested in whether there is a relationship between the tendency to believe in conspiracy theories (Y = `conspiracy`) and paranoia (X1 = `paranoia`) when controlling for person's general tendency to have delusions (X2 = `delusions`). Calculate the semi-partial and partial correlations for this scenario. Explain the difference in what the semi-partial versus the partial correlation means.
+
+```{r}
+# semi partial
+spcor.test(
+  x = df$conspiracy, # Y (var of interest 1)
+  y = df$paranoia,    # X1 (var of interest 2 - the one you want residualized)
+  z = df$delusions  # X2 (control variable)
+)
+
+spcor.test(
+  x = df$conspiracy, # Y (var of interest 1)
+  y = df$paranoia,    # X1 (var of interest 2 - the one you want residualized)
+  z = df$delusions  # X2 (control variable)
+)$estimate^2
+
+# partial
+pcor.test(
+  x = df$conspiracy, # Y (var of interest 1)
+  y = df$paranoia,    # X1 (var of interest 2 - the one you want residualized)
+  z = df$delusions  # X2 (control variable)
+)
+
+pcor.test(
+  x = df$conspiracy, # Y (var of interest 1)
+  y = df$paranoia,    # X1 (var of interest 2 - the one you want residualized)
+  z = df$delusions  # X2 (control variable)
+)$estimate^2
+```
+
+# Minihack 2
+
+Run a multiple regression predicting the tendency to believe in conspiracy theories (Y = `conspiracy`) from paranoia (X1 = `paranoia`) and delusional ideation (X2 = `delusions`). Interpret the meaning of the regression coefficients in your output.
+
+```{r}
+# multiple regression
+mini_model_1 <- lm(conspiracy ~ paranoia + delusions, data = df)
+
+summary(mini_model_1)
+```
+
+# Minihack 3
+
+Treat the model you ran in minihack 2 as Model 1. Make a new model, Model 2, that includes all the predictors in Model 1 plus the desire for uniqueness (`uniqueness`) and the desire for control (`control`).
+
+Perform a model comparison to test whether the variation in the tendency to believe in conspiracy theories is accounted for by a desire for uniqueness and control above and beyond the variation already accounted for by paranoia and delusional ideation.
+
+Report the change in SSE between Model 1 and Model 2, the F-statistic with its degrees of freedom, the *p*-value. Also, calculate $R^2$.
+
+```{r}
+# ceate model_2
+mini_model_2 <- lm(conspiracy ~ paranoia + delusions + uniqueness + control, data = df)
+
+# compare models
+comparison <- anova(mini_model_1, mini_model_2)
+comparison
+
+# r_squared
+comparison$`Sum of Sq`[2] / comparison$RSS[1]
+
+# delta_r_squared
+summary(mini_model_2)$r.squared - summary(mini_model_1)$r.squared
+```
