@@ -1,0 +1,224 @@
+---
+title             : "Lab 9 Example papaja"
+shorttitle        : "lab 9"
+
+author: 
+  - name          : "Cameron S. Kay"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Department of Psychology, 1227 University of Oregon, Eugene, OR, 97403"
+    email         : "ccostell@uoregon.edu"
+  - name          : "A second author"
+    affiliation   : "1"
+  - name          : "A third author"
+    affiliation   : "2"
+
+affiliation:
+  - id            : "1"
+    institution   : "University of Oregon"
+  - id            : "2"
+    institution   : "University of British Columbia"
+
+authornote: |
+  Cameron S. Kay, University of Oregon, Department of Psychology, 1227 University of Oregon, Eugene, OR, 97403
+
+
+abstract: |
+  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
+  
+  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
+  
+  One sentence clearly stating the **general problem** being addressed by  this particular study.
+  
+  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
+  
+  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
+  
+  One or two sentences to put the results into a more **general context**.
+  
+  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "Example, papaja, reproducible reporting"
+wordcount         : "X"
+
+bibliography      : ["r-references.bib", "lab-9.bib"]
+
+floatsintext      : yes # change if you want tables/figures in text rather than at the end
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : no # very cool option now that masked review has become more common
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man" # change to doc to look more like journal article.
+output            : papaja::apa6_pdf
+# need this for Tables to be single spaced
+header-includes:
+  - \usepackage{setspace}
+  - \AtBeginEnvironment{tabular}{\singlespacing}
+  - \AtBeginEnvironment{lltable}{\singlespacing}
+  - \AtBeginEnvironment{tablenotes}{\doublespacing}
+  - \captionsetup[table]{font={stretch=1.5}}
+  - \captionsetup[figure]{font={stretch=1.5}}
+  - \raggedbottom
+  - \setlength{\parskip}{0pt}
+---
+
+```{r setup, include = FALSE}
+if(!"corx" %in% rownames(installed.packages())) install.packages("corx")
+
+# load required packages
+library(papaja)
+library(tidyverse) 
+library(psych)     
+library(corx)
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+We could start our introduction here, potentially saying something about the history of the Big Five [@goldberg1990alternative], or about Roberts and colleagues [-@roberts2005]. We could also mention @mcclelland1993statistical.
+
+# Methods
+
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study.
+
+## Participants
+
+We have `r nrow(psych::bfi)` participants who completed some or all of the Big Five.
+
+## Material
+
+## Procedure
+
+## Data analysis
+
+We used `r cite_r("r-references.bib")` for all our analyses.
+
+# Results
+
+```{r descrips-tab, results = "asis" }
+b5 <- bfi %>% 
+  cbind(scoreVeryFast(keys = bfi.keys, items = bfi))
+
+descriptives <- b5 %>%
+  # select the columns for agreeableness to openness
+  select(agree:openness) %>% 
+  # convert into long format
+  gather(scale, score) %>% 
+  # group_by trait
+  group_by(scale) %>% 
+  # calculate the mean, median, sd, min, and max for each trait
+  summarize(
+    Mean   = mean(score), 
+    Median = median(score), 
+    SD     = sd(score), 
+    Min    = min(score),
+    Max    = max(score))
+
+apa_table(descriptives, 
+          caption = "Descriptive statistics of Big Five Scale Scores.", 
+          note    = "This table was created with apa_table().", 
+          escape  = TRUE)
+```
+
+```{r scale-intercors}
+cor <- b5 %>%
+  # select the columns for agreeableness to openness
+  select(agree:openness) %>% 
+  # create the correlation matrix
+  corx(triangle = "lower",
+       stars    = c(0.05, 0.01, 0.001),
+       describe = c(`$M$` = mean, `$SD$` = sd)) 
+```
+
+
+```{r scale-intercors-tbl, results = "asis"}
+apa_table(cor$apa, 
+          caption = "Example correlation matrix",
+          note    = "* p < 0.05; ** p < 0.01; *** p < 0.001",
+          escape  = TRUE)
+```
+
+```{r regressions}
+# tidy the data
+b5 <- b5 %>% 
+  # convert education to a factor and strings to the numbers
+  mutate(
+    education = as.factor(education),
+    education = case_when(education == 1 ~ "Some HS",
+                          education == 2 ~ " (Finished HS)",
+                          education == 3 ~ " (Some College)",
+                          education == 4 ~ " (College Grad)",
+                          education == 5 ~ " (Grad Degree)")) %>%
+  # remove rows where conscientiousness, age, or education are NA
+  filter(!is.na(conscientious),
+         !is.na(age),
+         !is.na(education))
+
+# fit the regression models
+model_1 <- lm(conscientious ~ age,             data = b5)
+model_2 <- lm(conscientious ~ age + education, data = b5)
+
+# model 1 results
+model_1_results <- apa_print(model_1)
+
+# model 2 results
+model_2_results <- apa_print(model_2)
+
+# model comparison results
+model_comp_results <- apa_print(list(model_1, 
+                                     model_2),
+                                boot_samples = 0)
+```
+
+```{r reg-models-tbl, results = "asis"}
+model_comp_results$table %>% 
+  apa_table(caption = "Model Comparison: Conscientiousness by Age and Age + Education",
+            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001",
+            escape  = TRUE)
+```
+
+(ref:fig-ageXconsc-cap) Conscientiousness by Age.
+
+```{r fig-ageXconsc, fig.cap="(ref:fig-ageXconsc-cap)"}
+ggplot(b5, aes(x = age, y = conscientious)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Age",
+       y = "Conscientiousness") +
+  # theme_apa puts it in apa format
+  theme_apa(box = TRUE)
+```
+
+We calculated scale scores for each of the Big Five. Descriptive statistics for each of the Big Five personality traits are shown in Table\ \@ref(tab:descrips-tab), where it is apparent that means were near the scale midpoints of 4.5, with the exception of neuroticism which had a much lower mean of `r printnum(mean(b5$neuroticism, na.rm = TRUE))`.
+
+Scale inter-correlations can be found in Table\ \@ref(tab:scale-intercors-tbl), where one can see that the smallest correlation was between neuroticism and opennes (*r* = `r printnum(cor$r["neuroticism","openness"])`) and the largest correlation was between extraversion and agreeableness (*r* = `r printnum(cor$r["agree","extraversion"])`).
+
+We next examined the extent to which grand-mean centered age and education are related to conscientiousness, based on the postulates of social investment theory [@roberts2005]. The results from a model with just age and a model with age and education are shown in Table\ \@ref(tab:reg-models-tbl) below. Age had a small (but significant) positive association with conscientiousness, both when education was (`r model_2_results$full_result$age`) and was not (`r model_1_results$full_result$age`) included as a covariate. Education significantly (but modestly) improved the model fit (`r model_comp_results$full_result`). Interestingly, the pattern of results did not follow a monotonic increase from some highschool to graduate degree. In fact, the only significant difference in conscientiousness across education was between participants who didn't finish high school and participants who reported having some college (`r model_2_results$full_result$education_Some_College`). At the sample average age, participants who didn't finish highschool had an average conscientiousness score of ($M_{SomeHS}$ = `r printnum(model_2$coefficients[["(Intercept)"]])`) while participants with some college had an average conscientiousness score of ($M_{SomeCollege}$ = `r printnum(model_2$coefficients[["(Intercept)"]] + model_2$coefficients[["education (Some College)"]])`). The remaining effects of education were small and non-significant (see Table\ \@ref(tab:reg-models-tbl)). 
+
+Figure\ \@ref(fig:fig-ageXconsc) depicts the small, linear increase of conscientiousness across the age range of our participants. 
+
+# Discussion
+
+
+\newpage
+
+# References
+```{r create_r-references}
+r_refs(file = "r-references.bib")
+```
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id = "refs"></div>
+\endgroup
