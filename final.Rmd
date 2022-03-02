@@ -24,7 +24,7 @@ Be sure to include the statistical tests, interpretation of statistical tests, a
 
 ## Report format
 
-Your report should be written in Rmarkdown. It is strongly recommended that you use the `papaja` template, but if you have your own formatting preferences, you may use those instead. Be sure to include each of the following:
+Your report should be written in Rmarkdown. You might consider using the `papaja` template, but if you have your own formatting preferences, you may use those instead. Be sure to include each of the following:
 
   1. a brief (one paragraph maximum) description of the research design, including the measurement of variables **(5 points)**;
   2. your research question and hypotheses **(5 points)**;
