@@ -56,7 +56,9 @@ navbar:
       - text: "7-Continuous x Categorical Interactions"
         href: labs/lab-7/lab-7-complete.html    
       - text: "8-Factorial ANOVA"
-        href: labs/lab-8/lab-8.html   
+        href: labs/lab-8/lab-8.html 
+      - text: "9-Reproducible Reporting with `{papaja}`"
+        href: labs/lab-9/lab-9.html 
     - text: Homework
       href: homework.html
     - text: Final Project
