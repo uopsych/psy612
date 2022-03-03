@@ -218,8 +218,8 @@ sim_con = function(n){
     x[outside_range] = rnorm(length(outside_range), 0, .5) 
     outside_range = which(x &gt; 1 | x &lt; -1)  # check
   }
-  
-  rounded = round(x/.2)*.2                 # convert to 9 point scale
+  # convert to 9 point scale
+  rounded = plyr::round_any(x, accuracy = .25)  
   return(rounded)                          # output of function
 }
 ```
@@ -239,8 +239,8 @@ table(X)
 
 ```
 ## X
-##   -1 -0.8 -0.6 -0.4 -0.2    0  0.2  0.4  0.6  0.8    1 
-##    1    3    9   12   18   14   14   10   13    4    2
+##    -1 -0.75  -0.5 -0.25     0  0.25   0.5  0.75     1 
+##     2     7    10    22    16    17    18     5     3
 ```
 
 ```r
@@ -248,7 +248,7 @@ cor(X,Z)
 ```
 
 ```
-## [1] -0.1044718
+## [1] -0.1427566
 ```
 ---
 
@@ -267,20 +267,20 @@ summary(lm(Y ~ X*Z))
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -11.8212  -2.4142   0.1027   2.5887  12.5324 
+## -11.5852  -2.3361   0.0421   2.4987  12.6863 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)  0.871585   0.428996   2.032   0.0449 *
-## X           -1.046351   0.953827  -1.097   0.2754  
-## Z            0.008329   1.014069   0.008   0.9935  
-## X:Z          4.317757   2.522180   1.712   0.0901 .
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)   0.8532     0.4322   1.974   0.0512 .
+## X            -0.8926     0.9387  -0.951   0.3441  
+## Z            -0.1403     1.0104  -0.139   0.8899  
+## X:Z           3.2863     2.2175   1.482   0.1416  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.252 on 96 degrees of freedom
-## Multiple R-squared:  0.03981,	Adjusted R-squared:  0.009806 
-## F-statistic: 1.327 on 3 and 96 DF,  p-value: 0.2702
+## Residual standard error: 4.271 on 96 degrees of freedom
+## Multiple R-squared:  0.03114,	Adjusted R-squared:  0.0008583 
+## F-statistic: 1.028 on 3 and 96 DF,  p-value: 0.3836
 ```
 
 ---
@@ -362,7 +362,7 @@ mean(obeta_xz)
 ```
 
 ```
-## [1] 0.4918059
+## [1] 0.4579002
 ```
 
 ![](18-power-3_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
@@ -383,7 +383,7 @@ mean(ot_xz)
 ```
 
 ```
-## [1] 0.2338885
+## [1] 0.218902
 ```
 
 ![](18-power-3_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
@@ -407,10 +407,10 @@ sum(osig)
 ```
 
 ```
-## [1] 1
+## [1] 2
 ```
 
-In our simulation, 66% of experimental studies were statistically significant, whereas only 1% of observational studies were significant. Remember, we built our simulation based on data where there really is an interaction effect (i.e., the null is false). 
+In our simulation, 66% of experimental studies were statistically significant, whereas only 2% of observational studies were significant. Remember, we built our simulation based on data where there really is an interaction effect (i.e., the null is false). 
 
 McClelland and Judd found that 74% of experimental studies and 9% of observational studies were significant.
 
@@ -699,7 +699,7 @@ $$
 
 3-way (and higher) interactions are incredibly difficult to interpret, in part because they represent incredibly complex processes. 
 
-If you have a solid theoretical rationale for conducting a 3-day interaction, be sure you've collected enough subjects to power your test (see above). 
+If you have a solid theoretical rationale for conducting a 3-way interaction, be sure you've collected enough subjects to power your test (see above). 
 
 ---
 
