@@ -15,96 +15,22 @@ output:
 library(tidyverse)
 ```
 
-## Reminder
+## Announcements
 
-Go to lab on Friday!!!
+* Download and install LaTex before lab tomorrow.
 
-  * Download LaTex before lab starts.
-
-Homework 2 due on Monday (9 am)
+* Homework 3 due next Friday 
 
 ---
 
 ## Last time...
 
 Factorial ANOVA
-* Estimated marginal means
-* Estimated cell means
-* Sums of squares
-
----
-
-## ANOVA vs Regression
-
-```{r, echo = F}
-set.seed(23)
-SD=120
-
-DV_Slow_N <- rnorm(20,mean=600,sd=SD) # draw 20 from normal distribution
-DV_Slow_C <- rnorm(20,mean=590,sd=SD) # draw 20 from normal distribution
-DV_Slow_U <- rnorm(20,mean=585,sd=SD) # draw 20 from normal distribution
-
-DV_Med_N <- rnorm(20,mean=550,sd=SD) # draw 20 from normal
-DV_Med_C <- rnorm(20,mean=450,sd=SD) # draw 20 from normal
-DV_Med_U <- rnorm(20,mean=300,sd=SD) # draw 20 from normal
-
-DV_Fast_N <- rnorm(20,mean=310,sd=SD) # draw 20 from normal
-DV_Fast_C <- rnorm(20,mean=305,sd=SD) # draw 20 from normal
-DV_Fast_U <- rnorm(20,mean=290,sd=SD) # draw 20 from normal
-
-# put DVs together in a data frame; specify Speed and Noise Values
-Data = data.frame(Time = c(DV_Slow_N,
-                           DV_Slow_C,
-                           DV_Slow_U,
-                           DV_Med_N,
-                           DV_Med_C,
-                           DV_Med_U,
-                           DV_Fast_N,
-                           DV_Fast_C,
-                           DV_Fast_U),
-                  Speed = rep(c("Slow", "Medium", "Fast"), each = 60),
-                  Noise = rep(rep(c("None", "Controllable", "Uncontrollable"), 
-                                  each = 20), 3)) #repeat each label 20 times, then repeat that whole sequence 3 times
-Data$Speed = factor(Data$Speed, levels = c("Slow", "Medium", "Fast")) # set order of levels as I want them presented
-Data$Noise = factor(Data$Noise, levels = c("None", "Controllable", "Uncontrollable")) # set order of levels as I want them presented
-```
-
-.pull-left[
-### Factorial ANOVA
-
-Interaction tests whether there are differences in differences.
-
-**Simple main effect** -- the effect of Factor A at a specific level of Factor B
-]
-.pull-right[
-### Regression
-
-Interaction tests whether slope changes. 
-
-**Simple slopes** -- the slope of Variable A at a specific level of Variable B
-]
 
 
----
+## Today...
 
-```{r, message = F, warning = F}
-library(car) 
-fit = lm(Time~Speed*Noise, data = Data)
-summary(aov(fit))
-Anova(fit, type = 2)
-```
----
-```{r}
-fit = lm(Time~Speed*Noise, data = Data)
-summary(fit)
-```
----
-```{r, message = F}
-library(emmeans)
-fit.grid = ref_grid(fit)
-pairs(fit.grid, adjust = "holm")
-```
-
+* Powering interactions
 
 ---
 
