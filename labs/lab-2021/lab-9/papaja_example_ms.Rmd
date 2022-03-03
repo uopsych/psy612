@@ -88,8 +88,8 @@ We have `r nrow(psych::bfi)` participants who completed some or all of the Big F
 ## Procedure
 
 ## Data analysis
-We used `r cite_r("r-references.bib")` for all our analyses.
 
+We used `r cite_r("r-references.bib")` for all our analyses.
 
 # Results
 

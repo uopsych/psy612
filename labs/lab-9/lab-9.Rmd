@@ -62,6 +62,14 @@ library(corx)
 
 OK, now we're ready to go! Below I'll briefly review some of the functions we'll be using today before we dive into hands-on work in a `{papaja}` template .Rmd.
 
+# Inserting object values in text
+
+The information covered in this section is not specific to `{papaja}`, but it will be very useful when it comes to preparing manuscripts using `{papaja}`.
+
+To insert a value stored within an object into text in Rmarkdown, you can write it as "r name_of_object" (replacing the quotes with back ticks; i.e., \`).
+
+For example, if you stored the value `5` in an object called `x` you would write "r x" (replacing the quotes with back ticks) to have the number 5 inserted in the text when you knit the Rmarkdown document.
+
 # Tables
 
 There are a few options for making APA-style tables in `{papaja}`, each of which has different strengths and weaknesses.
@@ -73,14 +81,13 @@ We'll start by going over `apa_table()` from `{papaja}`.`apa_table()` can be use
 3.  Pass this formatted dataframe to `apa_table()`, and set the caption and note (if applicable).
 4.  Always **set the chunk option `results = "asis"`**.
 
-## Table of Descriptives
+## Table of descriptives
 
 Let's start by getting a table of descriptive stats. We'll use the `bfi` data from the `{psych}` package and use `bfi.keys` to score the five scale scores.
 
 ```{r}
 b5 <- bfi %>% 
   cbind(scoreVeryFast(keys = bfi.keys, items = bfi))
-
 ```
 
 First, we create a dataframe with the descriptive statistics of our Big Five scales. We'll use some of the `{dplyr}` functions for this.
@@ -100,8 +107,6 @@ descriptives <- b5 %>%
     SD     = sd(score), 
     Min    = min(score),
     Max    = max(score))
-
-descriptives
 ```
 
 Next, we format the numerical columns using `printnum()` function from `{papaja}` for this. In essence, this puts everything to 2 decimal points (you can change this), pads with zeroes when necessary, and turns those to strings so they print correctly. "-1" indicates that the first column is non-numerical so does not apply.
@@ -110,8 +115,6 @@ Next, we format the numerical columns using `printnum()` function from `{papaja}
 descriptives <- descriptives %>%
   # if the column is numeric, apply the printnum function
   mutate_if(is.numeric, printnum)
-
-descriptives
 ```
 
 Then, we run `apa_table()` on the dataframe, and we can add a caption and note. You have to set `results = "asis"` in the chunk options for it to render correctly:
@@ -119,13 +122,12 @@ Then, we run `apa_table()` on the dataframe, and we can add a caption and note. 
 ```{r descrips-tab, results = "asis"}
 apa_table(descriptives, 
           caption = "Descriptive statistics of Big Five Scale Scores.", 
-          note    = "This table was created with apa_table().", 
-          escape  = TRUE)
+          note    = "This table was created with apa_table().")
 ```
 
-Now we have a nicely formatted APA-style table that is fully reproducible. We can also reference the table within the `{papaja}` .Rmd with `\@ref(tab:descrips-tab)` as you'll see when we walk through the example script.
+Now we have a nicely formatted APA-style table that is fully reproducible.
 
-## Table of Correlations
+## Table of correlations
 
 Next, let's get a table of scale inter-correlations for the same dataset. Correlation tables are a little difficult in `{papaja}`, but the `corx()` function from the `{corx}` package makes it a little easier.
 
@@ -143,15 +145,13 @@ cor <- b5 %>%
        stars    = c(0.05, 0.01, 0.001),
        describe = c(`$M$` = mean, `$SD$` = sd)) 
 
-cor
-
 apa_table(cor$apa, 
           caption = "Example correlation matrix",
           note    = "* p < 0.05; ** p < 0.01; *** p < 0.001",
           escape  = TRUE)
 ```
 
-## Regression Tables
+## Regression tables
 
 Now we'll get a regression table using another method available in `{papaja}`. We'll use the `apa_print()` function. This function takes statistical results as input and produces a list containing an APA-style table and several objects useful for printing results in-text (covered below).
 
@@ -159,7 +159,7 @@ The workflow for this method is:
 
 1.  Conduct statistical test(s).\
 2.  Create the APA-style results with `apa_print()`.
-3.  Extract the table from the `apa_print` object with `$table`.
+3.  Extract the table from the `apa_print()` object with `$table`.
 
 Let's do that with two regression models. Let's regress `conscientious` on `age` (model 1) and `conscientious` on `age` *and* `education` (model 2).
 
@@ -168,14 +168,18 @@ First, fit the two regression models.
 ```{r reg}
 # tidy the data
 b5 <- b5 %>% 
-  # convert education to a factor and strings to the numbers
-  mutate(
-    education = as.factor(education),
-    education = case_when(education == 1 ~ "Some HS",
-                          education == 2 ~ " (Finished HS)",
-                          education == 3 ~ " (Some College)",
-                          education == 4 ~ " (College Grad)",
-                          education == 5 ~ " (Grad Degree)")) %>%
+  # convert education to a factor
+  mutate(education = case_when(education == 1 ~ "Some HS",
+                               education == 2 ~ "Finished HS",
+                               education == 3 ~ "Some College",
+                               education == 4 ~ "College Grad",
+                               education == 5 ~ "Grad Degree"),
+         education = factor(education, 
+                            levels = c("Some HS",
+                                       "Finished HS",
+                                       "Some College",
+                                       "College Grad",
+                                       "Grad Degree")),) %>%
   # remove rows where conscientiousness, age, or education are NA
   filter(!is.na(conscientious),
          !is.na(age),
@@ -210,8 +214,7 @@ You could get a table for just the Model 1 results using the code below:
 ```{r reg-tbl-1, results = "asis"}
 model_1_results$table %>% 
   apa_table(caption = "Model Regressing Conscientiousness on Age",
-            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001",
-            escape  = TRUE)
+            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
 ```
 
 Or we could get a table for just the Model 2 results:
@@ -219,8 +222,7 @@ Or we could get a table for just the Model 2 results:
 ```{r reg-tbl-2, results = "asis"}
 model_2_results$table %>% 
   apa_table(caption = "Model Regressing Conscientiousness on Age & Education",
-            note = "* p < 0.05; ** p < 0.01; *** p < 0.001",
-            escape = TRUE)
+            note = "* p < 0.05; ** p < 0.01; *** p < 0.001")
 ```
 
 Finally, we can get these results together using the table stored in `model_comp_results`:
@@ -228,8 +230,7 @@ Finally, we can get these results together using the table stored in `model_comp
 ```{r reg-tbl-3, results = "asis"}
 model_comp_results$table %>% 
   apa_table(caption = "Model Comparison: Conscientiousness by Age and Age + Education",
-            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001",
-            escape  = TRUE)
+            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
 ```
 
 The last thing I'll mention here is that we can use the chunk labels for our table to reference them in text. For example, we could reference this last table by adding `Table \@ref(tab:reg-tbl-3)` in the `{papaja}` .Rmd.
@@ -281,7 +282,7 @@ b5 %>%
   theme_apa()
 ```
 
-# In-text Summaries of tests
+# In-text summaries of tests
 
 One of the most useful aspects of writing manuscripts in .Rmd and `{papaja}` is that we can report our results directly from the statistical models we run in R, reducing the likelihood of copy-and-pasting errors.
 
@@ -293,9 +294,9 @@ We can instead get the full result (including *t*, *df*, and *p*) by calling the
 
 > Age significantly predicted conscientiousness, `r model_1_results$full_result$age`.
 
-We could get the results of other slopes by changing out `$age` to reference other terms. For example, we could report the result of the difference between some high school and having finished high school with `model_2_results$estimate$education_Finished_HS`:
+We could get the results of other slopes by changing out `$age` to reference other terms. For example, we could report the result of the difference between some high school and having finished high school with `model_2_results$full_result$educationFinished_HS`:
 
-> Finishing highschool (vs. not finishing highschool) was not associated with Conscientiousness, `r model_2_results$full_result$education_Finished_HS`.
+> Finishing highschool (vs. not finishing highschool) was not associated with Conscientiousness, `r model_2_results$full_result$educationFinished_HS`.
 
 ## Regression model results
 
@@ -412,4 +413,3 @@ Today there is just one hack. For this hack, we want you to get started on your 
 -   Bonus points if you can reference the table and figure in-text.
 
 # References
-
