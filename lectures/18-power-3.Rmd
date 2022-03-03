@@ -215,8 +215,8 @@ sim_con = function(n){
     x[outside_range] = rnorm(length(outside_range), 0, .5) 
     outside_range = which(x > 1 | x < -1)  # check
   }
-  
-  rounded = round(x/.2)*.2                 # convert to 9 point scale
+  # convert to 9 point scale
+  rounded = plyr::round_any(x, accuracy = .25)  
   return(rounded)                          # output of function
 }
 ```
@@ -543,7 +543,7 @@ $$
 
 3-way (and higher) interactions are incredibly difficult to interpret, in part because they represent incredibly complex processes. 
 
-If you have a solid theoretical rationale for conducting a 3-day interaction, be sure you've collected enough subjects to power your test (see above). 
+If you have a solid theoretical rationale for conducting a 3-way interaction, be sure you've collected enough subjects to power your test (see above). 
 
 ---
 
