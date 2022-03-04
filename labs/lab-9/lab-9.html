@@ -283,7 +283,7 @@ div.tocify {
 <pre class="r"><code># install the devtools package if necessary
 if(!&quot;devtools&quot; %in% rownames(installed.packages())) install.packages(&quot;devtools&quot;)
 
-# install the stable development version of papaja from GitHub
+# install the stable development version of papaja from GitHub if necessary
 if(!&quot;papaja&quot; %in% rownames(installed.packages())) devtools::install_github(&quot;crsh/papaja&quot;)
 
 # load papaja
@@ -423,12 +423,11 @@ library(corx)</code></pre>
   # create the correlation matrix
   corx(triangle = &quot;lower&quot;,
        stars    = c(0.05, 0.01, 0.001),
-       describe = c(`$M$` = mean, `$SD$` = sd)) 
+       describe = c(M = mean, SD = sd)) 
 
 apa_table(cor$apa, 
           caption = &quot;Example correlation matrix&quot;,
-          note    = &quot;* p &lt; 0.05; ** p &lt; 0.01; *** p &lt; 0.001&quot;,
-          escape  = TRUE)</code></pre>
+          note    = &quot;* p &lt; 0.05; ** p &lt; 0.01; *** p &lt; 0.001&quot;)</code></pre>
 <caption>
 (#tab:corr_tab)
 </caption>
@@ -443,8 +442,8 @@ apa_table(cor$apa,
 <th align="left">2</th>
 <th align="left">3</th>
 <th align="left">4</th>
-<th align="left">$M$</th>
-<th align="left">$SD$</th>
+<th align="left">M</th>
+<th align="left">SD</th>
 </tr>
 </thead>
 <tbody>

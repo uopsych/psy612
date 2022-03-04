@@ -40,7 +40,7 @@ First, we need to install `{papaja}`. `{papaja}` is not yet on CRAN, so we have 
 # install the devtools package if necessary
 if(!"devtools" %in% rownames(installed.packages())) install.packages("devtools")
 
-# install the stable development version of papaja from GitHub
+# install the stable development version of papaja from GitHub if necessary
 if(!"papaja" %in% rownames(installed.packages())) devtools::install_github("crsh/papaja")
 
 # load papaja
@@ -143,12 +143,11 @@ cor <- b5 %>%
   # create the correlation matrix
   corx(triangle = "lower",
        stars    = c(0.05, 0.01, 0.001),
-       describe = c(`$M$` = mean, `$SD$` = sd)) 
+       describe = c(M = mean, SD = sd)) 
 
 apa_table(cor$apa, 
           caption = "Example correlation matrix",
-          note    = "* p < 0.05; ** p < 0.01; *** p < 0.001",
-          escape  = TRUE)
+          note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
 ```
 
 ## Regression tables
