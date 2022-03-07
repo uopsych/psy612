@@ -39,10 +39,10 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | -    | 2/24 | Factorial ANOVA                                  |                    |            |             |
 | -    | 2/25 | _Lab: ANOVA_                                     |                    |            |             |
 | 9    | 3/01 | Factorial ANOVA                                  | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
-| -    | 3/03 | Power and polynomials                            |                    |            |             |
+| -    | 3/03 | Power and 3-way Interactions                            |                    |            |             |
 | -    | 3/04 | _Lab: papaja_                                    |                    |            |             |
-| 10   | 3/08 | Polynomials and 3-way Interactions               | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
-| -    | 3/10 | WLS and Bootstrapping                            |                    |  Quiz 9    |             |
+| 10   | 3/08 | Polynomials and  Bootstrapping  | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
+| -    | 3/10 | Machine learning                           |                    |  Quiz 9    |             |
 | -    | 3/11 | _Lab: Bootstrapping_                             |                    |            | HW 3 Due    |
 |Finals| 3/18 |                                                  |                    |            | Final Project Due |         
 

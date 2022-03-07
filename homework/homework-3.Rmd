@@ -42,8 +42,6 @@ To receive full credit on this homework assignment, you must earn **30 points**.
 
 * Using the dataset `homework-happy`, run a two-predictor regression model predicting happiness by friendship and school success and the interaction between the two.
 
-* Describe in words exactly what each coefficient (there are 4) are telling us in this model. 
-
 * Describe in words exactly what the coefficients $b_1$, $b_2$, and $b_3$ are telling us in this model. 
 
 ## Question 2
