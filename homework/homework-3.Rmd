@@ -133,7 +133,7 @@ In this experiment, participants learn associations between scene and objects. I
 
 * Conduct a factorial analysis of variance of the outcome (similarity) measure using region of interest (CA23DG, CA1, PPA, and EVC) and learning status (IP and Pre) as factors. Report a summary of the results (source of variance, _df_, _SS_, _MS_, _F_, and _p_) in a table.
 
-* Display in a graph the means and 95% confidence intervals for the 2 x 5 design.
+* Display in a graph the means and 95% confidence intervals for the 2 x 4 design.
 
 * Calculate $\eta^2$ and partial $\eta^2$ for the main effects and interaction. Report these in a table. Which sums of squares method did you use and why?
 
