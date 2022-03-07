@@ -118,7 +118,7 @@ Refer to the dataset and model estimated in Question 5.2(#q5.2).
 
 Refer to the dataset and model estimated in Question 5.2(#q5.2).
 
-* Run a power analysis to determine sample size needed for the effect sizes found in the model fit above. (Note: the `pwr` package is a nice one to use but be sure to use the glm/regression one, `pwr.f2.test`, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)
+* Run a power analysis to determine sample size needed for the effect sizes found 90% of the time in the model fit above. (Note: the `pwr` package is a nice one to use but be sure to use the glm/regression one, `pwr.f2.test`, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)
 
 * The power analysis above does not give you the power for detecting differences between two cell means. Find the number of subjects needed for power of .90 with an effect size difference of .4 between two cell means, assuming no corrections for Type 1 error. (Hint: .4 is an unstandardized effect size, but most power functions require a standardized effect size. Some of the equations covered in PSY 611 may be helpful here.)
 
