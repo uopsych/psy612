@@ -118,7 +118,7 @@ mod1 = lm(points ~ talent, data = football)
 
 ... but we seem to have violated an assumption.
 
-```{r, echo = F}
+```{r, echo = F, warning = F, message = F}
 library(broom)
 aug1 = augment(mod1)
 ggplot(aug1, aes(x = .fitted, y = .resid)) +
