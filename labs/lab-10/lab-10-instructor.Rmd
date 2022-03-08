@@ -185,7 +185,45 @@ ci <- boot.ci(boot_r2, type = "perc")
 ci
 ```
 
-You might also be wondering what we get when we just call the `boot_r2` 
+You might also be wondering what we get when we just call the `boot_r2`:
+
+```{r}
+boot_r2
+```
+
+The `original` value refers to the estimate you would have obtained if you had not used bootstrapping, the `bias` value refers to the difference between the bootstrapped estimate and the estimate you would have obtained if you had not used bootstrapping, and `std.error` refers to the standard deviation of the sample distribution.
+
+Let's confirm that the`original` value really refers to the estimate we would have obtained if we did not use bootstrapping:
+
+```{r}
+# run original model
+fit <- lm(happiness ~ extraversion + 
+                      pos_express  + 
+                      soc_sup      + 
+                      optimism     + 
+                      exercise, 
+          data = df)
+
+# compare and contrast
+summary(fit)$r.squared
+boot_r2
+```
+
+Let's also confirm that the `bias` value really refers to the difference between the bootstrapped estimate and the estimate we would have obtained if we had not used bootstrapping.
+
+```{r}
+# compare and contrast
+mean(boot_r2$t) - boot_r2$t0
+boot_r2
+```
+
+Finally, let's confirm the `std.error` really refers to the standard deviation of the sample distribution.
+
+```{r}
+# compare and contrast
+sd(boot_r2$t)
+boot_r2
+```
 
 ## Plotting Bootstrapped Results
 
