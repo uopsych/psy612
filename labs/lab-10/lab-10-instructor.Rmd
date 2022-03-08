@@ -227,213 +227,224 @@ boot_r2
 
 ## Plotting Bootstrapped Results
 
-We can also generate plots to describe our bootstrapped distribution. One way is to produce a density plot. Let's do that using ggplot.
+We can also generate plots to describe our bootstrapped distribution. Let's do that using `{ggplot2}`. The only sort of tricky part is that we have to turn the bootstrapped results into a dataframe or tibble first. I've done this below using the `tibble()` function from the `{tidyverse}`
 
-The only sort of tricky part is that we have to turn the bootstrapped results into a dataframe or tibble first. I've done this below using the `tibble()` function from {tidyverse}.
+First, let's create a density plot
 
 ```{r}
-tibble(rsquared = boot_r2$t) %>% # turn to tibble
-  ggplot(aes(x = rsquared)) + # put statistic on the x axis (rsquared here)
-  geom_density(fill = "blue") + # add a geom_density
-  theme_minimal() # set them if you're so inclined
+# create a density 
+tibble(rsquared = boot_r2$t) %>%                   
+  ggplot(aes(x = rsquared)) +                      
+    geom_density(fill = "turquoise", alpha = .6) + 
+    theme_bw()                                     
 ```
 
 Alternatively, we could produce a histogram. Let's do that and also set up vertical lines for the 95% CI and Median values:
 
 ```{r}
-tibble(rsquared = boot_r2$t) %>% # turn to tibble
-  ggplot(aes(x = rsquared)) + # put stat on x axis
-  geom_histogram() + # add geom_histogram
-  geom_vline(aes(xintercept = CI$percent[4], # vertical line for 95% CI lower bound 
-                 color = "Lower 2.5%"), size = 2) + # Label it 
-  geom_vline(aes(xintercept = median(boot_r2$t), # vertical line for median
-                 color = "Median"), size = 2) + # label it
-  geom_vline(aes(xintercept = CI$percent[5], # # vertical line for 95% CI upper bound
-                 color = "Upper 2.5%"), size = 2) + # label it
-  theme_minimal() # set them if you like
+tibble(rsquared = boot_r2$t) %>% 
+  ggplot(aes(x = rsquared)) +
+    geom_histogram(fill = "turquoise", alpha = .6) + 
+    geom_vline(aes(xintercept = CI$percent[4],
+                   color      = "Lower 2.5%"), 
+               size     = 1,
+               color    = "blueviolet",
+               linetype = "dashed") +
+    geom_vline(aes(xintercept = median(boot_r2$t), 
+                   color      = "Median"), 
+               size  = 2,
+               color = "blueviolet") + 
+    geom_vline(aes(xintercept = CI$percent[5],
+                   color      = "Upper 2.5%"),
+               size     = 1,
+               color    = "blueviolet",
+               linetype = "dashed") +
+    theme_bw() 
 ```
 
 That plot contains a lot of useful information - we can see the lower limit is a little above .45 and the upper limit is right around .65, with the median value between .55 and .6. Plus, you get a sense of the shape of the distribution as well.
 
-
 # More advanced applications {#advanced}
 
-What we've done so far works pretty well, but there is some advantage to making a slightly more flexible function in more advanced or complicated cases. For example, let's say we wanted to compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
+What we've done so far works pretty well, but there are benefits to making a slightly more flexible function for more complicated cases. For example, let's say we wanted to compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
 
 ```{r}
-get_r2 <- function(d, i, formula){ # calling data d; calling index i
-  d2 <- d[i,] # subset data using the i argument
-  m <- lm(formula, data = d2) # this changed; now it runs 
-                              # whatever model we setup 
-                              # in the formula argument
-  rsq <- summary(m)$r.squared # extract r^2
-  return(rsq) # return r^2
+# create function
+get_r2 <- function(data, index, formula){
+  
+  data_subsetted <- data[index,] 
+  
+  fit            <- lm(formula,
+                      data = data_subsetted)
+  
+  rsq <- summary(fit)$r.squared
+  
+  return(rsq)
 }
+
 ```
 
-Next, we'll run `boot()`, changing the formula to each of the models we're interested in. FYI, you need to set the seed before each model if you want your results to be reproducible.
+Next, we'll run `boot()`, changing the formula to each of the models we're interested in.
 
 ```{r}
-set.seed(671)
-boot_r2_model1 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion, # formula
-                       R = 1000) # resamples
-set.seed(028383)
-boot_r2_model2 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express, # formula
-                       R = 1000) # resamples
+# set seed
+set.seed(42)
 
-set.seed(5421)
-boot_r2_model3 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express + 
-                         soc_sup, # formula
-                       R = 1000) # resamples
+# bootstrap r-squared for different models
+boot_r2_model1 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion,
+                       R = 1000) 
 
-set.seed(6777)
-boot_r2_model4 <- boot(df,     # data 
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express + 
-                         soc_sup + optimism, # formula
-                       R = 1000) # resamples
+boot_r2_model2 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express,
+                       R = 1000) 
 
-set.seed(9148)
-boot_r2_model5 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express + 
-                         soc_sup + optimism + exercise, # formula
-                       R = 1000) # resamples
+boot_r2_model3 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express + soc_sup,
+                       R = 1000) 
+
+boot_r2_model4 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
+                       R = 1000) 
+
+boot_r2_model5 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                       R = 1000) 
 ```
 
-Then we would want to pull out the bootstrapped estimates from each and label which model they came from. We'll do that for each below, specifying which model it is by creating a variable called `predictors` with the predictors that were included in the relevant model.
+Let's pull out the bootstrapped estimates from each model and label them with the name of the model they came from. Let's also list the predictors used by creating a variable called `predictors`.
 
 ```{r}
-r2_model1_results <- tibble(rsq = boot_r2_model1$t,
+r2_model1_results <- tibble(rsq        = boot_r2_model1$t,
                             predictors = "Extr.")
 
-r2_model2_results <- tibble(rsq = boot_r2_model2$t,
+r2_model2_results <- tibble(rsq        = boot_r2_model2$t,
                             predictors = "Extr. + Pos. Expr.")
 
-r2_model3_results <- tibble(rsq = boot_r2_model3$t,
+r2_model3_results <- tibble(rsq        = boot_r2_model3$t,
                             predictors = "Extr. + Pos. Expr. + Soc. Supp.")
 
-r2_model4_results <- tibble(rsq = boot_r2_model4$t,
+r2_model4_results <- tibble(rsq        = boot_r2_model4$t,
                             predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
 
-r2_model5_results <- tibble(rsq = boot_r2_model5$t,
+r2_model5_results <- tibble(rsq        = boot_r2_model5$t,
                             predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
 ```
 
-Then, we could put the dataframes together, and calculate medians and CIs for each of the models:
+Now, we can put the dataframes together, and calculate the medians and CIs for each of the models:
+
 ```{r}
-r2_all_models <- r2_model1_results %>% # row bind each df
+r2_all_models <- r2_model1_results %>%
   rbind(r2_model2_results) %>% 
   rbind(r2_model3_results) %>% 
   rbind(r2_model4_results) %>% 
   rbind(r2_model5_results) %>% 
-  group_by(predictors) %>% # group by predictors since we want a median and CI per model
+  group_by(predictors) %>%
   mutate(median = median(rsq),
-         lower = quantile(rsq, probs = .025),
-         upper = quantile(rsq, probs = .975))
+         lower  = quantile(rsq, probs = .025),
+         upper  = quantile(rsq, probs = .975))
 ```
 
 Finally, we could display the $R^2$ and bootstrapped CIs for each model to compare them.
 
 ```{r}
-ggplot(r2_all_models,
-       aes(x = predictors, y = rsq)) + # predictors on the x, rsq on the y
-  geom_pointrange(aes(y = median, ymin = lower, ymax = upper)) + # geom_linerange
-  geom_hline(yintercept = 0, color = "red") + # set a red line at 0
-  coord_flip() + # this flips the coordinates, which is useful when you have longer x-axis labels
-    labs(x = NULL, # remove x axis label
-         y = expression(paste(R^{2}, " (with bootstrapped 95% CIs)"))) + # label Y
-  theme_minimal()
+ggplot(r2_all_models, aes(x = predictors, y = rsq)) +
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
+                  color = "turquoise3") +
+  geom_hline(yintercept = 0, color = "blueviolet") +
+  coord_flip() +
+  labs(x = NULL,
+       y = expression(paste(R^{2}, " (with bootstrapped 95% CIs)"))) +
+  theme_bw()
 ```
 
-We could instead show their full distribution using `geom_density`, and color (fill) the density geoms according to which model they correspond to. Let's take a look at what that looks like:
+We could instead show their full distribution using `geom_density`, and fill the color of the density geoms according to the model they correspond to. Let's take a look at what that looks like:
 
 ```{r}
-ggplot(r2_all_models,
-       aes(x = rsq, fill = predictors)) + # rsq on x; set fill to predictors 
-  geom_density(alpha = .2) + # set alpha to .2 to make overlap easier to see
-    labs(x = expression(paste("Bootstrapped estimates of models' ", R^{2}))) + # set the xlabel
-  theme(legend.position="bottom") + 
-  guides(fill = guide_legend(nrow = 3))
+ggplot(r2_all_models, aes(x = rsq, fill = predictors)) + 
+  geom_density(alpha = .5) +
+  labs(x = expression(paste("Bootstrapped estimates of ", R^{2}))) +
+  guides(fill = guide_legend(nrow = 3)) +
+  scale_fill_viridis_d() +
+  theme_bw() +
+  theme(legend.position="bottom") 
 ```
 
-This is a nice visualization because it makes it more clear that adding optimism and then adding exercise seem to have the biggest impact on $R^2$, with the other three models showing a little more overlap. 
-
-
+This is a nice visualization because it makes it more clear that adding `optimism` and then adding `exercise` seem to have the biggest impact on $R^2$, with the other three models showing a little more overlap. 
 
 # Minihacks
 
 ## Minihack 1
 
-Using the same dataset we used here, calculate bootstrapped estimates of *adjusted* $R^2$ for the same 5 models we ran above:   
+Using the same dataset above, calculate bootstrapped estimates of *adjusted* $R^2$ for the same 5 models we ran above:   
 
 1. Happiness on Extraversion   
 2. Happiness on Extraversion & Positive Expressivity
 3. Happiness on Extraversion, Positive Expressivity, & Social Support   
 4. Happiness on Extraversion, Positive Expressivity, Optimism, & Social Support   
 5. Happiness on Extraversion, Positive Expressivity, Optimism, Social Support, & Exercise  
+
 ```{r}
-get_r2 <- function(d, i, formula){ # calling data d; calling index i
-  d2 <- d[i,] # subset data using the i argument
-  m <- lm(formula, data = d2) # this changed; now it runs 
-                              # whatever model we setup 
-                              # in the formula argument
-  rsq <- summary(m)$adj.r.squared # extract r^2
-  return(rsq) # return r^2
+# your code here
+
+get_r2 <- function(data, index, formula){
+  
+  data_subsetted <- data[index,] 
+  
+  fit            <- lm(formula,
+                      data = data_subsetted)
+  
+  rsq <- summary(fit)$adj.r.squared
+  
+  return(rsq)
 }
 
-set.seed(671)
-boot_adjr2_model1 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion, # formula
-                       R = 1000) # resamples
-set.seed(028383)
-boot_adjr2_model2 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express, # formula
-                       R = 1000) # resamples
+set.seed(42)
 
-set.seed(5421)
-boot_adjr2_model3 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express + 
-                         soc_sup, # formula
-                       R = 1000) # resamples
+boot_adjr2_model1 <- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion,
+                          R         = 1000) 
 
-set.seed(6777)
-boot_adjr2_model4 <- boot(df,     # data 
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express + 
-                         soc_sup + optimism, # formula
-                       R = 1000) # resamples
+boot_adjr2_model2 <- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion + pos_express,
+                          R         = 1000) 
 
-set.seed(9148)
-boot_adjr2_model5 <- boot(df,     # data
-                       get_r2, # function
-                       formula = happiness ~ extraversion + pos_express + 
-                         soc_sup + optimism + exercise, # formula
-                       R = 1000) # resamples
+boot_adjr2_model3 <- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion + pos_express + soc_sup,
+                          R = 1000) 
 
-adjr2_model1_results <- tibble(rsq = boot_adjr2_model1$t,
-                            predictors = "Extr.")
+boot_adjr2_model4 <- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
+                          R = 1000) 
 
-adjr2_model2_results <- tibble(rsq = boot_adjr2_model2$t,
-                            predictors = "Extr. + Pos. Expr.")
+boot_adjr2_model5 <- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                          R         = 1000) 
 
-adjr2_model3_results <- tibble(rsq = boot_adjr2_model3$t,
-                            predictors = "Extr. + Pos. Expr. + Soc. Supp.")
+adjr2_model1_results <- tibble(rsq        = boot_adjr2_model1$t,
+                               predictors = "Extr.")
 
-adjr2_model4_results <- tibble(rsq = boot_adjr2_model4$t,
-                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
+adjr2_model2_results <- tibble(rsq        = boot_adjr2_model2$t,
+                               predictors = "Extr. + Pos. Expr.")
 
-adjr2_model5_results <- tibble(rsq = boot_adjr2_model5$t,
-                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
+adjr2_model3_results <- tibble(rsq        = boot_adjr2_model3$t,
+                               predictors = "Extr. + Pos. Expr. + Soc. Supp.")
+
+adjr2_model4_results <- tibble(rsq        = boot_adjr2_model4$t,
+                               predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
+
+adjr2_model5_results <- tibble(rsq        = boot_adjr2_model5$t,
+                               predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
 
 adjr2_all_models <- adjr2_model1_results %>% # row bind each df
   rbind(adjr2_model2_results) %>% 
@@ -441,18 +452,9 @@ adjr2_all_models <- adjr2_model1_results %>% # row bind each df
   rbind(adjr2_model4_results) %>% 
   rbind(adjr2_model5_results) %>% 
   group_by(predictors) %>% # group by predictors since we want a median and CI per model
-  mutate(median = median(rsq),
-         lower = quantile(rsq, probs = .025),
-         upper = quantile(rsq, probs = .975))
-
-  ggplot(adjr2_all_models,
-         aes(x = predictors, y = rsq)) + # predictors on the x, rsq on the y
-  geom_pointrange(aes(y = median, ymin = lower, ymax = upper)) + # geom_linerange
-  geom_hline(yintercept = 0, color = "red") + # set a red line at 0
-  coord_flip() + # this flips the coordinates, which is useful when you have longer x-axis labels
-    labs(x = NULL, # remove x axis label
-         y = expression(paste(R^{2}, " (with bootstrapped 95% CIs)"))) + # label Y
-  theme_minimal()
+  summarize(median = median(rsq),
+           lower = quantile(rsq, probs = .025),
+           upper = quantile(rsq, probs = .975))
 ```
 
 ## Minihack 2
@@ -467,64 +469,66 @@ Get bootstrapped estimates of correlations between:
 Then, plot these alongside one another using one of the methods covered today.
 
 ```{r}
-get_r <- function(d, i, vars){ # calling data d; calling index i
-  d2 <- d[i,] # subset data using the i argument
-  r <- cor(d2[,vars])
-  return(r) # return r
+get_r <- function(data, index, vars){
+  
+  data_subsetted <- data[index,]
+  
+  r              <- cor(data_subsetted[,vars])
+  
+  return(r) 
 }
 
-set.seed(671)
-cor_extr_posexp <- boot(df,     # data
-                       get_r, # function
-                       vars = c("extraversion", "pos_express"), # formula
-                       R = 1000) # resamples
-set.seed(123)
-cor_extr_socsup <- boot(df,     # data
-                       get_r, # function
-                       vars = c("extraversion", "soc_sup"), # formula
-                       R = 1000) # resamples
+set.seed(42)
 
-set.seed(5634)
-cor_extr_opt <- boot(df,     # data
-                       get_r, # function
-                       vars = c("extraversion", "optimism"), # formula
-                       R = 1000) # resamples
+cor_extr_posexp <- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c("extraversion", "pos_express"),
+                        R         = 1000)
 
-set.seed(0398)
-cor_extr_exer <- boot(df,     # data
-                       get_r, # function
-                       vars = c("extraversion", "exercise"), # formula
-                       R = 1000) # resamples
+cor_extr_socsup <- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c("extraversion", "soc_sup"),
+                        R         = 1000) 
+
+cor_extr_opt    <- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c("extraversion", "optimism"),
+                        R         = 1000)
+
+cor_extr_exer <- boot(data      = df,  
+                      statistic = get_r, 
+                      vars      = c("extraversion", "exercise"), 
+                      R         = 1000)
 
 
-cor_extr_posexp_results <- tibble(r = cor_extr_posexp$t,
-                            vars = "r(Extr., Pos. Expr.)")
+cor_extr_posexp_results <- tibble(r    = cor_extr_posexp$t,
+                                  vars = "Extr., Pos. Expr.")
 
-cor_extr_socsup_results <- tibble(r = cor_extr_socsup$t,
-                            vars = "r(Extr., Soc. Supp.)")
+cor_extr_socsup_results <- tibble(r    = cor_extr_socsup$t,
+                                  vars = "Extr., Soc. Supp.")
 
-cor_extr_opt_results <- tibble(r = cor_extr_opt$t,
-                            vars = "r(Extr., Opt.)")
+cor_extr_opt_results    <- tibble(r    = cor_extr_opt$t,
+                                  vars = "Extr., Opt.")
 
-cor_extr_exer_results <- tibble(r = cor_extr_exer$t,
-                            vars = "r(Extr., Exercise)")
+cor_extr_exer_results   <- tibble(r    = cor_extr_exer$t,
+                                  vars = "Extr., Exercise")
 
-cor_all <- cor_extr_posexp_results %>% # row bind each df
+cor_all <- cor_extr_posexp_results %>% 
   rbind(cor_extr_socsup_results) %>% 
   rbind(cor_extr_opt_results) %>% 
   rbind(cor_extr_exer_results) %>% 
-  group_by(vars) %>% # group by predictors since we want a median and CI per model
-  mutate(median = median(r),
-         lower = quantile(r, probs = .025),
-         upper = quantile(r, probs = .975))
+  group_by(vars) %>% 
+  summarize(median = median(r),
+            lower  = quantile(r, probs = .025),
+            upper  = quantile(r, probs = .975))
 
-ggplot(cor_all,
-       aes(x = vars, y = r)) + # predictors on the x, rsq on the y
-  geom_pointrange(aes(y = median, ymin = lower, ymax = upper)) + # geom_linerange
-  geom_hline(yintercept = 0, color = "red") + # set a red line at 0
-  coord_flip() + # this flips the coordinates, which is useful when you have longer x-axis labels
-  labs(x = NULL, # remove x axis label
-       y = "zero-order r (with bootstrapped 95% CIs)") + # label Y
-  theme_minimal()
+ggplot(cor_all, aes(x = vars, y = r)) +
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
+                  color = "turquoise3") +
+  geom_hline(yintercept = 0, color = "blueviolet") +
+  coord_flip() +
+  labs(x = NULL,
+       y = expression(paste("Zero-order ", italic(r), " (with bootstrapped 95% CIs)"))) +
+  theme_bw()
 ```
 
