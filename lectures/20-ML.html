@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Machine Learning and wrap up</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Machine Learning and wrap up
+
+---
+
+
+
+
+
+#Last time...
+
+* Polynomials
+* Boostrapping
+
+# Today
+
+* Lessons from machine learning
+
+---
+
+## Yarkoni and Westfall (2017)
+
+Y&amp;W describe the goals of explanation and prediction in science; how are these goals similar to each other and how are they in opposition to each other? 
+
+According to Y&amp;W, how should psychologists change their research, in terms of explanation and prediction, and why?
+
+How do regression models fit into the goals of explanation and prediction? Where do they fall short on one or other or both?
+
+???
+
+Explanation: describe causal underpinnings of behaviors/outcomes
+Prediction: accurately forecast behaviors/outcomes
+
+Similar: both goals of science; good prediction can help us develop theory of explanation and vice versa
+
+Statistical tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes. 
+
+Y&amp;W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
+
+---
+
+## Yarkoni and Westfall (2017)
+
+What is **overfitting** and where does this occur in terms of the models we have discussed in class thus far?
+
+What is **bias** and **variance**, and how does the bias-variance trade-off relate to overfitting?
+
+* How concerned are you about overfitting in your own area of research? How about in the studies you'd like to do in the next couple of years?
+
+???
+
+Overfitting: mistakenly fitting sample-specific noise as if it were signal
+
+OLS models tend to be overfit because they minimize error for a specific sample
+
+Bias: systematically over or under estimating parameters
+Variance: how much estimates tend to jump around
+
+Model-fits tend to prioritizie minimizing bias or variance, and choosing to minimize one inflates the other; OLS models minimize one of these
+
+
+---
+
+## Yarkoni and Westfall (2017)
+
+How do Y&amp;W propose adjusting our current statistical practices to be more successful at prediction? 
+
+???
+
+big data sets
+
+Cross-validation
+
+regularization
+
+---
+
+## Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+### Big Data Sets
+
+"Every pattern that could be observed in a given dataset reflects some... unknown combination of signal and error" (page 1104). 
+
+Error is random, so it cannot correlate with anything; as we aggregate many pieces of information together, we reduce error. 
+
+Thus, as we get bigger and bigger datasets, the amount of error we have gets smaller and smaller
+
+---
+
+### Cross-validation
+
+**Cross-validation** is a family of techniques that involve testing and training a model on different samples of data. 
+* Replication
+* Hold-out samples
+* K-fold
+    * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other
+    * Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit
+    * Can split the dataset into more than 2 sections
+    
+---
+
+
+```r
+library(here)
+stress.data = read.csv(here("data/stress.csv"))
+library(psych)
+describe(stress.data, fast = T)
+```
+
+```
+##         vars   n  mean    sd  min    max  range   se
+## id         1 118 59.50 34.21 1.00 118.00 117.00 3.15
+## Anxiety    2 118  7.61  2.49 0.70  14.64  13.94 0.23
+## Stress     3 118  5.18  1.88 0.62  10.32   9.71 0.17
+## Support    4 118  8.73  3.28 0.02  17.34  17.32 0.30
+## group      5 118   NaN    NA  Inf   -Inf   -Inf   NA
+```
+
+```r
+model.lm = lm(Stress ~ Anxiety*Support*group, 
+              data = stress.data)
+summary(model.lm)$r.squared
+```
+
+```
+## [1] 0.4126943
+```
+
+---
+
+### Example: 10-fold cross validation
+
+
+```r
+# new package!
+library(caret)
+# set control parameters
+ctrl &lt;- trainControl(method="cv", number=10)
+# use train() instead of lm()
+cv.model &lt;- train(Stress ~ Anxiety*Support*group, 
+               data = stress.data, 
+               trControl=ctrl, # what are the control parameters
+               method="lm") # what kind of model
+cv.model
+```
+
+```
+## Linear Regression 
+## 
+## 118 samples
+##   3 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 106, 106, 106, 106, 106, 106, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared   MAE    
+##   1.513471  0.3805941  1.23448
+## 
+## Tuning parameter 'intercept' was held constant at a value of TRUE
+```
+
+---
+
+### Regularization
+
+Penalizing a model as it grows more complex. 
+* Usually involves shrinking coefficient estimates -- the model will fit less well in-sample but may be more predictive
+
+*lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
+- coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
+
+The coefficient `\(\lambda\)` is used to penalize the model.
+
+---
+
+The `glmnet` package has the tools for lasso regression. One small complication is that the package uses matrix algebra, so you need to feed it a matrix of predictors -- specifically, instead of saying "find the interaction between A and B", you need to create the variable that represents this term. How could you do that manually?
+
+--
+
+Luckily, the function `model.matrix()` can do this for you.
+
+---
+
+
+```r
+# provide your original lm model to get matrix of predictors
+X.matrix &lt;- model.matrix.lm(model.lm) 
+head(X.matrix)
+```
+
+```
+##   (Intercept)  Anxiety Support groupTx Anxiety:Support Anxiety:groupTx
+## 1           1 10.18520  6.1602       1        62.74287         10.1852
+## 2           1  5.58873  8.9069       0        49.77826          0.0000
+## 3           1  6.58500 10.5433       1        69.42763          6.5850
+## 4           1  8.95430 11.4605       1       102.62076          8.9543
+## 5           1  7.59910  5.5516       0        42.18716          0.0000
+## 6           1  8.15600  7.5117       1        61.26543          8.1560
+##   Support:groupTx Anxiety:Support:groupTx
+## 1          6.1602                62.74287
+## 2          0.0000                 0.00000
+## 3         10.5433                69.42763
+## 4         11.4605               102.62076
+## 5          0.0000                 0.00000
+## 6          7.5117                61.26543
+```
+
+```r
+library(glmnet)
+lasso.mod &lt;- glmnet(x = X.matrix[,-1], #don't need the intercept 
+                    y = stress.data$Stress)
+```
+
+---
+
+
+```r
+lasso.mod
+```
+
+```
+## 
+## Call:  glmnet(x = X.matrix[, -1], y = stress.data$Stress) 
+## 
+##    Df  %Dev  Lambda
+## 1   0  0.00 0.97920
+## 2   1  4.66 0.89220
+## 3   1  8.54 0.81300
+## 4   1 11.75 0.74080
+## 5   1 14.42 0.67500
+## 6   1 16.64 0.61500
+## 7   1 18.48 0.56040
+## 8   1 20.00 0.51060
+## 9   1 21.27 0.46520
+## 10  1 22.32 0.42390
+## 11  1 23.20 0.38620
+## 12  2 24.11 0.35190
+## 13  2 24.98 0.32070
+## 14  2 25.70 0.29220
+## 15  2 26.29 0.26620
+## 16  3 27.40 0.24260
+## 17  2 29.39 0.22100
+## 18  2 30.44 0.20140
+## 19  2 31.31 0.18350
+## 20  2 32.03 0.16720
+## 21  2 32.63 0.15230
+## 22  2 33.13 0.13880
+## 23  2 33.54 0.12650
+## 24  2 33.88 0.11520
+## 25  2 34.17 0.10500
+## 26  2 34.41 0.09567
+## 27  2 34.60 0.08717
+## 28  2 34.76 0.07943
+## 29  2 34.90 0.07237
+## 30  3 35.40 0.06594
+## 31  3 36.32 0.06009
+## 32  3 37.09 0.05475
+## 33  3 37.72 0.04988
+## 34  3 38.25 0.04545
+## 35  3 38.69 0.04141
+## 36  4 39.06 0.03774
+## 37  4 39.35 0.03438
+## 38  4 39.61 0.03133
+## 39  4 39.81 0.02855
+## 40  4 39.99 0.02601
+## 41  4 40.13 0.02370
+## 42  4 40.25 0.02159
+## 43  4 40.35 0.01968
+## 44  6 40.45 0.01793
+## 45  5 40.57 0.01633
+## 46  5 40.65 0.01488
+## 47  5 40.72 0.01356
+## 48  5 40.78 0.01236
+## 49  5 40.83 0.01126
+## 50  6 40.88 0.01026
+## 51  6 40.95 0.00935
+## 52  6 41.00 0.00852
+## 53  6 41.04 0.00776
+## 54  6 41.08 0.00707
+## 55  6 41.11 0.00644
+## 56  6 41.13 0.00587
+## 57  6 41.15 0.00535
+## 58  6 41.17 0.00487
+## 59  6 41.18 0.00444
+## 60  6 41.19 0.00405
+## 61  6 41.20 0.00369
+## 62  6 41.21 0.00336
+## 63  6 41.22 0.00306
+## 64  6 41.22 0.00279
+## 65  6 41.23 0.00254
+## 66  6 41.23 0.00231
+## 67  6 41.24 0.00211
+## 68  7 41.24 0.00192
+## 69  7 41.24 0.00175
+## 70  7 41.24 0.00160
+## 71  7 41.25 0.00145
+## 72  7 41.25 0.00132
+## 73  7 41.25 0.00121
+## 74  7 41.25 0.00110
+## 75  7 41.25 0.00100
+## 76  7 41.26 0.00091
+## 77  7 41.26 0.00083
+## 78  7 41.26 0.00076
+## 79  7 41.26 0.00069
+## 80  7 41.26 0.00063
+## 81  7 41.26 0.00057
+## 82  7 41.26 0.00052
+## 83  7 41.26 0.00048
+## 84  7 41.26 0.00043
+## 85  7 41.26 0.00040
+## 86  7 41.26 0.00036
+## 87  7 41.26 0.00033
+```
+
+???
+
+DF = number of non-zero coefficients
+dev = `\(R^2\)`
+lambda = complexity parameter (how much to downweight, between 0 and 1)
+
+---
+### What value of `\(\lambda\)` to choose?
+
+
+```r
+plot(lasso.mod, xvar = "dev", label = T)
+```
+
+![](20-ML_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+Looks like coefficients 1, 2, and 3 have high values even with shrinkage.
+
+---
+### What value of `\(\lambda\)` to choose?
+
+```r
+plot(lasso.mod, xvar = "lambda", label = TRUE)
+```
+
+![](20-ML_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+I might look for lambda values where those coefficients are still different from 0. 
+
+---
+.pull-left[
+
+```r
+coef = coef(lasso.mod, s = exp(-5))
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                                   s1
+## (Intercept)             -2.211802705
+## Anxiety                  0.572946040
+## Support                  0.621714623
+## groupTx                 -0.487719327
+## Anxiety:Support         -0.038680253
+## Anxiety:groupTx          .          
+## Support:groupTx          0.029353883
+## Anxiety:Support:groupTx  0.003006013
+```
+]
+
+.pull-left[
+
+```r
+coef = coef(lasso.mod, s = exp(-4))
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                                    s1
+## (Intercept)             -1.8538689387
+## Anxiety                  0.5028481785
+## Support                  0.5837254774
+## groupTx                 -0.0044703271
+## Anxiety:Support         -0.0302949960
+## Anxiety:groupTx         -0.0034894821
+## Support:groupTx          0.0009984811
+## Anxiety:Support:groupTx  .
+```
+]
+
+
+---
+
+
+```r
+coef = coef(lasso.mod, s = 0)
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                                   s1
+## (Intercept)             -2.373766131
+## Anxiety                  0.612812455
+## Support                  0.650290859
+## groupTx                 -1.044285344
+## Anxiety:Support         -0.045146588
+## Anxiety:groupTx          0.025299852
+## Support:groupTx          0.048852216
+## Anxiety:Support:groupTx  0.005913829
+```
+
+`\(\lambda = 0\)` is pretty close to our OLS solution
+
+---
+
+
+```r
+coef = coef(lasso.mod, s = 1)
+coef
+```
+
+```
+## 8 x 1 sparse Matrix of class "dgCMatrix"
+##                               s1
+## (Intercept)             5.180003
+## Anxiety                 .       
+## Support                 .       
+## groupTx                 .       
+## Anxiety:Support         .       
+## Anxiety:groupTx         .       
+## Support:groupTx         .       
+## Anxiety:Support:groupTx .
+```
+
+`\(\lambda = 1\)` is a huge penalty
+
+---
+### NHST no more
+
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicity deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+
+---
+
+## Summary: Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+class: inverse
+
+## Next time...
+
+PSY 613 with Elliot Berkman!
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

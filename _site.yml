@@ -39,6 +39,8 @@ navbar:
         href: lectures/1617-factorial.html
       - text: "18-Power and 3-way interactions"
         href: lectures/18-power-3.html
+      - text: "19-Polynomials and bootstrapping"
+        href: lectures/19-poly_boot.html
     - text: Labs
       menu:
       - text: "1-Correlations"

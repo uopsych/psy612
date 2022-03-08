@@ -41,7 +41,19 @@ knit_hooks$set(output = function(x, options) {
 
 knitr::opts_chunk$set(message = FALSE) # suppress messages
 ```
+## Annoucements/reminders
 
+* HW #3 due on Friday (9am)
+* Final project due next Friday (9am)
+* Final quiz on Thursday
+* Student experience survey
+
+## Thursday
+* Review
+  * Send in questions by 12pm tomorrow!
+* Machine Learning
+
+---
 
 class: inverse
 
@@ -91,26 +103,22 @@ football = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/dat
 interdependence determines when more talent is too much or not enough.](https://www8.gsb.columbia.edu/cbs-directory/sites/cbs-directory/files/publications/Too%20much%20talent%20PS.pdf) _Psychological Science 25_(8), 1581-1591.]
 
 ---
-.pull-left[
+
 ```{r, message = F, warning = F}
 head(football)
+psych::describe(football)
 ```
-]
-.pull-right[
-```{r, warning = F}
-ggplot(football, aes(x = talent, y = points)) +
-  geom_point() + 
-  geom_smooth(se = F) +
-  theme_bw(base_size = 20)
-```
-
-]
-
 
 ---
+We can fit a linear regression model to these data...
 
 ```{r mod1, warning = F, message = F, fig.width = 10, fig.height = 5}
 mod1 = lm(points ~ talent, data = football)
+```
+
+... but we seem to have violated an assumption.
+
+```{r, echo = F}
 library(broom)
 aug1 = augment(mod1)
 ggplot(aug1, aes(x = .fitted, y = .resid)) +
@@ -120,6 +128,9 @@ ggplot(aug1, aes(x = .fitted, y = .resid)) +
 ```
 
 ---
+
+Fit a polynomial term using `I()` -- this way, R will recognize this as a transformation of a variable already in the model.
+
 ```{r mod2}
 mod2 = lm(points ~ talent + I(talent^2), data = football)
 summary(mod2)
@@ -189,7 +200,7 @@ $$\large b_1 + (2\times b_2\times X)$$
 ---
 
 ```{r}
-tidy(mod2)
+coef(summary(mod2))
 ```
 
 .pull-left[
@@ -214,8 +225,13 @@ tidy(mod2)
 An term for $X^2$ is a term for $X \times X$ or the multiplication of two independent variables holding the same values. 
 
 ```{r}
-football$talent_2 = football$talent*football$talent
-tidy(lm(points ~ talent + talent_2, data = football))
+football = football %>% 
+  # create interaction term
+  mutate(talent_2 = talent*talent)
+
+#fit model
+lm(points ~ talent + talent_2, data = football) %>% 
+    summary %>% coef #print summary and then just coefficients
 ```
 ---
 
@@ -251,10 +267,11 @@ ggplot(aug2, aes(x = .fitted, y = .resid)) +
 ---
 
 ```{r, warning = F, message = F, fig.width=10, fig.height=7}
-plot_model(mod2, type = "pred", show.data = T)
+plot_model(mod2, type = "pred", terms = c("talent"), show.data = T)
 ```
 
 ---
+class: inverse
 
 ## Bootstrapping
 
@@ -292,14 +309,23 @@ heights
 ### Illustration
 
 ```{r}
-boot = 10000
-friends = c("Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross")
-heights = c(65, 65, 68, 70, 72, 73)
+boot = 10000 # number of bootstraps
+# make named vector (names not necessary)
+heights = c("Rachel" = 65, "Monica" = 65, "Phoebe" = 68, 
+            "Joey" = 70, "Chandler" = 72, "Ross" = 73)
+heights
+
+#a vector to store values
 sample_means = numeric(length = boot)
-for(i in 1:boot){
+
+for(i in 1:boot){ #loop through bootstraps
+  # draw new sample with replacement
   this_sample = sample(heights, size = length(heights), replace = T)
+  # store mean in empty vector
   sample_means[i] = mean(this_sample)
 }
+
+sample_means
 ```
 
 ---
@@ -320,7 +346,7 @@ bootstrapped = data.frame(means = sample_means) %>%
   geom_vline(aes(xintercept = quantile(sample_means, probs = .025), color = "Lower 2.5%"), size = 2) +
     geom_vline(aes(xintercept = quantile(sample_means, probs = .975), color = "Upper 2.5%"), size = 2) +
   scale_x_continuous(limits = c(mu-3*sem, mu+3*sem))+
-  ggtitle("Bootstrapped distribution") +
+  ggtitle("Bootstrapped sampling distribution") +
   cowplot::theme_cowplot()
 
 
@@ -328,10 +354,10 @@ from_prob = data.frame(means = seq(from = min(sample_means), to = max(sample_mea
   ggplot(aes(x = means)) +
   stat_function(fun = function(x) dnorm(x, m = mu, sd = sem)) + 
   geom_vline(aes(xintercept = mean(heights), color = "mean"), size = 2) +
-  geom_vline(aes(xintercept = median(heights), color = "median"), size = 2) +
+  geom_vline(aes(xintercept = mean(heights), color = "median"), size = 2) +
   geom_vline(aes(xintercept = mu-cv_t*sem, color = "Lower 2.5%"), size = 2) +
   geom_vline(aes(xintercept = mu+cv_t*sem, color = "Upper 2.5%"), size = 2) +scale_x_continuous(limits = c(mu-3*sem, mu+3*sem))+  
-  ggtitle("Distribution from probability theory") +
+  ggtitle("Theoretical sampling distribution") +
   cowplot::theme_cowplot()
 
 ggarrange(bootstrapped, from_prob, ncol = 1)
@@ -340,7 +366,12 @@ ggarrange(bootstrapped, from_prob, ncol = 1)
 ---
 ### Example
 
-A sample of 216 response times. What is their central tendency and variability?
+```{r, echo = F}
+N = 54
+```
+
+
+A sample of `r N` response times. What is their central tendency and variability?
 
 There are several candidates for central tendency (e.g., mean, median) and for variability (e.g., standard deviation, interquartile range).  Some of these do not have well understood theoretical sampling distributions.
 
@@ -350,7 +381,6 @@ For the mean and standard deviation, we have theoretical sampling distributions 
 ```{r, echo = F, message=F, fig.width=10, fig.height=8}
 library(tidyverse)
 set.seed(03102020)
-N = 20
 response = rf(n = N, 2, 50) 
 response = response + rchisq(n = N, df = 2)*20
 
@@ -377,7 +407,7 @@ data.frame(x = response) %>%
 ---
 ### Bootstrapping
 
-Before now, if we wanted to estimate the mean and the 95% confidence interval around the mean, we would find the theoretical sampling distribution by scaling a t-distribution to be centered on the mean of our sample and have a standard deviation equal to $\frac{s}{\sqrt{N}}.$ But we have to make many assumptions to use this sampling distribution, and we may have good reason not to.  
+Before now, if we wanted to estimate the mean and the 95% confidence interval around the mean, we would find the theoretical sampling distribution by scaling a _t_-distribution to be centered on the mean of our sample and have a standard deviation equal to $\frac{s}{\sqrt{N}}.$ But we have to make many assumptions to use this sampling distribution, and we may have good reason not to.  
 
 Instead, we can build a population sampling distribution empirically by randomly sampling with replacement from the sample.
 
@@ -412,13 +442,29 @@ data.frame(means = response_means) %>%
 
 
 ---
-
+.pull-left[
+Bootstrapped distribution
 ```{r}
-mean(response_means)
-median(response_means)
+mean(response_means); median(response_means)
 
-quantile(response_means, probs = c(.025, .975))
+#95%CI
+quantile(response_means, 
+         probs = c(.025, .975))
 ```
+]
+
+.pull-right[
+Theoretical distribution
+```{r}
+mean(response)
+
+
+#95% CI
+sem = sd(response/sqrt(N))
+cv = qt(.975,df = N-1)
+mean(response)-(cv*sem); mean(response)+(cv*sem)
+```
+]
 
 What about something like the median?
 
@@ -430,7 +476,7 @@ What about something like the median?
 boot = 10000
 response_med = numeric(length = boot)
 for(i in 1:boot){
-  sample_response = sample(response, size = 216, replace = T)
+  sample_response = sample(response, size = N, replace = T)
   response_med[i] = median(sample_response)
 }
 ```
@@ -462,7 +508,7 @@ quantile(response_med,
 boot = 10000
 response_sd = numeric(length = boot)
 for(i in 1:boot){
-  sample_response = sample(response, size = 216, replace = T)
+  sample_response = sample(response, size = N, replace = T)
   response_sd[i] = sd(sample_response)
 }
 ```
@@ -503,9 +549,11 @@ rsq <- function(data, indices) {
   
   return(summary(fit)$r.square)
 }
+
 # bootstrapping with 10000 replications
-results <- boot(data=mtcars, statistic=rsq,
-   R=10000)
+results <- boot(data=mtcars, 
+                statistic=rsq, # this is the function we created above
+                R=10000)
 ```
 
 ---
@@ -539,7 +587,7 @@ Verizon = read.csv(here("data/Verizon.csv"))
 Verizon %>%
   ggplot(aes(x = Time, fill = Group)) + 
   geom_histogram(bins = 30) + 
-  guides(fill = F) +
+  guides(fill = "none") +
   facet_wrap(~Group, scales = "free_y")
 ```
 
@@ -549,7 +597,7 @@ Verizon %>%
 Verizon %>%
   ggplot(aes(x = Time, fill = Group)) + 
   geom_histogram(bins = 50, position = "dodge") + 
-  guides(fill = F)
+  guides(fill = "none")
 table(Verizon$Group)
 ```
 
@@ -620,3 +668,9 @@ Bootstrapping will NOT help you deal with:
 class: inverse
 
 ## Next time...
+
+* Machine learning
+* Wrap up 
+- Send in questions
+
+

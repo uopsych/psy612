@@ -1,0 +1,271 @@
+---
+title: 'Machine Learning and wrap up'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rladies-fonts, "my-theme.css"]
+    incremental: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo = F, message = F, warning = F}
+library(tidyverse)
+```
+
+
+#Last time...
+
+* Polynomials
+* Boostrapping
+
+# Today
+
+* Lessons from machine learning
+
+---
+
+## Yarkoni and Westfall (2017)
+
+Y&W describe the goals of explanation and prediction in science; how are these goals similar to each other and how are they in opposition to each other? 
+
+According to Y&W, how should psychologists change their research, in terms of explanation and prediction, and why?
+
+How do regression models fit into the goals of explanation and prediction? Where do they fall short on one or other or both?
+
+???
+
+Explanation: describe causal underpinnings of behaviors/outcomes
+Prediction: accurately forecast behaviors/outcomes
+
+Similar: both goals of science; good prediction can help us develop theory of explanation and vice versa
+
+Statistical tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes. 
+
+Y&W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
+
+---
+
+## Yarkoni and Westfall (2017)
+
+What is **overfitting** and where does this occur in terms of the models we have discussed in class thus far?
+
+What is **bias** and **variance**, and how does the bias-variance trade-off relate to overfitting?
+
+* How concerned are you about overfitting in your own area of research? How about in the studies you'd like to do in the next couple of years?
+
+???
+
+Overfitting: mistakenly fitting sample-specific noise as if it were signal
+
+OLS models tend to be overfit because they minimize error for a specific sample
+
+Bias: systematically over or under estimating parameters
+Variance: how much estimates tend to jump around
+
+Model-fits tend to prioritizie minimizing bias or variance, and choosing to minimize one inflates the other; OLS models minimize one of these
+
+
+---
+
+## Yarkoni and Westfall (2017)
+
+How do Y&W propose adjusting our current statistical practices to be more successful at prediction? 
+
+???
+
+big data sets
+
+Cross-validation
+
+regularization
+
+---
+
+## Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+### Big Data Sets
+
+"Every pattern that could be observed in a given dataset reflects some... unknown combination of signal and error" (page 1104). 
+
+Error is random, so it cannot correlate with anything; as we aggregate many pieces of information together, we reduce error. 
+
+Thus, as we get bigger and bigger datasets, the amount of error we have gets smaller and smaller
+
+---
+
+### Cross-validation
+
+**Cross-validation** is a family of techniques that involve testing and training a model on different samples of data. 
+* Replication
+* Hold-out samples
+* K-fold
+    * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other
+    * Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit
+    * Can split the dataset into more than 2 sections
+    
+---
+
+```{r, message=FALSE, warning = F}
+library(here)
+stress.data = read.csv(here("data/stress.csv"))
+library(psych)
+describe(stress.data, fast = T)
+
+model.lm = lm(Stress ~ Anxiety*Support*group, 
+              data = stress.data)
+summary(model.lm)$r.squared
+```
+
+---
+
+### Example: 10-fold cross validation
+
+```{r, message = F}
+# new package!
+library(caret)
+# set control parameters
+ctrl <- trainControl(method="cv", number=10)
+# use train() instead of lm()
+cv.model <- train(Stress ~ Anxiety*Support*group, 
+               data = stress.data, 
+               trControl=ctrl, # what are the control parameters
+               method="lm") # what kind of model
+cv.model
+```
+
+---
+
+### Regularization
+
+Penalizing a model as it grows more complex. 
+* Usually involves shrinking coefficient estimates -- the model will fit less well in-sample but may be more predictive
+
+*lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
+- coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
+
+The coefficient $\lambda$ is used to penalize the model.
+
+---
+
+The `glmnet` package has the tools for lasso regression. One small complication is that the package uses matrix algebra, so you need to feed it a matrix of predictors -- specifically, instead of saying "find the interaction between A and B", you need to create the variable that represents this term. How could you do that manually?
+
+--
+
+Luckily, the function `model.matrix()` can do this for you.
+
+---
+
+```{r, message = F, warning = F}
+# provide your original lm model to get matrix of predictors
+X.matrix <- model.matrix.lm(model.lm) 
+head(X.matrix)
+library(glmnet)
+lasso.mod <- glmnet(x = X.matrix[,-1], #don't need the intercept 
+                    y = stress.data$Stress)
+```
+
+---
+
+```{r}
+lasso.mod
+```
+
+???
+
+DF = number of non-zero coefficients
+dev = $R^2$
+lambda = complexity parameter (how much to downweight, between 0 and 1)
+
+---
+### What value of $\lambda$ to choose?
+
+```{r}
+plot(lasso.mod, xvar = "dev", label = T)
+```
+
+Looks like coefficients 1, 2, and 3 have high values even with shrinkage.
+
+---
+### What value of $\lambda$ to choose?
+```{r, fig.height=5}
+plot(lasso.mod, xvar = "lambda", label = TRUE)
+```
+
+I might look for lambda values where those coefficients are still different from 0. 
+
+---
+.pull-left[
+```{r}
+coef = coef(lasso.mod, s = exp(-5))
+coef
+```
+]
+
+.pull-left[
+```{r}
+coef = coef(lasso.mod, s = exp(-4))
+coef
+```
+]
+
+
+---
+
+```{r}
+coef = coef(lasso.mod, s = 0)
+coef
+```
+
+$\lambda = 0$ is pretty close to our OLS solution
+
+---
+
+```{r}
+coef = coef(lasso.mod, s = 1)
+coef
+```
+
+$\lambda = 1$ is a huge penalty
+
+---
+### NHST no more
+
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicity deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+
+---
+
+## Summary: Yarkoni and Westfall (2017)
+
+
+**Big Data**
+* Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation**
+* Is my model overfit?
+
+**Regularization**
+* Constrain the model to be less overfit 
+
+---
+
+class: inverse
+
+## Next time...
+
+PSY 613 with Elliot Berkman!
+

@@ -10,6 +10,7 @@ labs overall
 * incorporate in-text R code to summarize results throughout 
 * most useful to teach from R, not from html output
 * should we replace papaja with data cleaning (for loops, functions, regular expressions, etc)
+* integrate correlation lab with Markdown (to Word/PDF and integrating figures and IN-LINE evaluation)
 
 final-project.html
 * add descriptive statistics back in?
@@ -97,15 +98,14 @@ homework-2.html
 * weights are 1/predicted values, not predicted values!!!
 
 lab-8.html
-* is it worth keeping in contrast codes? 
+* add power and cohen's D
+* remove manual calculation of SS
 
 15-interactions.html
 * write out equations on the screen 
 
 16-18-factorial.html
-* keep venn diagrams in sums of squares
-* give examples for when to use different SS
-* switch order of simple slope examples
+* switch order of EMM and pred in sjPlot
 
 19-interactions.html
 * blank slides
@@ -114,5 +114,5 @@ lab-8.html
 * keep -- when do I use this!
 
 lab-9.html
-* short and straightfoward -- good for this lab. 
-* add stargazer/ sjPlot/kable something for making formatted tables
+* do NOT work from the website version of this lab. Instead, note that there is a static version on the website available for reference, but spend the entire lab opening a papaja document and working ONLY on that.
+* if too long, remove bibliography stuff (sorry Cam)
