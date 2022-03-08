@@ -136,7 +136,7 @@ Basically, the workflow for this is:
 1.  Use `corx()` to create the correlation table.
 2.  Use `apa_table()` to add a caption, note, and print it.
 
-```{r corr_tab, results = "asis" }
+```{r corr_tab, results = "asis"}
 cor <- b5 %>%
   # select the columns for agreeableness to openness
   select(agree:openness) %>% 
