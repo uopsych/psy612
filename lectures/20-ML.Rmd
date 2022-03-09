@@ -1,5 +1,5 @@
 ---
-title: 'Machine Learning and wrap up'
+title: 'Review and Machine Learning'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -19,11 +19,16 @@ library(tidyverse)
 #Last time...
 
 * Polynomials
-* Boostrapping
+* Bootstrapping
 
 # Today
 
+* Review
 * Lessons from machine learning
+
+---
+
+
 
 ---
 
