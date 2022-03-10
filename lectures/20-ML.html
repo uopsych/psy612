@@ -97,7 +97,7 @@ glimpse(data)
 
 ```r
 mod1 = lm(Happiness ~ Life, data = data)
-mod2 = lm(Happiness ~ Life + Life, data = data)
+mod2 = lm(Happiness ~ Life + GDP, data = data)
 mod3 = lm(Happiness ~ Life*GDP, data = data)
 mod4 = lm(Happiness ~ Life + World_simple, data = data)
 mod5 = lm(Happiness ~ Life*World_simple, data = data)
@@ -132,7 +132,7 @@ tab_model(mod1, mod2, mod3, mod4, mod5,
 &lt;tr&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;(Intercept)&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;1.48 &lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;
-&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;1.48 &lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;2.40 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;8.65 &lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;1.22 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;3.55 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
@@ -140,7 +140,7 @@ tab_model(mod1, mod2, mod3, mod4, mod5,
 &lt;tr&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;Life&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.11 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
-&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.11 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.03 &lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.15 &lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.11 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.14 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
@@ -148,7 +148,7 @@ tab_model(mod1, mod2, mod3, mod4, mod5,
 &lt;tr&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;GDP&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
-&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.61 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.64 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
@@ -180,7 +180,7 @@ tab_model(mod1, mod2, mod3, mod4, mod5,
 &lt;tr&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;"&gt;Observations&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
-&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;121&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;121&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
@@ -188,7 +188,7 @@ tab_model(mod1, mod2, mod3, mod4, mod5,
 &lt;tr&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"&gt;R&lt;sup&gt;2&lt;/sup&gt; / R&lt;sup&gt;2&lt;/sup&gt; adjusted&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.540 / 0.537&lt;/td&gt;
-&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.540 / 0.537&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.687 / 0.682&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.708 / 0.700&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.541 / 0.534&lt;/td&gt;
 &lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.548 / 0.538&lt;/td&gt;
@@ -527,6 +527,11 @@ data %&gt;% lm(Happiness ~ World + Life, data = .) %&gt;% summary
 ---
 
 
+```r
+data %&gt;% lm(Happiness ~ World + Life, data = .) %&gt;% 
+  emtrends(var = "Life", ~"World")
+```
+
 ```
 ##  World Life.trend     SE  df lower.CL upper.CL
 ##  1         0.0678 0.0125 130   0.0429   0.0926
@@ -577,6 +582,11 @@ data %&gt;% lm(Happiness ~ World*Life, data = .) %&gt;% summary
 ![](20-ML_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 ---
 
+
+```r
+data %&gt;% lm(Happiness ~ World*Life, data = .) %&gt;% 
+  emtrends(var = "Life", ~"World")
+```
 
 ```
 ##  World Life.trend     SE  df lower.CL upper.CL

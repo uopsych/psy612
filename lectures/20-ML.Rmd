@@ -59,7 +59,7 @@ glimpse(data)
 
 ```{r fit_models, results='hide', eval = F}
 mod1 = lm(Happiness ~ Life, data = data)
-mod2 = lm(Happiness ~ Life + Life, data = data)
+mod2 = lm(Happiness ~ Life + GDP, data = data)
 mod3 = lm(Happiness ~ Life*GDP, data = data)
 mod4 = lm(Happiness ~ Life + World_simple, data = data)
 mod5 = lm(Happiness ~ Life*World_simple, data = data)
@@ -223,7 +223,7 @@ data %>% lm(Happiness ~ World + Life, data = .) %>%
 
 ---
 
-```{r, echo = F}
+```{r}
 data %>% lm(Happiness ~ World + Life, data = .) %>% 
   emtrends(var = "Life", ~"World")
 ```
@@ -244,7 +244,7 @@ data %>% lm(Happiness ~ World*Life, data = .) %>%
 ```
 ---
 
-```{r, echo = F}
+```{r}
 data %>% lm(Happiness ~ World*Life, data = .) %>% 
   emtrends(var = "Life", ~"World")
 ```
