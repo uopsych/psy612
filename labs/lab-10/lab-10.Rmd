@@ -65,7 +65,7 @@ df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2
 Recall from lecture that bootstrapping is a general purpose tool to use whenever you can't make assumptions about how a statistic is distributed. Some cases where it is useful include:   
 
 1. When test assumptions  (e.g., normality, homoscedasticity) have been violated  
-2. When you have good reason to believe the sampling distribution is not normal, but don't know what it is
+2. When you have good reason to believe the sampling distribution is not normal, but don't know what it is 
 3. With highly unbalanced sample sizes 
 
 One of its main uses is to construct CIs, but it can also be used in a standard error formula to produce a test statistic. We will focus just on CIs and plotting the full (bootstrapped) distribution today.
@@ -95,11 +95,6 @@ Let's walk through an example. Let's make a function that calculates the mean of
 
 ```{r}
 # your code here
-print_mean <- function(x){
-  mean   <- mean(x, na.rm = TRUE)
-  output <- paste("The Mean is", mean)
-  return(output)
-}
 ```
 
 Now let's test it out on extraversion from the data we loaded above:
@@ -126,22 +121,6 @@ We could create a simple one that subsets our data, passes the subsetted data to
 
 ```{r}
 # your code here
-
-get_r2 <- function(data, index){
-  
-  data_subsetted <- data[index,] 
-  
-  fit            <- lm(happiness ~ extraversion + 
-                                   pos_express  + 
-                                   soc_sup      + 
-                                   optimism     + 
-                                   exercise, 
-                      data = data_subsetted)
-  
-  rsq <- summary(fit)$r.squared
-  
-  return(rsq)
-}
 ```
 
 # Running `boot()` {#runBoot}
@@ -153,12 +132,12 @@ Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Le
 - R is the number of times that we want to sample with replacement
 
 ```{r}
-# your code here
 set.seed(42) # don't forget to set.seed()
 
-boot_r2 <- boot(data      = df, 
-                statistic = get_r2,
-                R         = 10000)
+boot_r2 <- boot(data      = # your code here
+                statistic = # your code here
+                R         = # your code here
+                )
 ```
 
 Okay, now let's take a look at what it contains:
@@ -274,13 +253,11 @@ That plot contains a lot of useful information - we can see the lower limit is a
 What we've done so far works pretty well, but there are benefits to making a slightly more flexible function for more complicated cases. For example, let's say we wanted to compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
 
 ```{r}
-# create function
 get_r2 <- function(data, index, formula){
   
   data_subsetted <- data[index,] 
   
-  fit            <- lm(formula,
-                      data = data_subsetted)
+  # your code here
   
   rsq <- summary(fit)$r.squared
   
@@ -395,70 +372,6 @@ Using the same dataset above, calculate bootstrapped estimates of *adjusted* $R^
 
 ```{r}
 # your code here
-
-get_r2 <- function(data, index, formula){
-  
-  data_subsetted <- data[index,] 
-  
-  fit            <- lm(formula,
-                      data = data_subsetted)
-  
-  rsq <- summary(fit)$adj.r.squared
-  
-  return(rsq)
-}
-
-set.seed(42)
-
-boot_adjr2_model1 <- boot(data      = df,     
-                          statistic = get_r2, 
-                          formula   = happiness ~ extraversion,
-                          R         = 1000) 
-
-boot_adjr2_model2 <- boot(data      = df,     
-                          statistic = get_r2, 
-                          formula   = happiness ~ extraversion + pos_express,
-                          R         = 1000) 
-
-boot_adjr2_model3 <- boot(data      = df,     
-                          statistic = get_r2, 
-                          formula   = happiness ~ extraversion + pos_express + soc_sup,
-                          R = 1000) 
-
-boot_adjr2_model4 <- boot(data      = df,     
-                          statistic = get_r2, 
-                          formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
-                          R = 1000) 
-
-boot_adjr2_model5 <- boot(data      = df,     
-                          statistic = get_r2, 
-                          formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
-                          R         = 1000) 
-
-adjr2_model1_results <- tibble(rsq        = boot_adjr2_model1$t,
-                               predictors = "Extr.")
-
-adjr2_model2_results <- tibble(rsq        = boot_adjr2_model2$t,
-                               predictors = "Extr. + Pos. Expr.")
-
-adjr2_model3_results <- tibble(rsq        = boot_adjr2_model3$t,
-                               predictors = "Extr. + Pos. Expr. + Soc. Supp.")
-
-adjr2_model4_results <- tibble(rsq        = boot_adjr2_model4$t,
-                               predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
-
-adjr2_model5_results <- tibble(rsq        = boot_adjr2_model5$t,
-                               predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
-
-adjr2_all_models <- adjr2_model1_results %>% # row bind each df
-  rbind(adjr2_model2_results) %>% 
-  rbind(adjr2_model3_results) %>% 
-  rbind(adjr2_model4_results) %>% 
-  rbind(adjr2_model5_results) %>% 
-  group_by(predictors) %>% # group by predictors since we want a median and CI per model
-  summarize(median = median(rsq),
-           lower = quantile(rsq, probs = .025),
-           upper = quantile(rsq, probs = .975))
 ```
 
 ## Minihack 2
@@ -473,65 +386,6 @@ Get bootstrapped estimates of correlations between:
 Then, plot these alongside one another using one of the methods covered today.
 
 ```{r}
-get_r <- function(data, index, vars){
-  
-  data_subsetted <- data[index,]
-  
-  r              <- cor(data_subsetted[,vars])
-  
-  return(r) 
-}
-
-set.seed(42)
-
-cor_extr_posexp <- boot(data      = df,  
-                        statistic = get_r, 
-                        vars      = c("extraversion", "pos_express"),
-                        R         = 1000)
-
-cor_extr_socsup <- boot(data      = df,  
-                        statistic = get_r, 
-                        vars      = c("extraversion", "soc_sup"),
-                        R         = 1000) 
-
-cor_extr_opt    <- boot(data      = df,  
-                        statistic = get_r, 
-                        vars      = c("extraversion", "optimism"),
-                        R         = 1000)
-
-cor_extr_exer <- boot(data      = df,  
-                      statistic = get_r, 
-                      vars      = c("extraversion", "exercise"), 
-                      R         = 1000)
-
-
-cor_extr_posexp_results <- tibble(r    = cor_extr_posexp$t,
-                                  vars = "Extr., Pos. Expr.")
-
-cor_extr_socsup_results <- tibble(r    = cor_extr_socsup$t,
-                                  vars = "Extr., Soc. Supp.")
-
-cor_extr_opt_results    <- tibble(r    = cor_extr_opt$t,
-                                  vars = "Extr., Opt.")
-
-cor_extr_exer_results   <- tibble(r    = cor_extr_exer$t,
-                                  vars = "Extr., Exercise")
-
-cor_all <- cor_extr_posexp_results %>% 
-  rbind(cor_extr_socsup_results) %>% 
-  rbind(cor_extr_opt_results) %>% 
-  rbind(cor_extr_exer_results) %>% 
-  group_by(vars) %>% 
-  summarize(median = median(r),
-            lower  = quantile(r, probs = .025),
-            upper  = quantile(r, probs = .975))
-
-ggplot(cor_all, aes(x = vars, y = r)) +
-  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
-                  color = "turquoise3") +
-  coord_flip() +
-  labs(x = NULL,
-       y = expression(paste("Zero-order ", italic(r), " (with bootstrapped 95% CIs)"))) +
-  theme_bw()
+# your code here
 ```
 
