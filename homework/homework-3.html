@@ -269,7 +269,7 @@ pre code {
 <li><p>How many factors are in this design, and how many levels does each factor have?</p></li>
 <li><p>What are the sample sizes for each group?</p></li>
 <li><p>Run the factorial ANOVA from Experiment 1. Interpret the sums of squares and F-ratios.</p></li>
-<li><p>What is the effect size associated with each of your terms? What is the <span class="math inline">\(R^2\)</span> for the model?</p></li>
+<li><p>Calculate the <span class="math inline">\(\eta^2\)</span> and partial <span class="math inline">\(\eta^2\)</span> effect sizes associated with each of your terms. What is the <span class="math inline">\(R^2\)</span> for the model?</p></li>
 <li><p>Graph the results in a manner that you think best conveys that data (it does not have to be the same as in the article). Make sure you include 95% CIs.</p></li>
 </ul>
 </div>
@@ -292,7 +292,7 @@ pre code {
 <h2>Question 1</h2>
 <p>Refer to the dataset and model estimated in Question 5.2(#q5.2).</p>
 <ul>
-<li><p>Run a power analysis to determine sample size needed for the omnibus test effect size found 90% of the time in the model fit above. (Note: the <code>pwr</code> package is a nice one to use but be sure to use the glm/regression one, <code>pwr.f2.test</code>, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)</p></li>
+<li><p>Run a power analysis to determine sample size needed for the omnibus effect size <span class="math inline">\((R^2)\)</span> found 90% of the time in the model fit above. (Note: the <code>pwr</code> package is a nice one to use but be sure to use the glm/regression one, <code>pwr.f2.test</code>, as opposed to the one-way anova. Also, pay close attention to the effect size requested. Those more adventurous can perform simulations to calculate power.)</p></li>
 <li><p>The power analysis above does not give you the power for detecting differences between two cell means. Find the number of subjects needed for power of .90 with an effect size difference of .4 between two cell means, assuming no corrections for Type 1 error. (Hint: .4 is an unstandardized effect size, but most power functions require a standardized effect size. Some of the equations covered in PSY 611 may be helpful here.)</p></li>
 <li><p>Assume that the researchers had an additional variable, familiarity with the area, to use as a covariate. The reasoning is that people who know the area well may make better distance predictions than those that do not. How do you think this would impact the findings? Describe what would change in terms of your standard regression components (why and in what direction).</p></li>
 </ul>
