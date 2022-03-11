@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Machine Learning and wrap up</title>
+    <title>Review and Machine Learning</title>
     <meta charset="utf-8" />
     <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Machine Learning and wrap up
+# Review and Machine Learning
 
 ---
 
@@ -24,30 +24,638 @@ class: center, middle, inverse, title-slide
 #Last time...
 
 * Polynomials
-* Boostrapping
+* Bootstrapping
 
 # Today
 
+* Review
 * Lessons from machine learning
 
 ---
 
-## Yarkoni and Westfall (2017)
+### Data
 
-Y&amp;W describe the goals of explanation and prediction in science; how are these goals similar to each other and how are they in opposition to each other? 
+Examples today are based on data from the [2015 World Happiness Report](https://worldhappiness.report/ed/2015/), which is an annual survey part of the [Gallup World Poll](https://www.gallup.com/178667/gallup-world-poll-work.aspx). 
 
-According to Y&amp;W, how should psychologists change their research, in terms of explanation and prediction, and why?
 
-How do regression models fit into the goals of explanation and prediction? Where do they fall short on one or other or both?
+```r
+library(tidyverse)
+
+data = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/world_happiness_2015.csv")
+glimpse(data)
+```
+
+```
+## Rows: 136
+## Columns: 10
+## $ Country    &lt;chr&gt; "Albania", "Argentina", "Armenia", "Australia", "Austria", …
+## $ Happiness  &lt;dbl&gt; 4.606651, 6.697131, 4.348320, 7.309061, 7.076447, 5.146775,…
+## $ GDP        &lt;dbl&gt; 9.251464, NA, 8.968936, 10.680326, 10.691354, 9.730904, NA,…
+## $ Support    &lt;dbl&gt; 0.6393561, 0.9264923, 0.7225510, 0.9518616, 0.9281103, 0.78…
+## $ Life       &lt;dbl&gt; 68.43517, 67.28722, 65.30076, 72.56024, 70.82256, 61.97585,…
+## $ Freedom    &lt;dbl&gt; 0.7038507, 0.8812237, 0.5510266, 0.9218710, 0.9003052, 0.76…
+## $ Generosity &lt;dbl&gt; -0.082337685, NA, -0.186696529, 0.315701962, 0.089088559, -…
+## $ Corruption &lt;dbl&gt; 0.8847930, 0.8509062, 0.9014622, 0.3565544, 0.5574796, 0.61…
+## $ World      &lt;int&gt; 2, 4, 2, 1, 1, 2, 4, 3, 2, 1, 3, 3, 4, 2, 4, 4, 3, 3, 4, 1,…
+## $ Hemisphere &lt;chr&gt; "East", "West", "East", "East", "East", "East", "East", "Ea…
+```
+
+---
+
+### Data
+
+```r
+data = data %&gt;% 
+  mutate(
+    World_simple = case_when(
+      World %in% c(1,2) ~ "1/2",
+      World %in% c(3,4) ~ "3/4"),
+    World = as.factor(World))
+glimpse(data)
+```
+
+```
+## Rows: 136
+## Columns: 11
+## $ Country      &lt;chr&gt; "Albania", "Argentina", "Armenia", "Australia", "Austria"…
+## $ Happiness    &lt;dbl&gt; 4.606651, 6.697131, 4.348320, 7.309061, 7.076447, 5.14677…
+## $ GDP          &lt;dbl&gt; 9.251464, NA, 8.968936, 10.680326, 10.691354, 9.730904, N…
+## $ Support      &lt;dbl&gt; 0.6393561, 0.9264923, 0.7225510, 0.9518616, 0.9281103, 0.…
+## $ Life         &lt;dbl&gt; 68.43517, 67.28722, 65.30076, 72.56024, 70.82256, 61.9758…
+## $ Freedom      &lt;dbl&gt; 0.7038507, 0.8812237, 0.5510266, 0.9218710, 0.9003052, 0.…
+## $ Generosity   &lt;dbl&gt; -0.082337685, NA, -0.186696529, 0.315701962, 0.089088559,…
+## $ Corruption   &lt;dbl&gt; 0.8847930, 0.8509062, 0.9014622, 0.3565544, 0.5574796, 0.…
+## $ World        &lt;fct&gt; 2, 4, 2, 1, 1, 2, 4, 3, 2, 1, 3, 3, 4, 2, 4, 4, 3, 3, 4, …
+## $ Hemisphere   &lt;chr&gt; "East", "West", "East", "East", "East", "East", "East", "…
+## $ World_simple &lt;chr&gt; "1/2", "3/4", "1/2", "1/2", "1/2", "1/2", "3/4", "3/4", "…
+```
+
+---
+
+## Concept 1: Interpreting the output of linear models.
+
+
+```r
+mod1 = lm(Happiness ~ Life, data = data)
+mod2 = lm(Happiness ~ Life + GDP, data = data)
+mod3 = lm(Happiness ~ Life*GDP, data = data)
+mod4 = lm(Happiness ~ Life + World_simple, data = data)
+mod5 = lm(Happiness ~ Life*World_simple, data = data)
+
+library(sjPlot)
+tab_model(mod1, mod2, mod3, mod4, mod5, 
+          show.p = F, 
+          show.ci = F, 
+          p.style = "stars", 
+          dv.labels = paste0("mod", 1:5))
+```
+
+---
+
+&lt;table style="border-collapse:collapse; border:none;"&gt;
+&lt;tr&gt;
+&lt;th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; "&gt;&amp;nbsp;&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;mod1&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;mod2&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;mod3&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;mod4&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;mod5&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; "&gt;Predictors&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;(Intercept)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;1.48 &lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;2.40 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;8.65 &lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;1.22 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;3.55 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;Life&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.11 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.03 &lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.15 &lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.11 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.14 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;GDP&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.61 &lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.64 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;Life * GDP&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.02 &lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;World_simple [3/4]&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.10 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;2.60 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;Life * World_simple [3/4]&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.04 &lt;sup&gt;&lt;/sup&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;"&gt;Observations&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;121&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;121&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;135&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"&gt;R&lt;sup&gt;2&lt;/sup&gt; / R&lt;sup&gt;2&lt;/sup&gt; adjusted&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.540 / 0.537&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.687 / 0.682&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.708 / 0.700&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.541 / 0.534&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="1"&gt;0.548 / 0.538&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td colspan="6" style="font-style:italic; border-top:double black; text-align:right;"&gt;* p&amp;lt;0.05&amp;nbsp;&amp;nbsp;&amp;nbsp;** p&amp;lt;0.01&amp;nbsp;&amp;nbsp;&amp;nbsp;*** p&amp;lt;0.001&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+---
+
+### One continuous predictor
+
+![](20-ML_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+---
+
+### Two continuous predictors
+
+![](20-ML_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+
+---
+
+### Two continuous predictors + interaction
+
+![](20-ML_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+library(emmeans)
+data %&gt;% lm(Happiness ~ Life*GDP, data = .) %&gt;% 
+  emtrends(., var = "Life", ~GDP, at = list(GDP = c(8,9,10)))
+```
+
+```
+##  GDP Life.trend     SE  df lower.CL upper.CL
+##    8     0.0150 0.0152 117 -0.01505   0.0451
+##    9     0.0353 0.0136 117  0.00825   0.0623
+##   10     0.0555 0.0155 117  0.02481   0.0862
+## 
+## Confidence level used: 0.95
+```
+
+
+---
+
+### One categorical predictor
+
+
+```r
+data %&gt;% lm(Happiness ~ World, data = .) %&gt;% summary
+```
+
+```
+## 
+## Call:
+## lm(formula = Happiness ~ World, data = .)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.0713 -0.4976  0.0398  0.5908  1.9147 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   6.7048     0.1572  42.646  &lt; 2e-16 ***
+## World2       -1.2876     0.2161  -5.959 2.18e-08 ***
+## World3       -2.6078     0.2161 -12.069  &lt; 2e-16 ***
+## World4       -1.1716     0.1869  -6.267 4.83e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7702 on 132 degrees of freedom
+## Multiple R-squared:  0.528,	Adjusted R-squared:  0.5173 
+## F-statistic: 49.22 on 3 and 132 DF,  p-value: &lt; 2.2e-16
+```
+---
+
+
+![](20-ML_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+data %&gt;% lm(Happiness ~ World, data = .) %&gt;%
+  emmeans(~World)
+```
+
+```
+##  World emmean    SE  df lower.CL upper.CL
+##  1       6.70 0.157 132     6.39     7.02
+##  2       5.42 0.148 132     5.12     5.71
+##  3       4.10 0.148 132     3.80     4.39
+##  4       5.53 0.101 132     5.33     5.73
+## 
+## Confidence level used: 0.95
+```
+
+```r
+data %&gt;% lm(Happiness ~ World, data = .) %&gt;% summary %&gt;%  coef
+```
+
+```
+##              Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)  6.704805  0.1572205  42.645878 4.587172e-79
+## World2      -1.287590  0.2160789  -5.958890 2.176877e-08
+## World3      -2.607793  0.2160789 -12.068710 4.620349e-23
+## World4      -1.171578  0.1869399  -6.267137 4.831268e-09
+```
+
+---
+
+
+```r
+data %&gt;% lm(Happiness ~ World, data = .) %&gt;%
+  emmeans(pairwise~World, adjust = "none")
+```
+
+```
+## $emmeans
+##  World emmean    SE  df lower.CL upper.CL
+##  1       6.70 0.157 132     6.39     7.02
+##  2       5.42 0.148 132     5.12     5.71
+##  3       4.10 0.148 132     3.80     4.39
+##  4       5.53 0.101 132     5.33     5.73
+## 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast estimate    SE  df t.ratio p.value
+##  1 - 2       1.288 0.216 132   5.959  &lt;.0001
+##  1 - 3       2.608 0.216 132  12.069  &lt;.0001
+##  1 - 4       1.172 0.187 132   6.267  &lt;.0001
+##  2 - 3       1.320 0.210 132   6.298  &lt;.0001
+##  2 - 4      -0.116 0.179 132  -0.647  0.5191
+##  3 - 4      -1.436 0.179 132  -8.004  &lt;.0001
+```
+
+---
+
+### One categorical predictor
+
+
+```r
+data %&gt;% lm(Happiness ~ World, data = .) %&gt;% anova
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Happiness
+##            Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## World       3 87.600 29.2001  49.221 &lt; 2.2e-16 ***
+## Residuals 132 78.308  0.5932                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+---
+
+### Two categorical predictors + interaction
+
+
+```r
+data %&gt;% lm(Happiness ~ World_simple*Hemisphere, data = .) %&gt;% summary
+```
+
+```
+## 
+## Call:
+## lm(formula = Happiness ~ World_simple * Hemisphere, data = .)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6566 -0.7113 -0.0935  0.7064  2.5165 
+## 
+## Coefficients:
+##                                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      5.9278     0.1502  39.473  &lt; 2e-16 ***
+## World_simple3/4                 -0.9964     0.2007  -4.965 2.08e-06 ***
+## HemisphereWest                   0.6945     0.4053   1.713    0.089 .  
+## World_simple3/4:HemisphereWest  -0.2677     0.4650  -0.576    0.566    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9961 on 132 degrees of freedom
+## Multiple R-squared:  0.2105,	Adjusted R-squared:  0.1926 
+## F-statistic: 11.73 on 3 and 132 DF,  p-value: 7.291e-07
+```
+---
+
+
+![](20-ML_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+data %&gt;% lm(Happiness ~ World_simple*Hemisphere, data = .) %&gt;%
+  emmeans(~World_simple)
+```
+
+```
+## NOTE: Results may be misleading due to involvement in interactions
+```
+
+```
+##  World_simple emmean    SE  df lower.CL upper.CL
+##  1/2            6.28 0.203 132     5.87     6.68
+##  3/4            5.14 0.114 132     4.92     5.37
+## 
+## Results are averaged over the levels of: Hemisphere 
+## Confidence level used: 0.95
+```
+
+
+---
+
+
+```r
+data %&gt;% lm(Happiness ~ World_simple*Hemisphere, data = .) %&gt;%
+  emmeans(~World_simple*Hemisphere)
+```
+
+```
+##  World_simple Hemisphere emmean    SE  df lower.CL upper.CL
+##  1/2          East         5.93 0.150 132     5.63     6.22
+##  3/4          East         4.93 0.133 132     4.67     5.19
+##  1/2          West         6.62 0.377 132     5.88     7.37
+##  3/4          West         5.36 0.185 132     4.99     5.72
+## 
+## Confidence level used: 0.95
+```
+
+---
+
+### Two categorical predictors + interaction
+
+
+```r
+data %&gt;% lm(Happiness ~ World_simple*Hemisphere, data = .) %&gt;% anova
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Happiness
+##                          Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## World_simple              1  28.533 28.5328 28.7545 3.563e-07 ***
+## Hemisphere                1   6.064  6.0639  6.1110   0.01471 *  
+## World_simple:Hemisphere   1   0.329  0.3288  0.3314   0.56581    
+## Residuals               132 130.982  0.9923                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+--
+
+
+```r
+table(data$World_simple, data$Hemisphere)
+```
+
+```
+##      
+##       East West
+##   1/2   44    7
+##   3/4   56   29
+```
+
+---
+
+### Two categorical predictors + interaction
+
+
+```r
+data %&gt;% lm(Happiness ~ World_simple*Hemisphere, data = .) %&gt;% 
+  car::Anova(Type = 2)
+```
+
+```
+## Anova Table (Type II tests)
+## 
+## Response: Happiness
+##                          Sum Sq  Df F value    Pr(&gt;F)    
+## World_simple             33.145   1 33.4029 5.132e-08 ***
+## Hemisphere                6.064   1  6.1110   0.01471 *  
+## World_simple:Hemisphere   0.329   1  0.3314   0.56581    
+## Residuals               130.982 132                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+### Mixing categorical and continuous predictors
+
+
+```r
+data %&gt;% lm(Happiness ~ World + Life, data = .) %&gt;% summary
+```
+
+```
+## 
+## Call:
+## lm(formula = Happiness ~ World + Life, data = .)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.17675 -0.46646  0.03876  0.53896  1.67472 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.85618    0.90922   2.041 0.043225 *  
+## World2      -0.85209    0.21255  -4.009 0.000102 ***
+## World3      -1.38074    0.30051  -4.595 1.01e-05 ***
+## World4      -0.61024    0.20028  -3.047 0.002801 ** 
+## Life         0.06775    0.01255   5.400 3.06e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.701 on 130 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.6146,	Adjusted R-squared:  0.6027 
+## F-statistic: 51.82 on 4 and 130 DF,  p-value: &lt; 2.2e-16
+```
+---
+
+
+![](20-ML_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+data %&gt;% lm(Happiness ~ World + Life, data = .) %&gt;% 
+  emtrends(var = "Life", ~"World")
+```
+
+```
+##  World Life.trend     SE  df lower.CL upper.CL
+##  1         0.0678 0.0125 130   0.0429   0.0926
+##  2         0.0678 0.0125 130   0.0429   0.0926
+##  3         0.0678 0.0125 130   0.0429   0.0926
+##  4         0.0678 0.0125 130   0.0429   0.0926
+## 
+## Confidence level used: 0.95
+```
+
+---
+
+### Mixing categorical and continuous predictors
+
+
+```r
+data %&gt;% lm(Happiness ~ World*Life, data = .) %&gt;% summary
+```
+
+```
+## 
+## Call:
+## lm(formula = Happiness ~ World * Life, data = .)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.2068 -0.4536  0.1133  0.5345  1.3040 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  2.89645    6.04123   0.479    0.632
+## World2       1.52357    6.81397   0.224    0.823
+## World3       0.78999    6.25686   0.126    0.900
+## World4      -2.81054    6.10923  -0.460    0.646
+## Life         0.05322    0.08439   0.631    0.529
+## World2:Life -0.03791    0.09726  -0.390    0.697
+## World3:Life -0.04553    0.08969  -0.508    0.613
+## World4:Life  0.03289    0.08560   0.384    0.701
+## 
+## Residual standard error: 0.6911 on 127 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.6341,	Adjusted R-squared:  0.6139 
+## F-statistic: 31.44 on 7 and 127 DF,  p-value: &lt; 2.2e-16
+```
+---
+
+
+![](20-ML_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+---
+
+
+```r
+data %&gt;% lm(Happiness ~ World*Life, data = .) %&gt;% 
+  emtrends(var = "Life", ~"World")
+```
+
+```
+##  World Life.trend     SE  df lower.CL upper.CL
+##  1        0.05322 0.0844 127  -0.1138   0.2202
+##  2        0.01531 0.0483 127  -0.0804   0.1110
+##  3        0.00768 0.0304 127  -0.0524   0.0678
+##  4        0.08611 0.0143 127   0.0578   0.1144
+## 
+## Confidence level used: 0.95
+```
+
+---
+
+## Concept 2: Suppression
+
+.purple[Suppression] occurs when the inclusion of a covariate (X2) enhances or reverses the relationship between a predictor (X1) and outcome (Y).
+
+Example 1: 
+
+`\(\hat{Y}_i = 5 + .3X1_i\)`
+
+`\(\hat{Y}_i = 3 + .7X1_i + .3X2_i\)`
+
+Example 2: 
+
+`\(\hat{Y}_i = 5 + .3X1_i\)`
+
+`\(\hat{Y}_i = 3 -.4X1_i + .3X2_i\)`
+
+---
+
+## Suppression
+
+Why does this occur? A few reasons, but the common thread to all of these is that X1 and X2 will be correlated. 
+
+Suppression can be "real" -- for example, the relation between mathematical ability and outcomes is often enhanced after controlling for verbal ability. 
+
+But suppression can be an artifact -- this is most often the case when X2 _overcontrols_ X1.
+
+What to do? Check your theory and see if the finding replicates in a new sample.
+
+---
+
+## Concept 3: Endogeneity
+
+Endogeneity refers to a situation in which a predictor (X1) is associated with an error term (e).
+
+![](20-ML_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+
+---
+
+## Concept 3: Endogeneity
+
+Endogeneity refers to a situation in which a predictor (X1) is associated with an error term (e).
+
+![](20-ML_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+
+---
+class: inverse
+
+## Lessons from machine learning
+
+Yarkoni and Westfall (2017) describe the goals of explanation and prediction in science.
+  - Explanation: describe causal underpinnings of behaviors/outcomes
+  - Prediction: accurately forecast behaviors/outcomes
+
+In some ways, these goals work in tandem. Good prediction can help us develop theory of explanation and vice versa. But, statistically speaking, they are in tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes. 
 
 ???
-
-Explanation: describe causal underpinnings of behaviors/outcomes
-Prediction: accurately forecast behaviors/outcomes
-
-Similar: both goals of science; good prediction can help us develop theory of explanation and vice versa
-
-Statistical tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes. 
 
 Y&amp;W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
 
@@ -55,37 +663,18 @@ Y&amp;W: we should spend more time and resources developing predictive models th
 
 ## Yarkoni and Westfall (2017)
 
-What is **overfitting** and where does this occur in terms of the models we have discussed in class thus far?
+.pull-left[
+.purple[Overfitting:] mistakenly fitting sample-specific noise as if it were signal
+  - OLS models tend to be overfit because they minimize error for a specific sample
 
-What is **bias** and **variance**, and how does the bias-variance trade-off relate to overfitting?
+.purple[Bias:] systematically over or under estimating parameters
+.purple[Variance:] how much estimates tend to jump around]
 
-* How concerned are you about overfitting in your own area of research? How about in the studies you'd like to do in the next couple of years?
+.pull-right[
 
-???
+![](images/bias-variance.png)
+]
 
-Overfitting: mistakenly fitting sample-specific noise as if it were signal
-
-OLS models tend to be overfit because they minimize error for a specific sample
-
-Bias: systematically over or under estimating parameters
-Variance: how much estimates tend to jump around
-
-Model-fits tend to prioritizie minimizing bias or variance, and choosing to minimize one inflates the other; OLS models minimize one of these
-
-
----
-
-## Yarkoni and Westfall (2017)
-
-How do Y&amp;W propose adjusting our current statistical practices to be more successful at prediction? 
-
-???
-
-big data sets
-
-Cross-validation
-
-regularization
 
 ---
 
@@ -99,7 +688,7 @@ regularization
 * Is my model overfit?
 
 **Regularization**
-* Constrain the model to be less overfit 
+* Constrain the model to be less overfit (and more biased)
 
 ---
 
@@ -178,11 +767,11 @@ cv.model
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 106, 106, 106, 106, 106, 106, ... 
+## Summary of sample sizes: 106, 106, 107, 106, 106, 107, ... 
 ## Resampling results:
 ## 
 ##   RMSE      Rsquared   MAE    
-##   1.513471  0.3805941  1.23448
+##   1.552992  0.3607622  1.26259
 ## 
 ## Tuning parameter 'intercept' was held constant at a value of TRUE
 ```
@@ -195,274 +784,15 @@ Penalizing a model as it grows more complex.
 * Usually involves shrinking coefficient estimates -- the model will fit less well in-sample but may be more predictive
 
 *lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
+
 - coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
 
-The coefficient `\(\lambda\)` is used to penalize the model.
-
----
-
-The `glmnet` package has the tools for lasso regression. One small complication is that the package uses matrix algebra, so you need to feed it a matrix of predictors -- specifically, instead of saying "find the interaction between A and B", you need to create the variable that represents this term. How could you do that manually?
-
---
-
-Luckily, the function `model.matrix()` can do this for you.
-
----
-
-
-```r
-# provide your original lm model to get matrix of predictors
-X.matrix &lt;- model.matrix.lm(model.lm) 
-head(X.matrix)
-```
-
-```
-##   (Intercept)  Anxiety Support groupTx Anxiety:Support Anxiety:groupTx
-## 1           1 10.18520  6.1602       1        62.74287         10.1852
-## 2           1  5.58873  8.9069       0        49.77826          0.0000
-## 3           1  6.58500 10.5433       1        69.42763          6.5850
-## 4           1  8.95430 11.4605       1       102.62076          8.9543
-## 5           1  7.59910  5.5516       0        42.18716          0.0000
-## 6           1  8.15600  7.5117       1        61.26543          8.1560
-##   Support:groupTx Anxiety:Support:groupTx
-## 1          6.1602                62.74287
-## 2          0.0000                 0.00000
-## 3         10.5433                69.42763
-## 4         11.4605               102.62076
-## 5          0.0000                 0.00000
-## 6          7.5117                61.26543
-```
-
-```r
-library(glmnet)
-lasso.mod &lt;- glmnet(x = X.matrix[,-1], #don't need the intercept 
-                    y = stress.data$Stress)
-```
-
----
-
-
-```r
-lasso.mod
-```
-
-```
-## 
-## Call:  glmnet(x = X.matrix[, -1], y = stress.data$Stress) 
-## 
-##    Df  %Dev  Lambda
-## 1   0  0.00 0.97920
-## 2   1  4.66 0.89220
-## 3   1  8.54 0.81300
-## 4   1 11.75 0.74080
-## 5   1 14.42 0.67500
-## 6   1 16.64 0.61500
-## 7   1 18.48 0.56040
-## 8   1 20.00 0.51060
-## 9   1 21.27 0.46520
-## 10  1 22.32 0.42390
-## 11  1 23.20 0.38620
-## 12  2 24.11 0.35190
-## 13  2 24.98 0.32070
-## 14  2 25.70 0.29220
-## 15  2 26.29 0.26620
-## 16  3 27.40 0.24260
-## 17  2 29.39 0.22100
-## 18  2 30.44 0.20140
-## 19  2 31.31 0.18350
-## 20  2 32.03 0.16720
-## 21  2 32.63 0.15230
-## 22  2 33.13 0.13880
-## 23  2 33.54 0.12650
-## 24  2 33.88 0.11520
-## 25  2 34.17 0.10500
-## 26  2 34.41 0.09567
-## 27  2 34.60 0.08717
-## 28  2 34.76 0.07943
-## 29  2 34.90 0.07237
-## 30  3 35.40 0.06594
-## 31  3 36.32 0.06009
-## 32  3 37.09 0.05475
-## 33  3 37.72 0.04988
-## 34  3 38.25 0.04545
-## 35  3 38.69 0.04141
-## 36  4 39.06 0.03774
-## 37  4 39.35 0.03438
-## 38  4 39.61 0.03133
-## 39  4 39.81 0.02855
-## 40  4 39.99 0.02601
-## 41  4 40.13 0.02370
-## 42  4 40.25 0.02159
-## 43  4 40.35 0.01968
-## 44  6 40.45 0.01793
-## 45  5 40.57 0.01633
-## 46  5 40.65 0.01488
-## 47  5 40.72 0.01356
-## 48  5 40.78 0.01236
-## 49  5 40.83 0.01126
-## 50  6 40.88 0.01026
-## 51  6 40.95 0.00935
-## 52  6 41.00 0.00852
-## 53  6 41.04 0.00776
-## 54  6 41.08 0.00707
-## 55  6 41.11 0.00644
-## 56  6 41.13 0.00587
-## 57  6 41.15 0.00535
-## 58  6 41.17 0.00487
-## 59  6 41.18 0.00444
-## 60  6 41.19 0.00405
-## 61  6 41.20 0.00369
-## 62  6 41.21 0.00336
-## 63  6 41.22 0.00306
-## 64  6 41.22 0.00279
-## 65  6 41.23 0.00254
-## 66  6 41.23 0.00231
-## 67  6 41.24 0.00211
-## 68  7 41.24 0.00192
-## 69  7 41.24 0.00175
-## 70  7 41.24 0.00160
-## 71  7 41.25 0.00145
-## 72  7 41.25 0.00132
-## 73  7 41.25 0.00121
-## 74  7 41.25 0.00110
-## 75  7 41.25 0.00100
-## 76  7 41.26 0.00091
-## 77  7 41.26 0.00083
-## 78  7 41.26 0.00076
-## 79  7 41.26 0.00069
-## 80  7 41.26 0.00063
-## 81  7 41.26 0.00057
-## 82  7 41.26 0.00052
-## 83  7 41.26 0.00048
-## 84  7 41.26 0.00043
-## 85  7 41.26 0.00040
-## 86  7 41.26 0.00036
-## 87  7 41.26 0.00033
-```
-
-???
-
-DF = number of non-zero coefficients
-dev = `\(R^2\)`
-lambda = complexity parameter (how much to downweight, between 0 and 1)
-
----
-### What value of `\(\lambda\)` to choose?
-
-
-```r
-plot(lasso.mod, xvar = "dev", label = T)
-```
-
-![](20-ML_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
-
-Looks like coefficients 1, 2, and 3 have high values even with shrinkage.
-
----
-### What value of `\(\lambda\)` to choose?
-
-```r
-plot(lasso.mod, xvar = "lambda", label = TRUE)
-```
-
-![](20-ML_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
-
-I might look for lambda values where those coefficients are still different from 0. 
-
----
-.pull-left[
-
-```r
-coef = coef(lasso.mod, s = exp(-5))
-coef
-```
-
-```
-## 8 x 1 sparse Matrix of class "dgCMatrix"
-##                                   s1
-## (Intercept)             -2.211802705
-## Anxiety                  0.572946040
-## Support                  0.621714623
-## groupTx                 -0.487719327
-## Anxiety:Support         -0.038680253
-## Anxiety:groupTx          .          
-## Support:groupTx          0.029353883
-## Anxiety:Support:groupTx  0.003006013
-```
-]
-
-.pull-left[
-
-```r
-coef = coef(lasso.mod, s = exp(-4))
-coef
-```
-
-```
-## 8 x 1 sparse Matrix of class "dgCMatrix"
-##                                    s1
-## (Intercept)             -1.8538689387
-## Anxiety                  0.5028481785
-## Support                  0.5837254774
-## groupTx                 -0.0044703271
-## Anxiety:Support         -0.0302949960
-## Anxiety:groupTx         -0.0034894821
-## Support:groupTx          0.0009984811
-## Anxiety:Support:groupTx  .
-```
-]
-
-
----
-
-
-```r
-coef = coef(lasso.mod, s = 0)
-coef
-```
-
-```
-## 8 x 1 sparse Matrix of class "dgCMatrix"
-##                                   s1
-## (Intercept)             -2.373766131
-## Anxiety                  0.612812455
-## Support                  0.650290859
-## groupTx                 -1.044285344
-## Anxiety:Support         -0.045146588
-## Anxiety:groupTx          0.025299852
-## Support:groupTx          0.048852216
-## Anxiety:Support:groupTx  0.005913829
-```
-
-`\(\lambda = 0\)` is pretty close to our OLS solution
-
----
-
-
-```r
-coef = coef(lasso.mod, s = 1)
-coef
-```
-
-```
-## 8 x 1 sparse Matrix of class "dgCMatrix"
-##                               s1
-## (Intercept)             5.180003
-## Anxiety                 .       
-## Support                 .       
-## groupTx                 .       
-## Anxiety:Support         .       
-## Anxiety:groupTx         .       
-## Support:groupTx         .       
-## Anxiety:Support:groupTx .
-```
-
-`\(\lambda = 1\)` is a huge penalty
+[See here for a tutorial](https://www.statology.org/lasso-regression-in-r/).
 
 ---
 ### NHST no more
 
-Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicity deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicitly deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
 
 ---
 
@@ -485,6 +815,10 @@ class: inverse
 ## Next time...
 
 PSY 613 with Elliot Berkman!
+
+.small[(But first take the final quiz.)]
+
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
