@@ -413,24 +413,24 @@ boot_adj_r2_model1 <- boot(data      = df,
                            R         = 1000) 
 
 boot_adj_r2_model2 <- boot(data      = df,     
-                       statistic = get_adj_r2, 
-                       formula   = happiness ~ extraversion + pos_express,
-                       R         = 1000) 
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express,
+                           R         = 1000) 
 
 boot_adj_r2_model3 <- boot(data      = df,     
-                       statistic = get_adj_r2, 
-                       formula   = happiness ~ extraversion + pos_express + soc_sup,
-                       R         = 1000) 
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express + soc_sup,
+                           R         = 1000) 
 
 boot_adj_r2_model4 <- boot(data      = df,     
-                       statistic = get_adj_r2, 
-                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
-                       R         = 1000) 
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
+                           R         = 1000) 
 
 boot_adj_r2_model5 <- boot(data      = df,     
-                       statistic = get_adj_r2, 
-                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
-                       R         = 1000) 
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                           R         = 1000) 
 
 # medians
 median(boot_adj_r2_model1$t)
@@ -494,16 +494,16 @@ cor4 <- boot(data      = df,
              R         = 1000) 
 
 cor1_results <- tibble(r    = cor1$t,
-                                  vars = "Extr., Pos. Expr.")
+                       vars = "Extr., Pos. Expr.")
 
 cor2_results <- tibble(r    = cor2$t,
-                                  vars = "Extr., Soc. Supp.")
+                       vars = "Extr., Soc. Supp.")
 
-cor3_results    <- tibble(r    = cor3$t,
-                                  vars = "Extr., Opt.")
+cor3_results <- tibble(r    = cor3$t,
+                       vars = "Extr., Opt.")
 
-cor4_results   <- tibble(r    = cor4$t,
-                                  vars = "Extr., Exercise")
+cor4_results <- tibble(r    = cor4$t,
+                       vars = "Extr., Exercise")
 
 cor_all <- cor1_results %>% 
   rbind(cor2_results) %>% 
