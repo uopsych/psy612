@@ -250,17 +250,14 @@ Alternatively, we could produce a histogram. Let's do that and also set up verti
 tibble(rsquared = boot_r2$t) %>% 
   ggplot(aes(x = rsquared)) +
     geom_histogram(fill = "turquoise", alpha = .6) + 
-    geom_vline(aes(xintercept = ci$percent[4],
-                   color      = "Lower 2.5%"), 
+    geom_vline(aes(xintercept = ci$percent[4]),
                size     = 1,
                color    = "blueviolet",
                linetype = "dashed") +
-    geom_vline(aes(xintercept = median(boot_r2$t), 
-                   color      = "Median"), 
+    geom_vline(aes(xintercept = median(boot_r2$t)), 
                size  = 2,
                color = "blueviolet") + 
-    geom_vline(aes(xintercept = ci$percent[5],
-                   color      = "Upper 2.5%"),
+    geom_vline(aes(xintercept = ci$percent[5]),
                size     = 1,
                color    = "blueviolet",
                linetype = "dashed") +
@@ -477,7 +474,7 @@ get_r <- function(data, index, vars){
   
   data_subsetted <- data[index,]
   
-  r              <- cor(data_subsetted[,vars])
+  r              <- cor(data_subsetted[,vars])[2, 1]
   
   return(r) 
 }
