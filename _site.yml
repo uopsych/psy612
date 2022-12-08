@@ -7,64 +7,11 @@ navbar:
       href: schedule.html
     - text: Lectures
       menu:
-      - text: "1-Correlation"
-        href: lectures/1-correlation.html
-      - text: "2-Correlation"
-        href: lectures/2-correlation.html
-      - text: "3-Univariate regression (equation)"
-        href: lectures/3-regression.html
-      - text: "4-Univariate regression (fit)"
-        href: lectures/4-regression.html
-      - text: "5-Univariate regression (precision)"
-        href: lectures/5-regression.html
-      - text: "6-General linear model"
-        href: lectures/6-glm.html
-      - text: "7-Part and partial correlations"
-        href: lectures/7-partial.html
-      - text: "8-Multiple Regression (equation)"
-        href: lectures/8-m_regression.html
-      - text: "9-Multiple Regression (tolerance, model comparison)"
-        href: lectures/9-m_regression.html
-      - text: "10-Categorical predictors/ANOVA"
-        href: lectures/10-anova.html
-      - text: "11/12-Diagnostics"
-        href: lectures/11_12-diagnostics.html
-      - text: "13-DAG models"
-        href: lectures/13-dag.html
-      - text: "14-Interactions"
-        href: lectures/14-interactions.html
-      - text: "15-Interactions II"
-        href: lectures/15-interactions.html
-      - text: "16/17-Factorial ANOVA"
-        href: lectures/1617-factorial.html
-      - text: "18-Power and 3-way interactions"
-        href: lectures/18-power-3.html
-      - text: "19-Polynomials and bootstrapping"
-        href: lectures/19-poly_boot.html
-      - text: "20-Review and machine learning"
-        href: lectures/20-ML.html
+      - text: "Coming soon!"
+ 
     - text: Labs
       menu:
-      - text: "1-Correlations"
-        href: labs/lab-1/lab-1.html
-      - text: "2-Univariate Linear Regression"
-        href: labs/lab-2/lab-2.html
-      - text: "3-Univariate Regression & GLM"
-        href: labs/lab-3/lab-3.html
-      - text: "4-Multiple Regression"
-        href: labs/lab-4/lab-4.html
-      - text: "5-Categorical Predictors/One-way ANOVA"
-        href: labs/lab-5/lab-5.html
-      - text: "6-Regression Diagnostics"
-        href: labs/lab-6/lab-6.html
-      - text: "7-Continuous x Categorical Interactions"
-        href: labs/lab-7/lab-7-complete.html    
-      - text: "8-Factorial ANOVA"
-        href: labs/lab-8/lab-8.html 
-      - text: "9-Reproducible Reporting with `{papaja}`"
-        href: labs/lab-9/lab-9.html 
-      - text: "10-Bootstrapping"
-        href: labs/lab-10/lab-10.html 
+      - text: "Coming soon!"
     - text: Homework
       href: homework.html
     - text: Final Project
