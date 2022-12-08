@@ -396,17 +396,14 @@ tibble(rsquared = boot_r2$t) %&gt;%
 <pre class="r"><code>tibble(rsquared = boot_r2$t) %&gt;% 
   ggplot(aes(x = rsquared)) +
     geom_histogram(fill = &quot;turquoise&quot;, alpha = .6) + 
-    geom_vline(aes(xintercept = ci$percent[4],
-                   color      = &quot;Lower 2.5%&quot;), 
+    geom_vline(aes(xintercept = ci$percent[4]),
                size     = 1,
                color    = &quot;blueviolet&quot;,
                linetype = &quot;dashed&quot;) +
-    geom_vline(aes(xintercept = median(boot_r2$t), 
-                   color      = &quot;Median&quot;), 
+    geom_vline(aes(xintercept = median(boot_r2$t)), 
                size  = 2,
                color = &quot;blueviolet&quot;) + 
-    geom_vline(aes(xintercept = ci$percent[5],
-                   color      = &quot;Upper 2.5%&quot;),
+    geom_vline(aes(xintercept = ci$percent[5]),
                size     = 1,
                color    = &quot;blueviolet&quot;,
                linetype = &quot;dashed&quot;) +
