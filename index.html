@@ -9,12 +9,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Winter 2022. Instructor: Sara J. Weston" />
+<meta name="author" content="Winter 2023. Instructor: Sara J. Weston" />
 
 
 <title>Psy 612: Data Analysis II</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -66,6 +66,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -86,6 +87,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -143,11 +147,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -311,7 +319,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -324,105 +332,23 @@ div.tocify {
   <a href="schedule.html">Syllabus</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Lectures
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="lectures/1-correlation.html">1-Correlation</a>
-    </li>
-    <li>
-      <a href="lectures/2-correlation.html">2-Correlation</a>
-    </li>
-    <li>
-      <a href="lectures/3-regression.html">3-Univariate regression (equation)</a>
-    </li>
-    <li>
-      <a href="lectures/4-regression.html">4-Univariate regression (fit)</a>
-    </li>
-    <li>
-      <a href="lectures/5-regression.html">5-Univariate regression (precision)</a>
-    </li>
-    <li>
-      <a href="lectures/6-glm.html">6-General linear model</a>
-    </li>
-    <li>
-      <a href="lectures/7-partial.html">7-Part and partial correlations</a>
-    </li>
-    <li>
-      <a href="lectures/8-m_regression.html">8-Multiple Regression (equation)</a>
-    </li>
-    <li>
-      <a href="lectures/9-m_regression.html">9-Multiple Regression (tolerance, model comparison)</a>
-    </li>
-    <li>
-      <a href="lectures/10-anova.html">10-Categorical predictors/ANOVA</a>
-    </li>
-    <li>
-      <a href="lectures/11_12-diagnostics.html">11/12-Diagnostics</a>
-    </li>
-    <li>
-      <a href="lectures/13-dag.html">13-DAG models</a>
-    </li>
-    <li>
-      <a href="lectures/14-interactions.html">14-Interactions</a>
-    </li>
-    <li>
-      <a href="lectures/15-interactions.html">15-Interactions II</a>
-    </li>
-    <li>
-      <a href="lectures/1617-factorial.html">16/17-Factorial ANOVA</a>
-    </li>
-    <li>
-      <a href="lectures/18-power-3.html">18-Power and 3-way interactions</a>
-    </li>
-    <li>
-      <a href="lectures/19-poly_boot.html">19-Polynomials and bootstrapping</a>
-    </li>
-    <li>
-      <a href="lectures/20-ML.html">20-Review and machine learning</a>
-    </li>
+    <li class="dropdown-header">Coming soon!</li>
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Labs
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="labs/lab-1/lab-1.html">1-Correlations</a>
-    </li>
-    <li>
-      <a href="labs/lab-2/lab-2.html">2-Univariate Linear Regression</a>
-    </li>
-    <li>
-      <a href="labs/lab-3/lab-3.html">3-Univariate Regression &amp; GLM</a>
-    </li>
-    <li>
-      <a href="labs/lab-4/lab-4.html">4-Multiple Regression</a>
-    </li>
-    <li>
-      <a href="labs/lab-5/lab-5.html">5-Categorical Predictors/One-way ANOVA</a>
-    </li>
-    <li>
-      <a href="labs/lab-6/lab-6.html">6-Regression Diagnostics</a>
-    </li>
-    <li>
-      <a href="labs/lab-7/lab-7-complete.html">7-Continuous x Categorical Interactions</a>
-    </li>
-    <li>
-      <a href="labs/lab-8/lab-8.html">8-Factorial ANOVA</a>
-    </li>
-    <li>
-      <a href="labs/lab-9/lab-9.html">9-Reproducible Reporting with `{papaja}`</a>
-    </li>
-    <li>
-      <a href="labs/lab-10/lab-10.html">10-Bootstrapping</a>
-    </li>
+    <li class="dropdown-header">Coming soon!</li>
   </ul>
 </li>
 <li>
@@ -437,7 +363,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Previous years
      
     <span class="caret"></span>
@@ -468,64 +394,109 @@ div.tocify {
 
 <h1 class="title toc-ignore">Psy 612: Data Analysis II</h1>
 <h3 class="subtitle">Department of Psychology, University of Oregon</h3>
-<h4 class="author">Winter 2022. Instructor: Sara J. Weston</h4>
+<h4 class="author">Winter 2023. Instructor: Sara J. Weston</h4>
 
 </div>
 
 
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>This course is the second in a 3-term sequence of classes designed to provide a thorough grounding in statistical concepts, methods, and applications of relevance to psychological science and related sciences. The aim of the course is to help students develop skills in the analysis and interpretation of real psychological data. Our focus will be both conceptual and mathematical – that is, understanding the underlying mathematical principles of statistics enhances ones’ ability to interpret and think critically about the use of statistics. Students will also learn the basics of the R language and use this program to wrangle, visualize, summarize, and test hypotheses with data.</p>
+<p>This course is the second in a 3-term sequence of classes designed to
+provide a thorough grounding in statistical concepts, methods, and
+applications of relevance to psychological science and related sciences.
+The aim of the course is to help students develop skills in the analysis
+and interpretation of real psychological data. Our focus will be both
+conceptual and mathematical – that is, understanding the underlying
+mathematical principles of statistics enhances ones’ ability to
+interpret and think critically about the use of statistics. Students
+will also learn the basics of the R language and use this program to
+wrangle, visualize, summarize, and test hypotheses with data.</p>
 <div id="meeting-times-and-locations" class="section level2">
 <h2>Meeting times and locations</h2>
-<p><strong>Lecture:</strong> Tuesdays and Thursdays, 10:00 - 11:20 am, 209 UNIV and <a href="https://uoregon.zoom.us/j/98429454216?pwd=QXd5YzBiYjVuYU51a0wyeHlzUnI5dz09">Zoom</a></p>
-<p><strong>Lab (Section 23919):</strong> Fridays, 9:00 - 10:20 am, <a href="https://uoregon.zoom.us/j/91791352220?pwd=WGxzYUMrWGxKZ1VXU0x4WmwyUFdIUT09">Zoom</a></p>
-<p><strong>Lab (Section 23920):</strong> Fridays, 10:30 - 11:50 am, <a href="https://uoregon.zoom.us/j/92012864290?pwd=Y202bGM2M2lpZGlEbUw0OU0yTFJ3Zz09">Zoom</a></p>
+<p><strong>Lecture:</strong> Tuesdays and Thursdays, 10:00 - 11:20 am,
+201 CON</p>
+<p><strong>Lab (Section 23919):</strong> Fridays, 9:00 - 10:20 am</p>
+<p><strong>Lab (Section 23920):</strong> Fridays, 10:30 - 11:50 am</p>
 </div>
 <div id="instructors" class="section level2">
 <h2>Instructors</h2>
-<p><strong>Sara Weston</strong> – <a href="mailto:sweston2@uoregon.edu">sweston2@uoregon.edu</a> Office Hours: <a href="https://calendly.com/sara-weston/weston-office-hours">By appointment</a></p>
-<p><strong>Wanjia Guo</strong> – <a href="mailto:wanjiag@uoregon.edu">wanjiag@uoregon.edu</a> Office Hours: Wednesdays, 10:00 am - 12:00 pm, <a href="https://uoregon.zoom.us/j/93405656620?pwd=YlNiUDllTzRFTGM5eG45NDVMcmx1UT09">Zoom</a></p>
-<p><strong>Cameron Kay</strong> – <a href="mailto:ckay@uoregon.edu">ckay@uoregon.edu</a> Office Hours: Mondays, 12:30 - 2:30 pm, <a href="https://uoregon.zoom.us/j/97617760372?pwd=RTY2TjBYVGtOUGxSa3JCWk1UVnZtUT09">Zoom</a></p>
+<p><strong>Sara Weston</strong> – <a
+href="mailto:sweston2@uoregon.edu">sweston2@uoregon.edu</a> Office
+Hours: <a href="https://calendly.com/sara-weston/weston-office-hours">By
+appointment</a></p>
+<p><strong>Sara Lieber</strong> – <a
+href="mailto:slieber@uoregon.edu">slieber@uoregon.edu</a> Office Hours:
+TBD</p>
+<p><strong>Ian Shryock</strong> – <a
+href="mailto:ishryock@uoregon.edu">ishryock@uoregon.edu</a> Office
+Hours: TBD</p>
 </div>
 </div>
 <div id="materials" class="section level1">
 <h1>Materials</h1>
 <div id="textbook" class="section level2">
 <h2>Textbook</h2>
-<p>We will primarily be referring to chapters in <a href="https://learningstatisticswithr-bookdown.netlify.com/index.html"><em>Learning Statistics with R</em></a> by Danielle Navarro. This textbook is available for free online. You may choose to purchase a paper copy if you wish, but it is not required. Additional readings assignments will be posted here.</p>
+<p>We will primarily be referring to chapters in <a
+href="https://learningstatisticswithr-bookdown.netlify.com/index.html"><em>Learning
+Statistics with R</em></a> by Danielle Navarro. This textbook is
+available for free online. You may choose to purchase a paper copy if
+you wish, but it is not required. Additional readings assignments will
+be posted here.</p>
 </div>
 <div id="latex" class="section level2">
 <h2>LaTeX</h2>
-<p>You’ll need to download and install some version of LaTeX. There are different software programs for different operating systems – you can find links to download them all <a href="https://www.latex-project.org/get/">here</a>.</p>
+<p>You’ll need to download and install some version of LaTeX. There are
+different software programs for different operating systems – you can
+find links to download them all <a
+href="https://www.latex-project.org/get/">here</a>.</p>
 </div>
 <div id="r-and-rstudio" class="section level2">
 <h2>R and RStudio</h2>
-<p>Students must have the latest version of R, which can be downloaded <a href="https://ftp.osuosl.org/pub/cran/">here</a>. It is strongly recommended that students also download the RStudio GUI, available <a href="https://www.rstudio.com/products/rstudio/download/#download">here</a>. Both software programs are free.</p>
+<p>Students must have the latest version of R, which can be downloaded
+<a href="https://ftp.osuosl.org/pub/cran/">here</a>. It is strongly
+recommended that students also download the RStudio GUI, available <a
+href="https://www.rstudio.com/products/rstudio/download/#download">here</a>.
+Both software programs are free.</p>
 </div>
 <div id="resources-for-r-and-rstudio" class="section level2">
 <h2>Resources for R and RStudio</h2>
-<p>While we will be covering the use of R and RStudio extensively in both lecture and lab, one of the key skills required to use R is the ability to find answers on the Internet. The R community (sometimes referred to as the useR community) tends to be friendly and helpful and enjoys solving R-related problems in their spare time. For that reason, many common questions or problems have been posted to spaces online and answered by smart people. Finding and deciphering those answers is the key skill you should seek to hone this year. It’s much more important than remembering function names.</p>
-<p>Here are some sites where you can find the answers to many R questions and learn new tricks:</p>
+<p>While we will be covering the use of R and RStudio extensively in
+both lecture and lab, one of the key skills required to use R is the
+ability to find answers on the Internet. The R community (sometimes
+referred to as the useR community) tends to be friendly and helpful and
+enjoys solving R-related problems in their spare time. For that reason,
+many common questions or problems have been posted to spaces online and
+answered by smart people. Finding and deciphering those answers is the
+key skill you should seek to hone this year. It’s much more important
+than remembering function names.</p>
+<p>Here are some sites where you can find the answers to many R
+questions and learn new tricks:</p>
 <div id="for-learning-the-basics" class="section level3">
 <h3>For learning the basics</h3>
 <ul>
-<li><a href="https://bookdown.org/ndphillips/YaRrr/"><em>YaRrr, the Pirate’s Guide to R</em></a> by Nathaniel Phillips</li>
-<li><a href="https://r4ds.had.co.nz/"><em>R for Data Science</em></a> by Hadley Wickham</li>
-<li><a href="http://www.cookbook-r.com/"><em>R Cookbook</em></a> by Winston Chang</li>
-<li><a href="http://www-bcf.usc.edu/~gareth/ISL"><em>An Introduction to Statistical Learning</em></a> by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani</li>
+<li><a href="https://bookdown.org/ndphillips/YaRrr/"><em>YaRrr, the
+Pirate’s Guide to R</em></a> by Nathaniel Phillips</li>
+<li><a href="https://r4ds.had.co.nz/"><em>R for Data Science</em></a> by
+Hadley Wickham</li>
+<li><a href="http://www.cookbook-r.com/"><em>R Cookbook</em></a> by
+Winston Chang</li>
+<li><a href="http://www-bcf.usc.edu/~gareth/ISL"><em>An Introduction to
+Statistical Learning</em></a> by Gareth James, Daniela Witten, Trevor
+Hastie and Robert Tibshirani</li>
 </ul>
 </div>
 <div id="for-plotting" class="section level3">
 <h3>For plotting</h3>
 <ul>
-<li>The <a href="http://www.cookbook-r.com/Graphs/">Graphs chapter of <em>R Cookbook</em></a> by Winston Chang</li>
+<li>The <a href="http://www.cookbook-r.com/Graphs/">Graphs chapter of
+<em>R Cookbook</em></a> by Winston Chang</li>
 </ul>
 </div>
 <div id="quick-resources" class="section level3">
 <h3>Quick resources</h3>
 <ul>
-<li><a href="https://www.rstudio.com/resources/cheatsheets">Cheat Sheets</a></li>
+<li><a href="https://www.rstudio.com/resources/cheatsheets">Cheat
+Sheets</a></li>
 <li><a href="https://www.statmethods.net">Quick-R</a></li>
 </ul>
 </div>

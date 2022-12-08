@@ -1,7 +1,7 @@
 ---
 title: "Psy 612: Data Analysis II"
 subtitle: "Department of Psychology, University of Oregon"
-author: "Winter 2022. Instructor: Sara J. Weston"
+author: "Winter 2023. Instructor: Sara J. Weston"
 output: 
   html_document:
     toc: TRUE
@@ -17,23 +17,23 @@ thorough grounding in statistical concepts, methods, and applications of relevan
 
 ## Meeting times and locations
 
-**Lecture:** Tuesdays and Thursdays, 10:00 - 11:20 am, 209 UNIV and [Zoom](https://uoregon.zoom.us/j/98429454216?pwd=QXd5YzBiYjVuYU51a0wyeHlzUnI5dz09) 
+**Lecture:** Tuesdays and Thursdays, 10:00 - 11:20 am, 201 CON
 
 **Lab (Section 23919):** Fridays,
-9:00 - 10:20 am, [Zoom](https://uoregon.zoom.us/j/91791352220?pwd=WGxzYUMrWGxKZ1VXU0x4WmwyUFdIUT09)
+9:00 - 10:20 am
 
-**Lab (Section 23920):** Fridays, 10:30 - 11:50 am, [Zoom](https://uoregon.zoom.us/j/92012864290?pwd=Y202bGM2M2lpZGlEbUw0OU0yTFJ3Zz09) 
+**Lab (Section 23920):** Fridays, 10:30 - 11:50 am
 
 ## Instructors
 
 **Sara Weston** -- [sweston2@uoregon.edu](mailto:sweston2@uoregon.edu)
 Office Hours: [By appointment](https://calendly.com/sara-weston/weston-office-hours)
 
-**Wanjia Guo** -- [wanjiag@uoregon.edu](mailto:wanjiag@uoregon.edu)
-Office Hours: Wednesdays, 10:00 am - 12:00 pm, [Zoom](https://uoregon.zoom.us/j/93405656620?pwd=YlNiUDllTzRFTGM5eG45NDVMcmx1UT09)
+**Sara Lieber** -- [slieber@uoregon.edu](mailto:slieber@uoregon.edu)
+Office Hours: TBD
 
-**Cameron Kay** -- [ckay@uoregon.edu](mailto:ckay@uoregon.edu)
-Office Hours: Mondays, 12:30 - 2:30 pm, [Zoom](https://uoregon.zoom.us/j/97617760372?pwd=RTY2TjBYVGtOUGxSa3JCWk1UVnZtUT09) 
+**Ian Shryock** -- [ishryock@uoregon.edu](mailto:ishryock@uoregon.edu)
+Office Hours: TBD
 
 
 # Materials

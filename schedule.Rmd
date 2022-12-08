@@ -14,39 +14,39 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 
 | Week | Date |  Topic                                           |Readings            | Quiz       | Homework    |
 -------|------|--------------------------------------------------|--------------------|------------|-------------|
-| 1    | 1/04 | Correlation (statistical test, power)            | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
-| -    | 1/06 | Correlation II (correlation matrix, reliability) |                    |            |             |
-| -    | 1/07 | _Lab: Correlations_                              |                    |            |             |
-| 2    | 1/11 | Univariate regression (equation, $\hat{Y}$, $e$) |  LSR Chapter 15    |  Quiz 1    |             |
-| -    | 1/13 | Univariate regression II (inferential tests)     |                    |            |             |
-| -    | 1/14 | _Lab: Univariate regression_                     |                    |            |             |
-| 3    | 1/18 | Univariate regression III (precision)            |                    |  Quiz 2    |             |
-| -    | 1/20 | General linear model                             |                    |            |             |
-| -    | 1/21 | _Lab: General linear model _                     |                    |            |             |
-| 4    | 1/25 | Partial correlations                             |                    |  Quiz 3    |             |
-| -    | 1/27 | Multiple regression (interpretation, model fit)  |                    |            |             |
-| -    | 1/28 | _Lab: Two continuous predictors_                 |                    |            | HW 1 Due    |
-| 5    | 2/01 | MR: tolerance, model comparison                  |                    |  Quiz 4    |             |
-| -    | 2/03 | MR: Categorical predictors and one-way ANOVA     |  LSR Chapter 14    |            |             |
-| -    | 2/04 | _Lab: Categorical predictors_                    |                    |            |             |
-| 6    | 2/08 | Finish ANOVA; start assumptions                  | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 5    |             |
-| -    | 2/10 | Assumptions and diagnostics                      |                    |            |             |
-| -    | 2/11 | _Lab: Diagnostics_                               |                    |            |             |             
-| 7    | 2/15 | Causal models                                    | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |
-| -    | 2/17 | Interactions: Continuous x categorical           |  [McCabe et al (2018)](readings/AMPPS.pdf)                  |            |             |
-| -    | 2/18 | _Lab: Interactions_                              |                    |            | HW 2 Due    |
-| 8    | 2/22 | Interactions: Continuous predictors              | LSR Chapter 16     |  Quiz 7    |             |
-| -    | 2/24 | Factorial ANOVA                                  |                    |            |             |
-| -    | 2/25 | _Lab: ANOVA_                                     |                    |            |             |
-| 9    | 3/01 | Factorial ANOVA                                  | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
-| -    | 3/03 | Power and 3-way Interactions                            |                    |            |             |
-| -    | 3/04 | _Lab: papaja_                                    |                    |            |             |
-| 10   | 3/08 | Polynomials and  Bootstrapping  | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
-| -    | 3/10 | Machine learning                           |                    |  Quiz 9    |             |
-| -    | 3/11 | _Lab: Bootstrapping_                             |                    |            | HW 3 Due    |
-|Finals| 3/18 |                                                  |                    |            | Final Project Due |         
+| 1    | 1/10 | Correlation (statistical test, power)            | [Revelle Chapter 4](readings/Correlation chapter4 Revelle.pdf) |            |             |
+| -    | 1/12 | Correlation II (correlation matrix, reliability) |                    |            |             |
+| -    | 1/13 | _Lab: Correlations_                              |                    |            |             |
+| 2    | 1/17 | Univariate regression (equation, $\hat{Y}$, $e$) |  LSR Chapter 15    |  Quiz 1    |             |
+| -    | 1/19 | Univariate regression II (inferential tests)     |                    |            |             |
+| -    | 1/20 | _Lab: Univariate regression_                     |                    |            |             |
+| 3    | 1/24 | Univariate regression III (precision)            |                    |  Quiz 2    |             |
+| -    | 1/26 | General linear model                             |                    |            |             |
+| -    | 1/27 | _Lab: General linear model _                     |                    |            |             |
+| 4    | 1/31 | Partial correlations                             |                    |  Quiz 3    |             |
+| -    | 2/02 | Multiple regression (interpretation, model fit)  |                    |            |             |
+| -    | 2/03 | _Lab: Two continuous predictors_                 |                    |            | HW 1 Due    |
+| 5    | 2/07 | MR: tolerance, model comparison                  |                    |  Quiz 4    |             |
+| -    | 2/09 | MR: Categorical predictors and one-way ANOVA     |  LSR Chapter 14    |            |             |
+| -    | 2/10 | _Lab: Categorical predictors_                    |                    |            |             |
+| 6    | 2/14 | Finish ANOVA; start assumptions                  | [Lynam et al (2006)](readings/Lynam-2006-Assessment.pdf) |  Quiz 5    |             |
+| -    | 2/16 | Assumptions and diagnostics                      |                    |            |             |
+| -    | 2/17 | _Lab: Diagnostics_                               |                    |            |             |             
+| 7    | 2/21 | Causal models                                    | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |
+| -    | 2/23 | Interactions: Continuous x categorical (_pre-recorded_)           |  [McCabe et al (2018)](readings/AMPPS.pdf)                  |            |             |
+| -    | 2/24 | _Lab: Interactions_                              |                    |            | HW 2 Due    |
+| 8    | 2/28 | Interactions: Continuous predictors              | LSR Chapter 16     |  Quiz 7    |             |
+| -    | 3/02 | Factorial ANOVA                                  |                    |            |             |
+| -    | 3/03 | _Lab: ANOVA_                                     |                    |            |             |
+| 9    | 3/07 | Factorial ANOVA                                  | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
+| -    | 3/09 | Power and 3-way Interactions                            |                    |            |             |
+| -    | 3/10 | _Lab: papaja_                                    |                    |            |             |
+| 10   | 3/14 | Polynomials and  Bootstrapping  | [Yarkoni & Westfall (2017)](readings/Yarkoni Westfall PPS.pdf) |            |             |
+| -    | 3/16 | Machine learning                           |                    |  Quiz 9    |             |
+| -    | 3/17 | _Lab: Bootstrapping_                             |                    |            | HW 3 Due    |
+|Finals| 3/20 |                                                  |                    |            | Final Project Due |         
 
-**Final:** The final project is due at 9am on March 18th.
+**Final:** The final project is due at 9am on March 24th.
 
 # Graded materials
 
@@ -62,19 +62,17 @@ Quizzes are intended to assess your understanding of the theoretical principles 
 
 Quizzes may be resubmitted with corrections and receive full credit. To resubmit a quiz, write your corrections on the back of the quiz; for each question that was answered incorrectly, identify the correct answer, and explain why this is the correct answer. Only if the explanation sufficiently conveys an understanding of the theoretical principles will credit be given. There are no limits to the number of times a quiz may be resubmitted.
 
-If you are absent the day of a quiz, email Sara to schedule a make-up quiz. 
+If you are absent the day of a quiz, you can take a make-up quiz after the next lecture you attend.
 
 ## Homework assignments
 
-Homework assignments are intended to gauge your ability to apply the topics covered in class to the practice of data analysis. Homework assignments are to be done using R and RMarkdown; completed assignments should be submitted through Canvas, and students must attach both the .Rmd file and the compiled HTML file. 
+Homework assignments are intended to gauge your ability to apply the topics covered in class to the practice of data analysis. Homework assignments are to be done using R and RMarkdown; completed assignments should be submitted through Canvas, and students must attach both the .Rmd file and the compiled HTML file.
 
 Homework assignments are due at the time the first lab starts on the day the assignment is listed. Homework assignments may be resubmitted with corrections and receive full credit. Please note, however, that corrections can only be made to problems that were answered at initial submission. There is no limit to the number of times a homework assignment may be resubmitted.
 
-Late assignments will receive 50\% of the points earned. For example, if you correctly answer questions totalling 28 points, the assignment will receive 14 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points. Late assignments will be accepted only within 7 days of the original deadline.
+Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totalling 28 points, the assignment will receive 14 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points. Late assignments will be accepted only within 7 days of the original deadline.
 
-You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else's code. If I believe one student has copied another's work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points. 
-
-
+You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else's code. If I believe one student has copied another's work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
 ## Final project
 
