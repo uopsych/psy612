@@ -95,6 +95,15 @@ Let's walk through an example. Let's make a function that calculates the mean of
 
 ```{r}
 # your code here
+print_mean <- function(x, digits = 2) {
+  mean_x <- mean(x)
+  
+  mean_x_rounded <- round(mean_x, digits)
+  
+  output <- paste("The mean is", mean_x_rounded)
+  
+  return(output)
+}
 ```
 
 Now let's test it out on extraversion from the data we loaded above:
@@ -121,6 +130,20 @@ We could create a simple one that subsets our data, passes the subsetted data to
 
 ```{r}
 # your code here
+get_r2 <- function(data, index) {
+  data_subsetted <- data[index, ]
+  
+  fit <- lm(happiness ~ extraversion +
+                        pos_express  +
+                        soc_sup      +
+                        optimism     +
+                        exercise,
+            data = data_subsetted)
+  
+  rsq <- summary(fit)$r.squared
+  
+  return(rsq)
+}
 ```
 
 # Running `boot()` {#runBoot}
@@ -134,10 +157,9 @@ Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Le
 ```{r}
 set.seed(42) # don't forget to set.seed()
 
-boot_r2 <- boot(data      = # your code here
-                statistic = # your code here
-                R         = # your code here
-                )
+boot_r2 <- boot(data      = df,
+                statistic = get_r2,
+                R         = 10000)
 ```
 
 Okay, now let's take a look at what it contains:
@@ -254,7 +276,7 @@ get_r2 <- function(data, index, formula){
   
   data_subsetted <- data[index,] 
   
-  # your code here
+  fit <- lm(formula, data = data_subsetted)
   
   rsq <- summary(fit)$r.squared
   
@@ -369,6 +391,60 @@ Using the same dataset above, calculate bootstrapped estimates of *adjusted* $R^
 
 ```{r}
 # your code here
+
+get_adj_r2 <- function(data, index, formula){
+  
+  data_subsetted <- data[index,] 
+  
+  fit <- lm(formula, data = data_subsetted)
+  
+  rsq <- summary(fit)$adj.r.squared
+  
+  return(rsq)
+}
+
+# set seed
+set.seed(42)
+
+# bootstrap r-squared for different models
+boot_adj_r2_model1 <- boot(data      = df,     
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion,
+                           R         = 1000) 
+
+boot_adj_r2_model2 <- boot(data      = df,     
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express,
+                           R         = 1000) 
+
+boot_adj_r2_model3 <- boot(data      = df,     
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express + soc_sup,
+                           R         = 1000) 
+
+boot_adj_r2_model4 <- boot(data      = df,     
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
+                           R         = 1000) 
+
+boot_adj_r2_model5 <- boot(data      = df,     
+                           statistic = get_adj_r2, 
+                           formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                           R         = 1000) 
+
+# medians
+median(boot_adj_r2_model1$t)
+median(boot_adj_r2_model2$t)
+median(boot_adj_r2_model3$t)
+median(boot_adj_r2_model4$t)
+median(boot_adj_r2_model5$t)
+
+# cis
+boot.ci(boot_adj_r2_model1, type = "perc")
+boot.ci(boot_adj_r2_model2, type = "perc")
+boot.ci(boot_adj_r2_model3, type = "perc")
+boot.ci(boot_adj_r2_model4, type = "perc")
+boot.ci(boot_adj_r2_model5, type = "perc")
 ```
 
 ## Minihack 2
@@ -384,5 +460,66 @@ Then, plot these alongside one another using one of the methods covered today.
 
 ```{r}
 # your code here
+get_r <- function(data, index, vars){
+  
+  data_subsetted <- data[index,] 
+  
+  r              <- cor(data_subsetted[,vars])[2, 1]
+  
+  return(r)
+}
+
+# set seed
+set.seed(42)
+
+# bootstrap r-squared for different models
+cor1 <- boot(data      = df,     
+             statistic = get_r,
+             vars      = c("extraversion", "pos_express"),
+             R         = 1000) 
+
+cor2 <- boot(data      = df,     
+             statistic = get_r,
+             vars      = c("extraversion", "soc_sup"),
+             R         = 1000) 
+
+cor3 <- boot(data      = df,     
+             statistic = get_r,
+             vars      = c("extraversion", "optimism"),
+             R         = 1000) 
+
+cor4 <- boot(data      = df,     
+             statistic = get_r,
+             vars      = c("extraversion", "exercise"),
+             R         = 1000) 
+
+cor1_results <- tibble(r    = cor1$t,
+                       vars = "Extr., Pos. Expr.")
+
+cor2_results <- tibble(r    = cor2$t,
+                       vars = "Extr., Soc. Supp.")
+
+cor3_results <- tibble(r    = cor3$t,
+                       vars = "Extr., Opt.")
+
+cor4_results <- tibble(r    = cor4$t,
+                       vars = "Extr., Exercise")
+
+cor_all <- cor1_results %>% 
+  rbind(cor2_results) %>% 
+  rbind(cor3_results) %>% 
+  rbind(cor4_results) %>% 
+  group_by(vars) %>% 
+  summarize(median = median(r),
+            lower  = quantile(r, probs = .025),
+            upper  = quantile(r, probs = .975))
+
+ggplot(cor_all, aes(x = vars, y = r)) +
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
+                  color = "turquoise3") +
+  coord_flip() +
+  labs(x = NULL,
+       y = expression(paste("Zero-order ", italic(r), " (with bootstrapped 95% CIs)"))) +
+  theme_bw()
 ```
 
