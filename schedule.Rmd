@@ -34,8 +34,9 @@ LSR readings can be found in the free, online textbook, [_Learning Statistics wi
 | -    | 2/17 | _Lab: Diagnostics_                               |                    |            |             |             
 | 7    | 2/21 | Causal models                                    | [Rohrer (2018)](https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629), [Rohrer (2017)](http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/)                   |  Quiz  6   |             |
 | -    | 2/23 | Interactions: Continuous x categorical (_pre-recorded_)           |  [McCabe et al (2018)](readings/AMPPS.pdf)                  |            |             |
-| -    | 2/24 | _Lab: Interactions_                              |                    |            | HW 2 Due    |
-| 8    | 2/28 | Interactions: Continuous predictors              | LSR Chapter 16     |  Quiz 7    |             |
+| -    | 2/24 | _Lab: Interactions_                              |                    |            |             |
+| 8    | 2/27 |               |      |      | HW 2 Due    |
+| -    | 2/28 | Interactions: Continuous predictors              | LSR Chapter 16     |  Quiz 7    |     |
 | -    | 3/02 | Factorial ANOVA                                  |                    |            |             |
 | -    | 3/03 | _Lab: ANOVA_                                     |                    |            |             |
 | 9    | 3/07 | Factorial ANOVA                                  | [McClelland & Judd (1993)](readings/McClelland-1993-Psychol Bull.pdf)     |  Quiz 8    |             |
