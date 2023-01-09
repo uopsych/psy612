@@ -1,0 +1,807 @@
+---
+title: "Psy 612: Data Analysis II"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+execute: 
+  echo: true
+editor: source
+---
+
+## Welcome back!
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Last term:**
+
+- Descriptive statistics
+- Probability
+- Sampling
+- Hypothesis testing
+
+:::
+
+::: {.column width="50%"}
+
+**This term:**
+
+- Model building
+- Correlation and regression
+- General linear model
+- Multiple regression
+
+:::
+
+::::
+
+```{r, warning = F, message = F}
+library(psych)
+library(psychTools)
+library(tidyverse)
+library(RColorBrewer)
+
+options(scipen=999)
+```
+
+
+------------------------------------------------------------------------
+
+## PSY 612 details
+
+[UOpsych.github.io/psy612/](uopsych.github.io/psy612/)
+
+Structure of this course:
+
+ - Lectures, Labs, Reading 
+ - Weekly quizzes (T/F)
+ - Homework assignments (3, 30 points each)
+ - Final project (1)
+ 
+Journals are optional (no impact on grade)
+
+------------------------------------------------------------------------
+
+## PSY 612 goals
+
+- Understand how models are built and estimated
+
+- Exposure to a broad range of ideas and tools
+    - Can't learn everything in a year -- exposure helps you when you need to learn something new
+    
+- Practice practical skills
+    - Looking up code online
+    - Troubleshooting errors
+    - Using real data, dealing with real problems
+    - Asking for help 
+    
+------------------------------------------------------------------------
+
+![](images/owl.png)
+
+------------------------------------------------------------------------
+
+## Relationships
+
+- What is the relationship between IV and DV?
+
+- Measuring relationships depend on type of measurement
+
+- You have primarily been working with categorical IVs 
+    - _t_-tests 
+    - chi-square
+
+------------------------------------------------------------------------
+
+## Scatter Plot with best fit line
+
+```{r}
+#| code-fold: true
+#| 
+galton.data <- galton
+purples = brewer.pal(n = 3, name = "Purples")
+
+ggplot(galton.data, aes(x=parent, y=child)) +
+    geom_jitter() +    
+    geom_smooth(method=lm,   # Add linear regression line
+                se=FALSE) +     # Don't add shaded confidence region
+    labs(x = "parent height", y = "child height")
+```
+
+------------------------------------------------------------------------
+
+## Review of Dispersion
+
+Variation (sum of squares)
+
+$$SS = {\sum{(x-\bar{x})^2}}$$
+$$SS = {\sum{(x-\mu)^2}}$$
+
+------------------------------------------------------------------------
+
+## Review of Dispersion
+
+Variance
+
+$$\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
+
+$$\large\sigma^{2} = {\frac{\sum{(x-\mu)^2}}{N}}$$
+
+------------------------------------------------------------------------
+
+## Review of Dispersion
+
+Standard Deviation
+
+$$ s = \sqrt{\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
+
+$$\sigma = \sqrt{\frac{\sum{(x-\mu)^2}}{N}}$$
+
+------------------------------------------------------------------------
+
+Formula for standard error of the mean?
+
+- $$\sigma_M = \frac{\sigma}{\sqrt{N}}$$
+
+- $$\sigma_M = \frac{\hat{s}}{\sqrt{N}}$$
+
+------------------------------------------------------------------------
+
+## Associations
+
+- i.e., relationships
+- to look at continuous variable associations we need to think in terms of how variables relate to one another
+
+------------------------------------------------------------------------
+
+## Associations
+
+Covariation (cross products)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Sample:**
+
+$$ SS = {\sum{(x-\bar{x})(y-\bar{y})}}$$
+
+:::
+
+::: {.column width="50%"}
+
+**Population:**
+
+$$SS = {\sum{{(x-\mu_{x}})(y-\mu_{y})}}$$
+
+:::
+
+::::
+
+
+------------------------------------------------------------------------
+
+## Associations
+
+Covariance
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Sample:**
+
+$$ cov_{xy} = {\frac{\sum{(x-\bar{x})(y-\bar{y})}}{N-1}}$$
+
+:::
+
+::: {.column width="50%"}
+**Population:**
+
+$$ \sigma_{xy}^{2} = {\frac{\sum{(x-\mu_{x})(y-\mu_{y})}}{N}}$$
+:::
+
+::::
+
+
+- Covariance matrix is basis for many analyses
+- What are some issues that may arise when comparing covariances?
+
+------------------------------------------------------------------------
+
+## Associations
+
+Correlations
+
+:::: {.columns}
+::: {.column width="50%"}
+
+**Sample:**
+
+$$ r_{xy} = {\frac{\sum({z_{x}z_{y})}}{N}}$$
+
+:::
+::: {.column width="50%"}
+
+**Population:**
+
+$$\rho_{xy} = {\frac{cov(X,Y)}{\sigma_{x}\sigma_{y}}}$$
+
+:::
+::::
+
+
+
+Many other formulas exist for specific types of data, these were more helpful when we computed everything by hand (more on this later).
+
+------------------------------------------------------------------------
+
+## Correlations
+
+
+- How much two variables are linearly related
+
+- -1 to 1
+
+- Invariant to changes in mean or scaling
+
+- Most common (and basic) effect size measure
+
+- Will use to build our regression model
+
+------------------------------------------------------------------------
+
+## Correlations
+
+```{r}
+#| code-fold: true
+#| 
+ggplot(galton.data, aes(x=parent, y=child)) +
+    geom_jitter(alpha = .4) +
+    geom_smooth(method=lm,   # Add linear regression line
+                se=FALSE) +     # Don't add shaded confidence region
+    labs(x = "parent height", y = "child height") +
+  theme_bw(base_size = 20)
+```
+
+------------------------------------------------------------------------
+
+## Conceptually 
+
+Ways to think about a correlation:
+
+* How two vectors of numbers co-relate
+
+* Product of z-scores
+  
+  + Mathematically, it is
+  
+* The average squared distance between two vectors in the same space
+
+* The cosine of the angle between Y and the projected Y from X $(\hat{Y})$. 
+
+
+
+------------------------------------------------------------------------
+
+## Statistical test
+
+:::: {.columns}
+::: {.column width="50%"}
+
+Hypothesis testing
+
+$$ H_{0}: \rho_{xy} = 0$$
+
+$$ H_{A}: \rho_{xy} \neq 0$$
+
+:::
+::: {.column width="50%"}
+
+Assumes:
+
+:::nonincremental
+
+- Observations are independent
+- Symmetric bivariate distribution (joint probability distribution)
+
+:::
+:::
+::::
+
+
+------------------------------------------------------------------------
+
+Univariate distributions
+
+```{r, fig.width=10, fig.height=7}
+#| code-fold: true
+
+
+pop = ggplot(data.frame(x = seq(-30, 30)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = 0, sd = 10),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous("X") +
+  scale_y_continuous("density", labels = NULL) +
+  ggtitle("Population")+
+  theme_bw(base_size = 20)
+sample = data.frame(x = rnorm(n = 30, m = 0, sd = 10)) %>%
+  ggplot(aes(x = x)) +
+  geom_histogram(fill = purples[2], color = "black", bins = 20) +
+  scale_x_continuous("X", limits = c(-30, 30)) +
+  scale_y_continuous("frequency", labels = NULL) +
+  ggtitle("Sample")+
+  theme_bw(base_size = 20)
+sampling = ggplot(data.frame(x = seq(-30, 30)), aes(x)) +
+  stat_function(fun = function(x) dnorm(x, m = 0, sd = 10/sqrt(30)),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous("X") +
+  scale_y_continuous("density", labels = NULL) +
+  ggtitle("Sampling")+
+  theme_bw(base_size = 20)
+
+ggpubr::ggarrange(pop, sample, sampling)
+```
+
+
+
+------------------------------------------------------------------------
+
+### Population
+
+```{r}
+#| code-fold: true
+
+
+mu1<-0 # setting the expected value of x1
+mu2<-0 # setting the expected value of x2
+s11<-4 # setting the variance of x1
+s12<-2 # setting the covariance between x1 and x2
+s22<-5 # setting the variance of x2
+rho<-0.1 # setting the correlation coefficient between x1 and x2
+x1<-seq(-10,10,length=41) # generating the vector series x1
+x2<-x1 # copying x1 to x2
+f<-function(x1,x2){
+    term1<-1/(2*pi*sqrt(s11*s22*(1-rho^2)))
+    term2<--1/(2*(1-rho^2))
+    term3<-(x1-mu1)^2/s11
+    term4<-(x2-mu2)^2/s22
+    term5<--2*rho*((x1-mu1)*(x2-mu2))/(sqrt(s11)*sqrt(s22))
+    term1*exp(term2*(term3+term4-term5))
+} # setting up the function of the multivariate normal density
+#
+z<-outer(x1,x2,f) # calculating the density values
+#
+persp(x1, x2, z,
+main="Joint Probability Distribution", sub=expression(italic(f)~(bold(x))==frac(1,2~pi~sqrt(sigma[11]~ sigma[22]~(1-rho^2)))~phantom(0)^bold(.)~exp~bgroup("{", list(-frac(1,2(1-rho^2)),
+bgroup("[", frac((x[1]~-~mu[1])^2, sigma[11])~-~2~rho~frac(x[1]~-~mu[1], sqrt(sigma[11]))~ frac(x[2]~-~mu[2],sqrt(sigma[22]))~+~ frac((x[2]~-~mu[2])^2, sigma[22]),"]")),"}")),
+col= purples[3],
+theta=30, phi=20,
+r=50,
+d=0.1,
+expand=0.5,
+ltheta=90, lphi=180,
+shade=0.75,
+ticktype="detailed",
+nticks=5)
+
+# produces the 3-D plot
+mtext(expression(list(mu[1]==0,mu[2]==0,sigma[11]==4,sigma[22]==5,sigma[12 ]==2,rho==0.1)), side=3)
+
+```
+
+------------------------------------------------------------------------
+
+### Sample
+
+```{r}
+#| code-fold: true
+#| 
+
+sigma <- matrix( c( 4, 2,
+                    2, 5 ), 2, 2 )  # covariance matrix
+
+sample = BDgraph::rmvnorm(n = 30, mean = c(0,0), sigma = sigma)
+
+sample %>% as.data.frame() %>%
+  ggplot(aes(x = V1, y = V2)) +
+  geom_smooth(method = "lm", se = F, color = purples[2])+
+  geom_point(color = purples[3]) +
+  scale_x_continuous("X1") + 
+  scale_y_continuous("X2")+
+  theme_bw(base_size = 20)
+```
+
+------------------------------------------------------------------------
+
+### Sampling distribution?
+
+- The sampling distribution we use depends on our null hypothesis.
+
+- If our null hypothesis is the nil $(\rho = 0)$ , then we can use a *_t_-distribution* to estimate the statistical significance of a correlation. 
+
+
+
+------------------------------------------------------------------------
+
+## Statistical test
+
+
+Test statistic
+
+$$\large t = {\frac{r}{SE_{r}}}$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+$$SE_r = \sqrt{\frac{1-r^2}{N-2}}$$
+
+$$t = {\frac{r}{\sqrt{\frac{1-r^{2}}{N-2}}}}$$
+
+:::
+
+::: {.column width="50%"}
+$$ DF = N-2$$
+:::
+
+::::
+
+
+
+------------------------------------------------------------------------
+
+## Example
+
+You're comparing scores on the GRE Quantitative section and GRE Verbal section. You randomly select 30 applications out of those submitted to the University of Oregon and find a correlation between these scores of .80. Is this significantly different from 0?
+
+```{r}
+#| code-fold: true
+#| 
+r = .80
+N = 30
+SE = sqrt((1-r^2)/(N-2))
+tstat = r/SE
+cv = qt(.975, df = N-2)
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$SE_r = \sqrt{\frac{1-.80^2}{30-2}} = `r round(SE, 2)`$$
+$$t = \frac{.80}{`r round(SE, 2)`} = `r round(tstat, 2)`$$
+
+
+:::
+::: {.column width="50%"}
+
+```{r}
+pt(7.055, df = 30-2, lower.tail = F)*2
+```
+
+:::
+::::
+
+
+
+
+
+------------------------------------------------------------------------
+
+## Power calculations
+
+```{r}
+library(pwr)
+pwr.r.test(n = , r = .1, sig.level = .05 , power = .8)
+pwr.r.test(n = , r = .3, sig.level = .05 , power = .8)
+```
+
+------------------------------------------------------------------------
+
+## Confidence intervals
+
+But here's where we get into some trouble. What happens if we try to estimate the precision around our estimate using the techniques we learned in PSY 611?
+
+For the CI around a mean or a difference in means, we would use:
+$$CI_{95} = \bar{X} \pm SE(t_{\text{critical value}})$$
+```{r}
+(cv = qt(.975, df = 30-2))
+.80 - 0.11*cv; .80 + 0.11*cv
+```
+
+
+
+------------------------------------------------------------------------
+
+### Sampling distributions are skewed
+
+
+If we want to make calculations around correlation values that are not equal to 0, then we will run into a skewed sampling distribution. This applies to both calculating confidence intervals around estimates of correlations and null hypotheses in which $\rho \neq 0$.
+
+------------------------------------------------------------------------
+
+### Skewed sampling distributions
+
+```{r, fig.width = 9.5}
+#| code-fold: true
+#| 
+
+r_sampling = function(x, r, n){
+  z = fisherz(r)
+  se = 1/(sqrt(n-3))
+  x_z = fisherz(x)
+  density = dnorm(x_z, mean = z, sd = se)
+  return(density)
+}
+
+cor_75 = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .75, 
+                                             n = 30),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .75, n = 30") +
+  theme_bw(base_size = 20)
+
+cor_32 = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .32, 
+                                             n = 30),
+                geom = "area", fill = purples[2]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .32, n = 30")+
+  theme_bw(base_size = 20)
+
+
+cor_n85 = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = -.85, 
+                                             n = 30),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = -.85, n = 30")+
+  theme_bw(base_size = 20)
+
+cor_75b = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .75, 
+                                             n = 150),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .75, n = 150") +
+  theme_bw(base_size = 20)
+
+cor_32b = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .32, 
+                                             n = 150),
+                geom = "area", fill = purples[2]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .32, n = 150")+
+  theme_bw(base_size = 20)
+
+
+cor_n85b = ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = -.85, 
+                                             n = 150),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = -.85, n = 150")+
+  theme_bw(base_size = 20)
+
+
+ggpubr::ggarrange(cor_n85, cor_32, cor_75, 
+                  cor_n85b, cor_32b, cor_75b)
+```
+
+
+------------------------------------------------------------------------
+
+
+Skewed sampling distribution will rear their heads when:
+
+  - $H_{0}: \rho \neq 0$
+
+  - Calculating confidence intervals
+
+  - Testing two correlations against one another
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+
+ggplot(data.frame(x = seq(-.99, .99)), aes(x)) +
+  stat_function(fun = function(x) r_sampling(x, r = .75, 
+                                             n = 30),
+                geom = "area", fill = purples[3]) +
+  scale_x_continuous(limits = c(-.99, .99)) +
+  ggtitle("r = .75, n = 30") +
+  theme_bw(base_size = 20)
+```
+
+
+------------------------------------------------------------------------
+
+### Fisher’s r to z’ transformation
+
+- r to z':
+
+$$ z^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}$$
+
+------------------------------------------------------------------------
+
+### Fisher’s r to z’ transformation
+
+```{r}
+#| code-fold: true
+#| 
+
+r = seq(-.99,.99,.01)
+z = psych::fisherz(r)
+data.frame(r,z) %>%
+  ggplot(aes(x = r, y = z)) +
+  geom_line() +
+  scale_x_continuous(expr(r))+
+  scale_y_continuous(expr(z_r))+
+  theme_bw(base_size = 20)
+```
+
+
+------------------------------------------------------------------------
+
+###  Steps for computing confidence interval
+
+::: nonincremental 
+
+1. Transform r into z' [^1]
+2. Compute CI as you normally would using z'
+3. Reconvert back to r
+
+:::
+
+$$ SE_z = \frac{1}{\sqrt{N-3}}$$
+
+$$r = {\frac{e^{2z'}-1}{e^{2z'}+1}}$$
+
+[^1]: Calculations using the Fisher r-to-z' transformation conventionally use the standard normal $(z)$ distribution as the sampling distribution. 
+
+------------------------------------------------------------------------
+
+### Example
+
+In a sample of 42 students, you calculate a correlation of 0.44 between hours spent outside on Saturday and self-rated health. What is the precision of your estimate?
+
+```{r, echo = F}
+r = .44
+N = 42
+z = fisherz(r)
+se = 1/(sqrt(N-3))
+cv = qnorm(p = .975, lower.tail = T)
+lbz = z-(se*cv)
+ubz = z+(se*cv)
+lb = fisherz2r(lbz)
+ub = fisherz2r(ubz)
+```
+
+$$z = {\frac{1}{2}}ln{\frac{1+.44}{1-.44}} = `r round(z,2)`$$
+$$SE_z = \frac{1}{\sqrt{42-3}} = `r round(se,2)`$$
+
+$$CI_{Z_{LB}} = `r round(z,2)`-(`r round(cv,3)`)`r round(se,2)` = `r round(lbz,2)`$$
+
+$$CI_{Z_{UB}} = `r round(z,2)`+(`r round(cv,3)`)`r round(se,2)` = `r round(ubz,2)`$$
+
+
+------------------------------------------------------------------------
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+$$CI_{r_{LB}} = {\frac{e^{2(`r round(lbz,2)`)}-1}{e^{2(`r round(lbz,2)`)}+1}} = `r round(lb,2)`$$
+
+$$CI_{r_{UB}} = {\frac{e^{2(`r round(ubz,2)`)}-1}{e^{2(`r round(ubz,2)`)}+1}} = `r round(ub,2)`$$
+
+These formulas are easy to mistype in R -- use the `psych` package and its functions `fisherz()` and `fisherz2r()` to save time and reduce human error. 
+
+:::
+
+::: {.column width="50%"}
+
+```{r, `code-line-numbers`="2,6,8", `code-overflow`="wrap"}
+library(psych)
+z_r = fisherz(.44)
+se = 1/( sqrt(42-3) )
+cv = qnorm(p = .975, lower.tail = T)
+lbz = z_r - ( se*cv )
+lb = fisherz2r(lbz)
+ubz = z_r + ( se*cv )
+ub = fisherz2r(ubz)
+lb; ub
+```
+
+:::
+
+::::
+
+
+
+------------------------------------------------------------------------
+
+## Comparing two correlations
+
+Again, we use the Fisher’s r to z’ transformation. Here, we're transforming the correlations into z's, then using the difference between z's to calculate the test statistic. 
+
+$$Z = \frac{z_1^{'}- z_2^{'}}{se_{z_1-z_2}}$$
+
+$$se_{z_1-z_2} = \sqrt{se_{z_1}+se_{z_2}} = \sqrt{\frac{1}{n_1-3}+\frac{1}{n_2-3}}$$
+
+------------------------------------------------------------------------
+
+### Example
+
+You measure narcissism and happiness in two sets of adults: young adults (19-25) and older adults (over 25). You calculate the correlations separately for these two groups, and you want to know whether this relationship is stronger for one group or another. 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### Young adults
+
+$$N = 327$$
+$$r = .402$$
+
+
+:::
+
+::: {.column width="50%"}
+
+#### Older adults
+
+$$N = 273$$
+$$r = .283$$
+
+
+:::
+
+::::
+
+
+
+$$H_0:\rho_1 = \rho_2$$
+$$H_1:\rho_1 \neq \rho_2$$
+
+------------------------------------------------------------------------
+
+```{r, echo = c(1,3,5,6,7,9,11)}
+z1 = fisherz(.402)
+z1
+z2 = fisherz(.283)
+z2
+n1 = 327
+n2 = 273
+se = sqrt(1/(n1-3) + 1/(n2-3))
+se
+zstat = (z1-z2)/se
+zstat
+pnorm(abs(zstat), lower.tail = F)*2
+```
+
+------------------------------------------------------------------------
+
+## Effect size
+
+- The strength of relationship between two variables
+
+- $\eta^2$, Cohen’s d, Cohen’s f, hedges g, $R^2$ , Risk-ratio, etc
+
+- Significance is a function of effect size and sample size
+
+- Statistical significance $\neq$ practical significance
+
+
+------------------------------------------------------------------------
+
+
+## Next time... 
+
+More correlations
