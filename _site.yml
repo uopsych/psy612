@@ -7,7 +7,7 @@ navbar:
       href: schedule.html
     - text: Lectures
       menu:
-      - text: "01-Correlations"
+      - text: "01-Correlation"
         href: "lectures/01-correlation.html"
  
     - text: Labs
