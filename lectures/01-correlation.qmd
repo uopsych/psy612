@@ -7,6 +7,7 @@ format:
     incremental: true
     touch: true
     code-overflow: wrap
+    theme: simple
 execute: 
   echo: true
 editor: source
@@ -57,10 +58,14 @@ options(scipen=999)
 
 Structure of this course:
 
+:::nonincremental 
+
  - Lectures, Labs, Reading 
  - Weekly quizzes (T/F)
  - Homework assignments (3, 30 points each)
  - Final project (1)
+ 
+:::
  
 Journals are optional (no impact on grade)
 
@@ -127,7 +132,7 @@ $$SS = {\sum{(x-\mu)^2}}$$
 
 Variance
 
-$$\large s^{2} = {\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
+$$\large s^{2} = \hat{\sigma}^2 = {\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
 
 $$\large\sigma^{2} = {\frac{\sum{(x-\mu)^2}}{N}}$$
 
@@ -137,7 +142,7 @@ $$\large\sigma^{2} = {\frac{\sum{(x-\mu)^2}}{N}}$$
 
 Standard Deviation
 
-$$ s = \sqrt{\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
+$$ s = \hat{\sigma} = \sqrt{\frac{\sum{(x-\bar{x})^2}}{N-1}}$$
 
 $$\sigma = \sqrt{\frac{\sum{(x-\mu)^2}}{N}}$$
 
@@ -147,7 +152,7 @@ Formula for standard error of the mean?
 
 - $$\sigma_M = \frac{\sigma}{\sqrt{N}}$$
 
-- $$\sigma_M = \frac{\hat{s}}{\sqrt{N}}$$
+- $$\sigma_M = \frac{s}{\sqrt{N}}$$
 
 ------------------------------------------------------------------------
 
