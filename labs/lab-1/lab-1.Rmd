@@ -57,6 +57,8 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) +
 
 ```{r}
 pairs.panels(mtcars, lm = TRUE)
+# stars indicates significance
+# cex change the size of fonts for the correlation coefficients.
 ```
 
 
@@ -280,7 +282,7 @@ c. How does the number of participants needed to obtain .8 power change when you
 
 For this minihack, calculate a 95% CI "by hand" (i.e., you can use R but not the `cor.test()` function) for the correlation between conscientiousness and self-reported health from the `health()` dataset. Make sure you get the same answer that was given by `cor.test()`. Hint: when calculating CI's, use the functions `fisherz()` and `fisherz2r()` from `{psych}`.
 
-To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#44){target="_blank"}.
+To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/01-correlation.html#/35){target="_blank"}.
 
 ```{r lab-1-45}
 # Your code here
