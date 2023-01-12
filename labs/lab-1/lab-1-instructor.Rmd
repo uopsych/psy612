@@ -47,26 +47,7 @@ Scatter plots allow us to visualize the relationship between two variables. Here
 ```{r, message = FALSE}
 ggplot(data = mtcars, aes(x = mpg, y = hp)) +
   geom_point() +
-  geom_smooth(method = "lm", color = "gray", se = FALSE)+
-  labs(x = "marshmellows per grape", y = "harry potter")+
-  theme_classic()
-
-ggplot(data = mtcars, aes(x = mpg, y = hp)) +
-  geom_point(alpha=1, color="lightpink") +
-  geom_smooth(method = "lm", color ="lightblue", show.legend = TRUE, se = FALSE) +
-  labs(title    = "Scatterplot of MPG by Horse Power",
-       x        = "Miles Per Gallon",
-       y        = "Horse Power") +
-  # set theme
-  theme_dark()
-
-library(ggthemes) # Load
-
-ggplot(data = mtcars, aes(x = mpg, y = hp)) + # establish the background of the painting, data from mtcars, x-axis is mpg and y-axis is hp
-  geom_point(shape=8, size=4) + # add a layer of data points (mpg,hp)
-  geom_smooth(method = "lm", color="lightblue", se=FALSE) + # draw linear-model line
-  ggtitle("Horsepower Baby") +
-  theme_tufte()
+  geom_smooth(method = "lm")
 ```
 
 
@@ -76,7 +57,7 @@ ggplot(data = mtcars, aes(x = mpg, y = hp)) + # establish the background of the 
 
 ```{r}
 pairs.panels(mtcars, lm=TRUE, stars = TRUE, cex = 5)
-# starts indicates significance
+# stars indicates significance
 # cex change the size of fonts for the correlation coefficients.
 ```
 
@@ -329,7 +310,7 @@ It decreases to `r ceiling(power_test_3$n)` (alpha = .05) or `r ceiling(power_te
 
 For this minihack, calculate a 95% CI "by hand" (i.e., you can use R but not the `cor.test()` function) for the correlation between conscientiousness and self-reported health from the `health()` dataset. Make sure you get the same answer that was given by `cor.test()`. Hint: when calculating CI's, use the functions `fisherz()` and `fisherz2r()` from `{psych}`.
 
-To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/1-correlation.html#45){target="_blank"}.
+To review the steps of calculating confidence intervals using Fisher's transformation, see [here](https://uopsych.github.io/psy612/lectures/01-correlation.html#/35){target="_blank"}.
 
 ```{r lab-1-45}
 #calculating correlation coefficient
