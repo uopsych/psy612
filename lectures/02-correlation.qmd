@@ -1,0 +1,671 @@
+---
+title: "Correlations" 
+subtitle: "Part 2"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+
+## Recap
+
+```{r, echo = F}
+library(psych)
+options(scipen=999)
+knitr::opts_chunk$set(message = F, warning = F)
+```
+
+Correlations are:
+
+:::: {.columns}
+::: {.column width="50%"}
+
+- Standardized covariances
+     
+     + Range from -1 to 1
+     
+- an effect size
+
+    + Measure of the strength of association between two continuous variables
+    
+
+:::
+::: {.column width="50%"}
+
+- Calculation:
+  - Sum the cross-product of deviation scores
+  - Divide by N-1 
+  - Divide by the product of standard deviation scores
+
+:::
+::::
+
+     
+------------------------------------------------------------------------
+
+### Example
+
+Do Pulizters help newspapers keep readers? (Data from [FiveThirtyEight](https://fivethirtyeight.com/features/do-pulitzers-help-newspapers-keep-readers/)). 
+
+```{r}
+library(fivethirtyeight)
+data("pulitzer")
+head(pulitzer)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+x_var = pulitzer$pctchg_circ
+y_var = pulitzer$num_finals2004_2014 
+n = length(x_var)
+
+x_d = x_var - mean(x_var)
+y_d = y_var - mean(y_var)
+
+describe(cbind(x_var, x_d, y_var, y_d), fast = T)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+# cross products
+x_d*y_d
+
+# sum of cross products (variation)
+sum(x_d*y_d)
+
+# covariance
+sum(x_d*y_d)/( n-1 )
+
+# correlation
+
+( sum(x_d*y_d)/( n-1 ) ) / ( sd(x_var)*sd(y_var) )
+```
+
+------------------------------------------------------------------------
+
+```{r}
+cor(pulitzer$pctchg_circ,
+    pulitzer$num_finals2004_2014)
+
+cor.test(pulitzer$pctchg_circ,
+    pulitzer$num_finals2004_2014)
+```
+
+_Note: `cor.test` cannot handle a null hypothesis other than 0. You'll have to calculate significance by hand if you're interested in using another null._
+
+
+------------------------------------------------------------------------
+
+### Recap: testing the significance of a correlation
+
+:::: {.columns}
+::: {.column width="50%"}
+
+If the null hypothesis is the <span style="color:purple">nil hypothesis</span>:
+
+:::nonincremental
+ - test significance using a _t_-distribution, where 
+:::
+ 
+ $$t = \frac{r}{SE_r}$$
+ $$SE_r = \sqrt{\frac{1-r^2}{N-2}}$$
+ $$DF = N-2$$
+
+:::
+::: {.column width="50%"}
+
+If null hypothesis is not 0 $(\text{e.g.,  }H_0:\rho_{xy} = .40)$
+ 
+::: nonincremental
+
+ - Transform statistic and null using Fisher's r to Z
+
+:::
+
+ $$ z^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}$$
+ 
+ $$SE = \frac{1}{\sqrt{N-3}}$$
+ 
+:::
+::::
+
+
+ 
+ 
+------------------------------------------------------------------------
+
+### Example
+
+In PSY 302, the correlation between midterm exam grades and final exam grades was .56. The class size was 104. Is this statistically significant?
+
+```{r, echo = F}
+N = 104
+r = .56
+
+se = sqrt((1-r^2)/(N-2))
+
+p1 = pt(r/se, df = N-2, lower.tail = F)
+```
+
+
+
+**Using t-method**
+
+$$SE_r = \sqrt{\frac{1-r^2}{N-2}} = \sqrt{\frac{1-.56^2}{104-2}} = `r round(se,2)`$$
+$$t = \frac{r}{SE_r} = \frac{`r round(r,2)`}{`r round(se,2)`} = `r round(r/se,2)`$$
+
+------------------------------------------------------------------------
+
+
+:::: {.columns}
+::: {.column width="30%"}
+
+Probability of getting a *t* statistic of `r round(r/se,2)` or greater is `r p1`.
+:::
+::: {.column width="70%"}
+
+```{r, message = F, warning = F, results='hide'}
+#| code-fold: true
+#| 
+library(tidyverse)
+data.frame(x = c(-3,7)) %>%
+  ggplot(aes(x = x)) +
+  stat_function(fun = function(x) dt(x = x, df = N-2), geom = "line") +
+  geom_vline(aes(xintercept = r/se), color = "purple") + 
+  ggtitle("t distribution (DF = 102)")+
+  theme_bw()
+```
+:::
+::::
+
+
+------------------------------------------------------------------------
+
+### Example
+
+In PSY 302, the correlation between midterm exam grades and final exam grades was .56. The class size was 104. Is this statistically significantly different from .40?
+
+```{r, echo = F}
+r = .56
+N = 104
+null = .40
+zr = psych::fisherz(r)
+znull = psych::fisherz(null)
+se = 1/sqrt(N-3)
+stat = (zr-znull)/se
+```
+
+$$z^{'} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}= {\frac{1}{2}}ln{\frac{1+`r r`}{1-`r r`}} = `r round(zr,2)`$$
+$$z^{'}_{H_0} = {\frac{1}{2}}ln{\frac{1+r}{1-r}}= {\frac{1}{2}}ln{\frac{1+`r null`}{1-`r null`}} = `r round(znull,2)`$$
+$$ SE_z = \frac{1}{\sqrt{`r N`-3}} = `r round(se,2)`$$
+
+------------------------------------------------------------------------
+
+```{r, echo = c(1:4,6,8)}
+r = .56
+N = 104
+null = .40
+zr = psych::fisherz(r)
+zr
+znull = psych::fisherz(null)
+znull
+se = 1/sqrt(N-3)
+se
+```
+
+
+------------------------------------------------------------------------
+
+$$Z_{\text{statistic}} = \frac{z'-\mu}{SE_z}=\frac{`r round(zr,2)`-`r round(znull,2)`}{`r round(se,2)`} = `r round(stat,2)`$$
+
+```{r, echo = c(1, 3)}
+stat = (zr-znull)/se
+stat
+pnorm(stat, lower.tail = F)*2
+```
+
+
+------------------------------------------------------------------------
+
+## Today
+
+- visualizing correlations
+- correlation matrices
+- reliability
+
+
+------------------------------------------------------------------------
+
+## Visualizing correlations
+
+For a single correlation, best practice is to visualize the relationship using a scatterplot. A best fit line is advised, as it can help clarify the strength and direction of the relationship. 
+
+[http://guessthecorrelation.com/](http://guessthecorrelation.com/)
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+library(datasauRus)
+datasaurus_dozen %>%
+  filter(dataset == "away") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point()+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+datasaurus_dozen %>%
+  filter(dataset == "h_lines") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point()+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+datasaurus_dozen %>%
+  filter(dataset == "x_shape") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point()+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+datasaurus_dozen %>%
+  filter(dataset == "circle") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point()+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+datasaurus_dozen %>%
+  filter(dataset == "wide_lines") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point()+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+datasaurus_dozen %>%
+  filter(dataset == "bullseye") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point()+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+
+datasaurus_dozen %>%
+  filter(dataset == "star") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 2)+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+datasaurus_dozen %>%
+  filter(dataset == "dino") %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 2)+
+  ggtitle(expression(paste(M[X], "= 54.3 ", S[X], "= 16.8 ", 
+                           M[Y], "= 47.8 ", S[Y], "= 26.9 ",
+                           "R = -.06"))) +
+  theme_bw(base_size = 15)
+```
+
+------------------------------------------------------------------------
+
+## Correlation matrices
+
+Correlations are both a descriptive and an inferential statistic. As a descriptive statistic, they're useful for understanding what's going on in a larger dataset. 
+
+Like we use the `summary()` or `describe()` (psych) functions to examine our dataset _before we run any infernetial tests_, we should also look at the correlation matrix. 
+
+------------------------------------------------------------------------
+
+```{r}
+library(psych)
+data(bfi)
+head(bfi)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+cor(bfi)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+round(cor(bfi, use = "pairwise"),2)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+round(cor(bfi, use = "complete"),2)
+```
+
+------------------------------------------------------------------------
+
+With <span style="color:purple">pairwise deletion</span>, different sets of cases contribute to different correlations.  That maximizes the sample sizes, but can lead to problems if the data are missing for some systematic reason.
+
+<span style="color:purple">Listwise deletion</span> (often referred to in `R` as use complete cases) doesn't have the same issue of biasing correlations, but does result in smaller samples and potentially limited generalizability.
+
+A good practice is comparing the different matrices; if the correlation values are very different, this suggests that the missingness that affects pairwise deletion is systematic.
+
+------------------------------------------------------------------------
+
+```{r}
+round(cor(bfi, use = "pairwise")- cor(bfi, use = "complete"),2)
+```
+
+------------------------------------------------------------------------
+
+## Types of missingness
+
+Ideally our missingness is <span style="color:purple">missing completely at random (MCAR)</span>. This means the probability of being missing is the same for all observations. If this is the case, our correlation estimates will be unbiased (if underpowered) and we're free to use them with no concerns (other than the usual).
+
+* Aliens beam into a warehouse and randomly take some files.
+
+------------------------------------------------------------------------
+
+## Types of missingness
+
+However, our data might be <span style="color:purple">missing at random (MAR)</span>. This means the probability of being missing is different between cases, and also the probability is related to variables we have observed. This is not great, but sometimes we can account for this using the variables we have observed (e.g., imputation, different estimation methods).
+
+* Raccoons sneak into the warehouse and eat all the files by the door. 
+
+------------------------------------------------------------------------
+
+## Types of missingness
+
+It's a problem if our data is <span style="color:purple">missing not at random (MNAR)</span>. The probability of being missing differs for reasons that are unknown to us. This is especially problematic if the reason is associated with the variables at the heart of our study. Sensitivity analyses might help us detect MNAR-ness and possibly define the limits of our study, but we can't adjust our data for this issue.
+
+* Criminals break into the warehouse and steal files about themselves.
+
+------------------------------------------------------------------------
+
+## Visualizing correlation matrices
+
+A single correlation can be informative; a correlation matrix is more than the sum of its parts. 
+
+Correlation matrices can be used to infer larger patterns of relationships. You may be one of the gifted who can look at a matrix of numbers and see those patterns immediately. Or you can use <span style="color:purple">heat maps</span> to visualize correlation matrices. 
+
+```{r, results = 'hide'}
+library(corrplot)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+corrplot(cor(bfi, use = "pairwise"), method = "square")
+```
+
+------------------------------------------------------------------------
+
+![](images/comm plot-1.png)
+
+
+[Beck, Condon, & Jackson, 2019](https://psyarxiv.com/857ev/)
+
+------------------------------------------------------------------------
+
+## Factors that influence $r$ (and most other test statistics)
+
+1. Restriction of range (GRE scores and success)
+
+2. Very skewed distributions (smoking and health)
+
+3. Non-linear associations
+
+4. Measurement overlap (modality and content)
+
+5. Reliability
+
+------------------------------------------------------------------------
+
+## Reliability
+
+
+Which would you rather have?
+
+  - 1-item final exam versus 30-item?
+  - assessment via trained clinician vs tarot cards?
+  - fMRI during minor earthquake vs no earthquake?
+
+. . .
+
+All measurement includes error
+
+- Score = true score + measurement error (CTT version)
+- Reliability assesses the consistency of measurement; high reliability indicates less error
+
+------------------------------------------------------------------------
+
+## Reliability
+
+- Cannot correlate error (randomness) with something
+
+- Because we do not measure our variables perfectly we get lower correlations compared to true correlations
+
+- If we want to have a valid measure it better be a reliable measure
+
+------------------------------------------------------------------------
+
+## Reliability
+
+Think of reliability as a correlation with a measure and itself in a different world, at a different time, or a different but equal version
+
+$$r_{XX}$$
+
+------------------------------------------------------------------------
+
+## Reliability
+
+Reliability can be expressed as the proportion of true score variance over observed variance
+
+How do you assess theoretical variance i.e., true score variance?
+
+$$r_{XY} = r_{X_{T} Y_{T}} {\sqrt{r_{XX}r_{YY}}}$$
+
+$$r_{XY} = .6 {\sqrt {(.70) (.70)}}$$
+
+------------------------------------------------------------------------
+
+## Reliability
+
+$$r_{X_{T} Y_{T}} =  = {\frac {r_{XY}} {\sqrt{r_{XX}r_{YY}}}}$$
+$$r_{X_{T} Y_{T}} =  = {\frac {.30} {\sqrt{(.70)(.70)}}} = .42$$
+
+
+::: notes
+
+N needed for .42 = 42
+N needed for .3 = 84 -- need twice as many people!!
+
+it doesn't work the other way -- you can't take your correlation and back calculate the true score, because reliabilities are also estimates. these can be wrong; the correlation you calculate is the max it could be
+
+:::
+
+------------------------------------------------------------------------
+
+## Most common ways to assess
+
+::: nonincremental 
+
+- Cronbach's alpha
+
+```{r, eval=FALSE}
+library(psych)
+alpha(dataset[,items])
+alpha(bfi[,c("A1", "A2", "A3", "A4", "A5")])
+## Gives average split half correlation
+## Can tell you if you are assessing a single construct
+## Conflicts with tidyverse - fix with psych::alpha()
+```
+
+- Rest-retest reliability
+- Kappa or ICC
+
+:::
+
+------------------------------------------------------------------------
+
+## Reliability
+
+- if you are going to measure something, do it well
+
+- applies to ALL IVs and DVs, and all designs
+
+- remember this when interpreting research
+
+------------------------------------------------------------------------
+
+## Types of correlations
+
+- Many ways to get at relationship between two variables
+
+- Statistically the different types are _almost_ exactly the same
+- Exist for historical reasons
+
+------------------------------------------------------------------------
+
+## Types of correlations
+
+:::: {.columns}
+::: {.column width="50%"}
+
+::: nonincremental 
+
+1. Point Biserial
+    +  continuous and dichotomous
+2. Phi coefficient
+    + both dichotomous
+3. Spearman rank order
+    + ranked data
+4. Biserial (assumes dichotomous is continuous)
+
+:::
+
+:::
+::: {.column width="50%"}
+
+Some important exceptions to the equivalence rule
+
+::: nonincremental 
+
+5. Tetrachoric 
+    + used for 2x2 contingency table
+6. Polychoric 
+    + ordinal variables 
+    + extension of tetrachoric
+    
+:::
+:::
+::::
+
+
+    
+------------------------------------------------------------------------
+
+## Statistics and eugenics
+
+The concept of the correlation is primarily attributed to Sir Frances Galton.
+
+  - He was also the founder of the [concept of eugenics](https://www.theguardian.com/commentisfree/2019/oct/03/eugenics-francis-galton-science-ideas).
+
+The correlation coefficient was developed by his student, [Karl Pearson](https://www.britannica.com/biography/Karl-Pearson), and adapted into the ANOVA framework by [Sir Ronald Fisher](https://statmodeling.stat.columbia.edu/2020/08/01/ra-fisher-and-the-science-of-hatred/).
+
+  - Both were prominent advocates for the eugenics movement. 
+
+
+------------------------------------------------------------------------
+
+## What do we do with this information?
+
+* Never use the correlation or the later techniques developed on it? Of course not. 
+
+* Acknowledge this history? Certainly.
+
+* [Understand how the perspectives](https://medium.com/swlh/is-statistics-racist-59cd4ddb5fa9) of Galton, Fisher, Pearson and others [shaped our practices](http://gppreview.com/2019/12/16/eugenics-ethics-statistical-analysis/)? We must! -- these are not set in stone, [nor are they necessarily the best way](https://www.forbes.com/sites/jerrybowyer/2016/01/06/beer-vs-eugenics-the-good-and-the-bad-uses-of-statistics/?sh=3114a0c82a14) to move forward.
+
+------------------------------------------------------------------------
+
+  * Statistical significance was a way to avoid talking about nuance or degree.
+  * "Correlation does not imply causation" was a refutation of work demonstrating associations between environment and poverty.
+  
+
+
+------------------------------------------------------------------------
+
+
+## Next time....
+
+Univariate regression
+
