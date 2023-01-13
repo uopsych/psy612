@@ -4,15 +4,10 @@ author: "YOUR NAME HERE"
 output:
   html_document:
     toc: yes
+    toc_float: yes
   pdf_document:
     toc: yes
 ---
-
-```{r, include = F}
-knitr::opts_chunk$set(message = F, warning = F)
-library(tidyverse)
-```
-
 
 # Instructions
 
@@ -28,15 +23,15 @@ To receive full credit on this homework assignment, you must earn **30 points**.
 
 4. You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If we believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.
 
-**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. [Link to data goes here.] In this dataset, you'll find four variables: 
+**Data:** Some of the questions in this homework assignment use the dataset referred to as `homework-anxiety`. In this dataset, you'll find four variables: 
   - id - numeric, refers to participant ID
   - Anxiety - participant's average levels of anxiety over a week; Stress -- the participant's average level of stress over a week
   - Support -- the participant's perceived social support over a week
   - group -- categorical, whether the participant was randomly assigned to a treatment group in which they given mediation instructions and were required to meditate for 10 minutes each day during the week. 
 
-Some questions refer to the dataset `homework-dawtry.csv` This dataset comes from Study 1a in the article by [Dawtry et al. (2015)](Dawtry et al 2015 PS.pdf), which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset. 
+Some questions refer to the dataset `homework-dawtry.csv` This dataset comes from Study 1a in the article by [Dawtry et al. (2015)](../data/Dawtry et al 2015 PS.pdf), which examines the relationship between wealth and perception of wealth. Study 1a is an observational study in which American participants indicated their own household income and estimated how incomes are distributed across both their immediate social circles and the wider population. Participants then indicated how fair and satisfactory they perceived society to be and whether they supported redistribution efforts, as well as their political orientation. You may need to refer to the article to complete the questions associated with this dataset. 
 
-The 20-point question refers to the dataset `homework-robin.csv`. These data were collected by Taylor Guthrie and Rob Chavez. A longer description of these data can be found in the question problem. 
+One question uses the dataset in `homework-robin.csv`. You'll find the dataset is organized as follows: each row is the rating of one person by one person. The `group` indicates which group the two people -- subject (judge) and target -- belong to, as well as columns indicating the specific `subject` and `target`. Note that when the subject number is the same as the target number, the ratings are self-ratings. The remaining column holds the ratings of extraversion. 
 
 # 2-point Questions
 
@@ -64,13 +59,11 @@ Calculate the correlation between X and Y.
 
 ## Question 2
 
-Using the `homework-dawtry` dataset, answer the following questions:
+Refer to the data provided in [question above](#q2.1).
 
-* What is the correlation between age and the mean income of one's social circle?
+* Calculate the unstandardized regression equation (use Y as the outcome). You may use whatever functions you want.
 
-* Is that correlation statistically significant?
-
-* Use the `corrplot` package to create a figure of the correlation matrix of the variables in the dataset. Describe one thing you find interesting in this figure. 
+* Calculate the standardized regression equation. You may use whatever functions you want.
 
 ## Question 3
 
@@ -92,19 +85,34 @@ You are given data with two variables, X and Y. The mean of X is 3 with a SD .75
 
 ## Question 5
 
-Refer to the data provided in [Question 2.1](#q2.1).
+Using the `homework-dawtry` dataset, answer the following questions:
 
-* Calculate the unstandardized regression equation (use Y as the outcome). You may use whatever functions you want.
+* What is the correlation between age and the mean income of one's social circle?
 
-* Calculate the standardized regression equation. You may use whatever functions you want.
+* Is that correlation statistically significant?
+
+* Use the `corrplot` package to create a figure of the correlation matrix of the variables in the dataset. Describe one thing you find interesting in this figure. 
 
 # 5-point Questions
 
 ## Question 1
 
-* Given a sample size of 40 participants, what is the smallest correlation we are able to detect as being significantly different from 0? Use a two-tailed test and $\alpha = .05$. (Do not use the `pwr` package for this problem -- there is an answer that does not depend on power.)
 
-* Given a sample size of 40 participants, what is the smallest correlation we are able to detect as being significantly different from .3? Use a two-tailed test and $\alpha = .05$. (Do not use the `pwr` package for this problem -- there is an answer that does not depend on power.)
+The file named `homework-dawtry.csv` contains the raw data from Study 1A of [Dawtry et al. (2015)](Dawtry et al 2015 PS.pdf)). One of the constructs measured in that study is a composite variable: that is, it is measured using multiple items. This question will give you some practice with (1) using supplemental materials to learn more about a published study and (2) calculating reliability.
+
+* Using the PDF file of the article (included in the zip-file for the homework), identify that construct that is a composite variable.
+
+* The authors posted supplemental materials on the Open Science Framework. Find this repository and use it to identify the items that are used to construct the composite variable. Write the text of those items here:
+
+* Do you believe any of these items should be reverse-scored? If so, which ones?
+
+* What are the names of the items in the data file (csv)?
+
+* Use the `alpha()` function in the `psych` package to calculate Cronbach's alpha for this composite variable. Make sure items that should be reverse scored (if there are any) are indeed reverse scored.
+
+* What is the reliability for this scale? Would you say that the reliability is good?
+
+* BONUS (worth 1 extra point!) You can use the `alpha()` function to quickly calculate sum scores! Save the output of the `alpha()` function to a new object. Extract the scores by indexing (with `$`) the scores sub-object. Add that to your data frame and show that the mean and standard deviation of this variable matches the descriptive statistics in Dawtry et al.
 
 ## Question 2
 
@@ -118,8 +126,7 @@ Refer to the data provided in [Question 2.1](#q2.1).
 
 * Now create a new variable where the reference group is represented by -1 and the other group is represented by 1. Run the regression model with this variable. What do the intercept and slope represent? (Hint: it may help to run descriptive statistics on your data frame to figure this out).
 
-
-## Question 3 
+## Question 3
 
 * Use the `homework-anxiety` data. Run a regression with Social Support (X) predicting Anxiety (Y). Then run a regression with Anxiety predicting Social Support. What is similar and different between these analyses?
 
@@ -139,43 +146,33 @@ Choices that individuals make in the voting booth, such as whether to support a 
 
 Below is an image of the output from a regression analysis, using their data: `republican` is a measure of support for the republican party; `ebola` is an index of the number of searches for Ebola on Google. Each observation was a day leading up to the national election. (Note, if this image does not load, you may need to download it from GitHub and save it in the same location as your homework file.)
 
-There are some missing values in the output, labeled with red letters. Complete the output by computing the missing values (A-M).
+There are some missing values in the output, labeled with red letters. Complete the output by computing the missing values (A-L).
 
 ![](beall_output.png)
 
 ## Question 2
 
-* Using the data from [Dawtry et al. (2015)](Dawtry et al 2015 PS.pdf)), replicate the correlation matrix part of Table 1. (Note: you will have to create at least one composite to do so, and some of the items may need to be reverse scored.)
+* Given a sample size of 40 participants, what is the smallest correlation we are able to detect as being significantly different from 0? Use a two-tailed test and $\alpha = .05$. (Do not use the `pwr` package for this problem -- there is an answer that does not depend on power.)
 
-* Calculate the means and standard deviations for Table 1 variables.
-
-* Graph the distributions of Household Income, Fairness and Satisfaction, Social circle mean income, population mean income, and political preference. Comment on anything you find irregular or interesting.
-
-* Run a regression where political preferences predict redistribution. Interpret the intercept, the regression coefficient and $R^2$. Then create a scatter plot with a best fit line between redistribution and political preference variables. Be sure your figure includes a title and a caption.
-
-* Dichotomize the political preferences data into a dichotomous conservative and liberal variable, assuming the midpoint is conservative. Then run a linear model with this new binary variable predicting redistribution. What are the conceptual differences between the two regression models. Which one would you prefer?
-
+* Given a sample size of 40 participants, what is the smallest correlation we are able to detect as being significantly different from .3? Use a two-tailed test and $\alpha = .05$. (Do not use the `pwr` package for this problem -- there is an answer that does not depend on power.)
 
 # 20-point Questions
 
 ## Question 1
 
-Round robin designs are great tools in perception research. A round-robin design is when each member of a group rates every other member. Taylor Guthrie, a UO grad student in the Computational Social Neuroscience Lab, spearheaded one such study in 2019. Taylor recruited groups of 6 people that all somewhat knew each other. Groups included those from Greek life, academic organizations,coworkers and friend groups. Each person came in individually for a
-behavioral session in which they rated both themselves and all of the other members of their group on a variety of survey measures. We'll be using the ratings on the Big Five personality traits for this question. 
+This question focuses on working with aspects of `tidy` and `dplyr`, but more importantly, is an abstract thinking problem. Can you start with data collected one way and figure out how to rearrange it to give you something else? I especially recommend the `group_by()` and `fill()` functions for this, but know that there are many ways to correctly solve this puzzle. You may *not* solve this problem by rewriting vectors by hand (e.g., `target = c(1, 2, 3)`) or indexing values based on position (e.g., `target[c(1,2,3)]`).  
 
-You'll find the `homework-robin` dataset is organized as follows: each row is the rating of one person by one person. The `group` indicates which group the two people -- subject (judge) and target -- belong to, as well as columns indicating the specific `subject` and `target`. Note that when the subject number is the same as the target number, the ratings are self-ratings. The remaining 5 columns hold the ratings of each trait. Your task is to calculate the following **for each trait**: 
+Round robin designs are great tools in perception research. A round-robin design is when each member of a group rates every other member. Taylor Guthrie, a UO grad student in the Computational Social Neuroscience Lab, spearheaded one such study in 2019. Taylor recruited groups of 6 people that all somewhat knew each other. Groups included those from Greek life, academic organizations,coworkers and friend groups. Each person came in individually for a behavioral session in which they rated both themselves and all of the other members of their group on a variety of survey measures. We'll be using the ratings on Extraversion for this question. 
+
+Your task is to calculate the following: 
 
 * The correlation between targets' self-reports and the ratings of the target by other people.
 
-* The correlation between targets' self-reports and the average rating of the target across the group. How do these values compare to the ones estimated above? What do you conclude about the agreement between self- and other-ratings?
+* The correlation between targets' self-reports and the average rating of the target by members of their group. How does this values compare to the one estimated above? What do you conclude about the agreement between self- and other-ratings?
 
-* The correlation between targets' self-reports and the other people by the target. 
+* The correlation between targets' self-reports and the other people by the target. How does this value compare to the values estimated above? What do you conclude about the relationship between ratings of the self and ratings of others?
 
 * The correlation between targets' self-reports and the target's average rating of other people. How do these values compare to the values estimated above? What do you conclude about the relationship between ratings of the self and ratings of others?
-
-Note, this is primarily a data cleaning problem. You may *not* solve this problem by rewriting vectors by hand (e.g., `target = c(1, 2, 3)`) or indexing values based on position (e.g., `target[c(1,2,3)]`). I recommend the use of the `tidyverse` suite of packages, but there are many other ways to solve this problem. You can ignore the issue of dependency in this problem. 
-
-
 
 
 
