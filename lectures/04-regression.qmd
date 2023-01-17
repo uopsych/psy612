@@ -1,0 +1,593 @@
+---
+title: "Univariate Regression" 
+subtitle: "Part 2"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+```{r, echo = F, message = F, warning=F}
+options(scipen = 999)
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+```
+
+
+## Last time...
+
+- Introduction to univariate regression
+  - Explaination, prediction, adjustment
+
+- Calculation and interpretation of $b_0$ and $b_1$
+
+- Relationship between $X$, $Y$, $\hat{Y}$, and $e$ 
+
+```{r}
+library(tidyverse)
+library(broom)
+```
+
+------------------------------------------------------------------------
+
+[Gallup](https://news.gallup.com/poll/350486/record-high-support-same-sex-marriage.aspx) has been tracking support for same-sex marriage since 1996. They provide data for the `percent` of respondents who agree with the statement, "Do you think marriages between same-sex couples should or should not be recognized by the law as valid, with the same rights as traditional marriages?"
+
+```{r}
+gallup = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/gallup_marriage.csv")
+gallup %>% select(year, percent) %>% glimpse()
+```
+
+```{r}
+cor(gallup$year, gallup$percent)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+mod = lm(percent ~ year, data = gallup)
+summary(mod)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+gallup %>% ggplot(aes(x = year, y = percent)) + geom_point() + 
+  geom_smooth(method = "lm", se = F)
+```
+
+::: notes
+
+Talk about prediction here
+
+:::
+
+------------------------------------------------------------------------
+
+```{r}
+model_info = augment(mod)
+glimpse(model_info)
+```
+
+------------------------------------------------------------------------
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = year, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") +
+  scale_x_continuous("X") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+------------------------------------------------------------------------
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = percent, y = .fitted)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous("Y") + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 30)
+```
+
+------------------------------------------------------------------------
+
+```{r, fig.width=8, fig.height = 6}
+model_info %>% ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() + geom_smooth(se = F, method = "lm") + 
+  scale_x_continuous(expression(hat(Y))) + 
+  scale_y_continuous("e") + theme_bw(base_size = 30)
+```
+------------------------------------------------------------------------
+
+## Least squares as springs
+
+:::: {.columns}
+::: {.column width="70%"}
+
+```{r, fig.width = 6, fig.height = 5}
+#| code-fold: true
+
+#this contains code to create functions building spring geoms
+source("https://raw.githubusercontent.com/uopsych/psy612/master/lectures/functions/spring_geom.R")
+model_info %>% ggplot(aes(x = year,  y = percent)) +
+  geom_point() +
+  scale_x_log10() +
+  geom_smooth(method = "lm", se = F) +
+  geom_spring(aes(xend = year, yend = .fitted,
+                  tension = abs(.resid)),
+              diameter = .25) +
+  scale_tension_continuous(range = c(.1, 2)) +
+  guides(tension = "none")
+```
+:::
+::: {.column width="30%"}
+
+See demo [here](https://enchufa2.shinyapps.io/ls-springs/) too.
+
+<span style="font-size:50%">Loftus (2020, Nov. 23). Neurath's Speedboat: Least squares as springs. Retrieved from http://joshualoftus.com/posts/2020-11-23-least-squares-as-springs/</span>
+
+:::
+::::
+
+
+
+
+------------------------------------------------------------------------
+
+### Today...
+
+Statistical inferences with regression
+
+- Partitioning variance
+
+- Testing $b_{xy}$
+
+------------------------------------------------------------------------
+
+## Statistical Inference
+
+- The way the world is = our model + error
+
+- How good is our model? Does it "fit" the data well? 
+
+. . .
+
+To assess how well our model fits the data, we will examine the proportion of variance in our outcome variable that can be "explained" by our model.
+
+To do so, we need to partition the variance into different categories. For now, we will partition it into two categories: the variability that is captured by (explained by) our model, and variability that is not.
+
+------------------------------------------------------------------------
+
+## Partitioning variation 
+
+Let's start with the formula defining the relationship between observed $Y$ and fitted $\hat{Y}$:
+
+$$Y_i = \hat{Y}_i + e_i$$
+
+One of the properties that we love about variance is that variances are additive when two variables are independent. In other words, if we create some variable, C, by adding together two other variables, A and B, then the variance of C is equal to the sum of the variances of A and B.
+
+Why can we use that rule in this case?
+
+::: notes
+Students must recognize that Y-hat and e are uncorrelated, they must be the way that we've built the OLS function.
+:::
+
+------------------------------------------------------------------------
+
+## Partitioning variation 
+
+:::: {.columns}
+::: {.column width="50%"}
+
+<span style="font-size:80%">$\hat{Y}_i$ and $e_i$ must be independent from each other. Thus, the variance of $Y$ is equal to the sum of the variance of $\hat{Y}$ and $e$.</span>
+
+
+$$\large s^2_Y = s^2_{\hat{Y}} + s^2_{e}$$
+:::
+::: {.column width="50%"}
+
+<span style="font-size:80%">Recall that variances are sums of squares divided by N-1. Thus, all variances have the same sample size, so we can also note the following:</span>
+
+$$\large SS_Y = SS_{\hat{Y}} + SS_{\text{e}}$$
+
+:::
+::::
+
+
+
+
+
+<span style="font-size:80%">And each of these values can be rewritten as the sum of squared deviations:</span>
+
+$$\large \sum (Y - \bar{Y})^2 = \sum (\hat{Y} -\bar{Y})^2 + \sum(Y - \hat{Y})^2$$
+
+::: notes
+Draw out the best fit line and residuals as lines. Show them this is the case. 
+:::
+
+------------------------------------------------------------------------
+
+
+
+<span style="font-size:80%">A quick note about terminology: I demonstrated these calculations using $Y$, $\hat{Y}$ and $e$. However, you may also see the same terms written differently, to more clearly indicate the source of the variance...</span>
+
+$$ SS_Y = SS_{\hat{Y}} + SS_{\text{e}}$$
+$$ SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$
+
+<span style="font-size:80%">The relative magnitudes of sums of squares provides a way of identifying particularly large and important sources of variability. Later, we can further partition $SS_{\text{Model}}$ and $SS_{\text{Residual}}$ into smaller pieces, which will help us make more specific inferences and increase statistical power.</span>
+
+------------------------------------------------------------------------
+
+## Partitioning variance in Y
+
+Consider the case with no correlation between X and Y
+
+$$ \hat{Y} = \bar{Y} + r_{xy} \frac{s_{y}}{s_{x}}(X-\bar{X})$$
+
+. . . 
+
+$$ \hat{Y} = \bar{Y}$$
+
+To the extent that we can generate different predicted values of Y based on the values of the predictors, we are doing well in our prediction
+
+$$ SS_Y = SS_{\text{Model}} + SS_{\text{Residual}}$$
+
+------------------------------------------------------------------------
+
+## Coefficient of Determination
+
+$$\Large \frac{SS_{Model}}{SS_{Y}} = \frac{s_{Model}^2}{s_{y}^2} = R^2$$
+
+$R^2$ represents the proportion of variance in Y that is explained by the model. 
+
+. . . 
+
+$\sqrt{R^2} = R$ is the correlation between the predicted values of Y from the model and the actual values of Y
+
+$$\large \sqrt{R^2} = r_{Y\hat{Y}}$$
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+set.seed(123)
+x.1 <- rnorm(10, 0, 1)
+e.1 <- rnorm(10, 0, 2)
+y.1 <- .5 + .55 * x.1 + e.1
+d.1 <- data.frame(x.1,y.1)
+m.1 <- lm(y.1 ~ x.1, data = d.1)
+d1.f<- augment(m.1)
+```
+
+
+```{r, echo = F, message = F, fig.height = 3, fig.width=9}
+d1.f %>%
+  ggplot(aes(x = x.1, y = y.1)) +
+  geom_smooth(se = F, method = "lm")+
+  geom_point(shape = 1, size = 4) +
+  geom_point(aes(y = .fitted), color = "red", size = 4)+
+  theme_bw(base_size = 20)
+```
+
+
+```{r, echo = F, message = F, fig.height = 3, fig.width=9}
+d1.f %>%
+  ggplot(aes(x = y.1, y = .fitted)) +
+  geom_smooth(se = F, method = "lm")+
+  geom_point(color = "black", size = 4) +
+  theme_bw(base_size = 20)
+```
+
+
+:::
+::::
+
+
+
+
+
+------------------------------------------------------------------------
+
+## Example
+
+```{r}
+#| highlight-output: "17"
+
+fit.1 = lm(percent ~ year, data = gallup)
+summary(fit.1) 
+summary(fit.1)$r.squared
+
+```
+
+------------------------------------------------------------------------
+
+## Example
+
+The correlation between X and Y is: 
+
+```{r}
+cor(gallup$year, gallup$percent, use = "pairwise")
+```
+
+. . . 
+
+If we square the correlation, we get:
+
+```{r}
+cor(gallup$year, gallup$percent)^2
+```
+
+Ta da!
+
+```{r}
+summary(fit.1)$r.squared
+```
+
+------------------------------------------------------------------------
+
+## Coefficient of Alienation
+
+$1-R^2$ is sometimes referred to as the <span style="color:purple">coefficient of alienation</span>. It represents the proportion of variance in Y that is unexplained by our model, or left over after accounting for X (and other predictors).
+
+------------------------------------------------------------------------
+
+Note the relationship between the variation of Y and the variation of the residuals:
+
+$$\frac{SS_{Model}}{SS_{Y}} = R^2$$
+$$SS_{Model} = R^2({SS_{Y})}$$
+$$SS_{residual} = SS_{Y} - R^2({SS_{Y})}$$
+$$SS_{residual} = {SS_{Y}(1- R^2)}$$
+
+------------------------------------------------------------------------
+
+$$SS_{residual} = {SS_{Y}(1- R^2)}$$
+
+also:
+
+$$\large  s^2_{residual} = {s^2_{Y}(1- R^2)}$$
+$$\large  s_{residual} = {s_{Y}\sqrt{(1- R^2)}}$$
+
+
+------------------------------------------------------------------------
+
+### standard deviation of the residuals
+
+```{r}
+sd(gallup$percent)
+summary(fit.1)$r.squared
+
+sd(gallup$percent)*sqrt(1-summary(fit.1)$r.squared)
+sd(model_info$.resid)
+```
+
+------------------------------------------------------------------------
+
+Residuals carry information about where and how the model fails to fit the data. However, it's important to note that residuals (like all other aspects of our data) are estimates. 
+
+In fact, residuals are _latent variables_ as we do not directly observe them in our data collection but infer their presence and value from other data. 
+
+We can use residuals to estimate true score error. Note that this formula will look similar to (but differ from) the calculation of the standard deviation.
+
+------------------------------------------------------------------------
+
+## standard error of the estimate
+
+- aka <span style="color:purple">residual standard error</span>
+
+$$s_{Y|X} = \sqrt{\frac{SS_{\text{Residual}}}{df_{\text{Residual}}}} =  \sqrt{\frac{\Sigma(Y_i -\hat{Y_i})^2}{N-2}}$$
+
+- interpreted in original units (unlike $R^2$)
+
+- We interpret the standard error of the estimate to represent the spread of observed data around the regression line. 
+
+------------------------------------------------------------------------
+
+## standard error of the estimate
+
+```{r, echo=FALSE, highlight.output = 16}
+summary(fit.1)
+```
+
+------------------------------------------------------------------------
+
+## standard error of the estimate
+
+```{r}
+summary(fit.1)$sigma 
+sd(model_info$.resid)
+```
+
+Note: these are not the same!
+
+
+------------------------------------------------------------------------
+
+## $1-R^2$ and standard error of the estimate
+
+- two sides of same coin
+
+- one in original units (standard error of the estimate), the other standardized $(1-R^2)$
+
+------------------------------------------------------------------------
+
+## Inferential tests
+
+NHST is about making decisions:
+  
+  - these two means are/are not different
+  - this correlation is/is not significant
+  - the distribution of this categorical variable is/is not different between these groups
+  
+. . . 
+
+In regression, there are several inferential tests being conducted at once. The first is called the <span style="color:purple">omnibus test</span> -- this is a test of whether the model fits the data. 
+
+------------------------------------------------------------------------
+
+### Omnibus test
+
+Historically we use <span style="color:purple">the _F_ distribution</span> to estimate the significance of our model, because it works with our ability to partition variance.
+
+What is our null hypothesis?
+
+**The model does not account for variance in $Y$.**
+
+. . .
+
+But you can also think of the null hypothesis as
+
+$$\Large H_{0}: \rho_{Y\hat{Y}}^2= 0$$
+
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+data.frame(x = c(0, 5)) %>%
+  ggplot(aes(x = x)) +
+  stat_function(fun = function(x) df(x, df1 = 3, df2 = 10), 
+                geom = "line", aes(color = "df1 = 3", linetype = "df2 = 10")) +
+  stat_function(fun = function(x) df(x, df1 = 1, df2 = 10), 
+                geom = "line", aes(color = "df1 = 1", linetype = "df2 = 10")) +
+  stat_function(fun = function(x) df(x, df1 = 5, df2 = 10), 
+                geom = "line", aes(color = "df1 = 5", linetype = "df2 = 10")) +
+    stat_function(fun = function(x) df(x, df1 = 3, df2 = 50), 
+                geom = "line", aes(color = "df1 = 3", linetype = "df2 = 50")) +
+  stat_function(fun = function(x) df(x, df1 = 1, df2 = 50), 
+                geom = "line", aes(color = "df1 = 1", linetype = "df2 = 50")) +
+  stat_function(fun = function(x) df(x, df1 = 5, df2 = 50), 
+                geom = "line", aes(color = "df1 = 5", linetype = "df2 = 50")) +
+  scale_y_continuous("density")+
+  theme_bw(base_size = 20)
+```
+
+
+------------------------------------------------------------------------
+
+## _F _ Distribution review
+
+The _F_ probability distribution represents all possible ratios of two variances:
+
+$$F \approx \frac{s^2_{1}}{s^2_{2}}$$
+
+------------------------------------------------------------------------
+
+## _F _ Distribution review
+
+Each variance estimate in the ratio is $\chi^2$ distributed, if the data are normally distributed. The ratio of two $\chi^2$ distributed variables is $F$ distributed. It should be noted that each $\chi^2$ distribution has its own degrees of freedom.
+
+$$F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$
+
+As a result, _F_ has two degrees of freedom, $\nu_1$ and $\nu_2$
+
+
+
+------------------------------------------------------------------------
+
+## _F_  Distributions and regression
+
+<span style = "font-size:80%">Recall that when using a _z_ or _t_ distribution, we were interested in whether one mean was equal to another mean -- sometimes the second mean was calculated from another sample or hypothesized (i.e., the value of the null). In this comparison, we compared the _difference of two means_ to 0 (or whatever our null hypothesis dictates), and if the difference was not 0, we concluded significance. </span>
+
+<span style = "font-size:80%">_F_ statistics are not testing the likelihood of differences; they test the likelihood of _ratios_. In this case, we want to determine whether the variance explained by our model is larger in magnitude than another variance.</span>
+
+Which variance?
+
+------------------------------------------------------------------------
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$\Large F_{\nu_1\nu_2} = \frac{\frac{\chi^2_{\nu_1}}{\nu_1}}{\frac{\chi^2_{\nu_2}}{\nu_2}}$$
+
+:::
+::: {.column width="50%"}
+
+$$\Large F_{\nu_1\nu_2} = \frac{\frac{\text{Variance}_{\text{Model}}}{\nu_1}}{\frac{\text{Variance}_{\text{Residual}}}{\nu_2}}$$
+:::
+::::
+
+
+$$\Large F = \frac{MS_{Model}}{MS_{residual}}$$
+
+------------------------------------------------------------------------
+
+:::: {.columns}
+::: {.column width="50%"}
+
+The degrees of freedom for our model are 
+
+$$DF_1 = k$$
+$$DF_2 = N-k-1$$
+
+Where k is the number of IV's in your model, and N is the sample size.
+
+:::
+::: {.column width="50%"}
+
+Mean squares are calculated by taking the relevant Sums of Squares and dividing by their respective degrees of freedom.
+
+- $SS_{\text{Model}}$ is divided by $DF_1$
+
+- $SS_{\text{Residual}}$ is divided by $DF_2$
+:::
+::::
+
+
+------------------------------------------------------------------------
+
+```{r}
+anova(fit.1)
+```
+
+------------------------------------------------------------------------
+
+```{r,highlight.output=18}
+summary(fit.1)
+```
+
+
+------------------------------------------------------------------------
+
+## Mean square error (MSE)
+
+- <span style="font-size:80%">AKA <span style="color:purple">mean square residual</span> and <span style="color:purple">mean square within</span></span>
+
+- <span style="font-size:80%">unbiased estimate of error variance</span>
+
+    - <span style="font-size:80%">measure of discrepancy between the data and the model</span>
+
+- <span style="font-size:80%">the MSE is the variance around the fitted regression line</span>
+
+- <span style="font-size:80%">Note: it is a transformation of the standard error of the estimate (and residual standard error)!</span>
+
+```{r,highlight.output=6}
+anova(fit.1)
+```
+
+
+::: notes
+
+What does it mean to be "unbiased"?
+
+* Variance estimates are biased because they are more likely to underestimate the true pop variance than overestimate. 
+
+:::
+
+
+------------------------------------------------------------------------
+
+## Next time...
+
+Even more univariate regression!
+
+::: nonincremental 
+
+- Confidence intervals 
+
+- Confidence and prediction _bands_
+
+- Model comparison
+
+:::
