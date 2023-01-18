@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type="text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -278,7 +282,6 @@ library(here)       # for creating quick path directories</code></pre>
 <blockquote>
 <p><strong>Question:</strong> Using the Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?</p>
 </blockquote>
-<p>REMOVE: The line that yields the smallest sum of squared deviations.</p>
 <div id="estimating-a-regression-model-in-r" class="section level3">
 <h3>Estimating a regression model in R</h3>
 <p>Without further ado, let’s go ahead and estimate a regression equation in R.</p>
@@ -312,6 +315,7 @@ head(health)</code></pre>
 <li>Regress self-report health scores on conscientiousness using the <code>lm()</code> function below.</li>
 <li>Store the results of <code>lm()</code> in an object called <code>model</code>.</li>
 </ul>
+<p><em>pause and let students work on the next chunk</em></p>
 <pre class="r"><code># REMOVE
 model &lt;- lm(health$sr_health ~ health$consc)
 model &lt;- lm(sr_health ~ consc, data = health)</code></pre>
@@ -331,14 +335,7 @@ summary(model)
 
 # we can also turn off scientific notation
 options(scipen = 999)
-summary(model)
-
-# we can also set the number of significant digits to use (you probably don&#39;t want to do this)
-1.5 * 3.0
-options(digits = 1)
-1.5 * 3.0
-options(digits = 7)
-1.5 * 3.0</code></pre>
+summary(model)</code></pre>
 <p>This output provides us with the following:</p>
 <ul>
 <li><p>The formula we used for the linear model</p></li>
@@ -367,13 +364,15 @@ options(digits = 7)
 <div id="extracting-predicted-y-values" class="section level3">
 <h3>Extracting predicted Y values</h3>
 <p>The fitted values of Y are stored in <code>model</code> in an element called <code>fitted.values</code>. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called <code>fitted_y</code>. Print <code>fitted_y</code>.</p>
-<pre class="r"><code># REMOVE
+<p><em>pause and let students work on the next chunk</em></p>
+<pre class="r"><code># option 1 
 fitted_y &lt;- model$fitted.values
 print(fitted_y)
+
+# option 2
 fitted(model)</code></pre>
 <p>Next, calculate the difference between the actual values of Y and the fitted values of Y. Store the output in an object called <code>residuals</code> and print them.</p>
-<pre class="r"><code># REMOVE
-residuals &lt;- health$sr_health - fitted_y
+<pre class="r"><code>residuals &lt;- health$sr_health - fitted_y
 print(residuals)</code></pre>
 </div>
 <div id="extracting-residuals" class="section level3">
@@ -391,6 +390,7 @@ resid(model)</code></pre>
 <p>With this information, we could calculate the sum of squared residuals, which is the numerator of the residual standard error equation:</p>
 <p><span class="math display">\[\Sigma(Y_i - \hat{Y_i})^2\]</span></p>
 <p>Calculate the sum of squared residuals and store the output in an object called <code>sum_sq_residuals</code>.</p>
+<p><em>pause and let students work on the next chunk</em></p>
 <pre class="r"><code># REMOVE
 sum_sq_residuals &lt;- sum(residuals^2)
 sum_sq_residuals</code></pre>
@@ -406,6 +406,7 @@ residual_standard_error</code></pre>
 <pre class="r"><code>model_summary &lt;- summary(model)
 str(model_summary)</code></pre>
 <p>Can you find what the residual standard error is called? Once you find it, extract it from the model_summary.</p>
+<p><em>pause and let students work on the next chunk</em></p>
 <pre class="r"><code># REMOVE
 model_summary$sigma </code></pre>
 <p>Is it equivalent to what we calculated above?</p>
@@ -447,7 +448,7 @@ r_squared</code></pre>
 <blockquote>
 <p><strong>Question:</strong> What does this r-squared value mean (in plain English)?</p>
 </blockquote>
-<p>REMOVE: <span class="math inline">\(R^2\)</span> represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.</p>
+<p><span class="math inline">\(R^2\)</span> represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.</p>
 </div>
 </div>
 <div id="omnibus-test" class="section level3">
@@ -467,19 +468,19 @@ r_squared</code></pre>
 <p>Either rearrange the above equation to solve for <code>ss_residual</code>, or calculate it from the raw and fitted values using the equation below:</p>
 <p><span class="math display">\[SS_{Residual} = \Sigma(Y_i - \hat{Y_i})^2\]</span></p>
 <p>Use one of these methods to calculate SS_Residual below.</p>
-<pre class="r"><code># REMOVE
+<p><em>pause and let students work on the next chunk</em></p>
+<pre class="r"><code># option 1
 ss_residual &lt;- ss_y - ss_model
 ss_residual
 
+# option 2
 ss_residual &lt;- sum((health$sr_health - fitted_y)^2)
 ss_residual</code></pre>
 <p>Divide the <code>ss_residual</code> by the degrees of freedom of the residuals, which is equal to the sample size minus the number of regression parameters.</p>
-<pre class="r"><code># REMOVE
-ms_residual &lt;- ss_residual / (nrow(health) - 2) 
+<pre class="r"><code>ms_residual &lt;- ss_residual / (nrow(health) - 2) 
 ms_residual</code></pre>
 <p>We can finally calculate the F-statistic. Store it in an object called <code>f_stat</code>.</p>
-<pre class="r"><code># REMOVE
-f_stat &lt;- ms_model / ms_residual</code></pre>
+<pre class="r"><code>f_stat &lt;- ms_model / ms_residual</code></pre>
 </div>
 <div id="extracting-f" class="section level4">
 <h4>Extracting F</h4>
@@ -512,20 +513,17 @@ f_stat &lt;- ms_model / ms_residual</code></pre>
 <p>For obtaining <span class="math inline">\(b_1\)</span>:</p>
 <p><span class="math display">\[b_1 = r(\frac{s_y}{s_x})\]</span></p>
 <p>Calculate <span class="math inline">\(b_1\)</span> using the equation above. Store the value in an object called <code>b1</code>.</p>
-<pre class="r"><code># REMOVE
-r &lt;- cor(health$sr_health, health$consc)
-r
+<p><em>pause and let students work on the next chunk</em></p>
+<pre class="r"><code>(r &lt;- cor(health$sr_health, health$consc))
 
-s_y &lt;- sd(health$sr_health)
-s_x &lt;- sd(health$consc)
+(s_y &lt;- sd(health$sr_health))
+(s_x &lt;- sd(health$consc))
 
-b1 &lt;- r * (s_y / s_x)
-b1</code></pre>
+(b1 &lt;- r * (s_y / s_x))</code></pre>
 <p>And for obtaining <span class="math inline">\(b_0\)</span>:</p>
 <p><span class="math display">\[b_0 = M_y - b_1M_x\]</span></p>
 <p>Calculate <span class="math inline">\(b_0\)</span> using the equation above. Store the value in an object called <code>b0</code>.</p>
-<pre class="r"><code>b0 &lt;- mean(health$sr_health) - (b1 * (mean(health$consc)))
-b0</code></pre>
+<pre class="r"><code>(b0 &lt;- mean(health$sr_health) - (b1 * (mean(health$consc))))</code></pre>
 </div>
 <div id="extracting-regression-coefficients" class="section level4">
 <h4>Extracting regression coefficients</h4>
@@ -543,6 +541,8 @@ coef(model)</code></pre>
 <p><strong>Question:</strong> What about the slope for conscientiousness?</p>
 </blockquote>
 <p>REMOVE: For every one-unit increase in conscientiousness, self-reported health increases by .49 units.</p>
+<p>We can get the confidence intervals around those coefficients by using the <code>confint</code> function from the <code>{stats}</code> package.</p>
+<pre class="r"><code>confint(model)</code></pre>
 </div>
 <div id="getting-standardized-coefficients" class="section level4">
 <h4>Getting standardized coefficients</h4>
@@ -591,7 +591,8 @@ coefficients(std_model) %&gt;%
 <h3><code>tidy()</code></h3>
 <p>Let’s see what happens when we tidy our model:</p>
 <pre class="r"><code>tidy(model)</code></pre>
-<p>You can see it produces a dataframe containing the model coefficients and their significance tests.</p>
+<p>You can see it produces a dataframe containing the model coefficients and their significance tests. If you also want to get the confidence intervals around those coefficients, you simply need to add the argument <code>conf.int = TRUE</code>:</p>
+<pre class="r"><code>tidy(model, conf.int = TRUE)</code></pre>
 </div>
 <div id="glance" class="section level3">
 <h3><code>glance()</code></h3>

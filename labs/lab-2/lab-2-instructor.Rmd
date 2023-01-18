@@ -56,7 +56,6 @@ $$\hat{Y_i} = b_0 + b_1X_i$$
 
 > **Question:** Using the Ordinary Least Squares estimation method, what criteria do we use to determine what is the best-fitting linear model?
 
-REMOVE: The line that yields the smallest sum of squared deviations.
 
 ### Estimating a regression model in R
 
@@ -101,6 +100,24 @@ ggplot(data = health, aes(x = consc, y = sr_health)) +
 -   Regress self-report health scores on conscientiousness using the `lm()` function below.
 -   Store the results of `lm()` in an object called `model`.
 
+*pause and let students work on the next chunk*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, eval = FALSE}
 # REMOVE
 model <- lm(health$sr_health ~ health$consc)
@@ -132,12 +149,7 @@ summary(model)
 options(scipen = 999)
 summary(model)
 
-# we can also set the number of significant digits to use (you probably don't want to do this)
-1.5 * 3.0
-options(digits = 1)
-1.5 * 3.0
-options(digits = 7)
-1.5 * 3.0
+
 
 ```
 
@@ -183,17 +195,32 @@ We can extract elements from this list by using `LIST$ELEMENT` or `LIST[["ELEMEN
 
 The fitted values of Y are stored in `model` in an element called `fitted.values`. Using the instructions about how to extract elements from lists right above, extract the fitted values from the model and store these in an object called `fitted_y`. Print `fitted_y`.
 
+*pause and let students work on the next chunk*
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, eval = FALSE}
-# REMOVE
+# option 1 
 fitted_y <- model$fitted.values
 print(fitted_y)
+
+# option 2
 fitted(model)
 ```
 
 Next, calculate the difference between the actual values of Y and the fitted values of Y. Store the output in an object called `residuals` and print them.
 
 ```{r, eval = FALSE}
-# REMOVE
 residuals <- health$sr_health - fitted_y
 print(residuals)
 ```
@@ -224,6 +251,23 @@ $$\Sigma(Y_i - \hat{Y_i})^2$$
 
 Calculate the sum of squared residuals and store the output in an object called `sum_sq_residuals`.
 
+*pause and let students work on the next chunk*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, eval = FALSE}
 # REMOVE
 sum_sq_residuals <- sum(residuals^2)
@@ -249,6 +293,21 @@ str(model_summary)
 
 Can you find what the residual standard error is called? Once you find it, extract it from the model_summary.
 
+*pause and let students work on the next chunk*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, eval = FALSE}
 # REMOVE
 model_summary$sigma 
@@ -262,6 +321,12 @@ model_summary$sigma == residual_standard_error
 ```
 
 > **Question:** What does this residual standard error (AKA standard error of the estimate) mean?
+
+
+
+
+
+
 
 REMOVE: We interpret the standard error of the estimate to represent the spread of observed data around the regression line. We want lower.
 
@@ -310,7 +375,19 @@ r_squared == model_summary$r.squared
 
 > **Question:** What does this r-squared value mean (in plain English)?
 
-REMOVE: $R^2$ represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.
+
+
+
+
+
+
+
+
+
+
+
+
+$R^2$ represents the proportion of variance in Y that is explained by the model. It is literally the square of correlation between the predicted values of Y from the model and the actual values of Y.
 
 ### Omnibus test
 
@@ -340,11 +417,30 @@ $$SS_{Residual} = \Sigma(Y_i - \hat{Y_i})^2$$
 
 Use one of these methods to calculate SS_Residual below.
 
+
+*pause and let students work on the next chunk*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, eval = FALSE}
-# REMOVE
+# option 1
 ss_residual <- ss_y - ss_model
 ss_residual
 
+# option 2
 ss_residual <- sum((health$sr_health - fitted_y)^2)
 ss_residual
 ```
@@ -352,7 +448,6 @@ ss_residual
 Divide the `ss_residual` by the degrees of freedom of the residuals, which is equal to the sample size minus the number of regression parameters.
 
 ```{r, eval = FALSE}
-# REMOVE
 ms_residual <- ss_residual / (nrow(health) - 2) 
 ms_residual
 ```
@@ -360,7 +455,6 @@ ms_residual
 We can finally calculate the F-statistic. Store it in an object called `f_stat`.
 
 ```{r, eval = FALSE}
-# REMOVE
 f_stat <- ms_model / ms_residual
 ```
 
@@ -397,6 +491,17 @@ summary(model)
 
 > **Question:** Is the F significant? What does this mean?
 
+
+
+
+
+
+
+
+
+
+
+
 REMOVE: If the *p*-value is less than the significance level, your sample data provide sufficient evidence to conclude that your regression model fits the data better than the model with no independent variables. The amount of variance explained is significantly different than zero. The ratio of the amount variance explained (the amount of variability of the predicted values; i.e., the model) to the amount variance left over (the amount of variability of the error; the residual) is significantly different than 1.
 
 ### Regression coefficients
@@ -413,16 +518,28 @@ $$b_1 = r(\frac{s_y}{s_x})$$
 
 Calculate $b_1$ using the equation above. Store the value in an object called `b1`.
 
+*pause and let students work on the next chunk*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, eval = FALSE}
-# REMOVE
-r <- cor(health$sr_health, health$consc)
-r
+(r <- cor(health$sr_health, health$consc))
 
-s_y <- sd(health$sr_health)
-s_x <- sd(health$consc)
+(s_y <- sd(health$sr_health))
+(s_x <- sd(health$consc))
 
-b1 <- r * (s_y / s_x)
-b1
+(b1 <- r * (s_y / s_x))
 ```
 
 And for obtaining $b_0$:
@@ -432,8 +549,7 @@ $$b_0 = M_y - b_1M_x$$
 Calculate $b_0$ using the equation above. Store the value in an object called `b0`.
 
 ```{r, eval = FALSE}
-b0 <- mean(health$sr_health) - (b1 * (mean(health$consc)))
-b0
+(b0 <- mean(health$sr_health) - (b1 * (mean(health$consc))))
 ```
 
 #### Extracting regression coefficients
@@ -450,9 +566,26 @@ coef(model)
 
 > **Question:** What does the intercept mean?
 
+
+
+
+
+
+
+
+
+
 REMOVE: At zero conscientiousness, self-reported health is estimated to be 1.66.
 
 > **Question:** What about the slope for conscientiousness?
+
+
+
+
+
+
+
+
 
 REMOVE: For every one-unit increase in conscientiousness, self-reported health increases by .49 units.
 
@@ -481,9 +614,32 @@ standardize(model)
 
 > **Question:** What does the standardized slope for conscientiousness mean?
 
+
+
+
+
+
+
+
+
+
+
 REMOVE: For everyone one standard deviation increase in conscientiousness, there is a .4765 standard deviation increase in self-reported health.
 
 > **Question:** Why is the intercept zero?
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 REMOVE: At the mean of conscientiousness, value of self-reported helath is the zero (because it has been scaled and is also the mean).
 
@@ -509,9 +665,42 @@ summary(model)$coefficients
 
 > **Question:** Is the test of the intercept significant? What does this mean?
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 REMOVE: Yes. The intercept of 1.66 is significantly different than zero.
 
 > **Question:** Is the test of the slope significant? What does this mean?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 REMOVE: Yes. The slope of 0.49 is significantly different than zero.
 
