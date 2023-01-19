@@ -20,11 +20,23 @@ options(scipen = 999)
 knitr::opts_chunk$set(message = FALSE) # suppress messages
 ```
 
+## Annoucements
+
+::: nonincremental
+
+* Labs are in-person. 
+  * (Zoom recordings are supplementary)
+
+* Homework 1 is due in 2 weeks.
+
+:::
+
+-------------
 
 ## Last time...
 
 - Introduction to univariate regression
-  - Explaination, prediction, adjustment
+  - Explanation, prediction, adjustment
 
 - Calculation and interpretation of $b_0$ and $b_1$
 
