@@ -1,0 +1,512 @@
+---
+title: "Univariate Regression" 
+subtitle: "Part 3"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+## Last week
+
+:::: {.columns}
+::: {.column width="50%"}
+
+**Unstandardized regression equation**
+
+$$Y = b_0 + b_1X + e$$
+
+- Intercept and slope are interpreted in the units of Y.
+  - Useful if the units of Y are meaningful.
+  
+- Built from covariances and variances
+
+$$b_1 = \frac{cov_{XY}}{s^2_X}$$
+
+:::
+::: {.column width="50%"}
+
+**Standardized regression equation**
+
+$$Z_Y = b^*_1Z_X + e$$
+
+- Slope are interpreted in standardized units.
+  - Useful for comparison
+  
+- Built from correlations
+
+$$b^*_1 = r_{xy}$$
+:::
+::::
+
+```{r, warning = F, message = F}
+options(scipen = 999)
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+library(tidyverse)
+library(broom)
+library(gganimate)
+library(ungeviz) #download from github
+```
+
+
+
+    
+-------------------------------------------------------------------
+
+## Last week -- Inferential tests
+
+**Omnibus test**
+
+- Does the model fit the data?
+
+- *F*-test (ratio of variances)
+
+    - How many magnitudes larger is variability attributed to the model compared to left-over variability?
+    
+* Effect size: Model fit can be measured in terms of $\large R^2$ or $\large s_{Y|X}$
+
+  
+
+-------------------------------------------------------------------
+
+## Terminology
+
+:::: {.columns}
+::: {.column width="50%"}
+
+- $R^2$
+
+. . .
+
+    - <span style="color:purple">coefficient of determination</span>
+    - squared correlation between $Y$ and $\hat{Y}$
+    - proportion of variance in Y accounted for by the model
+:::
+::: {.column width="50%"}
+
+- $s_{Y|X}$ 
+
+. . . 
+
+    - <span style="color:purple">standard error of the estimate</span> and the square root of the <span style="color:purple">mean square error (MSE)</span> 
+    - measure of discrepancy between model and data
+    - MSE: variance around fitted regression line
+:::
+::::
+
+  
+
+
+-------------------------------------------------------------------
+
+## Example
+ 
+<span style="font-size:80%">*Overclaiming* occurs when people claim that they know something that is impossible to know; are experts susceptible to overclaiming?</span>
+
+<span style="font-size:80%">Participants[^1] completed a measure of **_self-perceived knowledge_**, in which they indicate their level of knowledge in the area of personal finance. Next participants indicated how much they knew about 15 terms related to personal finance (e.g., home equity). Included in the 15 items were three terms that do not actually exist (e.g., annualized credit). Thus, **_overclaiming_** occurred when participants said that they were knowledgeable about the non-existent terms.</span> 
+
+[^1]: Atir, S., Rosenzweig, E., & Dunning, D. (2015). [When knowledge knows no bounds: Self-perceived expertise predicts claims of impossible knowledge.](https://journals.sagepub.com/stoken/default+domain/ZtrwAQcGwtzhkvv8vgKq/full) Psychological Science, 26, 1295-1303.
+
+
+-------------------------------------------------------------------
+
+```{r,  message = F, highlight.output=4:5}
+library(here)
+expertise = read.csv(here("data/expertise.csv"))
+psych::describe(expertise)
+```
+
+```{r}
+cor(expertise[,c("self_perceived_knowledge", "overclaiming_proportion")])
+```
+
+-------------------------------------------------------------------
+
+```{r}
+fit.1 = lm(overclaiming_proportion ~ self_perceived_knowledge, 
+           data = expertise)
+anova(fit.1)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+summary(fit.1)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+library(sjPlot)
+set_theme(base = theme_bw())
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r, results = 'hide', message = F, warning = F}
+plot_model(fit.1, 
+           type = "pred", 
+           show.data = T) 
+```
+
+:::
+::: {.column width="50%"}
+
+```{r, results = 'hide', message = F, warning = F}
+plot_model(fit.1, 
+           type = "pred", show.data = T, 
+           jitter = T) 
+```
+
+:::
+::::
+
+
+
+::: notes
+
+Point out here:
+* Can be hard to visualize data when you have a Likert scale or other measure with a relatively small number of possible answers. 
+* BUT jitter can produce impossible data points and possibly hide floor or ceiling effects. 
+
+:::
+
+-------------------------------------------------------------------
+
+## regression coefficient
+
+$$\Large H_{0}: \beta_{1}= 0$$
+$$\Large H_{1}: \beta_{1} \neq 0$$
+
+-------------------------------------------------------------------
+
+## What does the regression coefficient test?
+
+- Does X provide any predictive information? 
+
+- Does X provide any explanatory power regarding the variability of Y? 
+
+- Is the the average value different from the best guess 
+  - (i.e., is $\bar{Y}$ equal to $\hat{Y}$ ?)
+
+- Is the regression line not flat? 
+
+- Are X and Y correlated?  
+
+-------------------------------------------------------------------
+
+## Regression coefficient
+
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
+$$\Large t(n-2) = \frac{b_{1}}{se_{b}}$$
+
+-------------------------------------------------------------------
+
+```{r, highlight.output = c(13)}
+summary(fit.1)
+```
+
+-------------------------------------------------------------------
+
+## $se_b$
+
+- <span style="color:purple">standard error for the slope coefficient</span>
+
+- represent our uncertainty (noise) in our estimate of the regression coefficient 
+- different from (but proportional to) the standard error of the estimate
+
+-  we can take our estimate $(b)$ and put confidence regions around it to get an estimate of what could be "possible" if we ran the study again  
+
+-------------------------------------------------------------------
+
+## Intercept
+
+- more complex standard error calculation
+
+- the calculation depends on how far the X value (here zero) is away from the mean of X
+
+    - farther from the mean, less information, thus more uncertainty 
+    
+- we'll come back to this calculation shortly
+    
+-------------------------------------------------------------------
+
+```{r, highlight.output = c(12)}
+summary(fit.1)
+```
+
+-------------------------------------------------------------------
+
+## Confidence interval for coefficients
+
+- same equation as we've been working with:
+
+$$CI_b = b \pm CV(se_b)$$
+
+- How do we estimate the critical value?
+
+-------------------------------------------------------------------
+
+```{r}
+coef(summary(fit.1))
+confint(fit.1)
+```
+
+```{r, echo = F}
+b_est = coef(summary(fit.1))[2,1]
+b_se = coef(summary(fit.1))[2,2]
+cv = qt(.975, df = nrow(expertise)-2)
+moe = b_se*cv
+```
+
+$b_1 \pm CV(se_b) = `r round(b_est,3)` \pm `r round(cv,3)`(`r round(b_se,3)`)$
+$b_1 \pm CV(se_b) = `r round(b_est,3)` \pm `r round(moe,3)`$
+
+-------------------------------------------------------------------
+
+## $se_{\hat{Y_i}}$
+
+In addition to estimating precision around the our coefficients, we can also estimate our precision around our predicted values, $\hat{Y_i}$. Why might this be a useful exercise?
+
+. . .
+
+The formula to estimate the standard error of any particular $\hat{Y_i}$ is
+
+$$se_{\hat{Y}_i} = s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
+
+-------------------------------------------------------------------
+
+```{r, highlight.output = 5}
+library(broom)
+model_info = augment(fit.1, se_fit = T)
+psych::describe(model_info, fast=T)
+```
+
+```{r}
+head(model_info[,c(".fitted", ".se.fit")])
+```
+
+
+We can string these together in a figure and create **confidence bands**.
+-------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+cv = qt(.975, df = nrow(model_info)-2)
+model_info %>% 
+  ggplot(aes(x = self_perceived_knowledge)) +
+  geom_point(aes(y = .fitted)) +
+  geom_errorbar(aes(ymin = .fitted-(cv*.se.fit), 
+                    ymax = .fitted+(cv*.se.fit)  ))
+```
+
+-------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+
+cv = qt(.975, df = nrow(model_info)-2)
+model_info %>% 
+  ggplot(aes(x = self_perceived_knowledge)) +
+  geom_point(aes(y = .fitted)) +
+  geom_errorbar(aes(ymin = .fitted-(cv*.se.fit), 
+                    ymax = .fitted+(cv*.se.fit)  )) +
+  geom_smooth(aes(y = overclaiming_proportion), method = "lm")
+```
+
+-------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+
+expertise %>%
+  ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) + 
+  geom_jitter(size = .5, color = "darkgrey") + 
+  geom_smooth(method = "lm") +
+  scale_x_continuous("Self-perceived knowledge") +
+  scale_y_continuous("Proportion of overclaiming") +
+  ggtitle("Using geom_smooth(se = TRUE)")+
+  theme_bw()
+```
+
+
+-------------------------------------------------------------------
+
+Let's return to the idea of the uncertainty around our slope and intercept estimates. 
+
+```{r}
+confint(fit.1)
+```
+
+We accept that these ranges represent our guess for where the true values of these parameters could be. So while we estimated a single slope and single intercept, reasonably, there is a set of slopes and intercepts that we would consider reasonable. 
+
+```{r, echo = F}
+ci = confint(fit.1)
+```
+
+What if we took the extremes from these distributions?
+
+$\hat{Y}_i = `r round(ci[1,1], 2)` + `r round(ci[2,2],2)`X_i$
+
+$\hat{Y}_i = `r round(ci[1,2], 2)` + `r round(ci[2,1],2)`X_i$
+
+-------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+
+expertise %>%
+  ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) + 
+  geom_jitter(size = .5, color = "darkgrey") + 
+  geom_smooth(method = "lm") +
+  geom_abline(aes(intercept = ci[1,1], slope = ci[2,2])) +
+  geom_abline(aes(intercept = ci[1,2], slope = ci[2,1])) +
+  scale_x_continuous("Self-perceived knowledge") +
+  scale_y_continuous("Proportion of overclaiming") +
+  theme_bw()
+```
+
+-------------------------------------------------------------------
+
+```{r, }
+#| code-fold: true
+#| 
+
+set.seed(012220)
+
+boots <- bootstrapper(100)
+
+p <- expertise %>%
+  ggplot(aes(x = self_perceived_knowledge, y = overclaiming_proportion)) +
+  geom_smooth(method = "lm", color = NA) +
+  geom_jitter(alpha = 0.3) +
+  geom_smooth(data = boots, method = "lm", fullrange = TRUE, se = FALSE) +
+  theme_minimal() +
+  transition_states(.draw, 1, 1) +
+  enter_fade() +
+  exit_fade() +
+  ease_aes()
+
+animate(p, fps = 3)
+```
+
+-------------------------------------------------------------------
+## Confidence Bands for regression line
+
+```{r, message=FALSE, warning = F, fig.width = 10}
+#| code-fold: true
+#| 
+set.seed(123)
+
+px.1 <- rnorm(1000, 0, 1)
+pe.1 <- rnorm(1000, 0, 1)
+py.1 <- .5 + .55 * px.1 + pe.1
+pd.1 <- data.frame(px.1,py.1)
+
+px.2 <- rnorm(100, 0, 1)
+pe.2 <- rnorm(100, 0, 1)
+py.2 <- .5 + .55 * px.2 + pe.2
+pd.2 <- data.frame(px.2,py.2)
+
+
+p1 <- ggplot(pd.1, aes(x = px.1,y =  py.1)) +
+    geom_point(alpha = .3) +    
+    geom_smooth(method = lm, fill = "blue", alpha = .7) +
+   scale_x_continuous(limits = c(-3, 3))  +
+  scale_y_continuous(limits = c(-3, 3))
+
+p2 <- ggplot(pd.2, aes(x=px.2, y=py.2)) +
+    geom_point(alpha = .3) +    
+    geom_smooth(method=lm, fill = "blue", alpha = .7) +
+  scale_x_continuous(limits = c(-3, 3))  +
+  scale_y_continuous(limits = c(-3, 3))
+
+library(cowplot)
+plot_grid(p1, p2, ncol=2, labels = c("N = 1000", "N = 100"))
+
+```
+
+-------------------------------------------------------------------
+
+Compare mean estimate for self-perceived knowledge based on regression vs binning
+
+```{r, fig.width = 10, warning= F, message = F}
+#| code-fold: true
+#| 
+p1 = ggplot(expertise, aes(x=self_perceived_knowledge, y=overclaiming_proportion)) +
+      geom_point() +   
+  geom_smooth(method=lm,   # Add linear regression line
+                se=TRUE) +
+  scale_y_continuous(limits = c(-.12, 1.1))
+p2 = expertise %>%
+  mutate(self_perceived_knowledge = cut_interval(self_perceived_knowledge, length = 1)) %>%
+  group_by(self_perceived_knowledge) %>%
+  summarize(m = mean(overclaiming_proportion), 
+          s = sd(overclaiming_proportion), 
+          n = n(),
+          se = s/sqrt(n),
+          cv = qt(p = .975, df = n-2),
+          moe = se*cv) %>%
+  ggplot(aes(x = self_perceived_knowledge, y = m)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = m-moe, ymax = m+moe)) +
+  scale_y_continuous("overclaiming_proportion", limits = c(-.12, 1.1))
+
+ggpubr::ggarrange(p1, p2, align = "v")
+```
+
+-------------------------------------------------------------------
+
+### Confidence Bands
+
+$$ \hat{Y}_i\pm t_{critical} * s_{Y|X}*\sqrt{\frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
+### Prediction bands
+
+$$\hat{Y}_i\pm t_{critical} * s_{Y|X}*\sqrt{1+ \frac {1}{n}+\frac{(X_i-\bar{X})^2}{(n-1)s_{X}^2}}$$
+
+-------------------------------------------------------------------
+
+## Prediction bands
+
+- predicting an individual $i's$ score, not the $\hat{Y}$ for a particular level of X. (A new $Y_i$ given $X_i$, rather than $\bar{Y}$ given $X_i$ )
+
+- Because there is greater variation in predicting an individual value rather than a mean, the prediction band is greater
+
+- Combines unknown variability of the estimated mean $(\text{as reflected in }se_b)$ with peoples' scores around mean $(\text{standard error of the estimate }, s_{Y|X})$
+
+
+-------------------------------------------------------------------
+
+```{r, warning=FALSE, fig.width = 10}
+#| code-fold: true
+#| 
+temp_var <- predict(fit.1, interval="prediction")
+new_df <- cbind(expertise, temp_var)
+pred <- ggplot(new_df, aes(x=self_perceived_knowledge, y=overclaiming_proportion))+
+       geom_point() +   
+  geom_smooth(method=lm,se=TRUE) +
+ geom_ribbon(aes(ymin = lwr, ymax = upr), 
+               fill = "blue", alpha = 0.1) +
+  theme_bw(base_size = 20)
+
+pred
+```
+
+-------------------------------------------------------------------
+
+## Next time
+
+The general linear model
