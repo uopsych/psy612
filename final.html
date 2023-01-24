@@ -13,7 +13,7 @@
 
 <title>Final project description</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -146,11 +146,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -345,6 +349,12 @@ div.tocify {
     <li>
       <a href="lectures/04-regression.html">04-Univariate Regression</a>
     </li>
+    <li>
+      <a href="lectures/05-regression.html">05-Univariate Regression</a>
+    </li>
+    <li>
+      <a href="lectures/06-glm.html">06-General Linear Model</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -413,46 +423,89 @@ div.tocify {
 
 <div id="description" class="section level2">
 <h2>Description</h2>
-<p>For your final project, you will analyze your own data and write a short report of the results. The goal of this assignment is to translate the skills you have learned in PSY 611 and PSY 612 into your own work as a scientist. It is also an opportunity to get feedback on your current research. This project emphasizes careful examination of data <em>prior to analysis</em>, interpretation of statistical tests, and communication of results.</p>
+<p>For your final project, you will analyze your own data and write a
+short report of the results. The goal of this assignment is to translate
+the skills you have learned in PSY 611 and PSY 612 into your own work as
+a scientist. It is also an opportunity to get feedback on your current
+research. This project emphasizes careful examination of data <em>prior
+to analysis</em>, interpretation of statistical tests, and communication
+of results.</p>
 </div>
 <div id="analysis" class="section level2">
 <h2>Analysis</h2>
 <p>Your analysis must include</p>
 <ol style="list-style-type: decimal">
 <li>appropriate descriptive statistics,</li>
-<li>one inferential test using at least two continuous predictors<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>,</li>
-<li>one inferential test using at least one categorical predictor<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</li>
+<li>one inferential test using at least two continuous predictors<a
+href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>,</li>
+<li>one inferential test using at least one categorical predictor<a
+href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</li>
 </ol>
-<p>Be sure to include the statistical tests, interpretation of statistical tests, and any information on diagnostics or assumptions.</p>
+<p>Be sure to include the statistical tests, interpretation of
+statistical tests, and any information on diagnostics or
+assumptions.</p>
 </div>
 <div id="report-format" class="section level2">
 <h2>Report format</h2>
-<p>Your report should be written in Rmarkdown. You might consider using the <code>papaja</code> template, but if you have your own formatting preferences, you may use those instead. Be sure to include each of the following:</p>
+<p>Your report should be written in Rmarkdown. You might consider using
+the <code>papaja</code> template, but if you have your own formatting
+preferences, you may use those instead. Be sure to include each of the
+following:</p>
 <ol style="list-style-type: decimal">
-<li>a brief (one paragraph maximum) description of the research design, including the measurement of variables <strong>(5 points)</strong>;</li>
-<li>your research question and hypotheses <strong>(5 points)</strong>;</li>
-<li>written description of the results, including APA-formatted results of statistical tests and your interpretation of those results <strong>(30 points)</strong>;</li>
-<li>essential information on assumptions or diagnostics <strong>(10 points)</strong>;</li>
+<li>a brief (one paragraph maximum) description of the research design,
+including the measurement of variables <strong>(5 points)</strong>;</li>
+<li>your research question and hypotheses <strong>(5
+points)</strong>;</li>
+<li>written description of the results, including APA-formatted results
+of statistical tests and your interpretation of those results
+<strong>(30 points)</strong>;</li>
+<li>essential information on assumptions or diagnostics <strong>(10
+points)</strong>;</li>
 <li>at least one table in APA format <strong>(5 points)</strong>;</li>
-<li>at least one figure, with a title and caption <strong>(5 points)</strong>.</li>
+<li>at least one figure, with a title and caption <strong>(5
+points)</strong>.</li>
 </ol>
-<p>Be sure to interpret any information – statistical tests, figures, and tables – that you provide. Please note – this should not be a full manuscript (no introduction and discussion needed!), and you will certainly provide more information in this report regarding the analyses than you would in a traditional research article.</p>
+<p>Be sure to interpret any information – statistical tests, figures,
+and tables – that you provide. Please note – this should not be a full
+manuscript (no introduction and discussion needed!), and you will
+certainly provide more information in this report regarding the analyses
+than you would in a traditional research article.</p>
 </div>
 <div id="i-dont-have-data" class="section level2">
 <h2>I don’t have data</h2>
 <p>You have a couple options!</p>
 <ol style="list-style-type: decimal">
-<li>Use data collected by someone else in your lab. Perhaps a more senior graduate student would be willing to share their FYP data?</li>
-<li>Find an open dataset. There are lots of repositories, but a good place to start is looking at the journal <em>Psychological Science</em>. To start, go to <a href="https://journals-sagepub-com.libproxy.uoregon.edu/">this link</a> and sign in with your DuckID (this will give you access off campus). Then select the Social Sciences &amp; Humanities discipline, and navigate to <em>Psychological Science</em> in the list. Once you’ve found the journal page, check the tables of contents for research articles that look interesting. The PDF version of the table of contents for a journal will include a badge indicating if the article has open data.</li>
-<li>If you have a good idea of what variables will be in your FYP, their range and possible values, and how they may be associated, we can simulate a fake version of your dataset to work with.</li>
+<li>Use data collected by someone else in your lab. Perhaps a more
+senior graduate student would be willing to share their FYP data?</li>
+<li>Find an open dataset. There are lots of repositories, but a good
+place to start is looking at the journal <em>Psychological Science</em>.
+To start, go to <a
+href="https://journals-sagepub-com.libproxy.uoregon.edu/">this link</a>
+and sign in with your DuckID (this will give you access off campus).
+Then select the Social Sciences &amp; Humanities discipline, and
+navigate to <em>Psychological Science</em> in the list. Once you’ve
+found the journal page, check the tables of contents for research
+articles that look interesting. The PDF version of the table of contents
+for a journal will include a badge indicating if the article has open
+data.</li>
+<li>If you have a good idea of what variables will be in your FYP, their
+range and possible values, and how they may be associated, we can
+simulate a fake version of your dataset to work with.</li>
 </ol>
-<p>If you need any help, like finding or simulating a dataset, come talk to me (Sara W) by the end of Week 8 (February 26) to discuss options.</p>
+<p>If you need any help, like finding or simulating a dataset, come talk
+to me (Sara W) by the end of Week 8 (February 26) to discuss
+options.</p>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
-<li id="fn1"><p>This model may contain additional predictors, categorical or continuous, but that is not necessary.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>This cannot be the same as the model with two continuous predictors. You must have two different inferential models. This model may contain additional predictors, categorical or continuous, but that is not necessary.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>This model may contain additional predictors,
+categorical or continuous, but that is not necessary.<a href="#fnref1"
+class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>This cannot be the same as the model with two continuous
+predictors. You must have two different inferential models. This model
+may contain additional predictors, categorical or continuous, but that
+is not necessary.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

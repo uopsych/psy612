@@ -84,21 +84,21 @@ library(ungeviz) #download from github
 
 - $R^2$
 
-. . .
-
-    - <span style="color:purple">coefficient of determination</span>
+    -  <span style="color:purple">coefficient of determination</span>
     - squared correlation between $Y$ and $\hat{Y}$
     - proportion of variance in Y accounted for by the model
+    
 :::
 ::: {.column width="50%"}
 
 - $s_{Y|X}$ 
 
-. . . 
 
     - <span style="color:purple">standard error of the estimate</span> and the square root of the <span style="color:purple">mean square error (MSE)</span> 
     - measure of discrepancy between model and data
+    - estimate of population SD of $e$
     - MSE: variance around fitted regression line
+    
 :::
 ::::
 

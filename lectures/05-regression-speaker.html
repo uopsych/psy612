@@ -447,20 +447,23 @@
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
-<li class="fragment"><span class="math inline">\(R^2\)</span></li>
+<li class="fragment"><p><span class="math inline">\(R^2\)</span></p>
+<ul>
+<li class="fragment"><span style="color:purple">coefficient of determination</span></li>
+<li class="fragment">squared correlation between <span class="math inline">\(Y\)</span> and <span class="math inline">\(\hat{Y}\)</span></li>
+<li class="fragment">proportion of variance in Y accounted for by the model</li>
+</ul></li>
 </ul>
-<p>. . .</p>
-<pre><code>- &lt;span style="color:purple"&gt;coefficient of determination&lt;/span&gt;
-- squared correlation between $Y$ and $\hat{Y}$
-- proportion of variance in Y accounted for by the model</code></pre>
 </div><div class="column" style="width:50%;">
 <ul>
-<li class="fragment"><span class="math inline">\(s_{Y|X}\)</span></li>
+<li class="fragment"><p><span class="math inline">\(s_{Y|X}\)</span></p>
+<ul>
+<li class="fragment"><span style="color:purple">standard error of the estimate</span> and the square root of the <span style="color:purple">mean square error (MSE)</span></li>
+<li class="fragment">measure of discrepancy between model and data</li>
+<li class="fragment">estimate of population SD of <span class="math inline">\(e\)</span></li>
+<li class="fragment">MSE: variance around fitted regression line</li>
+</ul></li>
 </ul>
-<p>. . .</p>
-<pre><code>- &lt;span style="color:purple"&gt;standard error of the estimate&lt;/span&gt; and the square root of the &lt;span style="color:purple"&gt;mean square error (MSE)&lt;/span&gt; 
-- measure of discrepancy between model and data
-- MSE: variance around fitted regression line</code></pre>
 </div>
 </div>
 </section>
@@ -472,9 +475,9 @@
 <section class="slide level2">
 
 <div class="cell" data-highlight.output="[4,5]">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb4-2"><a href="#cb4-2"></a>expertise <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="fu">here</span>(<span class="st">"data/expertise.csv"</span>))</span>
-<span id="cb4-3"><a href="#cb4-3"></a>psych<span class="sc">::</span><span class="fu">describe</span>(expertise)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>expertise <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="fu">here</span>(<span class="st">"data/expertise.csv"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3"></a>psych<span class="sc">::</span><span class="fu">describe</span>(expertise)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                         vars   n   mean    sd median trimmed   mad   min
 id                          1 202 101.50 58.46 101.50  101.50 74.87  1.00
@@ -493,7 +496,7 @@ FINRA_score                5.00   5.00 -1.01     0.57 0.08</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">cor</span>(expertise[,<span class="fu">c</span>(<span class="st">"self_perceived_knowledge"</span>, <span class="st">"overclaiming_proportion"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">cor</span>(expertise[,<span class="fu">c</span>(<span class="st">"self_perceived_knowledge"</span>, <span class="st">"overclaiming_proportion"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                         self_perceived_knowledge overclaiming_proportion
 self_perceived_knowledge                1.0000000               0.4811502
@@ -504,9 +507,9 @@ overclaiming_proportion                 0.4811502               1.0000000</code>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fit<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">lm</span>(overclaiming_proportion <span class="sc">~</span> self_perceived_knowledge, </span>
-<span id="cb8-2"><a href="#cb8-2"></a>           <span class="at">data =</span> expertise)</span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="fu">anova</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>fit<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">lm</span>(overclaiming_proportion <span class="sc">~</span> self_perceived_knowledge, </span>
+<span id="cb6-2"><a href="#cb6-2"></a>           <span class="at">data =</span> expertise)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="fu">anova</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table
 
@@ -522,7 +525,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -549,24 +552,24 @@ F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">library</span>(sjPlot)</span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">set_theme</span>(<span class="at">base =</span> <span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">set_theme</span>(<span class="at">base =</span> <span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">plot_model</span>(fit<span class="fl">.1</span>, </span>
-<span id="cb13-2"><a href="#cb13-2"></a>           <span class="at">type =</span> <span class="st">"pred"</span>, </span>
-<span id="cb13-3"><a href="#cb13-3"></a>           <span class="at">show.data =</span> T) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">plot_model</span>(fit<span class="fl">.1</span>, </span>
+<span id="cb11-2"><a href="#cb11-2"></a>           <span class="at">type =</span> <span class="st">"pred"</span>, </span>
+<span id="cb11-3"><a href="#cb11-3"></a>           <span class="at">show.data =</span> T) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img data-src="05-regression_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">plot_model</span>(fit<span class="fl">.1</span>, </span>
-<span id="cb14-2"><a href="#cb14-2"></a>           <span class="at">type =</span> <span class="st">"pred"</span>, <span class="at">show.data =</span> T, </span>
-<span id="cb14-3"><a href="#cb14-3"></a>           <span class="at">jitter =</span> T) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">plot_model</span>(fit<span class="fl">.1</span>, </span>
+<span id="cb12-2"><a href="#cb12-2"></a>           <span class="at">type =</span> <span class="st">"pred"</span>, <span class="at">show.data =</span> T, </span>
+<span id="cb12-3"><a href="#cb12-3"></a>           <span class="at">jitter =</span> T) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img data-src="05-regression_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
 </div>
@@ -611,7 +614,7 @@ F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225</code></pre>
 <section class="slide level2">
 
 <div class="cell" data-highlight.output="13">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -658,7 +661,7 @@ F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225</code></pre>
 <section class="slide level2">
 
 <div class="cell" data-highlight.output="12">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -695,13 +698,13 @@ F-statistic: 60.25 on 1 and 200 DF,  p-value: 0.0000000000004225</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(fit<span class="fl">.1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(fit<span class="fl">.1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                            Estimate Std. Error   t value              Pr(&gt;|t|)
 (Intercept)              -0.11405571 0.05624236 -2.027932 0.0438935615758865028
 self_perceived_knowledge  0.09531747 0.01227997  7.762029 0.0000000000004224832</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">confint</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">confint</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                               2.5 %       97.5 %
 (Intercept)              -0.22495982 -0.003151603
@@ -724,9 +727,9 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <section class="slide level2">
 
 <div class="cell" data-highlight.output="5">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">library</span>(broom)</span>
-<span id="cb23-2"><a href="#cb23-2"></a>model_info <span class="ot">=</span> <span class="fu">augment</span>(fit<span class="fl">.1</span>, <span class="at">se_fit =</span> T)</span>
-<span id="cb23-3"><a href="#cb23-3"></a>psych<span class="sc">::</span><span class="fu">describe</span>(model_info, <span class="at">fast=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb21-2"><a href="#cb21-2"></a>model_info <span class="ot">=</span> <span class="fu">augment</span>(fit<span class="fl">.1</span>, <span class="at">se_fit =</span> T)</span>
+<span id="cb21-3"><a href="#cb21-3"></a>psych<span class="sc">::</span><span class="fu">describe</span>(model_info, <span class="at">fast=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                         vars   n mean   sd   min  max range   se
 overclaiming_proportion     1 202 0.31 0.23  0.00 1.00  1.00 0.02
@@ -741,7 +744,7 @@ self_perceived_knowledge    2 202 4.43 1.17  1.00 7.00  6.00 0.08
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">head</span>(model_info[,<span class="fu">c</span>(<span class="st">".fitted"</span>, <span class="st">".se.fit"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">head</span>(model_info[,<span class="fu">c</span>(<span class="st">".fitted"</span>, <span class="st">".se.fit"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
   .fitted .se.fit
@@ -760,12 +763,12 @@ self_perceived_knowledge    2 202 4.43 1.17  1.00 7.00  6.00 0.08
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>cv <span class="ot">=</span> <span class="fu">qt</span>(.<span class="dv">975</span>, <span class="at">df =</span> <span class="fu">nrow</span>(model_info)<span class="sc">-</span><span class="dv">2</span>)</span>
-<span id="cb27-2"><a href="#cb27-2"></a>model_info <span class="sc">%&gt;%</span> </span>
-<span id="cb27-3"><a href="#cb27-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge)) <span class="sc">+</span></span>
-<span id="cb27-4"><a href="#cb27-4"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted)) <span class="sc">+</span></span>
-<span id="cb27-5"><a href="#cb27-5"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .fitted<span class="sc">-</span>(cv<span class="sc">*</span>.se.fit), </span>
-<span id="cb27-6"><a href="#cb27-6"></a>                    <span class="at">ymax =</span> .fitted<span class="sc">+</span>(cv<span class="sc">*</span>.se.fit)  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>cv <span class="ot">=</span> <span class="fu">qt</span>(.<span class="dv">975</span>, <span class="at">df =</span> <span class="fu">nrow</span>(model_info)<span class="sc">-</span><span class="dv">2</span>)</span>
+<span id="cb25-2"><a href="#cb25-2"></a>model_info <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge)) <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted)) <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .fitted<span class="sc">-</span>(cv<span class="sc">*</span>.se.fit), </span>
+<span id="cb25-6"><a href="#cb25-6"></a>                    <span class="at">ymax =</span> .fitted<span class="sc">+</span>(cv<span class="sc">*</span>.se.fit)  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -775,13 +778,13 @@ self_perceived_knowledge    2 202 4.43 1.17  1.00 7.00  6.00 0.08
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>cv <span class="ot">=</span> <span class="fu">qt</span>(.<span class="dv">975</span>, <span class="at">df =</span> <span class="fu">nrow</span>(model_info)<span class="sc">-</span><span class="dv">2</span>)</span>
-<span id="cb28-2"><a href="#cb28-2"></a>model_info <span class="sc">%&gt;%</span> </span>
-<span id="cb28-3"><a href="#cb28-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge)) <span class="sc">+</span></span>
-<span id="cb28-4"><a href="#cb28-4"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted)) <span class="sc">+</span></span>
-<span id="cb28-5"><a href="#cb28-5"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .fitted<span class="sc">-</span>(cv<span class="sc">*</span>.se.fit), </span>
-<span id="cb28-6"><a href="#cb28-6"></a>                    <span class="at">ymax =</span> .fitted<span class="sc">+</span>(cv<span class="sc">*</span>.se.fit)  )) <span class="sc">+</span></span>
-<span id="cb28-7"><a href="#cb28-7"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> overclaiming_proportion), <span class="at">method =</span> <span class="st">"lm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>cv <span class="ot">=</span> <span class="fu">qt</span>(.<span class="dv">975</span>, <span class="at">df =</span> <span class="fu">nrow</span>(model_info)<span class="sc">-</span><span class="dv">2</span>)</span>
+<span id="cb26-2"><a href="#cb26-2"></a>model_info <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a href="#cb26-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge)) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted)) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .fitted<span class="sc">-</span>(cv<span class="sc">*</span>.se.fit), </span>
+<span id="cb26-6"><a href="#cb26-6"></a>                    <span class="at">ymax =</span> .fitted<span class="sc">+</span>(cv<span class="sc">*</span>.se.fit)  )) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> overclaiming_proportion), <span class="at">method =</span> <span class="st">"lm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -791,14 +794,14 @@ self_perceived_knowledge    2 202 4.43 1.17  1.00 7.00  6.00 0.08
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>expertise <span class="sc">%&gt;%</span></span>
-<span id="cb29-2"><a href="#cb29-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> overclaiming_proportion)) <span class="sc">+</span> </span>
-<span id="cb29-3"><a href="#cb29-3"></a>  <span class="fu">geom_jitter</span>(<span class="at">size =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span> </span>
-<span id="cb29-4"><a href="#cb29-4"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
-<span id="cb29-5"><a href="#cb29-5"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">"Self-perceived knowledge"</span>) <span class="sc">+</span></span>
-<span id="cb29-6"><a href="#cb29-6"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Proportion of overclaiming"</span>) <span class="sc">+</span></span>
-<span id="cb29-7"><a href="#cb29-7"></a>  <span class="fu">ggtitle</span>(<span class="st">"Using geom_smooth(se = TRUE)"</span>)<span class="sc">+</span></span>
-<span id="cb29-8"><a href="#cb29-8"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>expertise <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> overclaiming_proportion)) <span class="sc">+</span> </span>
+<span id="cb27-3"><a href="#cb27-3"></a>  <span class="fu">geom_jitter</span>(<span class="at">size =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span> </span>
+<span id="cb27-4"><a href="#cb27-4"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">"Self-perceived knowledge"</span>) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Proportion of overclaiming"</span>) <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7"></a>  <span class="fu">ggtitle</span>(<span class="st">"Using geom_smooth(se = TRUE)"</span>)<span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -807,7 +810,7 @@ self_perceived_knowledge    2 202 4.43 1.17  1.00 7.00  6.00 0.08
 
 <p>Let’s return to the idea of the uncertainty around our slope and intercept estimates.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">confint</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">confint</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                               2.5 %       97.5 %
 (Intercept)              -0.22495982 -0.003151603
@@ -827,15 +830,15 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>expertise <span class="sc">%&gt;%</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> overclaiming_proportion)) <span class="sc">+</span> </span>
-<span id="cb32-3"><a href="#cb32-3"></a>  <span class="fu">geom_jitter</span>(<span class="at">size =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span> </span>
-<span id="cb32-4"><a href="#cb32-4"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
-<span id="cb32-5"><a href="#cb32-5"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> ci[<span class="dv">1</span>,<span class="dv">1</span>], <span class="at">slope =</span> ci[<span class="dv">2</span>,<span class="dv">2</span>])) <span class="sc">+</span></span>
-<span id="cb32-6"><a href="#cb32-6"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> ci[<span class="dv">1</span>,<span class="dv">2</span>], <span class="at">slope =</span> ci[<span class="dv">2</span>,<span class="dv">1</span>])) <span class="sc">+</span></span>
-<span id="cb32-7"><a href="#cb32-7"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">"Self-perceived knowledge"</span>) <span class="sc">+</span></span>
-<span id="cb32-8"><a href="#cb32-8"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Proportion of overclaiming"</span>) <span class="sc">+</span></span>
-<span id="cb32-9"><a href="#cb32-9"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>expertise <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> overclaiming_proportion)) <span class="sc">+</span> </span>
+<span id="cb30-3"><a href="#cb30-3"></a>  <span class="fu">geom_jitter</span>(<span class="at">size =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span> </span>
+<span id="cb30-4"><a href="#cb30-4"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> ci[<span class="dv">1</span>,<span class="dv">1</span>], <span class="at">slope =</span> ci[<span class="dv">2</span>,<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> ci[<span class="dv">1</span>,<span class="dv">2</span>], <span class="at">slope =</span> ci[<span class="dv">2</span>,<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb30-7"><a href="#cb30-7"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">"Self-perceived knowledge"</span>) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Proportion of overclaiming"</span>) <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -845,22 +848,22 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">set.seed</span>(<span class="dv">012220</span>)</span>
-<span id="cb33-2"><a href="#cb33-2"></a></span>
-<span id="cb33-3"><a href="#cb33-3"></a>boots <span class="ot">&lt;-</span> <span class="fu">bootstrapper</span>(<span class="dv">100</span>)</span>
-<span id="cb33-4"><a href="#cb33-4"></a></span>
-<span id="cb33-5"><a href="#cb33-5"></a>p <span class="ot">&lt;-</span> expertise <span class="sc">%&gt;%</span></span>
-<span id="cb33-6"><a href="#cb33-6"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> overclaiming_proportion)) <span class="sc">+</span></span>
-<span id="cb33-7"><a href="#cb33-7"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb33-8"><a href="#cb33-8"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb33-9"><a href="#cb33-9"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> boots, <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">fullrange =</span> <span class="cn">TRUE</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb33-10"><a href="#cb33-10"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb33-11"><a href="#cb33-11"></a>  <span class="fu">transition_states</span>(.draw, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb33-12"><a href="#cb33-12"></a>  <span class="fu">enter_fade</span>() <span class="sc">+</span></span>
-<span id="cb33-13"><a href="#cb33-13"></a>  <span class="fu">exit_fade</span>() <span class="sc">+</span></span>
-<span id="cb33-14"><a href="#cb33-14"></a>  <span class="fu">ease_aes</span>()</span>
-<span id="cb33-15"><a href="#cb33-15"></a></span>
-<span id="cb33-16"><a href="#cb33-16"></a><span class="fu">animate</span>(p, <span class="at">fps =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">set.seed</span>(<span class="dv">012220</span>)</span>
+<span id="cb31-2"><a href="#cb31-2"></a></span>
+<span id="cb31-3"><a href="#cb31-3"></a>boots <span class="ot">&lt;-</span> <span class="fu">bootstrapper</span>(<span class="dv">100</span>)</span>
+<span id="cb31-4"><a href="#cb31-4"></a></span>
+<span id="cb31-5"><a href="#cb31-5"></a>p <span class="ot">&lt;-</span> expertise <span class="sc">%&gt;%</span></span>
+<span id="cb31-6"><a href="#cb31-6"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> overclaiming_proportion)) <span class="sc">+</span></span>
+<span id="cb31-7"><a href="#cb31-7"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb31-8"><a href="#cb31-8"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb31-9"><a href="#cb31-9"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> boots, <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">fullrange =</span> <span class="cn">TRUE</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb31-10"><a href="#cb31-10"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11"></a>  <span class="fu">transition_states</span>(.draw, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb31-12"><a href="#cb31-12"></a>  <span class="fu">enter_fade</span>() <span class="sc">+</span></span>
+<span id="cb31-13"><a href="#cb31-13"></a>  <span class="fu">exit_fade</span>() <span class="sc">+</span></span>
+<span id="cb31-14"><a href="#cb31-14"></a>  <span class="fu">ease_aes</span>()</span>
+<span id="cb31-15"><a href="#cb31-15"></a></span>
+<span id="cb31-16"><a href="#cb31-16"></a><span class="fu">animate</span>(p, <span class="at">fps =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img data-src="05-regression_files/figure-revealjs/unnamed-chunk-21-1.gif"></p>
@@ -904,26 +907,26 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>p1 <span class="ot">=</span> <span class="fu">ggplot</span>(expertise, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion)) <span class="sc">+</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a>      <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
-<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,   <span class="co"># Add linear regression line</span></span>
-<span id="cb34-4"><a href="#cb34-4"></a>                <span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb34-5"><a href="#cb34-5"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
-<span id="cb34-6"><a href="#cb34-6"></a>p2 <span class="ot">=</span> expertise <span class="sc">%&gt;%</span></span>
-<span id="cb34-7"><a href="#cb34-7"></a>  <span class="fu">mutate</span>(<span class="at">self_perceived_knowledge =</span> <span class="fu">cut_interval</span>(self_perceived_knowledge, <span class="at">length =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb34-8"><a href="#cb34-8"></a>  <span class="fu">group_by</span>(self_perceived_knowledge) <span class="sc">%&gt;%</span></span>
-<span id="cb34-9"><a href="#cb34-9"></a>  <span class="fu">summarize</span>(<span class="at">m =</span> <span class="fu">mean</span>(overclaiming_proportion), </span>
-<span id="cb34-10"><a href="#cb34-10"></a>          <span class="at">s =</span> <span class="fu">sd</span>(overclaiming_proportion), </span>
-<span id="cb34-11"><a href="#cb34-11"></a>          <span class="at">n =</span> <span class="fu">n</span>(),</span>
-<span id="cb34-12"><a href="#cb34-12"></a>          <span class="at">se =</span> s<span class="sc">/</span><span class="fu">sqrt</span>(n),</span>
-<span id="cb34-13"><a href="#cb34-13"></a>          <span class="at">cv =</span> <span class="fu">qt</span>(<span class="at">p =</span> .<span class="dv">975</span>, <span class="at">df =</span> n<span class="dv">-2</span>),</span>
-<span id="cb34-14"><a href="#cb34-14"></a>          <span class="at">moe =</span> se<span class="sc">*</span>cv) <span class="sc">%&gt;%</span></span>
-<span id="cb34-15"><a href="#cb34-15"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> m)) <span class="sc">+</span></span>
-<span id="cb34-16"><a href="#cb34-16"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb34-17"><a href="#cb34-17"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> m<span class="sc">-</span>moe, <span class="at">ymax =</span> m<span class="sc">+</span>moe)) <span class="sc">+</span></span>
-<span id="cb34-18"><a href="#cb34-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"overclaiming_proportion"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
-<span id="cb34-19"><a href="#cb34-19"></a></span>
-<span id="cb34-20"><a href="#cb34-20"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p1, p2, <span class="at">align =</span> <span class="st">"v"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>p1 <span class="ot">=</span> <span class="fu">ggplot</span>(expertise, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion)) <span class="sc">+</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a>      <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
+<span id="cb32-3"><a href="#cb32-3"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,   <span class="co"># Add linear regression line</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a>                <span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb32-5"><a href="#cb32-5"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
+<span id="cb32-6"><a href="#cb32-6"></a>p2 <span class="ot">=</span> expertise <span class="sc">%&gt;%</span></span>
+<span id="cb32-7"><a href="#cb32-7"></a>  <span class="fu">mutate</span>(<span class="at">self_perceived_knowledge =</span> <span class="fu">cut_interval</span>(self_perceived_knowledge, <span class="at">length =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb32-8"><a href="#cb32-8"></a>  <span class="fu">group_by</span>(self_perceived_knowledge) <span class="sc">%&gt;%</span></span>
+<span id="cb32-9"><a href="#cb32-9"></a>  <span class="fu">summarize</span>(<span class="at">m =</span> <span class="fu">mean</span>(overclaiming_proportion), </span>
+<span id="cb32-10"><a href="#cb32-10"></a>          <span class="at">s =</span> <span class="fu">sd</span>(overclaiming_proportion), </span>
+<span id="cb32-11"><a href="#cb32-11"></a>          <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb32-12"><a href="#cb32-12"></a>          <span class="at">se =</span> s<span class="sc">/</span><span class="fu">sqrt</span>(n),</span>
+<span id="cb32-13"><a href="#cb32-13"></a>          <span class="at">cv =</span> <span class="fu">qt</span>(<span class="at">p =</span> .<span class="dv">975</span>, <span class="at">df =</span> n<span class="dv">-2</span>),</span>
+<span id="cb32-14"><a href="#cb32-14"></a>          <span class="at">moe =</span> se<span class="sc">*</span>cv) <span class="sc">%&gt;%</span></span>
+<span id="cb32-15"><a href="#cb32-15"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> m)) <span class="sc">+</span></span>
+<span id="cb32-16"><a href="#cb32-16"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb32-17"><a href="#cb32-17"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> m<span class="sc">-</span>moe, <span class="at">ymax =</span> m<span class="sc">+</span>moe)) <span class="sc">+</span></span>
+<span id="cb32-18"><a href="#cb32-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"overclaiming_proportion"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
+<span id="cb32-19"><a href="#cb32-19"></a></span>
+<span id="cb32-20"><a href="#cb32-20"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p1, p2, <span class="at">align =</span> <span class="st">"v"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img data-src="05-regression_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
@@ -949,16 +952,16 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>temp_var <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit<span class="fl">.1</span>, <span class="at">interval=</span><span class="st">"prediction"</span>)</span>
-<span id="cb35-2"><a href="#cb35-2"></a>new_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(expertise, temp_var)</span>
-<span id="cb35-3"><a href="#cb35-3"></a>pred <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(new_df, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion))<span class="sc">+</span></span>
-<span id="cb35-4"><a href="#cb35-4"></a>       <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
-<span id="cb35-5"><a href="#cb35-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,<span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb35-6"><a href="#cb35-6"></a> <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr), </span>
-<span id="cb35-7"><a href="#cb35-7"></a>               <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb35-8"><a href="#cb35-8"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
-<span id="cb35-9"><a href="#cb35-9"></a></span>
-<span id="cb35-10"><a href="#cb35-10"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>temp_var <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit<span class="fl">.1</span>, <span class="at">interval=</span><span class="st">"prediction"</span>)</span>
+<span id="cb33-2"><a href="#cb33-2"></a>new_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(expertise, temp_var)</span>
+<span id="cb33-3"><a href="#cb33-3"></a>pred <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(new_df, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion))<span class="sc">+</span></span>
+<span id="cb33-4"><a href="#cb33-4"></a>       <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
+<span id="cb33-5"><a href="#cb33-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,<span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6"></a> <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr), </span>
+<span id="cb33-7"><a href="#cb33-7"></a>               <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb33-9"><a href="#cb33-9"></a></span>
+<span id="cb33-10"><a href="#cb33-10"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>

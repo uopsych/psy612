@@ -13,7 +13,7 @@
 
 <title>Helpful and/or interesting material</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -146,11 +146,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -345,6 +349,12 @@ div.tocify {
     <li>
       <a href="lectures/04-regression.html">04-Univariate Regression</a>
     </li>
+    <li>
+      <a href="lectures/05-regression.html">05-Univariate Regression</a>
+    </li>
+    <li>
+      <a href="lectures/06-glm.html">06-General Linear Model</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -411,39 +421,116 @@ div.tocify {
 </div>
 
 
-<p>This page contains links to journal articles, blog posts, webpages, etc., that we (the instructors) believe may be useful to you, or at the very least interesting. <strong>Bold</strong> articles are ones that we consider <strong>must-reads</strong> but don’t have enough time to actually assign. And to be clear, must-read means that people will probably assume you’ve read this and know the basic points.</p>
+<p>This page contains links to journal articles, blog posts, webpages,
+etc., that we (the instructors) believe may be useful to you, or at the
+very least interesting. <strong>Bold</strong> articles are ones that we
+consider <strong>must-reads</strong> but don’t have enough time to
+actually assign. And to be clear, must-read means that people will
+probably assume you’ve read this and know the basic points.</p>
 <div id="cohen-cohen-west-aiken-2003" class="section level2">
-<h2><a href="https://psycnet.apa.org/record/2002-18109-000">Cohen, Cohen, West, &amp; Aiken (2003)</a></h2>
-<p>For additional review of correlation and regression beyond the assigned textbook, here are chapters from another popular textbook (edition 3).</p>
-<p><a href="readings/CCWA_ch1.pdf">Chapter 1. <strong>Introduction.</strong></a> - Multiple regression/correlation as a general data-analytic system - A comparison of multiple regression/correlation and analysis of variance approaches - Multiple regression/correlation and the complexity of behavioral sciences - Orientation of the book - Computation, the computer, and numerical results - The spectrum of behavioral sciences</p>
-<p><a href="readings/CCWA_ch2.pdf">Chapter 2. <strong>Bivariate Correlation and Regression.</strong></a> - Tabular and graphic representations of relationships - The index of linear correlation between two variables - The Pearson Product-Moment Correlation Coefficient - Alternative formulas - Regression coefficients - Regression toward the mean - The standard error of the estimate and measures of the strength of association - Statistical inference - Precision and power - Factors affecting the size of <em>r</em></p>
-<p><a href="readings/CCWA_ch3.pdf">Chapter 3. <strong>Multiple Regression/Correlation with Two or More Independent Variables</strong></a> - Causal models - Regression with two independent variables - Measures of association - Patterns of association - Multiple regression/correlation with <em>k</em> independent variables - Statistical inference - Precision and power - Equations and prediction</p>
+<h2><a href="https://psycnet.apa.org/record/2002-18109-000">Cohen,
+Cohen, West, &amp; Aiken (2003)</a></h2>
+<p>For additional review of correlation and regression beyond the
+assigned textbook, here are chapters from another popular textbook
+(edition 3).</p>
+<p><a href="readings/CCWA_ch1.pdf">Chapter 1.
+<strong>Introduction.</strong></a> - Multiple regression/correlation as
+a general data-analytic system - A comparison of multiple
+regression/correlation and analysis of variance approaches - Multiple
+regression/correlation and the complexity of behavioral sciences -
+Orientation of the book - Computation, the computer, and numerical
+results - The spectrum of behavioral sciences</p>
+<p><a href="readings/CCWA_ch2.pdf">Chapter 2. <strong>Bivariate
+Correlation and Regression.</strong></a> - Tabular and graphic
+representations of relationships - The index of linear correlation
+between two variables - The Pearson Product-Moment Correlation
+Coefficient - Alternative formulas - Regression coefficients -
+Regression toward the mean - The standard error of the estimate and
+measures of the strength of association - Statistical inference -
+Precision and power - Factors affecting the size of <em>r</em></p>
+<p><a href="readings/CCWA_ch3.pdf">Chapter 3. <strong>Multiple
+Regression/Correlation with Two or More Independent
+Variables</strong></a> - Causal models - Regression with two independent
+variables - Measures of association - Patterns of association - Multiple
+regression/correlation with <em>k</em> independent variables -
+Statistical inference - Precision and power - Equations and
+prediction</p>
 </div>
 <div id="on-coding-and-data-science" class="section level2">
 <h2>On coding and data science</h2>
-<p>Peters (2004) <a href="https://www.python.org/dev/peps/pep-0020/">“The Zen of Python.”</a> – A list of 19 principles for writing better Python code; the principles also apply to writing better R code.</p>
-<p>Hill (2019) <a href="https://arm.rbind.io/slides/xaringan.html#1">“Meet xaringan.”</a> – There are a ton of resources for learning how to make slides using R. Too many to list here. I like this one because it’s accessible, funny, visually appealing, and will help you make slides that you’re proud of. (By the way, UO has theme you can use.)</p>
-<p>Bryan (2019) <a href="https://happygitwithr.com">“Happy Git with R.”</a> – Interested in using GitHub for version control? Jenny Bryan will guide you through the process and metaphorically hand you a tissue when you’re screaming with frustration.</p>
-<p>Anderson (2021) <a href="https://www.sds.pub/index.html">“Social Data Science with R”</a> – This book is currently being developed for the data science sequence at the University of Oregon, taught in the education department by Daniel Anderson. It is a helpful resource for foundational coding skills and data visualization in R.</p>
-<p>Robinson (2016) <a href="https://www.youtube.com/watch?v=7VGPUBWGv6g">Broom: Converting Statistical Models to Tidy Data Frames</a> – This YouTube video explains how to use the <code>{Broom}</code> package to extract useful information from model objects.</p>
+<p>Peters (2004) <a
+href="https://www.python.org/dev/peps/pep-0020/">“The Zen of
+Python.”</a> – A list of 19 principles for writing better Python code;
+the principles also apply to writing better R code.</p>
+<p>Hill (2019) <a
+href="https://arm.rbind.io/slides/xaringan.html#1">“Meet xaringan.”</a>
+– There are a ton of resources for learning how to make slides using R.
+Too many to list here. I like this one because it’s accessible, funny,
+visually appealing, and will help you make slides that you’re proud of.
+(By the way, UO has theme you can use.)</p>
+<p>Bryan (2019) <a href="https://happygitwithr.com">“Happy Git with
+R.”</a> – Interested in using GitHub for version control? Jenny Bryan
+will guide you through the process and metaphorically hand you a tissue
+when you’re screaming with frustration.</p>
+<p>Anderson (2021) <a href="https://www.sds.pub/index.html">“Social Data
+Science with R”</a> – This book is currently being developed for the
+data science sequence at the University of Oregon, taught in the
+education department by Daniel Anderson. It is a helpful resource for
+foundational coding skills and data visualization in R.</p>
+<p>Robinson (2016) <a
+href="https://www.youtube.com/watch?v=7VGPUBWGv6g">Broom: Converting
+Statistical Models to Tidy Data Frames</a> – This YouTube video explains
+how to use the <code>{Broom}</code> package to extract useful
+information from model objects.</p>
 </div>
 <div id="on-creating-useful-graphics" class="section level2">
 <h2>On creating useful graphics</h2>
-<p>Patil (2020) <a href="https://indrajeetpatil.github.io/ggstatsplot/index.html">“ggstatsplot”</a> – A very useful R package for creating visuals to display some basic univariate and bivariate descriptives.</p>
+<p>Patil (2020) <a
+href="https://indrajeetpatil.github.io/ggstatsplot/index.html">“ggstatsplot”</a>
+– A very useful R package for creating visuals to display some basic
+univariate and bivariate descriptives.</p>
 </div>
 <div id="on-statistical-models" class="section level2">
 <h2>On statistical models</h2>
-<p><a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab">YouTube series on linear algebra</a></p>
-<p><a href="https://uopsych.github.io/psy611/">PSY 611</a> – Don’t forget everything we covered last term!</p>
-<p>Dunn &amp; Smyth (2019) <a href="https://link.springer.com/book/10.1007/978-1-4419-0118-7">Generalized Linear Models With Examples in R</a> – if you’re looking for a supplemental (free, online) textbook to cover general and generalized linear models, I highly recommend this one. It includes useful tidbits, like <a href="https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_1#Sec4">coding factors</a>, an expansion on the <a href="https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec13">matrix algebra notation</a> for multiple regression, and an extended section on the <a href="https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec39">R code</a> useful for linear models. Plus, it expands to cases we don’t cover in class.</p>
-<p>Gelman posted a document containing <a href="https://statmodeling.stat.columbia.edu/wp-content/uploads/2020/07/raos_tips.pdf">Tips for improving regression</a> on his blog, but I can’t find the original citation. It may be from one of his own works or from someone else’s. Let me know if you figure it out!</p>
+<p><a
+href="https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab">YouTube
+series on linear algebra</a></p>
+<p><a href="https://uopsych.github.io/psy611/">PSY 611</a> – Don’t
+forget everything we covered last term!</p>
+<p>Dunn &amp; Smyth (2019) <a
+href="https://link.springer.com/book/10.1007/978-1-4419-0118-7">Generalized
+Linear Models With Examples in R</a> – if you’re looking for a
+supplemental (free, online) textbook to cover general and generalized
+linear models, I highly recommend this one. It includes useful tidbits,
+like <a
+href="https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_1#Sec4">coding
+factors</a>, an expansion on the <a
+href="https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec13">matrix
+algebra notation</a> for multiple regression, and an extended section on
+the <a
+href="https://link.springer.com/chapter/10.1007/978-1-4419-0118-7_2#Sec39">R
+code</a> useful for linear models. Plus, it expands to cases we don’t
+cover in class.</p>
+<p>Gelman posted a document containing <a
+href="https://statmodeling.stat.columbia.edu/wp-content/uploads/2020/07/raos_tips.pdf">Tips
+for improving regression</a> on his blog, but I can’t find the original
+citation. It may be from one of his own works or from someone else’s.
+Let me know if you figure it out!</p>
 </div>
-<div id="on-causality-confounds-colliders-and-controls" class="section level2">
+<div id="on-causality-confounds-colliders-and-controls"
+class="section level2">
 <h2>On causality, confounds, colliders, and controls</h2>
-<p>Simonsohn (2019) <a href="http://datacolada.org/80">Interaction effects need interaction controls.</a></p>
-<p>Wang et al. (2020) <a href="readings/wang_2020.pdf">Using independent covariates in experimental designs: Quantifying the trade-off between power boost and Type I error inflation</a></p>
-<p>Westfall &amp; Yarkoni (2016) <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0152719">Statistically Controlling for Confounding Constructs Is Harder than You Think</a></p>
-<p>Wysocki, Lawson, &amp; Rhemtulla (2020) <a href="https://psyarxiv.com/j9vw4">Statistical Control Requires Causal Justification</a></p>
+<p>Simonsohn (2019) <a href="http://datacolada.org/80">Interaction
+effects need interaction controls.</a></p>
+<p>Wang et al. (2020) <a href="readings/wang_2020.pdf">Using independent
+covariates in experimental designs: Quantifying the trade-off between
+power boost and Type I error inflation</a></p>
+<p>Westfall &amp; Yarkoni (2016) <a
+href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0152719">Statistically
+Controlling for Confounding Constructs Is Harder than You Think</a></p>
+<p>Wysocki, Lawson, &amp; Rhemtulla (2020) <a
+href="https://psyarxiv.com/j9vw4">Statistical Control Requires Causal
+Justification</a></p>
 </div>
 
 

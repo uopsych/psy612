@@ -15,6 +15,10 @@ navbar:
         href: "lectures/03-regression.html"
       - text: "04-Univariate Regression"
         href: "lectures/04-regression.html"
+      - text: "05-Univariate Regression"
+        href: "lectures/05-regression.html"
+      - text: "06-General Linear Model"
+        href: "lectures/06-glm.html"
     - text: Labs
       menu:
       - text: "Lab 1"
