@@ -63,6 +63,7 @@ summary(model)
 
 > **Question:** What do the intercept and slope mean? What do the *p*-values tell us? 
 
+
 ## Confidence intervals
 
 Our `b's` (intercept and slope) are *estimates* from our sample of true population parameters ($\beta$'s). Whenever we calculate an estimate, we should also determine how precise our estimate is. 
@@ -107,13 +108,13 @@ health %>%
 The animation below is an example of a ["Hypothetical Outcomes Plot"](https://github.com/wilkelab/ungeviz){target="_blank"} (HOP) that visually demonstrates what this 95% CI band represents. In essence, this plot shows what the regression line could look like if we were to repeat our experiment over and over (sampling from the same population each time). 
 
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-#devtools::install_github("wilkelab/ungeviz")
+#remotes::install_github("wilkelab/ungeviz")
 library(ungeviz)
 library(gganimate)
 library(transformr)
 library(gifski)
 
-set.seed(012220)
+set.seed(1)
 
 boots <- bootstrapper(100)
 
@@ -172,36 +173,11 @@ new_df %>%
 >**Question:** What does the prediction band represent? How does it differ from the confidence band? 
 
 
-## Other visualization tools
 
-sjPlot::plot_model()`
-
-```{r, eval=FALSE}
-plot_model(model = model,    # name of model object
-           type = "pred",    # show predicted values (i.e. regression line)
-           show.data = TRUE, # include data points on plot
-           jitter = FALSE)    # add small amount of random variation to  to prevent overlap
-```
-
-
-`ggpubr::ggscatter()`
-
-```{r, message = FALSE}
-ggscatter(data = health,              # name of data.frame
-          x = "consc",                # IV (must be quoted)
-          y = "sr_health",            # DV (must be quoted)
-          add = "reg.line",           # add regression line
-          xlab = "Conscientiousness", # x-axis label
-          ylab = "Self-rated health", # y-axis label
-          conf.int = TRUE,            # show 95% confidence band around regression line
-          cor.coef = TRUE)            # display correlation coefficient and p-value
-```
-
-***
 
 # The General Linear Model
 
-We just saw that regression works "under the hood" by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara mentioned in class, this matrix algebra equation works for *any* type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models...
+We just saw that regression works "under the hood" by solving a matrix algebra equation to get the intercept and slope of the regression line. As Sara briefly mentioned in class, this matrix algebra equation works for *any* type of data we have. This should clue us into the idea that there is some fundamental process going on behind the scenes of all of our models...
 
 The **general linear model (GLM)** is a family of models that assume the relationship between your DV and IV(s) is additive, and that your outcome is normally distributed. In its simplest form, we can think of the general linear model as: 
 
@@ -261,8 +237,8 @@ summary(regression)
 ```{r}
 t_test$p.value
 cor_test$p.value
-anova(anova_test)
-summary(regression)
+anova(anova_test)$`Pr(>F)`[1]
+summary(regression)$coefficients[2,4]
 ```
 
 ***
