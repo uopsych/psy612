@@ -13,7 +13,7 @@
 
 <title>Syllabus</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -146,15 +146,11 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark the anchor link active (and if it's in a dropdown, also mark that active)
-  var dropdown = menuAnchor.closest('li.dropdown');
-  if (window.bootstrap) { // Bootstrap 4+
-    menuAnchor.addClass('active');
-    dropdown.find('> .dropdown-toggle').addClass('active');
-  } else { // Bootstrap 3
-    menuAnchor.parent().addClass('active');
-    dropdown.addClass('active');
-  }
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -370,6 +366,9 @@ div.tocify {
     <li>
       <a href="labs/lab-2/lab-2.html">Lab 2</a>
     </li>
+    <li>
+      <a href="labs/lab-3/lab-3.html">Lab 3</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -423,15 +422,7 @@ div.tocify {
 
 <div id="weekly-schedule" class="section level1">
 <h1>Weekly schedule</h1>
-<p>LSR readings can be found in the free, online textbook, <a
-href="https://learningstatisticswithr-bookdown.netlify.com/index.html"><em>Learning
-Statistics with R</em></a> by Danielle Navarro. For those interested in
-taking notes, I recommend the use of the <a
-href="http://Hypothes.is">Hypothes.is</a> app to annotate webpages. I
-will note that the formatting of the book online is wonky in a few
-places. If this bothers you, or you prefer to work offline, you can
-download a <a href="https://learningstatisticswithr.com/lsr-0.6.pdf">PDF
-version</a> of the book.</p>
+<p>LSR readings can be found in the free, online textbook, <a href="https://learningstatisticswithr-bookdown.netlify.com/index.html"><em>Learning Statistics with R</em></a> by Danielle Navarro. For those interested in taking notes, I recommend the use of the <a href="http://Hypothes.is">Hypothes.is</a> app to annotate webpages. I will note that the formatting of the book online is wonky in a few places. If this bothers you, or you prefer to work offline, you can download a <a href="https://learningstatisticswithr.com/lsr-0.6.pdf">PDF version</a> of the book.</p>
 <table style="width:100%;">
 <colgroup>
 <col width="6%" />
@@ -456,8 +447,7 @@ version</a> of the book.</p>
 <td>1</td>
 <td>1/10</td>
 <td>Correlation (statistical test, power)</td>
-<td><a href="readings/Correlation%20chapter4%20Revelle.pdf">Revelle
-Chapter 4</a></td>
+<td><a href="readings/Correlation%20chapter4%20Revelle.pdf">Revelle Chapter 4</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -480,9 +470,7 @@ Chapter 4</a></td>
 <tr class="even">
 <td>2</td>
 <td>1/17</td>
-<td>Univariate regression (equation, <span
-class="math inline">\(\hat{Y}\)</span>, <span
-class="math inline">\(e\)</span>)</td>
+<td>Univariate regression (equation, <span class="math inline">\(\hat{Y}\)</span>, <span class="math inline">\(e\)</span>)</td>
 <td>LSR Chapter 15</td>
 <td>Quiz 1</td>
 <td></td>
@@ -579,8 +567,7 @@ class="math inline">\(e\)</span>)</td>
 <td>6</td>
 <td>2/14</td>
 <td>Finish ANOVA; start assumptions</td>
-<td><a href="readings/Lynam-2006-Assessment.pdf">Lynam et al
-(2006)</a></td>
+<td><a href="readings/Lynam-2006-Assessment.pdf">Lynam et al (2006)</a></td>
 <td>Quiz 5</td>
 <td></td>
 </tr>
@@ -604,11 +591,7 @@ class="math inline">\(e\)</span>)</td>
 <td>7</td>
 <td>2/21</td>
 <td>Causal models</td>
-<td><a
-href="https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629">Rohrer
-(2018)</a>, <a
-href="http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/">Rohrer
-(2017)</a></td>
+<td><a href="https://journals.sagepub.com/doi/pdf/10.1177/2515245917745629">Rohrer (2018)</a>, <a href="http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobody-ever-mentions-conditioning-on-a-collider/">Rohrer (2017)</a></td>
 <td>Quiz 6</td>
 <td></td>
 </tr>
@@ -664,8 +647,7 @@ href="http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobo
 <td>9</td>
 <td>3/07</td>
 <td>Factorial ANOVA</td>
-<td><a href="readings/McClelland-1993-Psychol%20Bull.pdf">McClelland
-&amp; Judd (1993)</a></td>
+<td><a href="readings/McClelland-1993-Psychol%20Bull.pdf">McClelland &amp; Judd (1993)</a></td>
 <td>Quiz 8</td>
 <td></td>
 </tr>
@@ -689,8 +671,7 @@ href="http://www.the100.ci/2017/03/14/that-one-weird-third-variable-problem-nobo
 <td>10</td>
 <td>3/14</td>
 <td>Polynomials and Bootstrapping</td>
-<td><a href="readings/Yarkoni%20Westfall%20PPS.pdf">Yarkoni &amp;
-Westfall (2017)</a></td>
+<td><a href="readings/Yarkoni%20Westfall%20PPS.pdf">Yarkoni &amp; Westfall (2017)</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -720,8 +701,7 @@ Westfall (2017)</a></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Final:</strong> The final project is due at 9am on March
-24th.</p>
+<p><strong>Final:</strong> The final project is due at 9am on March 24th.</p>
 </div>
 <div id="graded-materials" class="section level1">
 <h1>Graded materials</h1>
@@ -733,116 +713,35 @@ Westfall (2017)</a></td>
 </ul>
 <div id="quizzes" class="section level2">
 <h2>Quizzes</h2>
-<p>Quizzes are intended to assess your understanding of the theoretical
-principles underlying statistics. There will be a quiz every Tuesday,
-with the exception of the first week, when there will be no quiz, and
-the final week when the quiz will be on Thursday.</p>
-<p>Quizzes may be resubmitted with corrections and receive full credit.
-To resubmit a quiz, write your corrections on the back of the quiz; for
-each question that was answered incorrectly, identify the correct
-answer, and explain why this is the correct answer. Only if the
-explanation sufficiently conveys an understanding of the theoretical
-principles will credit be given. There are no limits to the number of
-times a quiz may be resubmitted.</p>
-<p>If you are absent the day of a quiz, you can take a make-up quiz
-after the next lecture you attend.</p>
+<p>Quizzes are intended to assess your understanding of the theoretical principles underlying statistics. There will be a quiz every Tuesday, with the exception of the first week, when there will be no quiz, and the final week when the quiz will be on Thursday.</p>
+<p>Quizzes may be resubmitted with corrections and receive full credit. To resubmit a quiz, write your corrections on the back of the quiz; for each question that was answered incorrectly, identify the correct answer, and explain why this is the correct answer. Only if the explanation sufficiently conveys an understanding of the theoretical principles will credit be given. There are no limits to the number of times a quiz may be resubmitted.</p>
+<p>If you are absent the day of a quiz, you can take a make-up quiz after the next lecture you attend.</p>
 </div>
 <div id="homework-assignments" class="section level2">
 <h2>Homework assignments</h2>
-<p>Homework assignments are intended to gauge your ability to apply the
-topics covered in class to the practice of data analysis. Homework
-assignments are to be done using R and RMarkdown; completed assignments
-should be submitted through Canvas, and students must attach both the
-.Rmd file and the compiled HTML file.</p>
-<p>Homework assignments are due at the time the first lab starts on the
-day the assignment is listed. Homework assignments may be resubmitted
-with corrections and receive full credit. Please note, however, that
-corrections can only be made to problems that were answered at initial
-submission. There is no limit to the number of times a homework
-assignment may be resubmitted.</p>
-<p>Late assignments will receive 50% of the points earned. For example,
-if you correctly answer questions totalling 28 points, the assignment
-will receive 14 points. If you resubmit this assignment with corrected
-answers (a total of 30 points), the assignment will receive 15 points.
-Late assignments will be accepted only within 7 days of the original
-deadline.</p>
-<p>You may discuss homework assignments with your classmates; however,
-it is important that you complete each assignment on your own and do not
-simply copy someone else’s code. If I believe one student has copied
-another’s work, both students will receive a 0 on the homework
-assignment and will not be allowed to resubmit the assignment for
-points.</p>
+<p>Homework assignments are intended to gauge your ability to apply the topics covered in class to the practice of data analysis. Homework assignments are to be done using R and RMarkdown; completed assignments should be submitted through Canvas, and students must attach both the .Rmd file and the compiled HTML file.</p>
+<p>Homework assignments are due at the time the first lab starts on the day the assignment is listed. Homework assignments may be resubmitted with corrections and receive full credit. Please note, however, that corrections can only be made to problems that were answered at initial submission. There is no limit to the number of times a homework assignment may be resubmitted.</p>
+<p>Late assignments will receive 50% of the points earned. For example, if you correctly answer questions totalling 28 points, the assignment will receive 14 points. If you resubmit this assignment with corrected answers (a total of 30 points), the assignment will receive 15 points. Late assignments will be accepted only within 7 days of the original deadline.</p>
+<p>You may discuss homework assignments with your classmates; however, it is important that you complete each assignment on your own and do not simply copy someone else’s code. If I believe one student has copied another’s work, both students will receive a 0 on the homework assignment and will not be allowed to resubmit the assignment for points.</p>
 </div>
 <div id="final-project" class="section level2">
 <h2>Final project</h2>
-<p>The final project is due at 9am on the last day of finals week (March
-24). Please note that, unlike quizzes and homeworks, there will not be
-an opportunity to re-attempt this assignment. Instructions for the final
-project can be <a
-href="https://uopsych.github.io/psy612/final.html">found here</a>.</p>
+<p>The final project is due at 9am on the last day of finals week (March 24). Please note that, unlike quizzes and homeworks, there will not be an opportunity to re-attempt this assignment. Instructions for the final project can be <a href="https://uopsych.github.io/psy612/final.html">found here</a>.</p>
 </div>
 </div>
 <div id="materials-needed" class="section level1">
 <h1>Materials needed</h1>
-<p>We will be using R for all data wrangling, visualization, and
-analysis. You may not use another statistical program in this course.
-Students must have the latest version of R, which can be downloaded <a
-href="https://ftp.osuosl.org/pub/cran/">here</a>. It is strongly
-recommended that students also download the RStudio GUI, available <a
-href="https://www.rstudio.com/products/rstudio/download/#download">here</a>.
-Both software programs are free.</p>
-<p>You’ll also need to download and install some version of LaTeX. There
-are different software programs for different operating systems – you
-can find links to download them all <a
-href="https://www.latex-project.org/get/">here</a>.</p>
+<p>We will be using R for all data wrangling, visualization, and analysis. You may not use another statistical program in this course. Students must have the latest version of R, which can be downloaded <a href="https://ftp.osuosl.org/pub/cran/">here</a>. It is strongly recommended that students also download the RStudio GUI, available <a href="https://www.rstudio.com/products/rstudio/download/#download">here</a>. Both software programs are free.</p>
+<p>You’ll also need to download and install some version of LaTeX. There are different software programs for different operating systems – you can find links to download them all <a href="https://www.latex-project.org/get/">here</a>.</p>
 <p>All reading assignments will be posted online.</p>
 </div>
 <div id="policies" class="section level1">
 <h1>Policies</h1>
-<p><strong>Cheating and plagiarism.</strong> Any student caught cheating
-on an assignment, quiz, or exam will receive a 0 on that assignment.
-Frankly, you’re in graduate school, and the purpose of work is to create
-opportunities to learn and improve. Even if cheating helps you in the
-short term, you’ll quickly find yourself ill-prepared for the career you
-have chosen. If you find yourself tempted to cheat, please come speak to
-Dr. Weston about an extension and developing tools to improve your
-success.</p>
-<p><strong>Students with special needs.</strong> The UO works to create
-inclusive learning environments. If there are aspects of the instruction
-or design of this course that result in disability-related barriers to
-your participation, please notify me as soon as possible. You may also
-wish to contact Disability Services in 164 Oregon Hall at 541-346-1155
-or <a href="mailto:disabsrv@uoregon.edu">disabsrv@uoregon.edu</a>.</p>
-<p><strong>If you are experiencing harassment.</strong> I am an
-Assisting Employee under the University’s Prohibited Discrimination and
-Retaliation Policy. As an Assisting Employee, I will direct students who
-disclose prohibited discrimination and harassment, including sexual
-harassment or violence, to resources that can help and will
-<strong>only</strong> report the information shared to the university
-administration <em>if the student requests</em> that the information be
-reported (unless someone is in imminent risk of serious harm or a
-minor).</p>
-<p>Students who have experienced sexual assault, relationship violence,
-sex or gender-based bullying, stalking, and/or sexual harassment may
-seek resources and help at <a
-href="https://safe.uoregon.edu/">safe.uoregon.edu</a>. To get help by
-phone, students may also call either the non-confidential Title IX
-Coordinator/OICRC at 541-346-3123 or the Dean of Students Office 24-hour
-hotline at 541-346-SAFE [7244]. Students experiencing all forms of
-prohibited discrimination or harassment may find information and
-resources at investigations.uoregon.edu or contact the non-confidential
-Title IX Coordinator/OICRC at 541-346-3123 or the Dean of Students
-Office at 541-346-3216 for help. Specific details about confidentiality
-of information and reporting obligations of employees can be found at <a
-href="investigations.uoregon.edu/how-get-support">investigations.uoregon.edu/how-get-support</a>.</p>
-<p>Mandatory Reporting of Child Abuse. UO employees, including faculty,
-staff, and GEs, are mandatory reporters of child abuse. This statement
-is to advise you that your disclosure of information about child abuse
-to a UO employee may trigger the UO employee’s duty to report that
-information to the designated authorities. Please refer to the following
-link for detailed information about mandatory reporting: <a
-href="https://hr.uoregon.edu/policies-leaves/general-information/mandatory-reporting-child-abuse-and-neglect">Mandatory
-Reporting of Child Abuse and Neglect</a>.</p>
+<p><strong>Cheating and plagiarism.</strong> Any student caught cheating on an assignment, quiz, or exam will receive a 0 on that assignment. Frankly, you’re in graduate school, and the purpose of work is to create opportunities to learn and improve. Even if cheating helps you in the short term, you’ll quickly find yourself ill-prepared for the career you have chosen. If you find yourself tempted to cheat, please come speak to Dr. Weston about an extension and developing tools to improve your success.</p>
+<p><strong>Students with special needs.</strong> The UO works to create inclusive learning environments. If there are aspects of the instruction or design of this course that result in disability-related barriers to your participation, please notify me as soon as possible. You may also wish to contact Disability Services in 164 Oregon Hall at 541-346-1155 or <a href="mailto:disabsrv@uoregon.edu">disabsrv@uoregon.edu</a>.</p>
+<p><strong>If you are experiencing harassment.</strong> I am an Assisting Employee under the University’s Prohibited Discrimination and Retaliation Policy. As an Assisting Employee, I will direct students who disclose prohibited discrimination and harassment, including sexual harassment or violence, to resources that can help and will <strong>only</strong> report the information shared to the university administration <em>if the student requests</em> that the information be reported (unless someone is in imminent risk of serious harm or a minor).</p>
+<p>Students who have experienced sexual assault, relationship violence, sex or gender-based bullying, stalking, and/or sexual harassment may seek resources and help at <a href="https://safe.uoregon.edu/">safe.uoregon.edu</a>. To get help by phone, students may also call either the non-confidential Title IX Coordinator/OICRC at 541-346-3123 or the Dean of Students Office 24-hour hotline at 541-346-SAFE [7244]. Students experiencing all forms of prohibited discrimination or harassment may find information and resources at investigations.uoregon.edu or contact the non-confidential Title IX Coordinator/OICRC at 541-346-3123 or the Dean of Students Office at 541-346-3216 for help. Specific details about confidentiality of information and reporting obligations of employees can be found at <a href="investigations.uoregon.edu/how-get-support">investigations.uoregon.edu/how-get-support</a>.</p>
+<p>Mandatory Reporting of Child Abuse. UO employees, including faculty, staff, and GEs, are mandatory reporters of child abuse. This statement is to advise you that your disclosure of information about child abuse to a UO employee may trigger the UO employee’s duty to report that information to the designated authorities. Please refer to the following link for detailed information about mandatory reporting: <a href="https://hr.uoregon.edu/policies-leaves/general-information/mandatory-reporting-child-abuse-and-neglect">Mandatory Reporting of Child Abuse and Neglect</a>.</p>
 </div>
 
 
