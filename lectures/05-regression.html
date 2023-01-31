@@ -865,74 +865,75 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <span id="cb31-15"><a href="#cb31-15"></a></span>
 <span id="cb31-16"><a href="#cb31-16"></a><span class="fu">animate</span>(p, <span class="at">fps =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output-display">
-<p><img data-src="05-regression_files/figure-revealjs/unnamed-chunk-21-1.gif"></p>
+
 </div>
+<img data-src="05-regression_files/figure-revealjs/unnamed-chunk-21-1.gif" class="r-stretch"></section>
+<section id="confidence-bands-for-regression-line" class="slide level2">
+<h2>Confidence Bands for regression line</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb32-2"><a href="#cb32-2"></a></span>
+<span id="cb32-3"><a href="#cb32-3"></a>px<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb32-4"><a href="#cb32-4"></a>pe<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb32-5"><a href="#cb32-5"></a>py<span class="fl">.1</span> <span class="ot">&lt;-</span> .<span class="dv">5</span> <span class="sc">+</span> .<span class="dv">55</span> <span class="sc">*</span> px<span class="fl">.1</span> <span class="sc">+</span> pe<span class="fl">.1</span></span>
+<span id="cb32-6"><a href="#cb32-6"></a>pd<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(px<span class="fl">.1</span>,py<span class="fl">.1</span>)</span>
+<span id="cb32-7"><a href="#cb32-7"></a></span>
+<span id="cb32-8"><a href="#cb32-8"></a>px<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb32-9"><a href="#cb32-9"></a>pe<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb32-10"><a href="#cb32-10"></a>py<span class="fl">.2</span> <span class="ot">&lt;-</span> .<span class="dv">5</span> <span class="sc">+</span> .<span class="dv">55</span> <span class="sc">*</span> px<span class="fl">.2</span> <span class="sc">+</span> pe<span class="fl">.2</span></span>
+<span id="cb32-11"><a href="#cb32-11"></a>pd<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(px<span class="fl">.2</span>,py<span class="fl">.2</span>)</span>
+<span id="cb32-12"><a href="#cb32-12"></a></span>
+<span id="cb32-13"><a href="#cb32-13"></a></span>
+<span id="cb32-14"><a href="#cb32-14"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pd<span class="fl">.1</span>, <span class="fu">aes</span>(<span class="at">x =</span> px<span class="fl">.1</span>,<span class="at">y =</span>  py<span class="fl">.1</span>)) <span class="sc">+</span></span>
+<span id="cb32-15"><a href="#cb32-15"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span>    </span>
+<span id="cb32-16"><a href="#cb32-16"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb32-17"><a href="#cb32-17"></a>   <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>))  <span class="sc">+</span></span>
+<span id="cb32-18"><a href="#cb32-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb32-19"><a href="#cb32-19"></a></span>
+<span id="cb32-20"><a href="#cb32-20"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pd<span class="fl">.2</span>, <span class="fu">aes</span>(<span class="at">x=</span>px<span class="fl">.2</span>, <span class="at">y=</span>py<span class="fl">.2</span>)) <span class="sc">+</span></span>
+<span id="cb32-21"><a href="#cb32-21"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span>    </span>
+<span id="cb32-22"><a href="#cb32-22"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb32-23"><a href="#cb32-23"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>))  <span class="sc">+</span></span>
+<span id="cb32-24"><a href="#cb32-24"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb32-25"><a href="#cb32-25"></a></span>
+<span id="cb32-26"><a href="#cb32-26"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb32-27"><a href="#cb32-27"></a><span class="fu">plot_grid</span>(p1, p2, <span class="at">ncol=</span><span class="dv">2</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"N = 1000"</span>, <span class="st">"N = 100"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
 </div>
-<table style="width:94%;">
-<colgroup>
-<col style="width: 94%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">## Confidence Bands for regression line</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">::: {.cell}</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">```{.r .cell-code code-fold=“true”} set.seed(123)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">px.1 &lt;- rnorm(1000, 0, 1) pe.1 &lt;- rnorm(1000, 0, 1) py.1 &lt;- .5 + .55 * px.1 + pe.1 pd.1 &lt;- data.frame(px.1,py.1)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">px.2 &lt;- rnorm(100, 0, 1) pe.2 &lt;- rnorm(100, 0, 1) py.2 &lt;- .5 + .55 * px.2 + pe.2 pd.2 &lt;- data.frame(px.2,py.2)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">p1 &lt;- ggplot(pd.1, aes(x = px.1,y = py.1)) + geom_point(alpha = .3) + geom_smooth(method = lm, fill = “blue”, alpha = .7) + scale_x_continuous(limits = c(-3, 3)) + scale_y_continuous(limits = c(-3, 3))</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">p2 &lt;- ggplot(pd.2, aes(x=px.2, y=py.2)) + geom_point(alpha = .3) + geom_smooth(method=lm, fill = “blue”, alpha = .7) + scale_x_continuous(limits = c(-3, 3)) + scale_y_continuous(limits = c(-3, 3))</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">library(cowplot) plot_grid(p1, p2, ncol=2, labels = c(“N = 1000”, “N = 100”)) ```</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">::: {.cell-output-display} <img data-src="05-regression_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"> ::: :::</td>
-</tr>
-</tbody>
-</table>
+<img data-src="05-regression_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
 <p>Compare mean estimate for self-perceived knowledge based on regression vs binning</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>p1 <span class="ot">=</span> <span class="fu">ggplot</span>(expertise, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion)) <span class="sc">+</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a>      <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
-<span id="cb32-3"><a href="#cb32-3"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,   <span class="co"># Add linear regression line</span></span>
-<span id="cb32-4"><a href="#cb32-4"></a>                <span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb32-5"><a href="#cb32-5"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
-<span id="cb32-6"><a href="#cb32-6"></a>p2 <span class="ot">=</span> expertise <span class="sc">%&gt;%</span></span>
-<span id="cb32-7"><a href="#cb32-7"></a>  <span class="fu">mutate</span>(<span class="at">self_perceived_knowledge =</span> <span class="fu">cut_interval</span>(self_perceived_knowledge, <span class="at">length =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb32-8"><a href="#cb32-8"></a>  <span class="fu">group_by</span>(self_perceived_knowledge) <span class="sc">%&gt;%</span></span>
-<span id="cb32-9"><a href="#cb32-9"></a>  <span class="fu">summarize</span>(<span class="at">m =</span> <span class="fu">mean</span>(overclaiming_proportion), </span>
-<span id="cb32-10"><a href="#cb32-10"></a>          <span class="at">s =</span> <span class="fu">sd</span>(overclaiming_proportion), </span>
-<span id="cb32-11"><a href="#cb32-11"></a>          <span class="at">n =</span> <span class="fu">n</span>(),</span>
-<span id="cb32-12"><a href="#cb32-12"></a>          <span class="at">se =</span> s<span class="sc">/</span><span class="fu">sqrt</span>(n),</span>
-<span id="cb32-13"><a href="#cb32-13"></a>          <span class="at">cv =</span> <span class="fu">qt</span>(<span class="at">p =</span> .<span class="dv">975</span>, <span class="at">df =</span> n<span class="dv">-2</span>),</span>
-<span id="cb32-14"><a href="#cb32-14"></a>          <span class="at">moe =</span> se<span class="sc">*</span>cv) <span class="sc">%&gt;%</span></span>
-<span id="cb32-15"><a href="#cb32-15"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> m)) <span class="sc">+</span></span>
-<span id="cb32-16"><a href="#cb32-16"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb32-17"><a href="#cb32-17"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> m<span class="sc">-</span>moe, <span class="at">ymax =</span> m<span class="sc">+</span>moe)) <span class="sc">+</span></span>
-<span id="cb32-18"><a href="#cb32-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"overclaiming_proportion"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
-<span id="cb32-19"><a href="#cb32-19"></a></span>
-<span id="cb32-20"><a href="#cb32-20"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p1, p2, <span class="at">align =</span> <span class="st">"v"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>p1 <span class="ot">=</span> <span class="fu">ggplot</span>(expertise, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion)) <span class="sc">+</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>      <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
+<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,   <span class="co"># Add linear regression line</span></span>
+<span id="cb33-4"><a href="#cb33-4"></a>                <span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb33-5"><a href="#cb33-5"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
+<span id="cb33-6"><a href="#cb33-6"></a>p2 <span class="ot">=</span> expertise <span class="sc">%&gt;%</span></span>
+<span id="cb33-7"><a href="#cb33-7"></a>  <span class="fu">mutate</span>(<span class="at">self_perceived_knowledge =</span> <span class="fu">cut_interval</span>(self_perceived_knowledge, <span class="at">length =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb33-8"><a href="#cb33-8"></a>  <span class="fu">group_by</span>(self_perceived_knowledge) <span class="sc">%&gt;%</span></span>
+<span id="cb33-9"><a href="#cb33-9"></a>  <span class="fu">summarize</span>(<span class="at">m =</span> <span class="fu">mean</span>(overclaiming_proportion), </span>
+<span id="cb33-10"><a href="#cb33-10"></a>          <span class="at">s =</span> <span class="fu">sd</span>(overclaiming_proportion), </span>
+<span id="cb33-11"><a href="#cb33-11"></a>          <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb33-12"><a href="#cb33-12"></a>          <span class="at">se =</span> s<span class="sc">/</span><span class="fu">sqrt</span>(n),</span>
+<span id="cb33-13"><a href="#cb33-13"></a>          <span class="at">cv =</span> <span class="fu">qt</span>(<span class="at">p =</span> .<span class="dv">975</span>, <span class="at">df =</span> n<span class="dv">-2</span>),</span>
+<span id="cb33-14"><a href="#cb33-14"></a>          <span class="at">moe =</span> se<span class="sc">*</span>cv) <span class="sc">%&gt;%</span></span>
+<span id="cb33-15"><a href="#cb33-15"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> self_perceived_knowledge, <span class="at">y =</span> m)) <span class="sc">+</span></span>
+<span id="cb33-16"><a href="#cb33-16"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb33-17"><a href="#cb33-17"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> m<span class="sc">-</span>moe, <span class="at">ymax =</span> m<span class="sc">+</span>moe)) <span class="sc">+</span></span>
+<span id="cb33-18"><a href="#cb33-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"overclaiming_proportion"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">12</span>, <span class="fl">1.1</span>))</span>
+<span id="cb33-19"><a href="#cb33-19"></a></span>
+<span id="cb33-20"><a href="#cb33-20"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p1, p2, <span class="at">align =</span> <span class="st">"v"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output-display">
-<p><img data-src="05-regression_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
+
 </div>
-</div>
-</section>
+<img data-src="05-regression_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <h3 id="confidence-bands">Confidence Bands</h3>
@@ -952,16 +953,16 @@ self_perceived_knowledge  0.07110265  0.119532290</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>temp_var <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit<span class="fl">.1</span>, <span class="at">interval=</span><span class="st">"prediction"</span>)</span>
-<span id="cb33-2"><a href="#cb33-2"></a>new_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(expertise, temp_var)</span>
-<span id="cb33-3"><a href="#cb33-3"></a>pred <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(new_df, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion))<span class="sc">+</span></span>
-<span id="cb33-4"><a href="#cb33-4"></a>       <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
-<span id="cb33-5"><a href="#cb33-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,<span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb33-6"><a href="#cb33-6"></a> <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr), </span>
-<span id="cb33-7"><a href="#cb33-7"></a>               <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb33-8"><a href="#cb33-8"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
-<span id="cb33-9"><a href="#cb33-9"></a></span>
-<span id="cb33-10"><a href="#cb33-10"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>temp_var <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit<span class="fl">.1</span>, <span class="at">interval=</span><span class="st">"prediction"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2"></a>new_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(expertise, temp_var)</span>
+<span id="cb34-3"><a href="#cb34-3"></a>pred <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(new_df, <span class="fu">aes</span>(<span class="at">x=</span>self_perceived_knowledge, <span class="at">y=</span>overclaiming_proportion))<span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4"></a>       <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
+<span id="cb34-5"><a href="#cb34-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm,<span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6"></a> <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr), </span>
+<span id="cb34-7"><a href="#cb34-7"></a>               <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb34-8"><a href="#cb34-8"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb34-9"><a href="#cb34-9"></a></span>
+<span id="cb34-10"><a href="#cb34-10"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>

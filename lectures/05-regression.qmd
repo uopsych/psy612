@@ -404,6 +404,7 @@ animate(p, fps = 3)
 ```
 
 -------------------------------------------------------------------
+
 ## Confidence Bands for regression line
 
 ```{r, message=FALSE, warning = F, fig.width = 10}

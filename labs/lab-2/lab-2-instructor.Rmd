@@ -11,6 +11,13 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r, eval = F, echo = F}
+# notes for the next GE
+# this is a very packed lab. maybe some of this can be moved to lab 3, which doesn't need to recreate the lecture material as much as it does
+
+```
+
+
 You will need the Rmd file for today's lab. You can download it [here](https://uopsych.github.io/psy612/labs/lab-2/lab-2.Rmd).
 
 # Purpose

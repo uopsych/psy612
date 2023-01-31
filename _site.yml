@@ -19,6 +19,10 @@ navbar:
         href: "lectures/05-regression.html"
       - text: "06-General Linear Model"
         href: "lectures/06-glm.html"
+      - text: "07-Partial Correlations"
+        href: "lectures/07-partial.html"
+      - text: "08-Multiple Regression"
+        href: "lectures/08-m_regression.html"
     - text: Labs
       menu:
       - text: "Lab 1"

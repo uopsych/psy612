@@ -1,0 +1,582 @@
+---
+title: "Multiple regression"
+subtitle: "Part 1"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+```{r, echo = F, results='hide',warning=FALSE,message=FALSE}
+options(scipen = 999)
+
+library(knitr)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(message = FALSE, 
+                      warning = FALSE) # suppress messages
+```
+
+## Last time
+
+- Semi-partial and partial correlations
+
+## Today
+
+- Introduction to multiple regression
+
+```{r}
+library(tidyverse)
+```
+
+-------------------------------------------------------------------
+
+## Regression equation
+
+$$\large \hat{Y} = b_0 + b_1X_1 + b_2X_2 + \dots+b_kX_k$$
+Regression coefficients are "partial" regression coefficients  
+
+:::: {.columns}
+::: {.column width="50%"}
+
+- predicted change in $Y$ for a 1 unit change in $X$, <span style="color:purple">holding all other predictors constant</span>
+  
+:::
+::: {.column width="50%"}
+
+- similar in interpretation to semi-partial correlation -- represents contribution to all of Y from unique part of each $X$
+
+:::
+::::
+
+- same statistical test as partial correlation -- unique variance of $Y$ explained by unique variance of each $X$
+  
+
+-------------------------------------------------------------------
+
+## example
+
+```{r, message=FALSE}
+library(here); library(tidyverse)
+support_df = read.csv(here("data/support.csv")) 
+library(psych)
+describe(support_df, fast = T)
+round(cor(support_df),2)
+```
+
+-------------------------------------------------------------------
+
+## example
+
+```{r, output.lines = c(9:13)}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+
+```{r}
+# partial correlation tests
+with(support_df, ppcor::pcor.test(relationship, receive_support, give_support))
+with(support_df, ppcor::pcor.test(relationship, give_support, receive_support))
+```
+
+::: notes
+
+Note that significance of partial effects is identital. 
+
+If a univariate regression is estimating the best-fit line, what is this estimating?
+
+:::
+
+-------------------------------------------------------------------
+
+## Visualizing multiple regression
+
+```{r}
+library(visreg)
+
+visreg2d(mr.model,"receive_support", "give_support", plot.type = "persp")
+
+```
+
+-------------------------------------------------------------------
+
+## Calculating coefficients 
+
+Just like with univariate regression, we calculate the OLS solution. As a reminder, this calculation will yield the estimate that reduces the sum of the squared deviations from the line:
+
+:::: {.columns}
+::: {.column width="50%"}
+
+### Unstandardized
+$$\large \hat{Y} = b_0 + b_{1}X1 + b_{2}X_2$$
+$$\large \text{minimize} \sum (Y-\hat{Y})^2 $$
+
+:::
+::: {.column width="50%"}
+
+
+### Standardized
+$$\large \hat{Z}_{Y} = b_{1}^*Z_{X1} + b_{2}^*Z_{X2}$$
+$$\large \text{minimize} \sum (z_{Y}-\hat{z}_{Y})^2$$
+
+:::
+::::
+
+
+-------------------------------------------------------------------
+
+## Calculating the standardized regression coefficient 
+
+$$b_{1}^* = \frac{r_{Y1}-r_{Y2}r_{12}}{1-r_{12}^2}$$
+
+$$b_{2}^* = \frac{r_{Y2}-r_{Y1}r_{12}}{1-r_{12}^2}$$
+
+
+
+-------------------------------------------------------------------
+
+## Relationships between partial, semi- and $b*$  
+
+(Standardized) Regression coefficients, partial correlations, and semi-partial correlations are all ways to represent the relationship between two variables while taking into account a third (or more!) variables. 
+
+. . . 
+
+Each is a standardized effect, meaning the effect size is calculated in standardized units, bounded by -1 and 1[^*]. This means they can be compared across studies, metrics, etc.
+
+
+[^*]: Actually, standardized regression coefficients are not bounded by -1 and 1, but it's rare to see values this large, and [usually indicative of some multicollinearity](http://www.statmodel.com/download/Joreskog.pdf).
+
+-------------------------------------------------------------------
+
+## Relationships between partial, semi- and $b*$  
+
+Note, however, that the calculations differ between the three effect sizes. These effect sizes are not synonymous and often yield different answers. 
+
+  - if predictors are not correlated, $r$,  $sr$ $(r_{Y(1.2)})$ and $b*$ are equal 
+
+
+-------------------------------------------------------------------
+
+**Standardized multiple regression coefficient,** $b^*$
+
+$$\large \frac{r_{Y1}-r_{Y2}r_{12}}{1-r_{12}^2}$$
+
+:::: {.columns}
+::: {.column width="50%"}
+
+**Semi-partial correlation,** $r_{y(1.2)}$
+$$\large \frac{r_{Y1}-r_{Y2}r_{Y12} }{\sqrt{1-r_{12}^2}}$$
+
+:::
+::: {.column width="50%"}
+
+**Partial correlation,** $r_{y1.2}$
+$$\large \frac{r_{Y1}-r_{Y2}r_{{12}}}{\sqrt{1-r^2_{Y2}}\sqrt{1-r^2_{12}}}$$
+
+:::
+::::
+
+::: notes
+
+Regression coefficient is most similar to the semi-partial correlation coefficient. 
+:::
+
+-------------------------------------------------------------------
+
+See here how the estimates differ from one another: 
+
+```{r}
+support_df = support_df %>%
+  mutate(z_give_support = scale(give_support),
+         z_receive_support = scale(receive_support),
+         z_relationship = scale(relationship))
+
+mod0 = lm(z_relationship ~ z_give_support + z_receive_support, 
+          data = support_df)
+
+#extract partial slope for give support
+round(coef(mod0)["z_give_support"],3)
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r, message=F, warning = F, echo = 2:4}
+library(ppcor)
+spcor.test(x = support_df$relationship, 
+           y = support_df$give_support, 
+           z = support_df$receive_support)$estimate
+```
+
+
+:::
+::: {.column width="50%"}
+
+```{r, message=F, warning = F, echo = 1:3}
+pcor.test(x = support_df$relationship, 
+          y = support_df$give_support, 
+          z = support_df$receive_support)$estimate
+```
+
+:::
+::::
+
+
+
+-------------------------------------------------------------------
+    
+## Original metric
+
+$$b_{1} = b_{1}^*\frac{s_{Y}}{s_{X1}}$$
+
+$$b_{1}^* = b_{1}\frac{s_{X1}}{s_{Y}}$$
+
+### Intercept
+
+$$b_{0} = \bar{Y} - b_{1}\bar{X_{1}} - b_{2}\bar{X_{2}}$$
+
+-------------------------------------------------------------------
+
+```{r, output.lines = c(1:11)}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+::: notes
+
+Highlight intercept value: what does this mean?
+
+:::
+
+-------------------------------------------------------------------
+
+
+```{r, output.lines = c(1:13)}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+::: notes
+
+Next, how to interpret those slope values? 
+
+"Controlling for"
+
+:::
+
+-------------------------------------------------------------------
+
+## "Controlling for"
+
+![](images/control.gif)
+
+Taken from [@nickchk](https://twitter.com/nickchk)
+
+-------------------------------------------------------------------
+
+## Compare the slopes
+
+```{r, output.lines = c(9:12), highlight.output = 5}
+un.model <- lm(relationship ~ give_support,           data = support_df)
+summary(un.model)
+```
+```{r, output.lines = c(9:13), highlight.output = 6}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+library(sjPlot)
+plot_model(un.model, type = "pred", terms = c("give_support")) + ylim(4.5, 7.5)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+library(sjPlot)
+plot_model(mr.model, type = "pred", terms = c("give_support")) + ylim(4.5, 7.5)
+```
+
+-------------------------------------------------------------------
+
+```{r, echo = F}
+library(broom)
+fitted_un = augment(un.model) %>% mutate(model = "univariate")
+fitted_mr = augment(mr.model) %>% mutate(model = "multiple")
+
+fitted_un %>% full_join(fitted_mr) %>% 
+  ggplot(aes(x = give_support, y = relationship)) +
+  geom_point(alpha = .3) +
+  #geom_point(aes(y = .fitted, color = model)) +
+  ggpubr::theme_pubclean()
+```
+
+-------------------------------------------------------------------
+
+```{r, echo = F}
+fitted_un %>% full_join(fitted_mr) %>% 
+  ggplot(aes(x = give_support, y = relationship)) +
+  geom_point(alpha = .3) +
+  geom_point(aes(y = .fitted, color = model)) +
+  ggpubr::theme_pubclean()
+```
+
+-------------------------------------------------------------------
+
+### Predictions: univariate model
+
+```{r, echo = F}
+newdf = expand.grid( #every possible combination
+  give_support = seq(
+    min(support_df$give_support),
+    max(support_df$give_support),
+    length = 100),
+  receive_support = c(5, 7, 9)
+)
+
+newdf$pred_un = predict(un.model, newdata = newdf)
+newdf$pred_mr = predict(mr.model, newdata = newdf)
+
+newdf = mutate(newdf, receive_support = paste("receive_support =", receive_support))
+
+newdf %>% ggplot(aes(x = give_support, y = pred_un)) +
+  geom_line() +
+  facet_wrap(~receive_support) +
+  ylim(4.5, 7.5) +
+  labs(x = "Give Support", y = "Expected Relationship Quality") +
+  theme_bw()
+```
+
+-------------------------------------------------------------------
+
+### Predictions: multiple regression model
+
+```{r, echo = F}
+
+newdf %>% ggplot(aes(x = give_support, y = pred_mr)) +
+  geom_line() +
+  facet_wrap(~receive_support) +
+  ylim(4.5, 7.5) +
+  labs(x = "Give Support", y = "Expected Relationship Quality") +
+  theme_bw()
+```
+
+-------------------------------------------------------------------
+
+```{r}
+plot_model(mr.model, type = "pred", 
+           terms = c("give_support", "receive_support[meansd]"))
+```
+
+-------------------------------------------------------------------
+
+Even though the slope of one predictor, `give_support`, is less steep (accounting for less variance), the model overall captures more of the variability in Y (relationship quality).
+
+```{r, output.lines = 16:18}
+un.model <- lm(relationship ~ give_support, data = support_df)
+summary(un.model)
+```
+
+```{r, output.lines = 17:19}
+mr.model <- lm(relationship ~ give_support + receive_support, data = support_df)
+summary(mr.model)
+```
+
+-------------------------------------------------------------------
+
+## Estimating model fit
+
+```{r, highlight.output = 18}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+
+-------------------------------------------------------------------
+
+```{r}
+library(broom); library(scales)
+support_df1 = augment(mr.model)
+support_df1 %>%
+  ggplot(aes(x = relationship, y = .fitted)) + geom_point() + geom_hline(aes(yintercept = mean(relationship), color = "bar(Y)")) + geom_smooth(method = "lm", aes(color = "R[bar(Y)][Y]")) + scale_x_continuous("Y (relationship)") + scale_color_discrete(labels = parse_format()) + scale_y_continuous(expression(hat(Y))) + theme_bw(base_size = 20)
+```
+
+
+-------------------------------------------------------------------
+
+## Multiple correlation, R
+
+$$\large \hat{Y} = b_{0} + b_{1}X_{1} + b_{2}X_{2}$$
+
+
+- $\hat{Y}$ is a linear combination of Xs
+- $r_{Y\hat{Y}}$ = multiple correlation = R
+
+. . . 
+
+$$\large R = \sqrt{b_{1}^*r_{Y1} + b_{2}^*r_{Y2}}$$
+$$\large R^2 = {b_{1}^*r_{Y1} + b_{2}^*r_{Y2}}$$
+
+-------------------------------------------------------------------
+
+![](images/venn/Slide7.jpeg)
+
+-------------------------------------------------------------------
+
+![](images/venn/Slide8.jpeg)
+
+-------------------------------------------------------------------
+
+## Decomposing sums of squares
+
+We haven't changed our method of decomposing variance from the univariate model
+
+$$\Large \frac{SS_{regression}}{SS_{Y}} = R^2$$
+$$\Large {SS_{regression}} = R^2({SS_{Y})}$$
+
+
+
+$$\Large {SS_{residual}} = (1- R^2){SS_{Y}}$$
+  
+-------------------------------------------------------------------
+
+## significance tests
+
+- $R^2$ (omnibus)  
+- Regression Coefficients  
+- Increments to $R^2$  
+    
+-------------------------------------------------------------------
+
+## R-squared, $R^2$
+
+
+- Same interpretation as before  
+
+- Adding predictors into your model will increase $R^2$ – regardless of whether or not the predictor is significantly correlated with Y.
+
+  - Think back to sampling error. If the population correlation, $\rho$, is 0, will your sample estimate always be 0? 
+
+- Adjusted/Shrunken $R^2$ takes into account the number of predictors in your model  
+
+-------------------------------------------------------------------
+
+## Adjusted R-squared, $\text{Adj } R^2$
+
+$$\large R_{A}^2 = 1 - (1 -R^2)\frac{n-1}{n-p-1}$$
+
+- What happens if you add many IV's to your model that are uncorrelated with your DV?
+
+-------------------------------------------------------------------
+
+## Adjusted R-squared, $\text{Adj } R^2$
+
+$$\large R_{A}^2 = 1 - (1 -R^2)\frac{n-1}{n-p-1}$$
+
+- What happens as you add more covariates to your model that are highly correlated with your key predictor, X?
+
+. . . 
+
+$$b_{1}^* = \frac{r_{Y1}-r_{Y2}r_{12}}{1-r_{12}^2}$$
+
+
+-------------------------------------------------------------------
+
+## ANOVA
+
+```{r, highlight.output = 19}
+summary(mr.model)
+```
+
+-------------------------------------------------------------------
+
+## ANOVA
+
+The omnibus test uses all SS associated with predictors.
+
+```{r, highlight.output = 5:6}
+anova(mr.model)
+```
+```{r, echo = F}
+aov_mod = anova(mr.model)
+ss_model = sum(aov_mod$`Sum Sq`[1:2])
+ms_model = ss_model/2
+Fstat = ms_model/aov_mod$`Mean Sq`[3]
+```
+
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$SS_{\text{model}} = `r round(ss_model,2)`$$
+$$MS_{\text{model}} = \frac{SS_{\text{model}}}{df_{\text{model}}} = `r round(ms_model,2)`$$
+:::
+::: {.column width="50%"}
+
+$$F_{\text{model}} = \frac{MS_{\text{model}}}{MS_{\text{residual}}} = `r round(Fstat,2)`$$
+
+:::
+::::
+
+
+
+-------------------------------------------------------------------
+
+## ANOVA
+
+
+
+The omnibus test uses all SS associated with predictors.
+
+```{r, highlight.output = 5:6}
+anova(mr.model)
+```
+
+<span style="font-size:80%">Note that the _p_-values in this table do NOT match the _p_-values in the regression summary table. For the time being, just know that, in a multiple regression framework, you should use the `summary()` output to interpret the unique contribution of predictors, not the `anova()` output. We'll return to these calculations later in the term.</span>
+
+-------------------------------------------------------------------
+
+```{r, output.lines = 12:13}
+summary(mr.model)
+```
+
+-------------------------------------------------------------------
+
+## Next time...
+
+Standard errors of regression coefficients 
+
+Model comparisons
+
+Categorical predictors
