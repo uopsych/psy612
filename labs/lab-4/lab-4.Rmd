@@ -44,7 +44,8 @@ data <- import(file     = paste("https://raw.githubusercontent.com",
   
 
 # look at the data
-data
+str(data)
+head(data)
 ```
 
 # Univariate Regression
