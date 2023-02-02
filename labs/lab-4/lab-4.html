@@ -60,6 +60,7 @@ if (window.hljs) {
 
 
 
+
 <style type="text/css">
 .main-container {
   max-width: 940px;
@@ -80,6 +81,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -195,7 +199,8 @@ data &lt;- import(file     = paste(&quot;https://raw.githubusercontent.com&quot;
   
 
 # look at the data
-data</code></pre>
+str(data)
+head(data)</code></pre>
 <div id="univariate-regression" class="section level1">
 <h1>Univariate Regression</h1>
 <p>Let’s start with inspecting the relationship between <code>age</code> and <code>weight</code>.</p>
@@ -461,8 +466,6 @@ r_squared</code></pre>
 <pre class="r"><code>sqrt(model_comparison$F[2])</code></pre>
 <p>And also notice the correspondence in the p-values.</p>
 <pre class="r"><code>model_comparison$`Pr(&gt;F)`[2]</code></pre>
-<p>Finally, we may also want confidence intervals around our regression coefficients.</p>
-<pre class="r"><code>confint(model_2)</code></pre>
 </div>
 </div>
 <div id="minihacks" class="section level1">

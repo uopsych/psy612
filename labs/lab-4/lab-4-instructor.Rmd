@@ -44,7 +44,8 @@ data <- import(file     = paste("https://raw.githubusercontent.com",
   
 
 # look at the data
-data
+str(data)
+head(data)
 ```
 
 # Univariate Regression
@@ -86,11 +87,37 @@ $$W_i = .00 + .74A_i + \epsilon_i$$
 
 > **Question** What is the relationship between the standardized regression coefficient in a univariate regression model to the zero-order correlation between the predictor and outcome variable?
 
-REMOVE They're identical. REMOVE
+
+
+*pause and let students respond*
+
+
+
+
+
+
+
+
+
+
+
+ They're identical.
 
 > **Question** What's another variable that could help explain the differences between the predicted values and the actual values? In other words, what's another variable that could explain variation in `weight` that is not explained by `age`?
 
-REMOVE Height. REMOVE
+
+*pause and let students respond*
+
+
+
+
+
+
+
+
+
+
+Height. 
 
 # Multiple Regression
 
@@ -109,7 +136,20 @@ $$W_i = .00 + .08A_i + .81H_i + \epsilon_i$$
 
 > **Question** How does the regression coefficient corresponding to `age` differ in `model_2` compared to in `model_1`?
 
-REMOVE It is substantially smaller. REMOVE
+
+
+*pause and let students respond*
+
+
+
+
+
+
+
+
+It is substantially smaller. 
+
+
 
 We can visualize the relationship among `weight`, `age`, and `height` using a 3D scatterplot. We can create a non-interactive version of a 3D scatterplot using the `scatterplot3d()` function from the `{scatterplot3d}` package.
 
@@ -192,11 +232,37 @@ summary(model_4)
 
 > **Question** How does the regression coefficient corresponding to the part of `age` that is unrelated to `height` in the univariate model (i.e., `model_4`) predicting `weight` compare to the regression coefficient corresponding to `age` in the multiple regression model (i.e., `model_2`)?
 
-REMOVE It's the same thing REMOVE
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+
+
+ It's the same thing 
 
 > **Question** Which type of correlation is the partial regression coefficient conceptually most similar to?
 
-REMOVE Semi-partial correlations REMOVE
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+ Semi-partial correlations 
 
 # Short Detour: The Relationship Between the Standardized Regression Coefficient and Semi-Partial Correlations
 
@@ -266,7 +332,20 @@ partial_cor
 
 > **Question** What's the difference conceptually in how we should understand the partial correlation between `weight` and `age` and the semi-partial correlation between `weight` and `age`?
 
-REMOVE The partial correlation is the association between weight controlling for height and age controlling for height whereas the semi-partial correlation is the association between weight and age controlling for height REMOVE
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+
+The partial correlation is the association between weight controlling for height, and age controlling for height whereas the semi-partial correlation is the association between weight and age controlling for height 
 
 Is there a way to test if this is true?
 
@@ -322,7 +401,7 @@ model_1_anova <- anova(model_1)
 model_1_anova
 ```
 
-The Sum of Squares on the *residuals* row corresponds to the SSE. That is, if you were to calculate the distance between each person's actual weight and the weight predicted by the model (in this case, the mean), square those distances, and sum them up, you would get 9,335.7.
+The Sum of Squares on the *residuals* row corresponds to the SSE. That is, if you were to calculate the distance between each person's actual weight and the weight predicted by the model (in this case, the mean), square those distances, and sum them up, you would get 9335.737.
 
 Let's visualize Model 2.
 
@@ -379,11 +458,48 @@ per
 
 > **Question** What does this proportional reduction in error mean?
 
-REMOVE Age and height explained 77.29% of the variability in weight scores. REMOVE
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+Age and height explained 77.29% of the variability in weight scores. 
+
+
+
+
+
+
+
+
 
 > **Question** What is the more familiar term for this value?
 
-REMOVE R-squared; coefficient of determination. REMOVE
+
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+
+ R-squared; coefficient of determination. 
+ 
+ 
+ 
+ 
 
 Look again at our summary output if we run our multiple regression model (i.e., `model_2`) and see how our results map on.
 
