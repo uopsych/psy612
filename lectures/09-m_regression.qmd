@@ -1,0 +1,567 @@
+---
+title: "Multiple regression"
+subtitle: "Part 2"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+```{r, echo = F, warning = F, message = F}
+library(tidyverse)
+library(knitr)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+
+```
+
+
+-------------------------------------------------------------------
+
+## Last time
+
+* Introduction to multiple regression
+* Interpreting coefficient estimates
+* Estimating model fit
+* Significance tests (omnibus and coefficients)
+
+
+-------------------------------------------------------------------
+
+## Today
+
+* Tolerance
+* Hierarchical regression/model comparison
+
+-------------------------------------------------------------------
+
+## Example from Thursday
+
+```{r}
+library(here); library(tidyverse); library(kableExtra)
+support_df = read.csv(here("data/support.csv")) 
+psych::describe(support_df, fast = T)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+mr.model <- lm(relationship ~ receive_support + give_support, data = support_df)
+summary(mr.model)
+```
+
+
+-------------------------------------------------------------------
+
+## Standard error of regression coefficient
+
+In the case of univariate regression:
+
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-r_{xy}^2}{n-2}}}$$
+
+In the case of multiple regression:
+
+$$\Large se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
+
+- As N increases... 
+- As variance explained increases... 
+
+-------------------------------------------------------------------
+
+$$se_{b} = \frac{s_{Y}}{s_{X}}{\sqrt{\frac {1-R_{Y\hat{Y}}^2}{n-p-1}}} \sqrt{\frac {1}{1-R_{i.jkl...p}^2}}$$
+
+### Tolerance
+
+$$1-R_{i.jkl...p}^2$$
+
+:::: {.columns}
+::: {.column width="50%"}
+
+- Proportion of $X_i$ that does not overlap with other predictors.
+    - Bounded by 0 and 1
+
+:::
+::: {.column width="50%"}
+
+- Large tolerance (little overlap) means standard error will be small.   
+- what does this mean for including a lot of variables in your model? 
+
+:::
+::::
+
+
+-------------------------------------------------------------------
+
+### Tolerance in `R`
+
+```{r}
+library(olsrr)
+
+ols_vif_tol(mr.model)
+```
+
+Why are tolerance values identical here?
+
+-------------------------------------------------------------------
+
+## Suppression
+
+Normally our standardized partial regression coefficients fall between 0 and $r_{Y1}$. However, it is possible for $b^*_{Y1}$ to be larger than $r_{Y1}$. We refer to this phenomenon as <span style="color:purple">suppression.</span>
+
+* A non-significant $r_{Y1}$ can become a significant $b^*_{Y1}$ when additional variables are added to the model.
+
+* A *positive* $r_{Y1}$ can become a *negative* and significant $b^*_{Y1}$.
+
+-------------------------------------------------------------------
+
+```{r}
+stress_df = read.csv(here("data/stress.csv")) %>% dplyr::select(-id, -group)
+
+cor(stress_df) %>% round(2)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+lm(Stress ~ Anxiety, data = stress_df) %>% summary
+```
+
+-------------------------------------------------------------------
+
+```{r}
+lm(Stress ~ Anxiety + Support, data = stress_df) %>% summary
+```
+
+-------------------------------------------------------------------
+
+### Suppression
+
+Recall that the partial regression coefficient is calculated:
+
+$$\large b^*_{Y1.2}=\frac{r_{Y1}-r_{Y2}r_{12}}{1-r^2_{12}}$$
+
+
+. . .
+
+
+Is suppression meaningful? 
+
+::: notes
+
+Imagine a scenario when X2 and Y are uncorrelated and X2 is correlated with X1.
+
+(Draw Venn diagram of this)
+
+Second part of numerator becomes 0
+Bottom part gets smaller
+Bigger value
+
+:::
+
+-------------------------------------------------------------------
+
+## Hierarchical regression/Model comparison
+
+```{r, message=FALSE}
+library(tidyverse)
+happy_d <- read_csv('http://static.lib.virginia.edu/statlab/materials/data/hierarchicalRegressionData.csv')
+happy_d$gender = ifelse(happy_d$gender == "Female", 1, 0)
+library(psych)
+describe(happy_d, fast = T)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+mr.model <- lm(happiness ~ age + gender + friends + pets, data = happy_d)
+summary(mr.model)
+```
+
+::: notes
+
+Review here:
+* Omnibus test
+* Coefficient of determination
+* Adjust R squared
+* Resid standard error
+* Coefficient estimates
+
+:::
+
+
+-------------------------------------------------------------------
+
+### Methods for entering variables
+
+**Simultaneous**: Enter all of your IV's in a single model.
+
+$$\large Y = b_0 + b_1X_1 + b_2X_2 + b_3X_3$$
+
+  - The benefits to using this method is that it reduces researcher degrees of freedom, is a more conservative test of any one coefficient, and often the most defensible action (unless you have specific theory guiding a hierarchical approach).
+
+-------------------------------------------------------------------
+
+### Methods for entering variables
+
+**Hierarchically**: Build a sequence of models in which every successive model includes one more (or one fewer) IV than the previous.
+$$\large Y = b_0 + e$$
+$$\large Y = b_0 + b_1X_1 + e$$
+$$\large Y = b_0 + b_1X_1 + b_2X_2 + e$$
+$$\large Y = b_0 + b_1X_1 + b_2X_2 + b_3X_3 + e$$
+
+This is known as **hierarchical regression**. (Note that this is different from Hierarchical Linear Modelling or HLM [which is often called Multilevel Modeling or MLM].) Hierarchical regression is a subset of **model comparison** techniques. 
+
+-------------------------------------------------------------------
+
+### Hierarchical regression / Model Comparison  
+
+**Model comparison:** Comparing how well two (or more) models fit the data in order to determine which model is better.
+
+If we're comparing nested models by incrementally adding or subtracting variables, this is known as hierarchical regression. 
+
+  - Multiple models are calculated  
+    
+  - Each predictor (or set of predictors) is assessed in terms of what it adds (in terms of variance explained) at the time it is entered   
+    
+  - Order is dependent on an _a priori_ hypothesis  
+
+
+-------------------------------------------------------------------
+
+![](images/venn/Slide9.jpeg)
+
+-------------------------------------------------------------------
+
+### $R^2$ change
+
+- distributed as an F
+
+$$F(p.new, N - 1 - p.all) = \frac {R_{m.2}^2- R_{m.1}^2} {1-R_{m.2}^2} (\frac {N-1-p.all}{p.new})$$
+
+- can also be written in terms of SSresiduals
+
+
+-------------------------------------------------------------------
+
+### Model comparison
+
+- The basic idea is asking how much variance remains unexplained in our model. This "left over" variance can be contrasted with an alternative model/hypothesis. We can ask does adding a new predictor variable help explain more variance or should we stick with a parsimonious model.   
+
+- Every test of an omnibus model is implicitly a model comparisons, typically of your fitted model with the nil model (no slopes). This framework allows you to be more flexible and explicit.   
+
+-------------------------------------------------------------------
+
+```{r}
+fit.0 <- lm(happiness ~ 1,
+            data = happy_d)
+
+summary(fit.0)
+```
+
+-------------------------------------------------------------------
+
+```{r}
+fit.1 <- lm(happiness ~ age,
+            data = happy_d)
+summary(fit.1)
+```
+
+
+-------------------------------------------------------------------
+```{r}
+anova(fit.0)
+```
+
+```{r}
+anova(fit.1)
+```
+
+```{r}
+anova(fit.1, fit.0)
+```
+
+-------------------------------------------------------------------
+
+### Model Comparisons 
+
+- This example of model comparisons is redundant with nil/null hypotheses and coefficient tests of slopes in univariate regression. 
+
+- Let's expand this to the multiple regression case model.
+
+-------------------------------------------------------------------
+
+### Model comparisons
+
+```{r, output.lines = c(1:9)}
+m.2 <- lm(happiness ~ age + gender, data = happy_d)
+m.3 <- lm(happiness ~ age + gender + pets, data = happy_d)
+m.4 <- lm(happiness ~ age + gender + friends + pets, data = happy_d)
+anova(m.2, m.3, m.4)
+```
+
+```{r}
+coef(summary(m.4))
+```
+
+-------------------------------------------------------------------
+
+### change in $R^2$
+
+```{r}
+summary(m.2)$r.squared
+summary(m.3)$r.squared
+summary(m.4)$r.squared
+```
+
+-------------------------------------------------------------------
+
+### partitioning the variance
+
+- It doesn't make sense to ask how much variance a variable explains (unless you qualify the association)
+
+$$R_{Y.1234...p}^2 = r_{Y1}^2 + r_{Y(2.1)}^2 + r_{Y(3.21)}^2 + r_{Y(4.321)}^2 + ...$$
+
+- In other words: order matters! 
+
+-------------------------------------------------------------------
+
+What if we compare the first (2 predictors) and last model (4 predictors)?
+
+```{r}
+anova(m.2, m.4)
+```
+
+-------------------------------------------------------------------
+
+Model comparison can thus be very useful for testing the explained variance attributable to a <span style="color:purple">set</span> of predictors, not just one. 
+
+For example, if we're interested in explaining variance in cognitive decline, perhaps we build a model comparison testing:
+
+* Set 1: Demographic variables (age, gender, education, income)
+* Set 2: Physical health (exercise, chronic illness, smoking, flossing)
+* Set 3: Social factors (relationship quality, social network size)
+
+-------------------------------------------------------------------
+
+# Categorical predictors
+
+-------------------------------------------------------------------
+
+One of the benefits of using regression (instead of partial correlations) is that it can handle both continuous and categorical predictors and allows for using both in the same model.
+
+Categorical predictors with more than two levels are broken up into several smaller variables. In doing so, we take variables that don't have any inherent numerical value to them (i.e., nominal and ordinal variables) and ascribe meaningful numbers that allow for us to calculate meaningful statistics. 
+
+You can choose just about any numbers to represent your categorical variable. However, there are several commonly used methods that result in very useful statistics. 
+
+-------------------------------------------------------------------
+
+## Dummy coding
+
+In dummy coding, one group is selected to be a reference group. From your single nominal variable with *K* levels, $K-1$ dummy code variables are created; for each new dummy code variable, one of the non-reference groups is assigned 1; all other groups are assigned 0.
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+| Occupation | D1 | D2 |
+|:----------:|:--:|:--:|
+|Engineer | 0 | 0 |
+|Teacher | 1 | 0 |
+|Doctor | 0 | 1 |
+
+
+:::
+::: {.column width="50%"}
+
+
+|Person | Occupation | D1 | D2 |
+|:-----|:----------:|:--:|:--:|
+|Billy |Engineer | 0 | 0 |
+|Susan |Teacher | 1 | 0 |
+|Michael |Teacher | 1 | 0 |
+|Molly |Engineer | 0 | 0 |
+|Katie |Doctor | 0 | 1 |
+
+:::
+::::
+
+
+-------------------------------------------------------------------
+
+## Example
+
+Following traumatic experiences, some people have flashbacks, which are also called “intrusive memories” and are characterized by involuntary images of aspects of the traumatic event. Research suggests that it may help to try to change the memory during reconsolidation, which occurs following the reactivation of a previously formed memory. 
+
+Because intrusive memories of trauma are often visual in nature, [James and colleagues (2015)](https://journals.sagepub.com/stoken/default+domain/hQ2W4fbPrZVJ7eyNJaqu/full) sought to explore whether completing a visuospatial task (e.g., tetris) while a memory is reconsolidating would interfere with the storage of that memory, and thereby reduce the frequency of subsequent intrusions. 
+
+-------------------------------------------------------------------
+
+## Example
+
+```{r}
+tetris = read.csv(here("data/james_e2.csv"), stringsAsFactors = T)
+tetris = janitor::clean_names(tetris) %>% 
+  rename(intrusions = days_one_to_seven_number_of_intrusions)
+tetris = tetris %>% select(condition, intrusions)
+summary(tetris)
+
+```
+
+
+-------------------------------------------------------------------
+
+Let's apply dummy coding to our example data. We'll have to pick one of the groups to be our <span style="color:purple">reference</span> group, and then all other groups will have their own dummy code.
+
+```{r}
+tetris = tetris %>%
+  mutate(dummy_2 = ifelse(condition == "Reactivation + Tetris", 1, 0),
+         dummy_3 = ifelse(condition == "Reactivation Only",     1, 0),
+         dummy_4 = ifelse(condition == "Tetris Only",           1, 0)) 
+
+```
+
+------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+tetris %>%
+  sample_n(size = 10) %>% 
+  kable() %>% kable_classic()
+```
+
+
+-------------------------------------------------------------------
+
+```{r}
+mod.1 = lm(intrusions ~ dummy_2 + dummy_3 + dummy_4, data = tetris)
+summary(mod.1)
+```
+
+-------------------------------------------------------------------
+
+### Interpreting coefficients
+
+When working with dummy codes, the intercept can be interpreted as the mean of the reference group.
+
+$$\begin{aligned} 
+\hat{Y} &= b_0 + b_1D_2 + b_2D_3 + b_3D_2 \\
+\hat{Y} &= b_0 + b_1(0) + b_2(0) + b_3(0) \\
+\hat{Y} &= b_0 \\
+\hat{Y} &= \bar{Y}_{\text{Reference}}
+\end{aligned}$$
+
+What do each of the slope coefficients mean?
+
+-------------------------------------------------------------------
+
+From this equation, we can get the mean of every single group.
+
+```{r}
+newdata = data.frame(dummy_2 = c(0,1,0,0),
+                     dummy_3 = c(0,0,1,0),
+                     dummy_4 = c(0,0,0,1))
+predict(mod.1, newdata = newdata, se.fit = T)
+```
+
+-------------------------------------------------------------------
+
+
+And the test of the coefficient represents the significance test of each group to the reference. This is an independent-samples *t*-test[^1].
+
+The test of the intercept is the one-sample *t*-test comparing the intercept to 0.
+
+```{r, output.lines = c(10:14)}
+summary(mod.1)
+```
+
+What if you wanted to compare groups 2 and 3?
+
+[^1]: Except for a few crucial differences: the standard error and degrees of freedom use all the data in the model, including those in groups 3 and 4.
+
+::: notes
+
+```{r}
+tetris %>% 
+  filter(condition %in% c("Control","Reactivation + Tetris")) %>% 
+  t.test(intrusions ~ condition, data = ., var.equal = T)
+```
+
+:::
+
+-------------------------------------------------------------------
+
+```{r}
+tetris = tetris %>%
+  mutate(dummy_1 = ifelse(condition == "Control",           1, 0),
+         dummy_3 = ifelse(condition == "Reactivation Only", 1, 0),
+         dummy_4 = ifelse(condition == "Tetris Only",       1, 0)) 
+mod.2 = lm(intrusions ~ dummy_1 + dummy_3 + dummy_4, data = tetris)
+summary(mod.2)
+```
+
+-------------------------------------------------------------------
+
+In all multiple regression models, we have to consider the correlations between the IVs, as highly correlated variables make it more difficult to detect significance of a particular X. One useful way to conceptualize the relationship between any two variables is "Does knowing someone's score on $X_1$ affect my guess for their score on $X_2$?"
+
+Are dummy codes associated with a categorical predictor correlated or uncorrelated?
+
+. . . 
+
+```{r}
+cor(tetris[,grepl("dummy", names(tetris))], use = "pairwise")
+```
+
+
+-------------------------------------------------------------------
+
+## Omnibus test
+
+Doesn't matter which set of dummy codes you use!
+
+```{r, output.lines = 20:21}
+summary(mod.1)
+```
+
+```{r, output.lines = 20:21}
+summary(mod.2)
+```
+
+-------------------------------------------------------------------
+
+## Next time...
+
+Analysis of Variance (ANOVA)
+
+
+
+ 

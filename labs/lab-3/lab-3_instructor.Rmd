@@ -12,6 +12,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r}
+# notes for future instructors
+- either cut GLM section or cut it down a LOT
+- move from lab 2 the reporting regressions content
+```
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, rows.print = 10)
 
