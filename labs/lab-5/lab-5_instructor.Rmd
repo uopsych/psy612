@@ -204,6 +204,18 @@ emmeans(model_anova, pairwise ~ group, adjust = "holm")
 
 >**Question:** What difference do you notice about the Bonferroni vs. Holm correction? 
 
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
 Bonferroni tends to have higher p-values, which indicates it's a more conservative test. Bonferroni also leads to higher chance of type II error (not detecting the effect when there is one.)
 
 ***
@@ -223,6 +235,20 @@ summary(model_default)
 ```
 
 >**Question:** What does the F test tell us?
+
+
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
  
  Whether any mean is different from any other mean. 
 
@@ -248,6 +274,22 @@ $$Depression_i = 7.20 -3.80psychotherapy + 2.60control$$
 
 >**Question:** Determine the mean depression score of each group.
 
+
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+
+
+
 7.2: CBT
 7.2 - 3.8 = 3.4: psychotherapy
 7.2 + 2.6 = 9.8: control
@@ -261,9 +303,38 @@ summary(model_default)
 ```
 >**Question:** Interpret the intercept. What does a significant p-value signify?
 
+
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
+
+
+
 mean of CBT is significantly different from 0.
 
 >**Question:** Interpret the slopes. What do the significant p-values signify?
+
+
+
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
+
 
 The differences between psychotherapy and control are significantly different from the mean of CBT.
 
@@ -301,6 +372,17 @@ summary(model_dummy1)
 ```
 
 >**Question:** What does the intercept mean? What do the slopes mean?
+
+
+
+*pause and let students answer*
+
+
+
+
+
+
+
 
 mean of the control group; slopes are the differences from the control group.
 
