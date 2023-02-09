@@ -13,7 +13,7 @@
 
 <title>Homework Assignments</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -146,11 +146,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -361,7 +365,7 @@ div.tocify {
       <a href="lectures/09-m_regression.html">09-Multiple Regression</a>
     </li>
     <li>
-      <a href="lectures/08-anova.html">10-ANOVA</a>
+      <a href="lectures/10-anova.html">10-ANOVA</a>
     </li>
   </ul>
 </li>
@@ -438,9 +442,15 @@ div.tocify {
 </div>
 
 
-<p>Homework assignments will appear here. You’ll be able to access the assignment, as well as any data that may be used. Homework assignments will be posted <strong>at least one week</strong> before they are due. Submit homework assignments through Canvas by the due date and time. Homework assignments are due prior to the start of the first lab section on the day they are listed.</p>
+<p>Homework assignments will appear here. You’ll be able to access the
+assignment, as well as any data that may be used. Homework assignments
+will be posted <strong>at least one week</strong> before they are due.
+Submit homework assignments through Canvas by the due date and time.
+Homework assignments are due prior to the start of the first lab section
+on the day they are listed.</p>
 <div id="homework-1" class="section level3">
-<h3><a href="homework/homework-1.html"><strong>Homework 1</strong></a></h3>
+<h3><a href="homework/homework-1.html"><strong>Homework
+1</strong></a></h3>
 <p><strong>Due February 3, 9am</strong></p>
 <ul>
 <li><a href="homework/homework-1.zip">Download all files here.</a></li>

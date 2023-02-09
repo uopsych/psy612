@@ -26,7 +26,7 @@ navbar:
       - text: "09-Multiple Regression"
         href: "lectures/09-m_regression.html"
       - text: "10-ANOVA"
-        href: "lectures/08-anova.html"
+        href: "lectures/10-anova.html"
         
     - text: Labs
       menu:
