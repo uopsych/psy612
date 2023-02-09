@@ -46,6 +46,7 @@ data <- import(file     = paste("https://raw.githubusercontent.com",
 # look at the data
 str(data)
 head(data)
+summary(data)
 ```
 
 # Univariate Regression
@@ -316,6 +317,8 @@ semi_partial_cor <- spcor.test(
 )
 
 semi_partial_cor
+semi_partial_cor$estimate^2 # R-Squared 
+
 ```
 
 ## Partial Correlation
@@ -328,6 +331,8 @@ partial_cor <- pcor.test(
 )
 
 partial_cor
+partial_cor$estimate^2 # R-Squared
+
 ```
 
 > **Question** What's the difference conceptually in how we should understand the partial correlation between `weight` and `age` and the semi-partial correlation between `weight` and `age`?
