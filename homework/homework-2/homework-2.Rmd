@@ -94,17 +94,16 @@ You're interested in studying the joint and combined influence of school success
 
 ## Question 3
 
-Using the dataset `homework-happy`, create a regression model predicting happiness from friendship quality, SES, and school success; be sure to save the output to an object.
 
-Load the `sjPlot` package and run through the following code. Interpret each figure along the way. (As a general hint: you'll want to open the help page for this function or use Google to find tutorials online.)
+Use the `homework-world` dataset for this question. 
 
-* Enter your model object into the function `plot_model` and set the argument `type = "est"`. What does this plot represent?
+* Conduct an analysis of variance (use the `aov()` function) to test the effect of the grouping variable, `world`, on happiness. 
 
-* Enter your model object into the function `plot_model` and set the argument `type = "std"`. What does this plot represent?
+* What is the null hypothesis of this test? Do you reject or retain the null hypothesis?
 
-* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = "school_success"` (or whatever the name of your school success variable is). What does this plot represent?
+* Compute the pairwise comparisons of all groups. What do you conclude?
 
-* Enter your model object into the function `plot_model` and set the argument `type = "pred"` and the argument `terms = c("school_success", "ses[meansd]"` (or whatever the name of your school success and SES variables are). What does this plot represent? (Hint, think about the regression plane....)
+* Create a plot to represent these findings. Be sure your plot includes the mean and 95% confidence interval of each group.
 
 
 # 10-point Questions
@@ -118,17 +117,16 @@ Check each of the six assumptions discussed in class. List each assumption and s
 
 ## Question 2
 
-Use the `homework-world` dataset for this question. This dataset contains 7 variables of interest: happiness, gross domestic product, support, life expectancy, freedom, generosity, and corruption. 
+In this question, you'll use iteration to more efficiently conduct a series of analyses. First, read this blog post by Thomas Mock: [https://towardsdatascience.com/functional-programming-in-r-with-purrr-469e597d0229](https://towardsdatascience.com/functional-programming-in-r-with-purrr-469e597d0229).
 
-* Conduct an analysis of variance (use the `aov()` function) for each of the measures, using country development status (`world`) as the grouping variable. In a table, report the degrees of freedom, _F_-statistic, and _p_-value for each analysis (one row for each analysis). Make sure this table is formatted nicely, i.e., not just R output. I recommend `kable` from the `knitr` package, but there are many good options available.
+Now, you'll apply the principles of iteration. Use the `homework-world` dataset for this question. This dataset contains 7 variables of interest: happiness, gross domestic product, support, life expectancy, freedom, generosity, and corruption. 
 
-* If the _F_-test is significant for an analysis, conduct follow-up pairwise comparisons using a Holm correction. Report these in a table (one table per analysis).  Make sure these tables are formatted nicely.
+* Using the `map()` functions, conduct an analysis of variance (use the `aov()` function) for each of the measures, using country development status (`world`) as the grouping variable. In a table, report the degrees of freedom, _F_-statistic, and _p_-value for each analysis. 
 
 * Recall that the ANOVA model has the same homogeneity of variance assumption as the independent samples _t_-test. Assess the homogeneity of variance assumption for each of the outcome measures (use the `leveneTest()` function from the `car` package). Report these results in a single table and comment on whether this assumption is satisfied for each measure.
 
-* If we cannot assume homogeneity of variance when using a (Student's) independent samples _t_-test, we run a Welch's _t_-test, which doesn't have this assumption (but has lower power). There is an analogous test in the ANOVA framework, called the Welch's one-way test. Re-run the analyses of variance, but now use the Welch one-way test (use the `oneway.test() function`). Report these results in a single table.  Make sure this table is formatted nicely. Comment on whether any conclusions about group differences change compared to the original ANOVAs.
+* If we cannot assume homogeneity of variance when using a (Student's) independent samples _t_-test, we run a Welch's _t_-test, which doesn't have this assumption (but has lower power). There is an analogous test in the ANOVA framework, called the Welch's one-way test. Re-run the analyses of variance, but now use the Welch one-way test (use the `oneway.test() function`).  Comment on whether any conclusions about group differences change compared to the original ANOVAs.
 
-**Earn 5 additional points:** If you are looking to stretch your `R` skills a bit, you can earn additional points by completing this problem using iteration functions. Here's what that means: you'll see this problem asks you to run multiple ANOVA tests. Instead of hard coding these (writing separate code for each test), write code that applies a single function or set of code to each outcome variable. The tricky part is doing this _without loops._ To accomplish this, you might look into the various apply functions (`apply`, `sapply`, and `lapply`), but I would recommend diving into the world of `purrr`. These analyses can be completed elegantly with the use of `gather` (or `pivot_longer`) and `map`. [This tutorial](https://broom.tidymodels.org/articles/broom_and_dplyr.html) is a nice starting place, but you should expect to do a bit of independent learning. To earn these bonus points, you'll need to use iteration on all parts of this problem except for the pairwise comparisons. (Unless you want to try that too!)
 
 # 20-point Questions
 
