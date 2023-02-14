@@ -27,6 +27,8 @@ navbar:
         href: "lectures/09-m_regression.html"
       - text: "10-ANOVA"
         href: "lectures/10-anova.html"
+      - text: "11/12-Diagnostics"
+        href: "lectures/11-diagnostics.html"
         
     - text: Labs
       menu:
