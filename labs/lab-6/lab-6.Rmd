@@ -1,7 +1,13 @@
 ---
 title: "Regression Diagnostics"
-date: "2/9/2021"
-output: html_document
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
 editor_options: 
   chunk_output_type: console
 ---
@@ -23,7 +29,7 @@ library(rio)       # for importing data
 library(tidyverse) # for dplyr, ggplot2, ETC
 library(gridExtra) # for plotting multiple figures side-by-side
 library(broom)     # for extracting residuals and outlier indices
-library(olsrr)     # for creating outlier pltos
+library(olsrr)     # for creating outlier plots
 library(psych)     # for calculating mahalanobis distance
 
 # suppress scientific notation
@@ -147,32 +153,24 @@ grid.arrange(scatter1,
 Listed below are a number of issues that violate one or more of the assumptions underlying linear regression analysis. Included with each issue is a method for determining the presence of each issue.
 
 1.  Non-linearity
-
--   Examine a plot of the fitted values vs residuals
+* Examine a plot of the fitted values vs residuals
 
 2.  Non-normally distributed errors
-
--   Examine the distribution of the residuals
-
--   Examine a Q-Q plot
+* Examine the distribution of the residuals
+* Examine a Q-Q plot
 
 3.  Heteroscedasticity
-
--   Examine a plot of the fitted values vs residuals
+* Examine a plot of the fitted values vs residuals
 
 4.  Non-independence among errors
-
--   Examine the relationship between the residuals and a variable the errors should not correspond to (e.g., ID number)
+* Examine the relationship between the residuals and a variable the errors should not correspond to (e.g., ID number)
 
 5.  Outliers
-
--   Univariate outliers: Examine a histogram or boxplot
-
--   Multivariate outliers: Examine a scatterplot, Mahalanobis Distances, Cook's D, dfbetas, and dffits
+* Univariate outliers: Examine a histogram or boxplot
+* Multivariate outliers: Examine a scatterplot, Mahalanobis Distances, Cook's D, dfbetas, and dffits
 
 6.  Multicollinearity
-
--   Examine zero-order correlations, tolerances, and VIFs
+* Examine zero-order correlations, tolerances, and VIFs
 
 # Running the linear regression models
 
