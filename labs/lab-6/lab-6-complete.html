@@ -2951,8 +2951,11 @@ predictor(s) and outcome.</p>
 <h1>Non-normally Distributed Errors</h1>
 <p>Another assumption underlying linear regression is that the model’s
 residuals are normally distributed.</p>
-<p>To diagnose this problem, you can either: * Examine the distribution
-of the residuals, and/or * Examine a Q-Q plot</p>
+<p>To diagnose this problem, you can either:</p>
+<ul>
+<li>Examine the distribution of the residuals, and/or</li>
+<li>Examine a Q-Q plot</li>
+</ul>
 <p>First, let’s plot the distribution of the residuals for model 1.</p>
 <p>To obtain the residuals, first we’ll pass our model to the
 <code>augment()</code> function. Then, we’ll plot the residuals using a
@@ -3157,10 +3160,8 @@ model5_aug %&gt;%
 has on the fit of the regression model using many different numerical
 assessments. We’ll go over <em>Cook’s Distance</em> in this lab.</p>
 <p>Cook’s Distance summarizes how much the regression model would change
-if you removed a particular value. In other words, it represents the
-difference between the regression coefficients obtained from the full
-data set and the regression coefficients that would be obtained if you
-deleted that particular value.</p>
+if you removed a particular case. It examines how different all of the
+fitted values would be with versus without a particular case.</p>
 <p>We can plot the Cook’s Distances using the
 <code>ols_plot_cooksd_chart()</code> function from the
 <code>{olsrr}</code> package:</p>
@@ -3176,7 +3177,7 @@ Cook’s D values are worth investigating.</p>
 immediately removed from the analysis. Consider the nature of the
 outlier (a data entry error? a real phenomenon?) and your research goal
 (interpretation? prediction?) when deciding whether to remove an outlier
-from the data. You can also provide results of your analysis but with
+from the data. You can also provide results of your analysis both with
 and without the outlier.</p>
 </div>
 </div>
