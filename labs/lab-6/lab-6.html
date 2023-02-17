@@ -2800,7 +2800,7 @@ options(scipen = 999)</code></pre>
 </div>
 <div id="import-the-data" class="section level1">
 <h1>Import the Data</h1>
-<p>We’ll be working with several versions of a dataset that includes
+<p>We’ll be working with several versions of a data set that includes
 participants’ scores on happiness and extraversion. Each version has
 modified the data to represent one of the violations of the assumptions
 underlying linear regression.</p>
@@ -2827,20 +2827,17 @@ df5 &lt;- import(file     = &quot;https://raw.githubusercontent.com/uopsych/psy6
 df6 &lt;- import(file     = &quot;https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-6/data/df_mc.csv&quot;,
               setclass = &quot;tibble&quot;) %&gt;%
   janitor::clean_names()</code></pre>
-</div>
-<div id="inspect-the-data" class="section level1">
-<h1>Inspect the Data</h1>
 <p>The same variables (mostly) are contained in each dataset. Let’s
-inspect just <code>df1</code>.</p>
+inspect the first data set, <code>df1</code>.</p>
 <pre class="r"><code>df1</code></pre>
 </div>
-<div id="visualize-each-dataset" class="section level1">
-<h1>Visualize Each Dataset</h1>
+<div id="scatterplots" class="section level1">
+<h1>Scatterplots</h1>
+<p>Visualization is always a good place to start when inspecting the
+relationships between variables.</p>
 <p>We’re going to focus on the relationship between
 <code>happiness</code> (Y) and <code>extraversion</code> (X). Let’s
-visualize this using a scatterplot for each dataset. Visualization is
-always a good place to start when inspecting the relationships between
-variables.</p>
+visualize this using a scatterplot for each data set.</p>
 <pre class="r"><code># scatterplot using df1
 scatter1 &lt;- ggplot(data = df1, aes(x = extraversion, y = happiness)) +
   geom_point() + 
@@ -2909,162 +2906,141 @@ package.</p>
 these scatterplots that we used to represent the data so
 far?</strong></p>
 </blockquote>
-</div>
-<div id="potential-issues" class="section level1">
-<h1>Potential Issues</h1>
-<p>Listed below are a number of issues that violate one or more of the
-assumptions underlying linear regression analysis. Included with each
-issue is a method for determining the presence of each issue.</p>
-<ol style="list-style-type: decimal">
-<li>Non-linearity</li>
-</ol>
-<ul>
-<li>Examine a plot of the fitted values vs residuals</li>
-</ul>
-<ol start="2" style="list-style-type: decimal">
-<li>Non-normally distributed errors</li>
-</ol>
-<ul>
-<li>Examine the distribution of the residuals</li>
-<li>Examine a Q-Q plot</li>
-</ul>
-<ol start="3" style="list-style-type: decimal">
-<li>Heteroscedasticity</li>
-</ol>
-<ul>
-<li>Examine a plot of the fitted values vs residuals</li>
-</ul>
-<ol start="4" style="list-style-type: decimal">
-<li>Non-independence among errors</li>
-</ol>
-<ul>
-<li>Examine the relationship between the residuals and a variable the
-errors should not correspond to (e.g., ID number)</li>
-</ul>
-<ol start="5" style="list-style-type: decimal">
-<li>Outliers</li>
-</ol>
-<ul>
-<li>Univariate outliers: Examine a histogram or boxplot</li>
-<li>Multivariate outliers: Examine a scatterplot, Mahalanobis Distances,
-Cook’s D, dfbetas, and dffits</li>
-</ul>
-<ol start="6" style="list-style-type: decimal">
-<li>Multicollinearity</li>
-</ol>
-<ul>
-<li>Examine zero-order correlations, tolerances, and VIFs</li>
-</ul>
-</div>
-<div id="running-the-linear-regression-models" class="section level1">
-<h1>Running the linear regression models</h1>
+<p>Let’s run the linear models:</p>
 <pre class="r"><code>model1 &lt;- lm(happiness ~ extraversion, data = df1)
 model2 &lt;- lm(happiness ~ extraversion, data = df2)
 model3 &lt;- lm(happiness ~ extraversion, data = df3)
 model4 &lt;- lm(happiness ~ extraversion, data = df4)
 model5 &lt;- lm(happiness ~ extraversion, data = df5)</code></pre>
+<p>And then we’ll perform regression diagnostics on them. There are
+multiple potential issues you can run into when fitting a linear
+regression model. Below, we will discuss these issues and how you can
+diagnose them.</p>
 </div>
-<div id="checking-for-non-linearity" class="section level1">
-<h1>Checking for non-linearity</h1>
-<p>To examine whether there is the presence of a non-linear trend in the
-relationship between <code>extraversion</code> and
-<code>happiness</code> that is not captured by our linear model, you can
-first examine a scatterplot (as we did above).</p>
-<p>Additionally, you can examine a plot of the model’s fitted values by
-the residuals. We can obtain this plot using the function
-<code>plot()</code>, which is included in base R. The
-<code>plot()</code> function provides a set of four different diagnostic
-plots. Let’s look at them all for <code>model1</code>.</p>
-<pre class="r"><code>par(mfrow = c(2, 2)) # display plots in a 2x2 grid
-plot(model1)</code></pre>
-<p>Now, let’s focus just on examining the plot of the fitted values by
-the residuals, which is the first plot.</p>
-<pre class="r"><code>par(mfrow = c(1, 1))
-plot(model1, 1)</code></pre>
+<div id="non-linearity" class="section level1">
+<h1>Non-Linearity</h1>
+<p>One of the assumptions underlying linear regression is that the form
+of the relationship between the predictor(s) and outcome is linear. If
+the actual form of the relationship is non-linear, then the linear model
+estimates could be quite inaccurate.</p>
+<p>Non-linearity is typically diagnosed using a <strong>residuals
+plot</strong>, which is a plot of the model residuals by the model’s
+fitted values.</p>
+<p>You can obtain a residuals plot using using the function
+<code>plot()</code>, which is included in base R. This function provides
+multiple diagnostic plots, but we will focus on the first one (which is
+the residuals plot).</p>
+<pre class="r"><code>plot(model1, 1)</code></pre>
+<p>If the linear model is a good fit to the patter of the relationship,
+there will be no discernible pattern in the residuals plot. If there is
+some systematic pattern, this is indication that potentially there is a
+non-linear trend not being captured by the linear model.</p>
 <p>Let’s also examine the plot for <code>model_2</code>.</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code>## your code</code></pre>
 <blockquote>
 <p><strong>Question: Do you see a pattern in either of these plots that
 suggest the presence of a non-linear trend between extraversion and
 happiness that is not captured by the linear model?</strong></p>
 </blockquote>
+<p><strong>Potential Solution:</strong> If your residuals plot suggests
+the relationship is non-linear, then consider fitting a non-linear model
+that more accurately captures the form of the relationship between the
+predictor(s) and outcome.</p>
 </div>
-<div id="checking-for-normally-distributed-errors" class="section level1">
-<h1>Checking for normally-distributed errors</h1>
-<p>You can check whether a model’s residuals are normally distributed by
-plotting either a (a) distribution of the residuals or (b) Q-Q plot.</p>
-<p>Remember, we can pass our model to the <code>augment()</code>
-function to retrieve a model’s residuals. Let’s run the
-<code>augment()</code> function on each of our models so we can use the
-output later.</p>
-<pre class="r"><code>model1_aug &lt;- augment(model1)
-model2_aug &lt;- augment(model2)
-model3_aug &lt;- augment(model3)
-model4_aug &lt;- augment(model4)
-model5_aug &lt;- augment(model5)</code></pre>
-<p>Let’s check whether the residuals are normally distributed for
-<code>model1</code>. First, we’ll use a density plot with a normal
-distribution overlaid on top to easily compare the two:</p>
-<pre class="r"><code>ggplot(data = model1_aug, aes(x = .resid)) + 
+<div id="non-normally-distributed-errors" class="section level1">
+<h1>Non-normally Distributed Errors</h1>
+<p>Another assumption underlying linear regression is that the model’s
+residuals are normally distributed.</p>
+<p>To diagnose this problem, you can either: * Examine the distribution
+of the residuals, and/or * Examine a Q-Q plot</p>
+<p>First, let’s plot the distribution of the residuals for model 1.</p>
+<p>To obtain the residuals, first we’ll pass our model to the
+<code>augment()</code> function. Then, we’ll plot the residuals using a
+density plot with a normal distribution overlaid on top to easily
+compare the shape of the two:</p>
+<pre class="r"><code># storing residuals
+model1_aug &lt;- augment(model1)
+model1_aug
+
+# plotting histogram of residuals
+ggplot(data = model1_aug, aes(x = .resid)) + 
   geom_density(fill = &quot;purple&quot;) + 
   stat_function(linetype = 2, 
                 fun      = dnorm, 
                 args     = list(mean = mean(model1_aug$.resid), 
                                 sd   =   sd(model1_aug$.resid))) +
   theme_minimal()</code></pre>
-<p>Next, let’s use a Q-Q plot. We can create a Q-Q plot by using the
-<code>stat_qq()</code> function in the <code>{ggplot2}</code>
-package.</p>
+<p>Next, let’s examine a Q-Q plot for model 1. We can create a Q-Q plot
+by using the <code>stat_qq()</code> function in the
+<code>{ggplot2}</code> package.</p>
 <pre class="r"><code>ggplot(model1) +
   geom_abline(color = &quot;turquoise4&quot;) + 
   stat_qq(aes(sample = .stdresid), color = &quot;darkorchid4&quot;, alpha = .50) +
   theme_minimal()</code></pre>
-<p>A Q-Q plot plots the quantiles of a reference distribution (in this
-case, the normal distribution) on the x-axis by the quantiles of the
-residuals on the y-axis. If your residuals come from a normal
-distribution, the percentage of data lying between any two points should
-approximate the percentage of data lying between any two points on a
-normal distribution.</p>
-<p>When the points on a Q-Q plot are close to lying on the diagonal line
-(with a slope of 1) the residuals are approximately normally
-distributed.</p>
+<p>When the points on a Q-Q plot are close to lying on the diagonal
+line, the residuals are approximately normally distributed.</p>
 <p>Now, do the same thing, but this time let’s examine whether we have
 violated the assumption of normally distributed residuals for
 <code>model3</code>.</p>
 <p>Obtain a density plot of the residuals from <code>model3</code>:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code>## your code</code></pre>
 <p>Obtain a Q-Q plot for <code>model3</code>:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code>## your code</code></pre>
 <blockquote>
 <p><strong>Question: Do the errors appear to be approximately normally
 distributed?</strong></p>
 </blockquote>
+<p><strong>Potential Solution:</strong> Linear regression is robust to
+some degree of violation of the normality assumption. Some questions to
+consider are: Is the violation mild enough that you can proceed with
+analysis? Is there potentially a non-linear trend in the data that the
+linear model is not capturing, or should you consider fitting a
+non-linear model? Should you use a non-parametric test that makes no
+assumptions about the form of the model?</p>
 </div>
-<div id="checking-for-heteroscedasticity" class="section level1">
-<h1>Checking for heteroscedasticity</h1>
-<p>The plot of the fitted values by the residuals for a model can also
-be used to check whether the assumption of homogeneity of variance has
-been met (i.e., whether error variance appears to be approximately the
-same across all values fitted by the model).</p>
-<p>Let’s check for heteroscedasticity by examining the plot of the
-fitted values vs. residuals for <code>model1</code>.</p>
+<div id="non-constant-variance-of-residuals-heteroscedasticity" class="section level1">
+<h1>Non-Constant Variance of Residuals (Heteroscedasticity)</h1>
+<p>Another assumption underlying linear regression is called
+<em>homoscedasticity</em>, which is the assumption that the variance of
+an outcome is approximately the same across all values of the
+predictor(s). <em>Heteroscedasticity</em> is the violation of this
+assumption. The accuracy of the standard errors and confidence intervals
+depend on this assumption being met.</p>
+<p>The residuals plot can also be used to check for heteroscedasticity.
+Let’s again examine the fitted values vs. residuals for
+<code>model1</code>.</p>
 <pre class="r"><code>plot(model1, 1)</code></pre>
-<p>Now, check for heteroscedasticity by examining the plot of the fitted
-values vs. residuals for <code>model4</code>.</p>
-<pre class="r"><code># your code here</code></pre>
+<p>Now, we are looking at the amount of scatter in the residuals across
+the range of the fitted values. If the amount of scatter looks
+approximately the same, we have not violated the homoscedasticity
+assumption.</p>
+<p>Check for heteroscedasticity in model 4 below.</p>
+<pre class="r"><code>## your code</code></pre>
 <blockquote>
-<p><strong>Question: Does the amount of variability in the residuals
-seem to differ across the model’s fitted values for either of these
-models? In other words, is there evidence of
-heteroscedasticity?</strong></p>
+<p><strong>Question: Is there evidence of heteroscedasticity
+?</strong></p>
 </blockquote>
+<p><strong>Potential Solution:</strong>Bootstrapping, weighted least
+squares, transformation on the outcome</p>
 </div>
-<div id="checking-for-non-independence-among-errors" class="section level1">
-<h1>Checking for non-independence among errors</h1>
-<p>One way to check for non-independence among errors is to examine
-whether the errors have a non-random (i.e., systematic) relationship
-with a variable they shouldn’t, such as ID number. In this case, ID
-represents the order in which participants participated.</p>
+<div id="non-independence-among-errors" class="section level1">
+<h1>Non-Independence Among Errors</h1>
+<p>Another assumption underlying linear regression is that the errors
+are uncorrelated. Non-independence occurs if there’s a relationship
+between the residuals (for example, if you collected multiple
+observations from the same person, the errors associated with that
+person’s observations would be correlated).</p>
+<p>Non-independence of errors is a significant issue because then
+estimated standard errors will tend to be underestimates of true
+standard errors, which leads to test statistics being larger than they
+should be (more likely to erroneously conclude a predictor is
+significant), and confidence intervals will be smaller than they should
+be (suggesting you have more precision than you actually do).</p>
+<p>In some cases, the research design will inform you of whether to
+expect non-independent errors. To test for non-independence when the
+research design does not inform you, you can look at a plot of the
+residuals with a variable that the errors should not correspond to
+(e.g., ID number, time).</p>
 <p>Let’s check whether we have violated the assumption of independence
 of errors by plotting residuals against ID numbers for
 <code>model1</code>.</p>
@@ -3076,27 +3052,46 @@ ggplot(data = model1_aug, aes(x = id, y = .resid)) +
   geom_hline(yintercept = 0)</code></pre>
 <p>Repeat the same thing, but this time testing the independence of
 errors assumption for <code>model4</code>.</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code>## your code</code></pre>
 <blockquote>
 <p><strong>Question: Does there appear to be a relationship between ID
 number and the residuals for either model above?</strong></p>
 </blockquote>
+<p><strong>Potential Solution:</strong> Use a different analysis that
+does not assume non-independence among errors (e.g., multilevel
+modeling)</p>
 </div>
-<div id="checking-for-outliers" class="section level1">
-<h1>Checking for outliers</h1>
-<p>The presence of outliers means a few values could be having a
-disproportionate influence on a single variable (univariate outliers) or
-on the fit of a regression model (multivariate outliers). Therefore, we
-want to identify outliers so we can consider whether they should be
-removed or changed.</p>
+<div id="outliers" class="section level1">
+<h1>Outliers</h1>
+<p>There are two types of outliers: univariate outliers and multivariate
+outliers.</p>
+<p>Univariate outliers are cases that have an unusual value on a single
+variable compared to where the majority of cases lie.</p>
+<p>Multivariate outliers are cases with an unusual <em>set</em> of
+values compared to where the model lies.</p>
 <div id="univariate-outliers" class="section level2">
-<h2>Univariate outliers</h2>
-<p>One way of visually seeing potential outliers for a single variable
-is by using a boxplot.</p>
-<p>Let’s obtain a boxplot of the happiness outcome variable from the
-dataset called <code>df5</code>.</p>
+<h2>Univariate Outliers</h2>
+<p>To diagnose univariate outliers, you can examine a histogram and/or
+boxplot for each variable of interest.</p>
+<p>First, let’s look at a histogram for <code>happiness</code> and
+<code>extraversion</code> from <code>df5</code>.</p>
+<pre class="r"><code>df5 %&gt;% 
+  ggplot(aes(x = happiness)) + 
+  geom_histogram(fill = &quot;purple&quot;, bins = 15) +
+  theme_minimal()
+
+df5 %&gt;% 
+  ggplot(aes(x = extraversion)) + 
+  geom_histogram(fill = &quot;purple&quot;, bins = 15) +
+  theme_minimal()</code></pre>
+<p>We could also examine a boxplot for each variable.</p>
 <pre class="r"><code>ggplot(df5) +
   aes(y = happiness) +
+  geom_boxplot() +
+  theme_minimal()
+
+ggplot(df5) +
+  aes(y = extraversion) +
   geom_boxplot() +
   theme_minimal()</code></pre>
 <p>The outer edges of the boxplot correspond to the first and third
@@ -3108,27 +3103,21 @@ is the distance from the first to the third quartile). The lower whisker
 extends from the lower edge of the boxplot to the smallest value that is
 smallest value that is no further than 1.5 * IQR from the edge. Data
 points beyond these are considered outliers.</p>
-<p>To determine the value of the potential outliers, you can use the
-function <code>boxplot.stats()</code>. The value(s) underneath
-<code>$out</code> are scores on the variable that landed more extreme
-than the boxplot’s whiskers.</p>
+<p>It looks like happiness has a potential outlier. To determine the
+value of the potential outliers, you can use the function
+<code>boxplot.stats()</code>. The value(s) underneath <code>$out</code>
+are scores on the variable that landed more extreme than the boxplot’s
+whiskers.</p>
 <pre class="r"><code>boxplot.stats(df5$happiness)</code></pre>
 <p>Let’s find out who in the original dataset this value corresponds
 to.</p>
 <pre class="r"><code>df5[df5$happiness == 32,]</code></pre>
-<p>Not all outliers determined in this way necessarily need to be
-removed from or changed in the dataset. Use your knowledge of your
-field, the methods used, and how extreme the outlier is to determine if
-it should be addressed. You can also examine the mean of your variable
-with and without the outlier present to gauge how strong of an influence
-it is having.</p>
 </div>
 <div id="multivariate-outliers" class="section level2">
-<h2>Multivariate outliers</h2>
+<h2>Multivariate Outliers</h2>
 <p>You can also have multivariate outliers, which are outliers because
 they are far away from the values predicted by your linear regression
-model <em>or</em> they have an undue influence on the fit of the
-model.</p>
+model or they have an undue influence on the fit of the model.</p>
 <p>One straightforward way to visually inspect the data for multivariate
 outliers is to use bivariate scatterplots for each combination of
 outcome and predictor.</p>
@@ -3140,76 +3129,37 @@ outcome and predictor.</p>
 <p><strong>Question: Do there appear to be any multivariate outliers in
 the scatterplot?</strong></p>
 </blockquote>
-<div id="measures-of-distance" class="section level3">
-<h3>Measures of Distance</h3>
-<p>We can get a quantitative measure of the <em>distance</em> of points
-from the regression model using either 1) standardized residuals or 2)
-studentized deleted residuals.</p>
-<div id="standardized-residuals" class="section level4">
-<h4>Standardized Residuals</h4>
-<p>Standardized residuals are the raw residuals put into standardized
-units by dividing by the residual standard error.</p>
+<div id="outlier-distance-from-model" class="section level3">
+<h3>Outlier Distance from Model</h3>
+<p>You can also examine the distance of an observation from the model
+using several different numerical measures, including <em>standardized
+residuals</em>.</p>
+<p>Standardized residuals are the raw residuals converted into
+standardized units.</p>
 <p>We can plot the standardized residuals by using the
 <code>ols_plot_resid_stand()</code> function from the
 <code>{olsrr}</code> package.</p>
 <pre class="r"><code>ols_plot_resid_stand(model5)</code></pre>
 <p>We can also look at the standardized residuals stored in
 <code>model5_aug</code>:</p>
-<pre class="r"><code>model5_aug$id &lt;- df5$id
+<pre class="r"><code>model5_aug &lt;- augment(model5)
+
+model5_aug$id &lt;- df5$id
 
 model5_aug %&gt;% 
   select(id, .std.resid) %&gt;%
   arrange(desc(abs(.std.resid)))</code></pre>
 <p>One standard is that standardized residuals greater than <span class="math inline">\(\pm2\)</span> are worth inspecting further.</p>
 </div>
-<div id="studentized-deleted-residuals" class="section level4">
-<h4>Studentized Deleted Residuals</h4>
-<p>Studentized deleted residuals are calculated by deleting data points
-from a dataset one by one, fitting models with the new datasets, and
-calculating the standardized distance between the deleted data points
-and the predicted values for the models without the data points.</p>
-<p>Let’s plot the studentized deleted residuals by using the
-<code>ols_plot_resid_stud()</code> function from the
-<code>{olsrr}</code> package.</p>
-<pre class="r"><code>ols_plot_resid_stud(model5)
-
-# for some of you, the above function might not work. try this...
-data.frame(id = seq_along(rstudent(model5)),
-           rs = rstudent(model5)) %&gt;%
-  ggplot(aes(x = id, y = rs, label = id)) +
-  geom_hline(yintercept = c(-3, 3), color = &quot;red&quot;) +
-  geom_bar(width  = 0.25, 
-           stat   = &quot;identity&quot;, 
-           colour = &quot;turquoise4&quot;,
-           fill   = &quot;turquoise4&quot;) +
-  geom_text(hjust   = -0.2, 
-            nudge_x = 0.05, 
-            size    = 2, 
-            na.rm   = TRUE) +
-  xlab(&quot;Observation&quot;) + 
-  ylab(&quot;Deleted Studentized Residuals&quot;) + 
-  ggtitle(&quot;Studentized Residuals Plot&quot;) +
-  theme_bw()</code></pre>
-<p>We can also view the studentized residuals by using the
-<code>rstudent()</code> function from <code>{stats}</code> package.</p>
-<pre class="r"><code>studentized_resids &lt;- rstudent(model5)
-sort(abs(studentized_resids), decreasing = TRUE)</code></pre>
-<p>One standard is that studentized residuals greater than <span class="math inline">\(\pm3\)</span> are worth inspecting further.</p>
-</div>
-</div>
-<div id="measures-of-influence" class="section level3">
-<h3>Measures of influence</h3>
-<p>Another way of examining whether outliers are present and should be
-dealt with is by measuring their <em>influence</em> on the regression
-model. Three measures you can use to measure influence of a data point
-on the regression model are 1) Cook’s Distance, 2) DFFITS, and 3)
-DFBETAS</p>
-<div id="cooks-distance" class="section level4">
-<h4>Cook’s Distance</h4>
+<div id="outlier-influence-on-model" class="section level3">
+<h3>Outlier Influence on Model</h3>
+<p>And finally, you can examine the <em>influence</em> that an outlier
+has on the fit of the regression model using many different numerical
+assessments. We’ll go over <em>Cook’s Distance</em> in this lab.</p>
 <p>Cook’s Distance summarizes how much the regression model would change
 if you removed a particular value. In other words, it represents the
 difference between the regression coefficients obtained from the full
-dataset and the regression coefficients that would be obtained if you
+data set and the regression coefficients that would be obtained if you
 deleted that particular value.</p>
 <p>We can plot the Cook’s Distances using the
 <code>ols_plot_cooksd_chart()</code> function from the
@@ -3222,62 +3172,48 @@ deleted that particular value.</p>
   arrange(desc(abs(.cooksd))) </code></pre>
 <p>One standard is that Cook’s D values greater than 3 times the average
 Cook’s D values are worth investigating.</p>
-</div>
-<div id="dfbetas" class="section level4">
-<h4>DFBETAS</h4>
-<p>DFBETA (AKA difference in betas) measures the difference in each
-parameter estimate with and without a particular point being included in
-the data.</p>
-<p>We can visualize this by using the <code>ols_plot_dfbetas()</code>
-function from the <code>{olsrr}</code> package:</p>
-<pre class="r"><code>ols_plot_dfbetas(model5)</code></pre>
-<p>We can also view the individual values by using the
-<code>dfbeta</code> function from the <code>{stats}</code> package:</p>
-<pre class="r"><code>dfbetas &lt;- dfbeta(model5)
-
-sort(abs(dfbetas[,1]), decreasing = TRUE)
-sort(abs(dfbetas[,2]), decreasing = TRUE)</code></pre>
-<p>One standard is that DFBETAS larger than <span class="math inline">\(\frac{2}{\sqrt{n}}\)</span> should be investigated
-as potential outliers.</p>
-</div>
-<div id="dffits" class="section level4">
-<h4>DFFITS</h4>
-<p>DFFITS (AKA difference in fits) measure the difference in the model’s
-fitted values with and without a particular point being included in the
-data.</p>
-<p>We can visualize this by using the <code>ols_plot_dffits()</code>
-function from the <code>{olsrr}</code> package:</p>
-<pre class="r"><code>ols_plot_dffits(model5)</code></pre>
-<p>We can also view the individual values by using the
-<code>dffits</code> function from the <code>{stats}</code> package:</p>
-<pre class="r"><code>dffits &lt;- dffits(model5)
-sort(abs(dffits), decreasing = TRUE)</code></pre>
-<p>One standard is that DFFITS larger than <span class="math inline">\(2
-\times \frac{p+1}{\sqrt{n−p−1}}\)</span> should be investigated as
-potential outliers (n = number of observations, p = number of predictors
-including the intercept).</p>
+<p><strong>Potential Solution:</strong> Not all outliers should be
+immediately removed from the analysis. Consider the nature of the
+outlier (a data entry error? a real phenomenon?) and your research goal
+(interpretation? prediction?) when deciding whether to remove an outlier
+from the data. You can also provide results of your analysis but with
+and without the outlier.</p>
 </div>
 </div>
 </div>
-</div>
-<div id="checking-for-multicollinearity" class="section level1">
-<h1>Checking for multicollinearity</h1>
+<div id="multicolllinearity" class="section level1">
+<h1>Multicolllinearity</h1>
 <p>Multicollinearity occurs when one or more predictors in our model are
 highly correlated.</p>
-<p>One way we can check this before we even run our model is to look at
-the zero-order correlations between variables. The <code>df6</code>
-dataset contains two predictor variables. Let’s investigate the
-correlation between them.</p>
-<pre class="r"><code>cor(df6)</code></pre>
+<p>This poses an issue because if two or more predictors are highly
+redundant with one another, it becomes difficult to tell what the unique
+relationship each has with the outcome variable is. It also increases
+standard errors, which makes it more difficult to find significant
+effects.</p>
+<p>First, you can simply look at a correlation matrix of your
+predictors. Let’s do this for <code>df6</code>, which contains two
+predictor variables.</p>
+<pre class="r"><code>df6 # inspect data 
+
+cor(df6) # correlation matrix</code></pre>
 <p>The variables <code>extraversion</code> and
 <code>social_engagement</code> appear to be VERY highly correlated
 (<em>r</em> = 0.96)!</p>
-<div id="tolerance-variance-inflation-factor-vif" class="section level2">
-<h2>Tolerance &amp; Variance Inflation Factor (VIF)</h2>
-<p>Recall the two measures of multicollinearity that we discussed in
-lecture: tolerance and VIF.</p>
+<p>We can’t rely <em>only</em> on correlation matrices to identify
+collinearity, because it is possible for multicollinearity to exist
+among three or more variables (even if each pair of variables is not
+highly correlated).</p>
+<p>Thus, we also want to calculate numerical measures of
+multicollinearity, including <em>tolerance</em> and <em>VIFs</em>.</p>
 <p>Tolerance is: <span class="math display">\[1 - R_{12}^2\]</span></p>
+<ul>
+<li>where <span class="math inline">\(R_{12}^2\)</span> is the R-squared
+value resulting from regression predictor 1 onto predictor 2.</li>
+</ul>
 <p>And VIF is <span class="math display">\[\frac{1}{Tolerance}\]</span></p>
+<ul>
+<li>which is simply the inverse of tolerance</li>
+</ul>
 <p>Let’s run a model with two predictors using <code>df6</code>. We’ll
 predict <code>happiness</code> from both <code>extraversion</code> and
 <code>social_engagement</code>.</p>
@@ -3286,21 +3222,30 @@ predict <code>happiness</code> from both <code>extraversion</code> and
 <code>ols_vif_tol()</code> function from the <code>{olsrr}</code>
 package.</p>
 <pre class="r"><code>ols_vif_tol(model6)</code></pre>
-<p>Either a <em>low</em> tolerance (below 0.20 is one standard) or a
-<em>high</em> VIF (above 5 or 10 are standards) is an indication of a
-problem with multicollinearity.</p>
-</div>
+<p>Notice that the tolerance is simply 1 minus the R-squared value you
+obtain if you run a regression model predicting one of the predictors
+from the other:</p>
+<pre class="r"><code>tol_ext &lt;- lm(extraversion ~ social_engagement, data = df6)
+
+tol &lt;- 1 - summary(tol_ext)$r.squared
+tol
+
+VIF &lt;- 1/tol # and VIF is its inverse
+VIF</code></pre>
+<p>Either a <em>low</em> tolerance (below 0.20 is one rule of thumb) or
+a <em>high</em> VIF (above 5 or 10) is an indication of a problem with
+multicollinearity.</p>
 </div>
 <div id="minihack-1" class="section level1">
 <h1>Minihack 1</h1>
 <p>Load the <code>bfi</code> dataset from the <code>{psych}</code>
-package (this is done for you below, in case you haven’t loaded a
-dataset from a package).</p>
+package (this is done for you below, in case you haven’t loaded a dat
+set from a package).</p>
 <pre class="r"><code>data(bfi, package = &quot;psych&quot;)</code></pre>
 <p>First, create a model regressing age on the 5 items for
 <code>Conscientiousness</code> (labeled <code>C1</code>,
 <code>C2</code>, <code>C3</code>, <code>C4</code>, and <code>C5</code>).
-Asign the object to a variable called <code>model</code>.</p>
+Assign the object to a variable called <code>model</code>.</p>
 <pre class="r"><code># your code here</code></pre>
 <p>Next, use <code>augment()</code> on the model. Save the output to
 variable called <code>model_aug</code>.</p>
