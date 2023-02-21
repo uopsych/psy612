@@ -363,7 +363,7 @@ ggplot(aug_1, aes(x = Support, y = .resid)) +
 ### 4) Homoscedasticity
 
 ```{r, echo = FALSE}
-ggplot(data = aug_1, aes(x=.fitted, y=.resid)) + 
+ggplot(data = aug_1, aes(x=Anxiety, y=.resid)) + 
   geom_point() +
   geom_hline(yintercept = 0) +
   theme_bw(base_size = 20)
