@@ -1,0 +1,646 @@
+---
+title: "Interactions"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+options(scipen = 999)
+library(tidyverse)
+library(knitr)
+# function to display only part of the output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(message = FALSE) # suppress messages
+```
+
+## Last time
+
+Causal models as a tool for model building
+
+## Today
+
+Interactions/moderation
+
+------------------------------------------------------------------------
+
+## Motivating example
+
+```{r}
+library(tidyverse)
+t_data = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/tutor.csv")
+glimpse(t_data)
+t_data = t_data %>%
+  mutate(tutor_lab = factor(tutor, 
+                            levels = c(0,1),
+                            labels = c("No tutor", "Tutor")))
+```
+
+------------------------------------------------------------------------
+
+```{r, output.lines = c(9:12)}
+mod1 = lm(grade ~ tutor, data = t_data)
+summary(mod1)
+```
+
+
+Consider the regression model below. How do we interpret the coefficient, $b_1$ ?
+
+$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor}$$
+
+. . . 
+
+$b_0$ is the mean of the reference group (no tutor), and $b_1$ represents the difference in means between the two groups.
+
+------------------------------------------------------------------------
+
+### Visualizing
+
+```{r,  message=F, warning = F, fig.width = 8}
+#| code-fold: true
+#| 
+means = t_data %>%
+  group_by(tutor_lab) %>%
+  summarize(M = mean(grade))
+
+mod1 = lm(grade ~ tutor, data = t_data)
+predict.1 = data.frame(study = rep(.5,2), tutor = c(0,1))
+predict.1$grade = predict(mod1, newdata = predict.1) 
+predict.1 = cbind(predict.1[1,], predict.1[2,])
+names(predict.1) = c("x1", "d1", "y1", "x2", "d2", "y2")
+
+ggplot(t_data, aes(tutor,grade, color = tutor_lab)) +
+  geom_jitter(size = 3, width = .05) +
+  geom_hline(aes(yintercept = M, color = tutor_lab), 
+             data = means, size = 1.5) + 
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.1, 
+               inherit.aes = F, size = 1.5)+
+  scale_x_continuous(breaks = c(0,1), labels = c("No tutor", "tutor")) +
+  scale_y_continuous(limits =c(5,10)) +
+  labs(x = "Group", y = "Grade (out of 10)", color = "") +
+  cowplot::theme_cowplot()
+```
+
+------------------------------------------------------------------------
+
+### Visualizing
+
+```{r, message=F, warning = F, fig.width = 8}
+#| code-fold: true
+means = t_data %>%
+  group_by(tutor_lab) %>%
+  summarize(M = mean(grade))
+
+mod1 = lm(grade ~ tutor, data = t_data)
+predict.1 = data.frame(study = rep(mean(t_data$study),2), tutor = c(0,1))
+predict.1$grade = predict(mod1, newdata = predict.1) 
+predict.1 = cbind(predict.1[1,], predict.1[2,])
+names(predict.1) = c("x1", "d1", "y1", "x2", "d2", "y2")
+
+ggplot(t_data, aes(study,grade, color = tutor_lab)) +
+  geom_point(size = 3) +
+  geom_hline(aes(yintercept = M, color = tutor_lab), 
+             data = means, size = 1.5) + 
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.1, 
+               inherit.aes = F, size = 1.5)+
+  labs(x = "Hours studying", y = "Grade (out of 10)", color = "") +
+  scale_y_continuous(limits =c(5,10)) +
+  cowplot::theme_cowplot()
+```
+
+------------------------------------------------------------------------
+
+### Interpreting slopes
+
+Extending this to the multivariate case, let's add hours spent studying (`study`) as another covariate.
+
+```{r, output.lines = c(9:13)}
+mod2 = lm(grade ~ tutor_lab + study, data = t_data)
+summary(mod2)
+```
+
+$$\hat{Y} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study}$$
+
+How do we interpret $b_1?$
+
+------------------------------------------------------------------------
+
+
+```{r, output.lines = c(9:13)}
+mod2 = lm(grade ~ tutor_lab + study, data = t_data)
+summary(mod2)
+```
+
+$$\hat{Y} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study}$$
+
+$b_1$ is the difference in means between the two groups *if the two groups have the same average level of hours studying* or holding `study` constant. 
+
+This, by the way, is ANCOVA.
+
+
+------------------------------------------------------------------------
+
+### Visualizing
+
+```{r, message = F, fig.width = 8}
+#| code-fold: true
+mod = lm(grade ~ study + tutor_lab, data = t_data)
+t_data$pmod = predict(mod)
+
+predict.2 = data.frame(study = rep(mean(t_data$study), 2), tutor_lab = c("No tutor", "Tutor"))
+predict.2$grade = predict(mod, newdata = predict.2) 
+predict.2 = cbind(predict.2[1,], predict.2[2,])
+names(predict.2) = c("x1", "d1", "y1", "x2", "d2", "y2")
+
+ggplot(t_data, aes(study,grade, color = tutor_lab)) +
+  geom_point(size = 3, aes(color = tutor_lab)) +
+  geom_smooth(aes(y = pmod), method = "lm", se = F)+
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.2, 
+               inherit.aes = F, size = 1.5)+
+    labs(x = "Hours studying", y = "Grade (out of 10)", color = "") +
+  scale_y_continuous(limits =c(5,10)) +
+  cowplot::theme_cowplot()
+```
+
+------------------------------------------------------------------------
+
+### Visualizing
+
+```{r, message = F, fig.width = 8}
+#| code-fold: true
+
+ggplot(t_data, aes(study, grade, group = tutor_lab)) +
+  geom_point(size = 3, aes(shape = tutor_lab, color = tutor_lab)) +
+  geom_smooth(aes(y = pmod), method = "lm", se = F, color = "black")+
+    geom_hline(aes(yintercept = M), linetype = "dashed",
+             data = means, size = 1.5) + 
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = predict.2, 
+               inherit.aes = F, size = 1.5) +
+  geom_segment(aes(x = x1+.05, y = y1, xend = x2+.05, yend = y2), data = predict.1, 
+               inherit.aes = F, size = 1.5, linetype = "dashed") +
+    labs(x = "Hours studying", y = "Grade (out of 10)", color = "", shape = "") +
+  scale_y_continuous(limits =c(5,10)) +
+  cowplot::theme_cowplot()
+
+```
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+
+t_data = t_data %>% select(-pmod)
+```
+
+## What are interactions?
+
+When we have two variables, A and B, in a regression model, we are testing whether these variables have [additive effects]{style="color:purple"} on our outcome, Y. That is, the effect of A on Y is constant over all values of B. 
+
+- Example: Studying and working with a tutor have additive effects on grades; no matter how many hours I spend studying, working with a tutor will improve my grade by 2 points.
+
+------------------------------------------------------------------------
+
+## What are interactions?
+However, we may hypothesis that two variables have [joint effects]{style="color:purple"}, or interact with each other. In this case, the effect of A on Y changes as a function of B. 
+
+- Example: Working with a tutor has a positive impact on grades but only for individuals who do not spend a lot of time studying; for individuals who study a lot, tutoring will have little or no impact. 
+
+- This is also referred to as [moderation.]{style="color:purple"}
+
+Interactions (moderation) tell us whether the effect of one IV (on a DV) _depends_ on another IV.
+
+------------------------------------------------------------------------
+
+## Interactions
+
+Now extend this example to include joint effects, not just additive effects:
+
+$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})$$
+
+```{r, output.lines = c(9:14)}
+mod3 = lm(grade ~ tutor_lab + study + tutor_lab:study, data = t_data) 
+mod3 = lm(grade ~ tutor_lab*study, data = t_data)
+summary(mod3)
+```
+
+------------------------------------------------------------------------
+
+### Visualizing
+
+```{r, fig.width=8, fig.height = 6}
+#| code-fold: true
+#| 
+ggplot(t_data, aes(study, grade, color = tutor_lab)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = F)+
+    labs(x = "Hours studying", y = "Grade (out of 10)", color = "") +
+  cowplot::theme_cowplot()
+```
+
+Where should we draw the segment to compare means?
+
+------------------------------------------------------------------------
+
+## Interpreting coefficients
+
+$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})$$
+
+```{r, echo = F, output.lines = c(9:14)}
+mod3 = lm(grade ~ tutor_lab + study + tutor_lab:study, data = t_data)
+summary(mod3)
+```
+
+Intercept: the expected value of Y when all predictors are 0
+
+$b_1$: The difference in means (tutor vs no tutor) _when study = 0_
+
+$b_2$: The slope of study _when tutor = 0, or the reference group_
+
+$b_3$?
+
+------------------------------------------------------------------------
+
+## Interpreting coefficients
+
+$$\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})$$
+
+$b_3$
+
+- the linear effect of the product of hours studying and tutoring
+- the degree of curvature in the regression plane
+- how much the slope of `study` differs for the two tutoring groups 
+- how much the effect of tutoring changes for for every one 1 hour increase in studying. 
+
+------------------------------------------------------------------------
+
+##  Terms
+
+
+Interactions tell us whether the effect of one IV (on a DV) _depends_ on another IV. In this case, the effect of tutoring _depends on_ a student's time spent studying. Tutoring has a large effect when a student's spends little time studying, but a small effect when the amount of time studying is high.
+
+$b_3$ is referred to as a "higher-order term."
+
+[Higher-order terms]{style="color:purple"} are those terms that represent interactions. 
+
+------------------------------------------------------------------------
+
+##  Terms
+
+[Lower-order terms]{style="color:purple"} change depending on the values of the higher-order terms. The value of $b_1$ and $b_2$ will change depending on the value of $b_3$. 
+
+- These values represent "conditional effects" (because the value is conditional on the level of the other variable). In many cases, the value and significance test with these terms is either meaningless (if an IV is never equal to 0) or unhelpful, as these values and significance change across the data. 
+
+------------------------------------------------------------------------
+
+## Conditional effects and simple slopes
+
+The regression line estimated in this model is quite difficult to interpret on its own. A good strategy is to decompose the regression equation into [simple slopes]{style="color:purple"}, which are determined by calculating the conditional effects at a specific level of the moderating variable.
+
+- Simple slope: the equation for Y on X at different levels of Z
+
+- Conditional effect: the slope coefficients in the full regression model that can change. These are the lower-order terms associated with a variable. E.g., studying has a conditional effect on grade. 
+
+------------------------------------------------------------------------
+
+The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our tutoring data:
+
+------------------------------------------------------------------------
+
+```{r, echo = F, output.lines = c(9:14)}
+mod3 = lm(grade ~ tutor_lab + study + tutor_lab:study, data = t_data)
+summary(mod3)
+```
+
+```{r, echo = F}
+C.vector = coef(summary(mod3))[,1]
+C.round = round(C.vector,2)
+```
+
+$$\hat{\text{grade}} = `r C.round[1]` + `r C.round[2]`(\text{Tutor})+ `r C.round[3]`(\text{Study})+ `r C.round[4]`(\text{T} \times \text{S})$$
+
+. . . 
+
+[Set Tutoring to 0]{style="color:purple"}
+
+$$
+\begin{aligned}
+\hat{\text{grade}} &= `r C.round[1]` + `r C.round[2]`(0)+ `r C.round[3]`(\text{Study})+ `r C.round[4]`(0 \times \text{Study}) \\
+&= `r C.round[1]` + `r C.round[2]*0`+ `r C.round[3]`(\text{Study})+ `r C.round[4]*0`(\text{Study}) \\
+&= `r C.round[1] + C.round[2]*0` + `r C.round[3] + C.round[4]*0`(\text{Study})
+\end{aligned}
+$$
+
+------------------------------------------------------------------------
+
+```{r, echo = F, output.lines = c(9:14)}
+mod3 = lm(grade ~ tutor_lab + study + tutor_lab:study, data = t_data)
+summary(mod3)
+```
+
+```{r, echo = F}
+C.vector = coef(summary(mod3))[,1]
+C.round = round(C.vector,2)
+```
+
+$$\hat{\text{grade}} = `r C.round[1]` + `r C.round[2]`(\text{Tutor})+ `r C.round[3]`(\text{Study})+ `r C.round[4]`(\text{T} \times \text{S})$$
+
+
+[Set Tutoring to 1]{style="color:purple"} 
+
+$$
+\begin{aligned}
+\hat{\text{grade}} &= `r C.round[1]` + `r C.round[2]`(1)+ `r C.round[3]`(\text{Study})+ `r C.round[4]`(1 \times \text{Study}) \\
+&= `r C.round[1]` + `r C.round[2]*1`+ `r C.round[3]`(\text{Study})+ `r C.round[4]*1`(\text{Study}) \\
+&= `r C.round[1] + C.round[2]*1` + `r C.round[3] + C.round[4]*1`(\text{Study})
+\end{aligned}
+$$
+------------------------------------------------------------------------
+
+
+## Interaction shapes
+
+Often we graph the simple slopes as a way to understand the interaction. The shape of the lines in the graph are informative and help us interpret conceptually what's happening.
+
+------------------------------------------------------------------------
+
+### Cross-over interactions
+
+```{r, echo = F, fig.width=10, fig.height=5, messages = F, warning = F, results = 'hide'}
+x = 1:10
+y1 = -2 + .9*x
+y2 = 1.6 - .2*x
+
+
+data.frame(x = rep(x, 2), y = c(y1,y2), group = rep(c("Group 1", "Group 2"),each = 10)) %>%
+  ggplot(aes(x,y,color = as.factor(group))) +
+  geom_line(size = 2) +
+  labs(x = "X", y = "Y", color = "") +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(labels = NULL, limit = c(-5, 10)) + cowplot::theme_cowplot(font_size = 20)
+```
+
+
+------------------------------------------------------------------------
+
+### Ordinal interactions
+
+```{r, echo = F, fig.width=10, fig.height=5, messages = F, warning = F, results = 'hide'}
+x = 1:10
+y1 = .7 + .9*x
+y3 = .5 - .4*x
+
+data.frame(x = rep(x, 2), y = c(y1,y3), group = rep(c("Group 1", "Group 2"),each = 10)) %>%
+  ggplot(aes(x,y,color = as.factor(group))) +
+  geom_line(size = 2) +
+  labs(x = "X", y = "Y", color = "") +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(labels = NULL, limit = c(-5, 15)) + cowplot::theme_cowplot(font_size = 20)
+```
+
+------------------------------------------------------------------------
+
+## Interaction shapes
+
+### Ordinal interactions (beware...)
+
+```{r, echo = F, fig.width=10, fig.height=5, messages = F, warning = F, results = 'hide'}
+x = 1:10
+y1 = .7 + 0*x
+y3 = .3 + .03*x
+
+data.frame(x = rep(x, 2), y = c(y1,y3), group = rep(c("Group 1", "Group 2"),each = 10)) %>%
+  ggplot(aes(x,y,color = as.factor(group))) +
+  geom_line(size = 2) +
+  labs(x = "X", y = "Y", color = "") +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(labels = NULL) + cowplot::theme_cowplot(font_size = 20)
+```
+
+------------------------------------------------------------------------
+
+
+```{r, results = 'hide', message = F, warning = F}
+library(sjPlot)
+plot_model(mod3, type = "int")
+```
+
+------------------------------------------------------------------------
+
+
+```{r, results = 'hide', message = F, warning = F}
+library(sjPlot)
+plot_model(mod3, type = "pred", terms = c("study", "tutor_lab"))
+```
+
+------------------------------------------------------------------------
+
+
+## Simple slopes - Significance tests
+
+The slope of studying at a specific level of tutoring (1 or 0) is a combination of both $b_1$ and $b_3$:
+
+$$\large \hat{Y} = (b_{0} + b_{2}D) + (b_{1} + b_{3}D)X$$
+$$\large se_{b@D} = \sqrt{se_{b_1}^2 + (2 * D * cov_{b_1b_3})+ (D^2 se_{b_3}^2)}$$
+
+
+------------------------------------------------------------------------
+
+$$\large se_{b@D} = \sqrt{se_{b_1}^2 + (2 * D * cov_{b_1b_3})+ (D^2 se_{b_3}^2)}$$
+In this formula, $cov_{b_1b_3}$ refers to the covariance of the coefficients, not the covariance of the variables. This may seem a strange concept, as we only ever have one value for $b_1$ and $b_3$ -- the covariance of these coefficients refer to idea that if we randomly sample from a population, estimate the coefficients each time, and then examine the covariance of coefficients across random samples, it will not be 0.
+
+```{r}
+round(vcov(mod3),4)
+```
+
+------------------------------------------------------------------------
+
+### Significance tests
+
+We can use the standard error of the slope to estimate whether or not it is significantly different from 0. 
+
+
+$$\large \hat{Y} = (b_{0} + b_{2}D) + (b_{1} + b_{3}D)X$$
+$$\large t = \frac{(b_{1} + b_{3}D)}{se_{b@D}}$$
+$$df = N-p-1$$
+
+
+------------------------------------------------------------------------
+
+### Significance tests in R
+
+
+We want to know whether studying is a significant predictor of grades at different levels of tutoring.
+
+```{r, message = F, warning = F}
+library(emmeans)
+emtrends(mod3, ~tutor_lab, var = "study")
+```
+
+------------------------------------------------------------------------
+
+### Significance tests in R
+
+
+What if you want to compare slopes to each other? How would we test this?
+
+```{r}
+emtrends(mod3, pairwise~tutor_lab, var = "study")
+```
+
+------------------------------------------------------------------------
+
+### Significance tests in R
+
+Note that this significance test is the same as our interaction coefficient!
+
+```{r,highlight.output = 5}
+coef(summary(mod3))
+```
+
+------------------------------------------------------------------------
+
+### Significance tests in R
+
+
+What if you want to compare the effect of tutoring at different levels of studying?
+
+First, we can calculate specific fitted values at combinations of studying and tutoring.
+
+```{r}
+mylist <- list(study=c(.50,1,2), tutor_lab=c("No tutor","Tutor"))
+emmeans(mod3, ~ study*tutor_lab, at=mylist)
+```
+
+------------------------------------------------------------------------
+
+Next, we can use the `contrast` function to look at pairwise comparisons of these fitted values.
+
+```{r}
+combins = emmeans(mod3, ~ study*tutor_lab, at=mylist)
+contrast(combins, "pairwise", by = "study")
+```
+
+
+------------------------------------------------------------------------
+
+## Centering
+
+The regression equation built using the raw data is not only diffiuclt to interpret, but often the terms displayed are not relevant to the hypotheses we're interested.
+
+  - $b_0$ is the expected value when all predictors are 0, but this may never happen in real life
+  - $b_1$ is the effect of tutoring when hours spent studying is equal to 0, but this may not ever happen either.
+
+------------------------------------------------------------------------
+
+[Centering]{style="color:purple"} your variables by subtracting the mean from all values can improve the interpretation of your results.
+
+  - Remember, a linear transformation does not change associations (correlations) between variables. In this case, it only changes the interpretation for some coefficients.
+
+------------------------------------------------------------------------
+
+```{r}
+t_data = t_data %>%
+  mutate(study_c = study - mean(study))
+head(t_data)
+```
+
+Why did we not center Y (grades)?
+
+------------------------------------------------------------------------
+
+```{r}
+summary(lm(grade ~ tutor_lab + study_c + tutor_lab:study_c, data = t_data))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(mod3)
+```
+
+What changed? What stayed the same?
+
+------------------------------------------------------------------------
+
+## Example
+
+What if our categorical variable has three groups?
+
+```{r}
+t_data2 = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/tutor_3grp.csv")
+glimpse(t_data2)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+mod4 = lm(grade ~ study*tutor, data = t_data2)
+summary(mod4)
+```
+
+------------------------------------------------------------------------
+
+What if we want a different reference group?
+
+```{r}
+t_data2 = t_data2 %>%
+  mutate(tutor = as.factor(tutor)) %>% # only necessary if your variable is character, not factor
+  mutate(tutor = relevel(tutor, ref = "No tutor"))
+mod4 = lm(grade ~ study*tutor, data = t_data2)
+summary(mod4)
+```
+
+------------------------------------------------------------------------
+
+```{r, results = 'hide', message = F, warning = F}
+plot_model(mod4, type = "pred", terms = c("study", "tutor"))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+emtrends(mod4, pairwise~tutor, var = "study")
+```
+
+------------------------------------------------------------------------
+
+```{r}
+mylist = list(study = c(.5, 1, 2), tutor = c("No tutor", "Group tutor", "One-on-one tutor"))
+combins = emmeans(mod4, ~tutor*study, at = mylist)
+contrast(combins, "pairwise", by = "study")
+```
+
+------------------------------------------------------------------------
+
+
+## Next time
+
+Interactions between continuous predictors

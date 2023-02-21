@@ -29,6 +29,8 @@ navbar:
         href: "lectures/10-anova.html"
       - text: "11/12-Diagnostics"
         href: "lectures/11-diagnostics.html"
+      - text: "13-Causal models"
+        href: "lectures/13-dag.html"
         
     - text: Labs
       menu:

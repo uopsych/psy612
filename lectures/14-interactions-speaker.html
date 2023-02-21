@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="14-interactions_files/libs/clipboard/clipboard.min.js"></script>
+<script src="14-interactions_files/libs/quarto-html/tabby.min.js"></script>
+<script src="14-interactions_files/libs/quarto-html/popper.min.js"></script>
+<script src="14-interactions_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="14-interactions_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="14-interactions_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="14-interactions_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.2.269">
+
+  <title>Interactions</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="14-interactions_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="14-interactions_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="14-interactions_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link href="14-interactions_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="14-interactions_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="14-interactions_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="14-interactions_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-captioned.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-captioned) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-captioned.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-captioned .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-captioned .callout-caption  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-captioned.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-captioned.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-caption {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-caption {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-caption {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-captioned .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-captioned) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-caption {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-caption {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-caption {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-caption {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-caption {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Interactions</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div class="cell">
+
+</div>
+</section>
+<section id="last-time" class="slide level2">
+<h2>Last time</h2>
+<p>Causal models as a tool for model building</p>
+</section>
+<section id="today" class="slide level2">
+<h2>Today</h2>
+<p>Interactions/moderation</p>
+</section>
+<section id="motivating-example" class="slide level2">
+<h2>Motivating example</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>t_data <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/uopsych/psy612/master/data/tutor.csv"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">glimpse</span>(t_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 20
+Columns: 4
+$ ID    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1…
+$ study &lt;dbl&gt; 1.62, 0.54, 0.86, 0.80, 0.36, 2.14, 1.13, 1.66, 1.23, 1.92, 1.82…
+$ grade &lt;dbl&gt; 9.0, 7.8, 8.5, 6.2, 6.9, 9.0, 6.6, 8.7, 6.6, 8.8, 9.7, 5.9, 9.5,…
+$ tutor &lt;dbl&gt; 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>t_data <span class="ot">=</span> t_data <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">mutate</span>(<span class="at">tutor_lab =</span> <span class="fu">factor</span>(tutor, </span>
+<span id="cb3-3"><a href="#cb3-3"></a>                            <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb3-4"><a href="#cb3-4"></a>                            <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No tutor"</span>, <span class="st">"Tutor"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell" data-output.lines="[9,10,11,12]">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mod1 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor, <span class="at">data =</span> t_data)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">summary</span>(mod1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+            Estimate Std. Error t value            Pr(&gt;|t|)    
+(Intercept)   6.7600     0.2804  24.108 0.00000000000000375 ***
+tutor         2.1300     0.3966   5.371 0.00004186706304119 ***
+...</code></pre>
+</div>
+</div>
+<p>Consider the regression model below. How do we interpret the coefficient, <span class="math inline">\(b_1\)</span> ?</p>
+<p><span class="math display">\[\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor}\]</span></p>
+<div class="fragment">
+<p><span class="math inline">\(b_0\)</span> is the mean of the reference group (no tutor), and <span class="math inline">\(b_1\)</span> represents the difference in means between the two groups.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing">Visualizing</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>means <span class="ot">=</span> t_data <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="fu">group_by</span>(tutor_lab) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="fu">summarize</span>(<span class="at">M =</span> <span class="fu">mean</span>(grade))</span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a>mod1 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor, <span class="at">data =</span> t_data)</span>
+<span id="cb6-6"><a href="#cb6-6"></a>predict<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">study =</span> <span class="fu">rep</span>(.<span class="dv">5</span>,<span class="dv">2</span>), <span class="at">tutor =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb6-7"><a href="#cb6-7"></a>predict<span class="fl">.1</span><span class="sc">$</span>grade <span class="ot">=</span> <span class="fu">predict</span>(mod1, <span class="at">newdata =</span> predict<span class="fl">.1</span>) </span>
+<span id="cb6-8"><a href="#cb6-8"></a>predict<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">cbind</span>(predict<span class="fl">.1</span>[<span class="dv">1</span>,], predict<span class="fl">.1</span>[<span class="dv">2</span>,])</span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="fu">names</span>(predict<span class="fl">.1</span>) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"d1"</span>, <span class="st">"y1"</span>, <span class="st">"x2"</span>, <span class="st">"d2"</span>, <span class="st">"y2"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="fu">ggplot</span>(t_data, <span class="fu">aes</span>(tutor,grade, <span class="at">color =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>  <span class="fu">geom_jitter</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">width =</span> .<span class="dv">05</span>) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> M, <span class="at">color =</span> tutor_lab), </span>
+<span id="cb6-14"><a href="#cb6-14"></a>             <span class="at">data =</span> means, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span> </span>
+<span id="cb6-15"><a href="#cb6-15"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> y1, <span class="at">xend =</span> x2, <span class="at">yend =</span> y2), <span class="at">data =</span> predict<span class="fl">.1</span>, </span>
+<span id="cb6-16"><a href="#cb6-16"></a>               <span class="at">inherit.aes =</span> F, <span class="at">size =</span> <span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No tutor"</span>, <span class="st">"tutor"</span>)) <span class="sc">+</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Group"</span>, <span class="at">y =</span> <span class="st">"Grade (out of 10)"</span>, <span class="at">color =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-4-1.png" width="768" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 id="visualizing-1">Visualizing</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>means <span class="ot">=</span> t_data <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">group_by</span>(tutor_lab) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="fu">summarize</span>(<span class="at">M =</span> <span class="fu">mean</span>(grade))</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a>mod1 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor, <span class="at">data =</span> t_data)</span>
+<span id="cb7-6"><a href="#cb7-6"></a>predict<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">study =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(t_data<span class="sc">$</span>study),<span class="dv">2</span>), <span class="at">tutor =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb7-7"><a href="#cb7-7"></a>predict<span class="fl">.1</span><span class="sc">$</span>grade <span class="ot">=</span> <span class="fu">predict</span>(mod1, <span class="at">newdata =</span> predict<span class="fl">.1</span>) </span>
+<span id="cb7-8"><a href="#cb7-8"></a>predict<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">cbind</span>(predict<span class="fl">.1</span>[<span class="dv">1</span>,], predict<span class="fl">.1</span>[<span class="dv">2</span>,])</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="fu">names</span>(predict<span class="fl">.1</span>) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"d1"</span>, <span class="st">"y1"</span>, <span class="st">"x2"</span>, <span class="st">"d2"</span>, <span class="st">"y2"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="fu">ggplot</span>(t_data, <span class="fu">aes</span>(study,grade, <span class="at">color =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> M, <span class="at">color =</span> tutor_lab), </span>
+<span id="cb7-14"><a href="#cb7-14"></a>             <span class="at">data =</span> means, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span> </span>
+<span id="cb7-15"><a href="#cb7-15"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> y1, <span class="at">xend =</span> x2, <span class="at">yend =</span> y2), <span class="at">data =</span> predict<span class="fl">.1</span>, </span>
+<span id="cb7-16"><a href="#cb7-16"></a>               <span class="at">inherit.aes =</span> F, <span class="at">size =</span> <span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours studying"</span>, <span class="at">y =</span> <span class="st">"Grade (out of 10)"</span>, <span class="at">color =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-5-1.png" width="768" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 id="interpreting-slopes">Interpreting slopes</h3>
+<p>Extending this to the multivariate case, let’s add hours spent studying (<code>study</code>) as another covariate.</p>
+<div class="cell" data-output.lines="[9,10,11,12,13]">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>mod2 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor_lab <span class="sc">+</span> study, <span class="at">data =</span> t_data)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">summary</span>(mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+               Estimate Std. Error t value         Pr(&gt;|t|)    
+(Intercept)      5.5882     0.3198  17.474 0.00000000000269 ***
+tutor_labTutor   1.3751     0.3183   4.320         0.000465 ***
+study            1.1777     0.2565   4.592         0.000259 ***
+...</code></pre>
+</div>
+</div>
+<p><span class="math display">\[\hat{Y} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study}\]</span></p>
+<p>How do we interpret <span class="math inline">\(b_1?\)</span></p>
+</section>
+<section class="slide level2">
+
+<div class="cell" data-output.lines="[9,10,11,12,13]">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>mod2 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor_lab <span class="sc">+</span> study, <span class="at">data =</span> t_data)</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">summary</span>(mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+               Estimate Std. Error t value         Pr(&gt;|t|)    
+(Intercept)      5.5882     0.3198  17.474 0.00000000000269 ***
+tutor_labTutor   1.3751     0.3183   4.320         0.000465 ***
+study            1.1777     0.2565   4.592         0.000259 ***
+...</code></pre>
+</div>
+</div>
+<p><span class="math display">\[\hat{Y} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study}\]</span></p>
+<p><span class="math inline">\(b_1\)</span> is the difference in means between the two groups <em>if the two groups have the same average level of hours studying</em> or holding <code>study</code> constant.</p>
+<p>This, by the way, is ANCOVA.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-2">Visualizing</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>mod <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> study <span class="sc">+</span> tutor_lab, <span class="at">data =</span> t_data)</span>
+<span id="cb12-2"><a href="#cb12-2"></a>t_data<span class="sc">$</span>pmod <span class="ot">=</span> <span class="fu">predict</span>(mod)</span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a>predict<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">study =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(t_data<span class="sc">$</span>study), <span class="dv">2</span>), <span class="at">tutor_lab =</span> <span class="fu">c</span>(<span class="st">"No tutor"</span>, <span class="st">"Tutor"</span>))</span>
+<span id="cb12-5"><a href="#cb12-5"></a>predict<span class="fl">.2</span><span class="sc">$</span>grade <span class="ot">=</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> predict<span class="fl">.2</span>) </span>
+<span id="cb12-6"><a href="#cb12-6"></a>predict<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">cbind</span>(predict<span class="fl">.2</span>[<span class="dv">1</span>,], predict<span class="fl">.2</span>[<span class="dv">2</span>,])</span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="fu">names</span>(predict<span class="fl">.2</span>) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"d1"</span>, <span class="st">"y1"</span>, <span class="st">"x2"</span>, <span class="st">"d2"</span>, <span class="st">"y2"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8"></a></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="fu">ggplot</span>(t_data, <span class="fu">aes</span>(study,grade, <span class="at">color =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="fu">aes</span>(<span class="at">color =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> pmod), <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F)<span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> y1, <span class="at">xend =</span> x2, <span class="at">yend =</span> y2), <span class="at">data =</span> predict<span class="fl">.2</span>, </span>
+<span id="cb12-13"><a href="#cb12-13"></a>               <span class="at">inherit.aes =</span> F, <span class="at">size =</span> <span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours studying"</span>, <span class="at">y =</span> <span class="st">"Grade (out of 10)"</span>, <span class="at">color =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-8-1.png" width="768" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 id="visualizing-3">Visualizing</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">ggplot</span>(t_data, <span class="fu">aes</span>(study, grade, <span class="at">group =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="fu">aes</span>(<span class="at">shape =</span> tutor_lab, <span class="at">color =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> pmod), <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F, <span class="at">color =</span> <span class="st">"black"</span>)<span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a>    <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> M), <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5"></a>             <span class="at">data =</span> means, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span> </span>
+<span id="cb13-6"><a href="#cb13-6"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> y1, <span class="at">xend =</span> x2, <span class="at">yend =</span> y2), <span class="at">data =</span> predict<span class="fl">.2</span>, </span>
+<span id="cb13-7"><a href="#cb13-7"></a>               <span class="at">inherit.aes =</span> F, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1<span class="fl">+.05</span>, <span class="at">y =</span> y1, <span class="at">xend =</span> x2<span class="fl">+.05</span>, <span class="at">yend =</span> y2), <span class="at">data =</span> predict<span class="fl">.1</span>, </span>
+<span id="cb13-9"><a href="#cb13-9"></a>               <span class="at">inherit.aes =</span> F, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours studying"</span>, <span class="at">y =</span> <span class="st">"Grade (out of 10)"</span>, <span class="at">color =</span> <span class="st">""</span>, <span class="at">shape =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-9-1.png" width="768" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+
+</div>
+</section>
+<section id="what-are-interactions" class="slide level2">
+<h2>What are interactions?</h2>
+<p>When we have two variables, A and B, in a regression model, we are testing whether these variables have <span style="color:purple">additive effects</span> on our outcome, Y. That is, the effect of A on Y is constant over all values of B.</p>
+<ul>
+<li class="fragment">Example: Studying and working with a tutor have additive effects on grades; no matter how many hours I spend studying, working with a tutor will improve my grade by 2 points.</li>
+</ul>
+</section>
+<section id="what-are-interactions-1" class="slide level2">
+<h2>What are interactions?</h2>
+<p>However, we may hypothesis that two variables have <span style="color:purple">joint effects</span>, or interact with each other. In this case, the effect of A on Y changes as a function of B.</p>
+<ul>
+<li class="fragment"><p>Example: Working with a tutor has a positive impact on grades but only for individuals who do not spend a lot of time studying; for individuals who study a lot, tutoring will have little or no impact.</p></li>
+<li class="fragment"><p>This is also referred to as <span style="color:purple">moderation.</span></p></li>
+</ul>
+<p>Interactions (moderation) tell us whether the effect of one IV (on a DV) <em>depends</em> on another IV.</p>
+</section>
+<section id="interactions" class="slide level2">
+<h2>Interactions</h2>
+<p>Now extend this example to include joint effects, not just additive effects:</p>
+<p><span class="math display">\[\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})\]</span></p>
+<div class="cell" data-output.lines="[9,10,11,12,13,14]">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>mod3 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor_lab <span class="sc">+</span> study <span class="sc">+</span> tutor_lab<span class="sc">:</span>study, <span class="at">data =</span> t_data) </span>
+<span id="cb14-2"><a href="#cb14-2"></a>mod3 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> tutor_lab<span class="sc">*</span>study, <span class="at">data =</span> t_data)</span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="fu">summary</span>(mod3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+                     Estimate Std. Error t value      Pr(&gt;|t|)    
+(Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+study                  1.7567     0.3095   5.676 0.00003443132 ***
+tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-4">Visualizing</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">ggplot</span>(t_data, <span class="fu">aes</span>(study, grade, <span class="at">color =</span> tutor_lab)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F)<span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hours studying"</span>, <span class="at">y =</span> <span class="st">"Grade (out of 10)"</span>, <span class="at">color =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-12-1.png" width="768" class="r-stretch"><p>Where should we draw the segment to compare means?</p>
+</section>
+<section id="interpreting-coefficients" class="slide level2">
+<h2>Interpreting coefficients</h2>
+<p><span class="math display">\[\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})\]</span></p>
+<div class="cell" data-output.lines="[9,10,11,12,13,14]">
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+                     Estimate Std. Error t value      Pr(&gt;|t|)    
+(Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+study                  1.7567     0.3095   5.676 0.00003443132 ***
+tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...</code></pre>
+</div>
+</div>
+<p>Intercept: the expected value of Y when all predictors are 0</p>
+<p><span class="math inline">\(b_1\)</span>: The difference in means (tutor vs no tutor) <em>when study = 0</em></p>
+<p><span class="math inline">\(b_2\)</span>: The slope of study <em>when tutor = 0, or the reference group</em></p>
+<p><span class="math inline">\(b_3\)</span>?</p>
+</section>
+<section id="interpreting-coefficients-1" class="slide level2">
+<h2>Interpreting coefficients</h2>
+<p><span class="math display">\[\hat{\text{grade}} = b_{0} + b_{1}\text{Tutor} + b_2\text{Study} + b_3(\text{Tutor}\times\text{Study})\]</span></p>
+<p><span class="math inline">\(b_3\)</span></p>
+<ul>
+<li class="fragment">the linear effect of the product of hours studying and tutoring</li>
+<li class="fragment">the degree of curvature in the regression plane</li>
+<li class="fragment">how much the slope of <code>study</code> differs for the two tutoring groups</li>
+<li class="fragment">how much the effect of tutoring changes for for every one 1 hour increase in studying.</li>
+</ul>
+</section>
+<section id="terms" class="slide level2">
+<h2>Terms</h2>
+<p>Interactions tell us whether the effect of one IV (on a DV) <em>depends</em> on another IV. In this case, the effect of tutoring <em>depends on</em> a student’s time spent studying. Tutoring has a large effect when a student’s spends little time studying, but a small effect when the amount of time studying is high.</p>
+<p><span class="math inline">\(b_3\)</span> is referred to as a “higher-order term.”</p>
+<p><span style="color:purple">Higher-order terms</span> are those terms that represent interactions.</p>
+</section>
+<section id="terms-1" class="slide level2">
+<h2>Terms</h2>
+<p><span style="color:purple">Lower-order terms</span> change depending on the values of the higher-order terms. The value of <span class="math inline">\(b_1\)</span> and <span class="math inline">\(b_2\)</span> will change depending on the value of <span class="math inline">\(b_3\)</span>.</p>
+<ul>
+<li class="fragment">These values represent “conditional effects” (because the value is conditional on the level of the other variable). In many cases, the value and significance test with these terms is either meaningless (if an IV is never equal to 0) or unhelpful, as these values and significance change across the data.</li>
+</ul>
+</section>
+<section id="conditional-effects-and-simple-slopes" class="slide level2">
+<h2>Conditional effects and simple slopes</h2>
+<p>The regression line estimated in this model is quite difficult to interpret on its own. A good strategy is to decompose the regression equation into <span style="color:purple">simple slopes</span>, which are determined by calculating the conditional effects at a specific level of the moderating variable.</p>
+<ul>
+<li class="fragment"><p>Simple slope: the equation for Y on X at different levels of Z</p></li>
+<li class="fragment"><p>Conditional effect: the slope coefficients in the full regression model that can change. These are the lower-order terms associated with a variable. E.g., studying has a conditional effect on grade.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>The conditional nature of these effects is easiest to see by “plugging in” different values for one of your variables. Return to the regression equation estimated in our tutoring data:</p>
+</section>
+<section class="slide level2">
+
+<div class="cell" data-output.lines="[9,10,11,12,13,14]">
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+                     Estimate Std. Error t value      Pr(&gt;|t|)    
+(Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+study                  1.7567     0.3095   5.676 0.00003443132 ***
+tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...</code></pre>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<p><span class="math display">\[\hat{\text{grade}} = 5.01 + 2.92(\text{Tutor})+ 1.76(\text{Study})+ -1.17(\text{T} \times \text{S})\]</span></p>
+<div class="fragment">
+<p><span style="color:purple">Set Tutoring to 0</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\text{grade}} &amp;= 5.01 + 2.92(0)+ 1.76(\text{Study})+ -1.17(0 \times \text{Study}) \\
+&amp;= 5.01 + 0+ 1.76(\text{Study})+ 0(\text{Study}) \\
+&amp;= 5.01 + 1.76(\text{Study})
+\end{aligned}
+\]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell" data-output.lines="[9,10,11,12,13,14]">
+<div class="cell-output cell-output-stdout">
+<pre><code>...
+Coefficients:
+                     Estimate Std. Error t value      Pr(&gt;|t|)    
+(Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+study                  1.7567     0.3095   5.676 0.00003443132 ***
+tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+...</code></pre>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<p><span class="math display">\[\hat{\text{grade}} = 5.01 + 2.92(\text{Tutor})+ 1.76(\text{Study})+ -1.17(\text{T} \times \text{S})\]</span></p>
+<p><span style="color:purple">Set Tutoring to 1</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\text{grade}} &amp;= 5.01 + 2.92(1)+ 1.76(\text{Study})+ -1.17(1 \times \text{Study}) \\
+&amp;= 5.01 + 2.92+ 1.76(\text{Study})+ -1.17(\text{Study}) \\
+&amp;= 7.93 + 0.59(\text{Study})
+\end{aligned}
+\]</span> ————————————————————————</p>
+</section>
+<section id="interaction-shapes" class="slide level2">
+<h2>Interaction shapes</h2>
+<p>Often we graph the simple slopes as a way to understand the interaction. The shape of the lines in the graph are informative and help us interpret conceptually what’s happening.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="cross-over-interactions">Cross-over interactions</h3>
+
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 id="ordinal-interactions">Ordinal interactions</h3>
+
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
+<section id="interaction-shapes-1" class="slide level2">
+<h2>Interaction shapes</h2>
+<h3 id="ordinal-interactions-beware">Ordinal interactions (beware…)</h3>
+
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">plot_model</span>(mod3, <span class="at">type =</span> <span class="st">"int"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="fu">plot_model</span>(mod3, <span class="at">type =</span> <span class="st">"pred"</span>, <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"study"</span>, <span class="st">"tutor_lab"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
+<section id="simple-slopes---significance-tests" class="slide level2">
+<h2>Simple slopes - Significance tests</h2>
+<p>The slope of studying at a specific level of tutoring (1 or 0) is a combination of both <span class="math inline">\(b_1\)</span> and <span class="math inline">\(b_3\)</span>:</p>
+<p><span class="math display">\[\large \hat{Y} = (b_{0} + b_{2}D) + (b_{1} + b_{3}D)X\]</span> <span class="math display">\[\large se_{b@D} = \sqrt{se_{b_1}^2 + (2 * D * cov_{b_1b_3})+ (D^2 se_{b_3}^2)}\]</span></p>
+</section>
+<section class="slide level2">
+
+<p><span class="math display">\[\large se_{b@D} = \sqrt{se_{b_1}^2 + (2 * D * cov_{b_1b_3})+ (D^2 se_{b_3}^2)}\]</span> In this formula, <span class="math inline">\(cov_{b_1b_3}\)</span> refers to the covariance of the coefficients, not the covariance of the variables. This may seem a strange concept, as we only ever have one value for <span class="math inline">\(b_1\)</span> and <span class="math inline">\(b_3\)</span> – the covariance of these coefficients refer to idea that if we randomly sample from a population, estimate the coefficients each time, and then examine the covariance of coefficients across random samples, it will not be 0.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">round</span>(<span class="fu">vcov</span>(mod3),<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     (Intercept) tutor_labTutor   study tutor_labTutor:study
+(Intercept)               0.1222        -0.1222 -0.0953               0.0953
+tutor_labTutor           -0.1222         0.4119  0.0953              -0.2557
+study                    -0.0953         0.0953  0.0958              -0.0958
+tutor_labTutor:study      0.0953        -0.2557 -0.0958               0.1938</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="significance-tests">Significance tests</h3>
+<p>We can use the standard error of the slope to estimate whether or not it is significantly different from 0.</p>
+<p><span class="math display">\[\large \hat{Y} = (b_{0} + b_{2}D) + (b_{1} + b_{3}D)X\]</span> <span class="math display">\[\large t = \frac{(b_{1} + b_{3}D)}{se_{b@D}}\]</span> <span class="math display">\[df = N-p-1\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="significance-tests-in-r">Significance tests in R</h3>
+<p>We want to know whether studying is a significant predictor of grades at different levels of tutoring.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="fu">emtrends</span>(mod3, <span class="sc">~</span>tutor_lab, <span class="at">var =</span> <span class="st">"study"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> tutor_lab study.trend    SE df lower.CL upper.CL
+ No tutor        1.757 0.310 16   1.1006     2.41
+ Tutor           0.585 0.313 16  -0.0783     1.25
+
+Confidence level used: 0.95 </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="significance-tests-in-r-1">Significance tests in R</h3>
+<p>What if you want to compare slopes to each other? How would we test this?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">emtrends</span>(mod3, pairwise<span class="sc">~</span>tutor_lab, <span class="at">var =</span> <span class="st">"study"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$emtrends
+ tutor_lab study.trend    SE df lower.CL upper.CL
+ No tutor        1.757 0.310 16   1.1006     2.41
+ Tutor           0.585 0.313 16  -0.0783     1.25
+
+Confidence level used: 0.95 
+
+$contrasts
+ contrast         estimate   SE df t.ratio p.value
+ No tutor - Tutor     1.17 0.44 16   2.661  0.0171</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="significance-tests-in-r-2">Significance tests in R</h3>
+<p>Note that this significance test is the same as our interaction coefficient!</p>
+<div class="cell" data-highlight.output="5">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(mod3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      Estimate Std. Error   t value           Pr(&gt;|t|)
+(Intercept)           5.012076  0.3495910 14.336973 0.0000000001502173
+tutor_labTutor        2.920264  0.6418121  4.550030 0.0003278477460362
+study                 1.756707  0.3095144  5.675688 0.0000344313228001
+tutor_labTutor:study -1.171341  0.4402441 -2.660662 0.0170931704270407</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="significance-tests-in-r-3">Significance tests in R</h3>
+<p>What if you want to compare the effect of tutoring at different levels of studying?</p>
+<p>First, we can calculate specific fitted values at combinations of studying and tutoring.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>mylist <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">study=</span><span class="fu">c</span>(.<span class="dv">50</span>,<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">tutor_lab=</span><span class="fu">c</span>(<span class="st">"No tutor"</span>,<span class="st">"Tutor"</span>))</span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="fu">emmeans</span>(mod3, <span class="sc">~</span> study<span class="sc">*</span>tutor_lab, <span class="at">at=</span>mylist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> study tutor_lab emmean    SE df lower.CL upper.CL
+   0.5 No tutor    5.89 0.225 16     5.41     6.37
+   1.0 No tutor    6.77 0.165 16     6.42     7.12
+   2.0 No tutor    8.53 0.352 16     7.78     9.27
+   0.5 Tutor       8.23 0.392 16     7.39     9.06
+   1.0 Tutor       8.52 0.259 16     7.97     9.07
+   2.0 Tutor       9.10 0.201 16     8.68     9.53
+
+Confidence level used: 0.95 </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>Next, we can use the <code>contrast</code> function to look at pairwise comparisons of these fitted values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>combins <span class="ot">=</span> <span class="fu">emmeans</span>(mod3, <span class="sc">~</span> study<span class="sc">*</span>tutor_lab, <span class="at">at=</span>mylist)</span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="fu">contrast</span>(combins, <span class="st">"pairwise"</span>, <span class="at">by =</span> <span class="st">"study"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>study = 0.5:
+ contrast         estimate    SE df t.ratio p.value
+ No tutor - Tutor   -2.335 0.452 16  -5.160  0.0001
+
+study = 1.0:
+ contrast         estimate    SE df t.ratio p.value
+ No tutor - Tutor   -1.749 0.307 16  -5.693  &lt;.0001
+
+study = 2.0:
+ contrast         estimate    SE df t.ratio p.value
+ No tutor - Tutor   -0.578 0.406 16  -1.424  0.1736</code></pre>
+</div>
+</div>
+</section>
+<section id="centering" class="slide level2">
+<h2>Centering</h2>
+<p>The regression equation built using the raw data is not only diffiuclt to interpret, but often the terms displayed are not relevant to the hypotheses we’re interested.</p>
+<ul>
+<li class="fragment"><span class="math inline">\(b_0\)</span> is the expected value when all predictors are 0, but this may never happen in real life</li>
+<li class="fragment"><span class="math inline">\(b_1\)</span> is the effect of tutoring when hours spent studying is equal to 0, but this may not ever happen either.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><span style="color:purple">Centering</span> your variables by subtracting the mean from all values can improve the interpretation of your results.</p>
+<ul>
+<li class="fragment">Remember, a linear transformation does not change associations (correlations) between variables. In this case, it only changes the interpretation for some coefficients.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>t_data <span class="ot">=</span> t_data <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a>  <span class="fu">mutate</span>(<span class="at">study_c =</span> study <span class="sc">-</span> <span class="fu">mean</span>(study))</span>
+<span id="cb34-3"><a href="#cb34-3"></a><span class="fu">head</span>(t_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+     ID study grade tutor tutor_lab study_c
+  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;       &lt;dbl&gt;
+1     1  1.62   9       1 Tutor       0.304
+2     2  0.54   7.8     1 Tutor      -0.776
+3     3  0.86   8.5     1 Tutor      -0.456
+4     4  0.8    6.2     0 No tutor   -0.516
+5     5  0.36   6.9     0 No tutor   -0.956
+6     6  2.14   9       1 Tutor       0.824</code></pre>
+</div>
+</div>
+<p>Why did we not center Y (grades)?</p>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(grade <span class="sc">~</span> tutor_lab <span class="sc">+</span> study_c <span class="sc">+</span> tutor_lab<span class="sc">:</span>study_c, <span class="at">data =</span> t_data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = grade ~ tutor_lab + study_c + tutor_lab:study_c, 
+    data = t_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.5728 -0.3837 -0.1584  0.1838  1.2555 
+
+Coefficients:
+                       Estimate Std. Error t value             Pr(&gt;|t|)    
+(Intercept)              7.3230     0.1929  37.963 &lt; 0.0000000000000002 ***
+tutor_labTutor           1.3794     0.2732   5.049             0.000119 ***
+study_c                  1.7567     0.3095   5.676            0.0000344 ***
+tutor_labTutor:study_c  -1.1713     0.4402  -2.661             0.017093 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.5232 on 16 degrees of freedom
+Multiple R-squared:  0.8811,    Adjusted R-squared:  0.8588 
+F-statistic: 39.53 on 3 and 16 DF,  p-value: 0.0000001259</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="fu">summary</span>(mod3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = grade ~ tutor_lab + study + tutor_lab:study, data = t_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.5728 -0.3837 -0.1584  0.1838  1.2555 
+
+Coefficients:
+                     Estimate Std. Error t value      Pr(&gt;|t|)    
+(Intercept)            5.0121     0.3496  14.337 0.00000000015 ***
+tutor_labTutor         2.9203     0.6418   4.550      0.000328 ***
+study                  1.7567     0.3095   5.676 0.00003443132 ***
+tutor_labTutor:study  -1.1713     0.4402  -2.661      0.017093 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.5232 on 16 degrees of freedom
+Multiple R-squared:  0.8811,    Adjusted R-squared:  0.8588 
+F-statistic: 39.53 on 3 and 16 DF,  p-value: 0.0000001259</code></pre>
+</div>
+</div>
+<p>What changed? What stayed the same?</p>
+</section>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<p>What if our categorical variable has three groups?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>t_data2 <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/uopsych/psy612/master/data/tutor_3grp.csv"</span>)</span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="fu">glimpse</span>(t_data2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 30
+Columns: 4
+$ ID    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1…
+$ study &lt;dbl&gt; 0.76, 0.21, 0.43, 0.44, 1.65, 1.46, 0.70, 0.90, 0.40, 0.58, 0.80…
+$ grade &lt;dbl&gt; 8.9, 8.6, 8.6, 8.5, 7.7, 7.5, 6.6, 6.8, 8.6, 8.3, 6.7, 7.9, 7.8,…
+$ tutor &lt;chr&gt; "One-on-one tutor", "One-on-one tutor", "One-on-one tutor", "One…</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>mod4 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> study<span class="sc">*</span>tutor, <span class="at">data =</span> t_data2)</span>
+<span id="cb42-2"><a href="#cb42-2"></a><span class="fu">summary</span>(mod4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = grade ~ study * tutor, data = t_data2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.85839 -0.04148 -0.01957  0.03061  0.91044 
+
+Coefficients:
+                            Estimate Std. Error t value             Pr(&gt;|t|)
+(Intercept)                   6.4485     0.3188  20.229 &lt; 0.0000000000000002
+study                         0.2748     0.4135   0.665              0.51262
+tutorNo tutor                -0.3143     0.6135  -0.512              0.61308
+tutorOne-on-one tutor         2.8758     0.4111   6.996          0.000000311
+study:tutorNo tutor           0.6737     0.5090   1.324              0.19807
+study:tutorOne-on-one tutor  -2.0312     0.6121  -3.318              0.00288
+                               
+(Intercept)                 ***
+study                          
+tutorNo tutor                  
+tutorOne-on-one tutor       ***
+study:tutorNo tutor            
+study:tutorOne-on-one tutor ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.312 on 24 degrees of freedom
+Multiple R-squared:  0.8857,    Adjusted R-squared:  0.8618 
+F-statistic: 37.18 on 5 and 24 DF,  p-value: 0.0000000001532</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>What if we want a different reference group?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>t_data2 <span class="ot">=</span> t_data2 <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">mutate</span>(<span class="at">tutor =</span> <span class="fu">as.factor</span>(tutor)) <span class="sc">%&gt;%</span> <span class="co"># only necessary if your variable is character, not factor</span></span>
+<span id="cb44-3"><a href="#cb44-3"></a>  <span class="fu">mutate</span>(<span class="at">tutor =</span> <span class="fu">relevel</span>(tutor, <span class="at">ref =</span> <span class="st">"No tutor"</span>))</span>
+<span id="cb44-4"><a href="#cb44-4"></a>mod4 <span class="ot">=</span> <span class="fu">lm</span>(grade <span class="sc">~</span> study<span class="sc">*</span>tutor, <span class="at">data =</span> t_data2)</span>
+<span id="cb44-5"><a href="#cb44-5"></a><span class="fu">summary</span>(mod4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = grade ~ study * tutor, data = t_data2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.85839 -0.04148 -0.01957  0.03061  0.91044 
+
+Coefficients:
+                            Estimate Std. Error t value       Pr(&gt;|t|)    
+(Intercept)                   6.1342     0.5242  11.702 0.000000000021 ***
+study                         0.9486     0.2967   3.197        0.00387 ** 
+tutorGroup tutor              0.3143     0.6135   0.512        0.61308    
+tutorOne-on-one tutor         3.1902     0.5850   5.454 0.000013237857 ***
+study:tutorGroup tutor       -0.6737     0.5090  -1.324        0.19807    
+study:tutorOne-on-one tutor  -2.7049     0.5401  -5.008 0.000040705983 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.312 on 24 degrees of freedom
+Multiple R-squared:  0.8857,    Adjusted R-squared:  0.8618 
+F-statistic: 37.18 on 5 and 24 DF,  p-value: 0.0000000001532</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">plot_model</span>(mod4, <span class="at">type =</span> <span class="st">"pred"</span>, <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"study"</span>, <span class="st">"tutor"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="14-interactions_files/figure-revealjs/unnamed-chunk-35-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">emtrends</span>(mod4, pairwise<span class="sc">~</span>tutor, <span class="at">var =</span> <span class="st">"study"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$emtrends
+ tutor            study.trend    SE df lower.CL upper.CL
+ No tutor               0.949 0.297 24    0.336    1.561
+ Group tutor            0.275 0.414 24   -0.579    1.128
+ One-on-one tutor      -1.756 0.451 24   -2.688   -0.825
+
+Confidence level used: 0.95 
+
+$contrasts
+ contrast                         estimate    SE df t.ratio p.value
+ No tutor - Group tutor              0.674 0.509 24   1.324  0.3962
+ No tutor - (One-on-one tutor)       2.705 0.540 24   5.008  0.0001
+ Group tutor - (One-on-one tutor)    2.031 0.612 24   3.318  0.0078
+
+P value adjustment: tukey method for comparing a family of 3 estimates </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>mylist <span class="ot">=</span> <span class="fu">list</span>(<span class="at">study =</span> <span class="fu">c</span>(.<span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">tutor =</span> <span class="fu">c</span>(<span class="st">"No tutor"</span>, <span class="st">"Group tutor"</span>, <span class="st">"One-on-one tutor"</span>))</span>
+<span id="cb49-2"><a href="#cb49-2"></a>combins <span class="ot">=</span> <span class="fu">emmeans</span>(mod4, <span class="sc">~</span>tutor<span class="sc">*</span>study, <span class="at">at =</span> mylist)</span>
+<span id="cb49-3"><a href="#cb49-3"></a><span class="fu">contrast</span>(combins, <span class="st">"pairwise"</span>, <span class="at">by =</span> <span class="st">"study"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>study = 0.5:
+ contrast                         estimate    SE df t.ratio p.value
+ No tutor - Group tutor             0.0225 0.404 24   0.056  0.9983
+ No tutor - (One-on-one tutor)     -1.8377 0.392 24  -4.683  0.0003
+ Group tutor - (One-on-one tutor)  -1.8602 0.170 24 -10.930  &lt;.0001
+
+study = 1.0:
+ contrast                         estimate    SE df t.ratio p.value
+ No tutor - Group tutor             0.3594 0.281 24   1.277  0.4215
+ No tutor - (One-on-one tutor)     -0.4853 0.334 24  -1.452  0.3311
+ Group tutor - (One-on-one tutor)  -0.8447 0.276 24  -3.059  0.0144
+
+study = 2.0:
+ contrast                         estimate    SE df t.ratio p.value
+ No tutor - Group tutor             1.0331 0.548 24   1.886  0.1645
+ No tutor - (One-on-one tutor)      2.2196 0.682 24   3.257  0.0090
+ Group tutor - (One-on-one tutor)   1.1865 0.856 24   1.386  0.3638
+
+P value adjustment: tukey method for comparing a family of 3 estimates </code></pre>
+</div>
+</div>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next time</h2>
+<p>Interactions between continuous predictors</p>
+<div class="footer footer-default">
+
+</div>
+</section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="14-interactions_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="14-interactions_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/multiplex/socket.io.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/multiplex/multiplex.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="14-interactions_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="14-interactions_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'multiplex': {"secret":"16769316615053319566","id":"de31d3ce5ffb8513","url":"https://reveal-multiplex.glitch.me/"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        target: function(trigger) {
+          return trigger.previousElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto-reveal',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
