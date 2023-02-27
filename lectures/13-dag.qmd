@@ -14,6 +14,12 @@ execute:
 editor: source
 ---
 
+```{r, echo = FALSE}
+NOTES FOR NEXT YEAR
+ADD MORE EXAMPLES AT THE END! -- WHAT SHOULD WE CONTROL FOR?
+```
+
+
 ## Annoucements
 
 -   Lecture 14 will be pre-recorded by end of day tomorrow

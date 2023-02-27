@@ -31,6 +31,8 @@ navbar:
         href: "lectures/11-diagnostics.html"
       - text: "13-Causal models"
         href: "lectures/13-dag.html"
+      - text: "14-Interactions"
+        href: "lectures/14-interactions.html"
         
     - text: Labs
       menu:
