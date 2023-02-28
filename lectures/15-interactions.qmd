@@ -1,0 +1,599 @@
+---
+title: "Interactions"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+## Last time...
+
+Introduction to interactions with one categorical and one continuous predictor
+
+
+## Today
+
+Two continuous predictors
+
+------------------------------------------------------------------------
+
+## What are interactions?
+
+When we have two variables, A and B, in a regression model, we are testing whether these variables have **additive effects** on our outcome, Y. That is, the effect of A on Y is constant over all values of B. 
+
+- Example: Drinking coffee and hours of sleep have additive effects on alertness; no matter how any hours I slept the previous night, drinking one cup of coffee will make me .5 SD more awake than not drinking coffee. 
+
+------------------------------------------------------------------------
+
+## What are interactions?
+
+However, we may hypothesis that two variables have **joint effects**, or interact with each other. In this case, the effect of A on Y changes as a function of B. 
+
+- Example: Chronic stress has a negative impact on health but only for individuals who receive little or no social support; for individuals with high social support, chronic stress has no impact on health. 
+
+- This is also referred to as **moderation.** 
+
+- The **"interaction term"** is the regression coefficient that tests this hypothesis. 
+
+------------------------------------------------------------------------
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+### Univariate regression
+
+```{r, echo = F, message = F, warning = F, fig.width = 4.5}
+library(tidyverse)
+set.seed(022020)
+x = rnorm(n = 20)
+z = rnorm(n = 20)
+y  = x*z + rnorm(n = 20)
+data.frame(x,y) %>%
+  ggplot(aes(x,y)) + geom_point() + geom_smooth(method = 'lm', se = F) + theme_bw()
+```
+
+:::
+::: {.column width="50%"}
+
+### Multivariate regression
+
+```{r, echo = F, fig.width=4.5}
+library(visreg)
+x1 = x
+x2 = z
+mr.model = lm(y ~ x1 + x2)
+visreg2d(mr.model,"x1", "x2", plot.type = "persp")
+
+```
+
+
+:::
+::::
+
+
+
+------------------------------------------------------------------------
+
+
+### Multivariate regression with an interaction
+
+```{r, echo = F, fig.width = 10, fig.height = 8}
+mr.model2 = lm(y ~ x1*x2)
+visreg2d(mr.model2,"x1", "x2", plot.type = "persp")
+```
+
+------------------------------------------------------------------------
+
+### Example
+
+Here we have an outcome (`Stress`) that we are interested in predicting from trait `Anxiety` and levels of social `Support`.
+
+```{r, message=FALSE, warning = F}
+library(tidyverse)
+stress.data = read_csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/stress.csv")
+psych::describe(stress.data, fast = T)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+imodel = lm(Stress ~ Anxiety*Support, data = stress.data)
+summary(imodel)
+```
+
+```{r, echo = F}
+mod.c = round(coef(imodel),2)
+```
+
+$$\hat{Stress} = `r mod.c[1]` + `r mod.c[2]`(Anx) + `r mod.c[3]`(Sup) + `r mod.c[4]`(Anx \times Sup)$$
+
+------------------------------------------------------------------------
+
+## Conditional effects and simple slopes
+
+The regression line estimated in this model is quite difficult to interpret on its own. A good strategy is to decompose the regression equation into **simple slopes**, which are determined by calculating the conditional effects at a specific level of the moderating variable.
+
+:::: {.columns}
+::: {.column width="50%"}
+
+- Simple slope: the equation for Y on X at different levels of Z; but also refers to only the coefficient for X in this equation
+
+:::
+::: {.column width="50%"}
+
+- Conditional effect: the slope coefficients in the full regression model which can change. These are the lower-order terms associated with a variable. 
+
+:::
+::::
+
+
+
+
+------------------------------------------------------------------------
+
+The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our stress data:
+
+```{r, echo = F}
+imodel = lm(Stress ~ Anxiety*Support, data = stress.data)
+C.vector = coef(summary(imodel))[,1]
+C.round = round(C.vector,2)
+```
+
+$$\hat{Stress} = `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]`(\text{Sup})+ `r C.round[4]`(\text{Anx} \times \text{Sup})$$
+
+------------------------------------------------------------------------
+
+The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our stress data:
+
+```{r, echo = F}
+imodel = lm(Stress ~ Anxiety*Support, data = stress.data)
+C.vector = coef(summary(imodel))[,1]
+C.round = round(C.vector,2)
+```
+
+$$\hat{Stress} = `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]`(\text{Sup})+ `r C.round[4]`(\text{Anx} \times \text{Sup})$$
+
+**Set Support to 5**
+
+$$
+\begin{aligned}
+\hat{Stress} &= `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]`(5)+ `r C.round[4]`(\text{Anx} \times 5) \\
+&= `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]*5`+ `r C.round[4]*5`(\text{Anx}) \\
+&= `r C.round[1] + C.round[3]*5` + `r C.round[2] + C.round[4]*5`(\text{Anx})
+\end{aligned}
+$$
+
+------------------------------------------------------------------------
+
+The conditional nature of these effects is easiest to see by "plugging in" different values for one of your variables. Return to the regression equation estimated in our stress data:
+
+```{r, echo = F}
+imodel = lm(Stress ~ Anxiety*Support, data = stress.data)
+C.vector = coef(summary(imodel))[,1]
+C.round = round(C.vector,2)
+```
+
+$$\hat{Stress} = `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]`(\text{Sup})+ `r C.round[4]`(\text{Anx} \times \text{Sup})$$
+
+**Set Support to 10**
+
+$$
+\begin{aligned}
+\hat{Stress} &= `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]`(10)+ `r C.round[4]`(\text{Anx} \times 10) \\
+&= `r C.round[1]` + `r C.round[2]`(\text{Anx})+ `r C.round[3]*10`+ `r C.round[4]*10`(\text{Anx}) \\
+&= `r C.round[1] + C.round[3]*10` + `r C.round[2] + C.round[4]*10`(\text{Anx})
+\end{aligned}
+$$
+
+------------------------------------------------------------------------
+
+## Plotting interactions
+
+What is this plotting?
+
+
+```{r, results = 'hide', message = F, warning = F, fig.width = 10, fig.height = 4}
+library(sjPlot)
+plot_model(imodel, type = "pred", terms = c("Support", "Anxiety[mean]"))
+```
+
+------------------------------------------------------------------------
+
+:::: {.columns}
+::: {.column width="50%"}
+
+Put values of the moderator in brackets!
+
+```{r intplot1, results = 'hide', message = F, warning = F, echo = F}
+plot_model(imodel, type = "pred", 
+           terms = c("Support", 
+                     "Anxiety[5,10]"))
+```
+
+```{r,ref.label="intplot1", eval = F}
+
+```
+
+
+:::
+::: {.column width="50%"}
+
+Put values of the moderator in argument `mdrt.values`!
+
+```{r intplot2, results = 'hide', message = F, warning = F, echo = F}
+plot_model(imodel, type = "pred", 
+           terms = c("Support", 
+                     "Anxiety"), 
+           mdrt.values = "meansd")
+```
+
+```{r,ref.label="intplot2", eval = F}
+
+```
+
+:::
+::::
+
+
+------------------------------------------------------------------------
+
+## Testing simple slopes
+
+```{r, message = F}
+library(emmeans)
+
+anx.vals = list(Anxiety = c(5,6,7))
+simple_slopes = emtrends(imodel, var = "Support", ~Anxiety, at = anx.vals)
+simple_slopes
+
+test(simple_slopes)
+```
+
+------------------------------------------------------------------------
+
+## Testing simple slopes
+
+```{r}
+m.anx = mean(stress.data$Anxiety)
+s.anx = sd(stress.data$Anxiety)
+anx.vals = list(Anxiety = c(m.anx - s.anx, 
+                            m.anx,
+                            m.anx + s.anx))
+
+simple_slopes = emtrends(imodel, var = "Support", ~Anxiety, at = anx.vals)
+test(simple_slopes)
+```
+
+------------------------------------------------------------------------
+
+## Simple slopes - Significance tests
+
+What if you want to compare slopes to each other? How would we test this?
+
+. . . 
+
+The test of the interaction coefficient is equivalent to the test of the difference in slopes at levels of Z separated by 1 unit. 
+
+```{r,highlight.output = 5}
+coef(summary(imodel))
+```
+
+
+------------------------------------------------------------------------
+
+Or you can use the `emmeans` package.
+
+```{r, highlight=3}
+simple_slopes = emtrends(imodel, var = "Support", 
+                         pairwise~Anxiety, 
+                         at = anx.vals, adjust = "none")
+simple_slopes
+```
+
+------------------------------------------------------------------------
+
+Perhaps you noted that the t-statistic and p-values are the same... The OLS model constrains the change in slope to be equal equivalent across values of the moderator.
+
+```{r, echo = F}
+anx.vals_all = list(Anxiety = seq(min(stress.data$Anxiety),
+                                  max(stress.data$Anxiety),
+                                  length = 1000))
+
+simple_slopes_all = emtrends(imodel, var = "Support", 
+                         ~Anxiety, 
+                         at = anx.vals_all)
+simple_slopes_all %>% 
+  as_tibble() %>% 
+  ggplot(aes(x = Anxiety, y = Support.trend)) +
+  geom_ribbon(aes(ymin = lower.CL, ymax = upper.CL),
+              alpha = .3) +
+  geom_line() +
+  geom_hline(aes(yintercept = 0), linetype = "dashed") +
+  labs(x = "Anxiety", y = "Support slope") +
+  ggpubr::theme_pubr()
+```
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+**Marginal** effects -- or additional effects -- refer to what happens to an outcome, Y, when a predictor, X, changes a little. (i.e., a slope)
+
+For example, in the equation
+
+$$Y = -1 + 2X$$
+
+The marginal effect of X on Y is 2. (You can use calculus, specifically derivatives, to calculate marginal effects.) 
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+Marginal effects are easy to calculate when we have additive effects, but now that we've introduced joint effects, things become more complicated.
+
+We've already used the `emmeans` package to decompose a regression equation into simple slopes. In that instance, we tell the package at which values of the moderator, Z, we want to estimate slopes of X.
+
+But we can also use this package to estimate marginal effects.
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+```{r}
+emtrends(imodel, ~ Anxiety, var = "Anxiety", delta.var = .001)
+```
+
+What does this value tell us?
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+This is a marginal effect _at the mean_, or the effect of Anxiety when all predictors are at their average value. 
+
+![](images/MEM.png)
+
+Why might this be useful? 
+Why might this be not so useful?
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+Another option is the _average marginal effect_, which estimates the slope for each individual observation (row) and then calculates the average of these. 
+
+![](images/AME.png)
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+```{r}
+library(marginaleffects)
+marginaleffects(imodel)
+```
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+```{r}
+library(marginaleffects)
+marginaleffects(imodel) %>% 
+  summary()
+```
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+The main advantage of the average marginal effect is that each individual slope prediction uses values that actually exist in the data, and so your average marginal effect is a better representation of your sample. 
+
+How much does this matter? For OLS and the models covered in PSY 612, not much. Simple slopes are by far the most common way to decompose interaction terms and are expected. Marginal effects are sometimes seen, and usually described using the marginal effect at the mean (MEM), not the average marginal effect (AME).
+
+------------------------------------------------------------------------
+
+## Marginal effects
+
+BUT, as you move into more complicated models (polynomials later this term, logistic regression, etc next term), there are less clear standards for how to report models and bigger differences between the MEM and the AME. Keep this in your back pocket for future work.
+
+Also see this [really great blog post by Andrew Heiss](https://www.andrewheiss.com/blog/2022/05/20/marginalia/).
+
+
+
+------------------------------------------------------------------------
+
+
+
+## Centering
+
+The regression equation built using the raw data is not only difficult to interpret, but often the terms displayed are not relevant to the hypotheses we're interested. 
+
+  - $b_0$ is the expected value when all predictors are 0, but this may never happen in real life
+  - $b_1$ is the slope of X when Z is equal to 0, but this may not ever happen either. 
+
+------------------------------------------------------------------------
+
+## Centering
+
+**Centering** your variables by subtracting the mean from all values can improve the interpretation of your results. 
+
+  - Remember, a linear transformation does not change associations (correlations) between variables. In this case, it only changes the interpretation for some coefficients
+
+------------------------------------------------------------------------
+
+### Applying one function to multiple variables
+
+```{r}
+stress.c = stress.data %>%
+  mutate(
+    across( c(Anxiety, Support) , ~.x-mean(.x) )
+    )
+
+psych::describe(stress.c, fast = T)
+```
+
+------------------------------------------------------------------------
+
+### Model with centered predictors
+
+```{r}
+summary(lm(Stress ~ Anxiety*Support, data = stress.c))
+```
+
+------------------------------------------------------------------------
+
+### Model with uncentered predictors
+
+```{r}
+summary(lm(Stress ~ Anxiety*Support, data = stress.data))
+```
+
+
+------------------------------------------------------------------------
+ 
+## Standardized regression equation
+
+If you're interested in getting the standardized regression equation, you can follow the procedure of standardizing your variables first and then entering them into your linear model.
+
+An important note: You must take the product of the Z-scores, not the Z-score of the products to get the correct regression model. 
+
+:::: {.columns}
+::: {.column width="50%"}
+
+**This is OK**
+
+```{r, eval = F}
+z(Y) ~ z(X) + z(Z) + z(X)*z(Z) 
+
+z(Y) ~ z(X)*z(Z) 
+```
+
+:::
+::: {.column width="50%"}
+
+**This is not OK**
+
+```{r, eval = F}
+z(Y) ~ z(X) + z(Z) + z(X*Z) 
+```
+:::
+::::
+
+
+
+------------------------------------------------------------------------
+
+### Applying one function to all numeric variables
+
+```{r}
+stress.z = stress.data %>%
+  mutate(across(where(is.numeric), ~(. - mean(., na.rm=T))/sd(., na.rm=T))) 
+
+head(stress.z)
+```
+
+------------------------------------------------------------------------
+
+### Standardized equation
+
+```{r}
+summary(lm(Stress ~ Anxiety*Support, stress.z))
+```
+
+------------------------------------------------------------------------
+
+### Unstandardized equation
+
+```{r}
+summary(lm(Stress ~ Anxiety*Support, stress.data))
+```
+
+------------------------------------------------------------------------
+
+# Interactions with two categorical variables
+
+If both X and Z are categorical variables, the interpretation of coefficients is no longer the value of means and slopes, but means and differences in means. 
+
+------------------------------------------------------------------------
+
+## Example
+
+:::: {.columns}
+::: {.column width="50%"}
+
+![](images/dot.jpg)
+:::
+::: {.column width="50%"}
+
+Recall our hand-eye coordination study (for a reminder of the study design, see the [ANOVA lecture](https://uopsych.github.io/psy612/lectures/10-anova.html#17)):
+
+:::
+::::
+
+```{r}
+handeye_d = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/hand_eye_task.csv")
+
+glimpse(handeye_d)
+```
+
+
+------------------------------------------------------------------------
+
+```{r}
+handeye_d %>%
+  group_by(Speed, Noise) %>%
+  count()
+```
+
+
+------------------------------------------------------------------------
+
+### Model summary
+
+```{r, highlight.output = 11}
+handeye_d.mod = lm(Time ~ Speed*Noise, data = handeye_d)
+summary(handeye_d.mod)
+```
+
+::: notes
+
+highlight lines in this order:
+
+* intercept
+* speed medium, speed slow
+* noise none, noise uncontrollable
+* interaction terms
+* R2 and F-stat
+:::
+
+------------------------------------------------------------------------
+
+### Plotting results
+
+```{r, fig.width=9, fig.height=6}
+plot_model(handeye_d.mod, type = "pred", terms = c("Speed", "Noise"))
+```
+
+
+------------------------------------------------------------------------
+
+Remember, regression and ANOVA are mathematically equivalent -- both divide the total variability in $Y$ into variability overlapping with ("explained by") the model and residual variability. 
+
+What differs is the way results are presented. The regression framework is excellent for continuous variables, but interpreting the interactions of categorical variables is more difficult. So we'll switch back to the ANOVA framework next time and talk about...
+
+------------------------------------------------------------------------
+
+
+## Next time
+
+Factorial ANOVA
