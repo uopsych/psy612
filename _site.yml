@@ -35,6 +35,8 @@ navbar:
         href: "lectures/14-interactions.html"
       - text: "15-Interactions"
         href: "lectures/15-interactions.html"
+      - text: "16/17-Factorial ANOVA"
+        href: "lectures/16-factorial.html"
         
     - text: Labs
       menu:

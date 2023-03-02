@@ -1,5 +1,4 @@
 *update to quarto?
-*replace emmeans with marginal effects (https://vincentarelbundock.github.io/marginaleffects/index.html) -- or... complement with this? https://www.andrewheiss.com/blog/2022/05/20/marginalia/
 * add shiny app for interaction power: https://david-baranger.shinyapps.io/InteractionPoweR_analytic/
 
 lectures overall

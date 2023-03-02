@@ -1,0 +1,2479 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="16-factorial_files/libs/clipboard/clipboard.min.js"></script>
+<script src="16-factorial_files/libs/quarto-html/tabby.min.js"></script>
+<script src="16-factorial_files/libs/quarto-html/popper.min.js"></script>
+<script src="16-factorial_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="16-factorial_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="16-factorial_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="16-factorial_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.2.269">
+
+  <title>Factorial ANOVA</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="16-factorial_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="16-factorial_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="16-factorial_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link href="16-factorial_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="16-factorial_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="16-factorial_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="16-factorial_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-captioned.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-captioned) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-captioned.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-captioned .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-captioned .callout-caption  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-captioned.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-captioned.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-caption {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-caption {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-caption {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-captioned .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-captioned) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-caption {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-caption {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-caption {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-caption {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-caption {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  
+  <script src="16-factorial_files/libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="16-factorial_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Factorial ANOVA</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section id="factorial-anova" class="slide level2">
+<h2>Factorial ANOVA</h2>
+<div class="cell">
+
+</div>
+<p>The interaction of two or more categorical variables in a general linear model is formally known as <span style="color:purple">Factorial ANOVA</span> .</p>
+<p>A factorial design is used when there is an interest in how two or more variables (or factors) affect the outcome.</p>
+<ul>
+<li class="fragment"><p>Rather than conduct separate one-way ANOVAs for each factor, they are all included in one analysis.</p></li>
+<li class="fragment"><p>The unique and important advantage to a factorial ANOVA over separate one-way ANOVAs is the ability to examine interactions.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>Data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/uopsych/psy612/master/data/hand_eye_task.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p>The example data are from a simulated study in which 180 participants performed an eye-hand coordination task in which they were required to keep a mouse pointer on a red dot that moved in a circular motion.</p>
+</div><div class="column" style="width:30%;">
+<p><img data-src="images/dot.jpg"></p>
+</div>
+</div>
+<p>The outcome was the time of the 10th failure. The experiment used a completely crossed, 3 x 3 factorial design. One factor was dot speed: .5, 1, or 1.5 revolutions per second. The second factor was noise condition: no noise, controllable noise, and uncontrollable noise. The design was balanced.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="marginal-means">Marginal means</h3>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Noise </th>
+   <th style="text-align:right;"> Fast </th>
+   <th style="text-align:right;"> Medium </th>
+   <th style="text-align:right;"> Slow </th>
+   <th style="text-align:right;"> Marginal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="5" style="border-bottom: 1px solid;"><strong></strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Controllable </td>
+   <td style="text-align:right;"> 287.23 </td>
+   <td style="text-align:right;"> 492.72 </td>
+   <td style="text-align:right;"> 576.67 </td>
+   <td style="text-align:right;"> 452.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> None </td>
+   <td style="text-align:right;"> 329.28 </td>
+   <td style="text-align:right;"> 525.29 </td>
+   <td style="text-align:right;"> 630.72 </td>
+   <td style="text-align:right;"> 495.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Uncontrollable </td>
+   <td style="text-align:right;"> 268.16 </td>
+   <td style="text-align:right;"> 304.62 </td>
+   <td style="text-align:right;"> 594.44 </td>
+   <td style="text-align:right;"> 389.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: white !important;background-color: #562457 !important;"> Marginal </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 294.89 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 440.88 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 600.61 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 445.46 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>Regardless of noise condition, does speed of the moving dot affect performance?</p>
+</section>
+<section class="slide level2">
+
+<h3 id="marginal-means-1">Marginal means</h3>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Noise </th>
+   <th style="text-align:right;"> Fast </th>
+   <th style="text-align:right;"> Medium </th>
+   <th style="text-align:right;"> Slow </th>
+   <th style="text-align:right;"> Marginal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="5" style="border-bottom: 1px solid;"><strong></strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Controllable </td>
+   <td style="text-align:right;"> 287.23 </td>
+   <td style="text-align:right;"> 492.72 </td>
+   <td style="text-align:right;"> 576.67 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 452.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> None </td>
+   <td style="text-align:right;"> 329.28 </td>
+   <td style="text-align:right;"> 525.29 </td>
+   <td style="text-align:right;"> 630.72 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 495.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Uncontrollable </td>
+   <td style="text-align:right;"> 268.16 </td>
+   <td style="text-align:right;"> 304.62 </td>
+   <td style="text-align:right;"> 594.44 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 389.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Marginal </td>
+   <td style="text-align:right;"> 294.89 </td>
+   <td style="text-align:right;"> 440.88 </td>
+   <td style="text-align:right;"> 600.61 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 445.46 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>Regardless of dot speed, does noise condition affect performance?</p>
+</section>
+<section class="slide level2">
+
+<h3 id="marginal-means-2">Marginal means</h3>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Noise </th>
+   <th style="text-align:right;"> Fast </th>
+   <th style="text-align:right;"> Medium </th>
+   <th style="text-align:right;"> Slow </th>
+   <th style="text-align:right;"> Marginal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="5" style="border-bottom: 1px solid;"><strong></strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Controllable </td>
+   <td style="text-align:right;"> 287.23 </td>
+   <td style="text-align:right;"> 492.72 </td>
+   <td style="text-align:right;"> 576.67 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 452.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> None </td>
+   <td style="text-align:right;"> 329.28 </td>
+   <td style="text-align:right;"> 525.29 </td>
+   <td style="text-align:right;"> 630.72 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 495.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Uncontrollable </td>
+   <td style="text-align:right;"> 268.16 </td>
+   <td style="text-align:right;"> 304.62 </td>
+   <td style="text-align:right;"> 594.44 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 389.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: white !important;background-color: #562457 !important;"> Marginal </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 294.89 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 440.88 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;"> 600.61 </td>
+   <td style="text-align:right;font-weight: bold;color: white !important;background-color: #562457 !important;font-weight: bold;color: white !important;background-color: #562457 !important;"> 445.46 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>The <span style="color:purple">marginal mean differences</span> correspond to main effects. They tell us what impact a particular factor has, ignoring the impact of the other factor.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="marginal-means-3">Marginal means</h3>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Noise </th>
+   <th style="text-align:right;"> Fast </th>
+   <th style="text-align:right;"> Medium </th>
+   <th style="text-align:right;"> Slow </th>
+   <th style="text-align:right;"> Marginal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="5" style="border-bottom: 1px solid;"><strong></strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Controllable </td>
+   <td style="text-align:right;"> 287.23 </td>
+   <td style="text-align:right;"> 492.72 </td>
+   <td style="text-align:right;"> 576.67 </td>
+   <td style="text-align:right;"> 452.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> None </td>
+   <td style="text-align:right;"> 329.28 </td>
+   <td style="text-align:right;"> 525.29 </td>
+   <td style="text-align:right;"> 630.72 </td>
+   <td style="text-align:right;"> 495.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Uncontrollable </td>
+   <td style="text-align:right;"> 268.16 </td>
+   <td style="text-align:right;"> 304.62 </td>
+   <td style="text-align:right;"> 594.44 </td>
+   <td style="text-align:right;"> 389.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Marginal </td>
+   <td style="text-align:right;"> 294.89 </td>
+   <td style="text-align:right;"> 440.88 </td>
+   <td style="text-align:right;"> 600.61 </td>
+   <td style="text-align:right;"> 445.46 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>The remaining effect in a factorial design, and it primary advantage over separate one-way ANOVAs, is the ability to examine <span style="color:purple">simple main effects</span>, sometimes called conditional effects.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="mean-differences">Mean differences</h3>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Noise </th>
+   <th style="text-align:right;"> Fast </th>
+   <th style="text-align:right;"> Medium </th>
+   <th style="text-align:right;"> Slow </th>
+   <th style="text-align:right;"> Marginal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="5" style="border-bottom: 1px solid;"><strong></strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Controllable </td>
+   <td style="text-align:right;background-color: #EECACA !important;"> 287.23 </td>
+   <td style="text-align:right;background-color: #B2D4EB !important;"> 492.72 </td>
+   <td style="text-align:right;background-color: #FFFFC5 !important;"> 576.67 </td>
+   <td style="text-align:right;color: white !important;background-color: grey !important;"> 452.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> None </td>
+   <td style="text-align:right;background-color: #EECACA !important;"> 329.28 </td>
+   <td style="text-align:right;background-color: #B2D4EB !important;"> 525.29 </td>
+   <td style="text-align:right;background-color: #FFFFC5 !important;"> 630.72 </td>
+   <td style="text-align:right;color: white !important;background-color: grey !important;"> 495.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Uncontrollable </td>
+   <td style="text-align:right;background-color: #EECACA !important;"> 268.16 </td>
+   <td style="text-align:right;background-color: #B2D4EB !important;"> 304.62 </td>
+   <td style="text-align:right;background-color: #FFFFC5 !important;"> 594.44 </td>
+   <td style="text-align:right;color: white !important;background-color: grey !important;"> 389.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: white !important;"> Marginal </td>
+   <td style="text-align:right;background-color: #EECACA !important;background-color: white !important;"> 294.89 </td>
+   <td style="text-align:right;background-color: #B2D4EB !important;background-color: white !important;"> 440.88 </td>
+   <td style="text-align:right;background-color: #FFFFC5 !important;background-color: white !important;"> 600.61 </td>
+   <td style="text-align:right;color: white !important;background-color: grey !important;background-color: white !important;"> 445.46 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>Are the marginal mean differences for noise condition a good representation of what is happening within each of the dot speed conditions?</p>
+<p>If not, then we would need to say that the noise condition effect depends upon (is conditional on) dot speed.</p>
+</section>
+<section class="slide level2">
+
+
+<img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"><p>The noise condition means are most distinctly different in the medium speed condition. The noise condition means are clearly not different in the fast speed condition.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="interpretation-of-interactions">Interpretation of interactions</h3>
+<p>The presence of an interaction qualifies any main effect conclusions, leading to “yes, but” or “it depends” kinds of inferences.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-11-1.png" width="480"></p>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Does noise condition affect failure time?</p>
+<p>“Yes, but the magnitude of the effect is strongest for the medium speed condition, weaker for the fast speed condition, and mostly absent for the slow speed condition.”</p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="interactions-are-symmetrical">Interactions are symmetrical</h3>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><span style="font-size:80%">The speed condition means are clearly different in each noise condition, but the pattern of those differences is not the same</span></p>
+<p><span style="font-size:80%">The marginal speed condition means do not represent well the means in each noise condition.</span></p>
+<p><span style="font-size:80%">An interaction.</span></p>
+</div><div class="column" style="width:60%;">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-12-1.png" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="null-hypotheses">Null Hypotheses</h3>
+<table>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Slow</th>
+<th style="text-align: center;">Medium</th>
+<th style="text-align: center;">Fast</th>
+<th style="text-align: center;">Marginal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No Noise</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{11}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{12}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{13}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{1.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Controllable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{21}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{22}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{23}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{2.}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uncontrollable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{31}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{32}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{33}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{3.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Marginal</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.1}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.2}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.3}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{..}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span style="font-size:80%">The two main effects and the interaction represent three independent questions we can ask about the data. We have three null hypotheses to test.</span></p>
+<p><span style="font-size:80%">One null hypothesis refers to the marginal row means.</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="null-hypotheses-1">Null Hypotheses</h3>
+<table>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Slow</th>
+<th style="text-align: center;">Medium</th>
+<th style="text-align: center;">Fast</th>
+<th style="text-align: center;">Marginal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No Noise</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{11}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{12}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{13}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{1.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Controllable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{21}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{22}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{23}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{2.}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uncontrollable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{31}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{32}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{33}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{3.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Marginal</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.1}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.2}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.3}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{..}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[
+\begin{aligned}
+H_0&amp;: \mu_{1.} = \mu_{2.} = \dots = \mu_{R.}\\
+H_1&amp;: \text{Not true that }\mu_{1.} = \mu_{2.} = \dots = \mu_{R.}
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="null-hypotheses-2">Null Hypotheses</h3>
+<table>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Slow</th>
+<th style="text-align: center;">Medium</th>
+<th style="text-align: center;">Fast</th>
+<th style="text-align: center;">Marginal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No Noise</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{11}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{12}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{13}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{1.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Controllable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{21}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{22}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{23}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{2.}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uncontrollable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{31}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{32}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{33}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{3.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Marginal</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.1}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.2}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.3}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{..}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>We can state this differently:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\alpha_r&amp;= \mu_{r.} - \mu_{..} \\
+H_0&amp;: \alpha_1 = \alpha_2 = \dots = \alpha_R = 0\\
+H_1&amp;: \text{At least one }\alpha_r \neq 0
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="null-hypotheses-3">Null Hypotheses</h3>
+<table>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Slow</th>
+<th style="text-align: center;">Medium</th>
+<th style="text-align: center;">Fast</th>
+<th style="text-align: center;">Marginal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No Noise</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{11}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{12}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{13}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{1.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Controllable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{21}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{22}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{23}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{2.}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uncontrollable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{31}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{32}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{33}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{3.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Marginal</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.1}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.2}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.3}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{..}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The main effect for dot speed can be stated similarly:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\beta_c&amp;= \mu_{.c} - \mu_{..} \\
+H_0&amp;: \beta_1 = \beta_2 = \dots = \beta_C = 0\\
+H_1&amp;: \text{At least one }\beta_c \neq 0
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="null-hypothesis">Null Hypothesis</h3>
+<table>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Slow</th>
+<th style="text-align: center;">Medium</th>
+<th style="text-align: center;">Fast</th>
+<th style="text-align: center;">Marginal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No Noise</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{11}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{12}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{13}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{1.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Controllable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{21}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{22}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{23}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{2.}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uncontrollable</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{31}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{32}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{33}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{3.}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Marginal</td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.1}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.2}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{.3}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mu_{..}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The interaction null hypothesis can then be stated as follows:</p>
+<p><span class="math display">\[
+\begin{aligned}
+(\alpha\beta)_{rc}&amp;= \mu_{rc} - \alpha_r - \beta_c  - \mu_{..} \\
+H_0&amp;: (\alpha\beta)_{11} = (\alpha\beta)_{12} = \dots = (\alpha\beta)_{RC} = 0\\
+H_1&amp;: \text{At least one }(\alpha\beta)_{rc} \neq 0
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="variability">Variability</h3>
+<p>As was true for the simpler one-way ANOVA, we will partition the total variability in the data matrix into two basic parts.</p>
+<p>One part will represent variability <span style="color:purple">within groups</span> . This within-group variability is variability that has nothing to do with the experimental conditions (all participants within a particular group experience the same experimental conditions).</p>
+<p>The other part will be <span style="color:purple">between-group variability</span> . This part will include variability due to experimental conditions. We will further partition this between-group variability into parts due to the two main effects and the interaction.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="variability-1">Variability</h3>
+<p><span class="math display">\[
+\begin{aligned}
+SS_{\text{total}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{...})^2 \\
+SS_{\text{Within}} &amp;= \sum_{r=1}^R\sum_{c=1}^C\sum_{i=1}^{N_{rc}}(Y_{rci}-\bar{Y}_{rc.})^2 \\
+SS_R &amp;= CN\sum_{r=1}^R(\bar{Y}_{r..}-\bar{Y}_{...})^2\\
+SS_C &amp;= RN\sum_{c=1}^C(\bar{Y}_{.c.}-\bar{Y}_{...})^2\\
+SS_{RC} &amp;= N\sum_{r=1}^R\sum_{c=1}^C(\bar{Y}_{rc.}-\bar{Y}_{r..}-\bar{Y}_{.c.}+\bar{Y}_{...})^2 \\
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="variability-2">Variability</h3>
+<p>If the design is balanced (equal observations in all conditions), then:</p>
+<p><span class="math display">\[ SS_{\text{total}} = SS_{\text{within}} + SS_R + SS_C + SS_{RxC}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="variability-3">Variability</h3>
+<p><span class="math inline">\(df\)</span>, <span class="math inline">\(MS\)</span>, and <span class="math inline">\(F\)</span> ratios are defined in the same way as they were for one-way ANOVA. We just have more of them. <span class="math display">\[
+\begin{aligned}
+df_R &amp;= R-1 \\
+df_C &amp;= C-1 \\
+df_{RxC} &amp;= (R-1)(C-1) \\
+df_{within} &amp;= N-G \\
+&amp;= N-(R-1)-(C-1)-[(R-1)(C-1)]-1\\
+&amp;= df_{total} - df_{R} - df_C - df_{RxC}
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="variability-4">Variability</h3>
+<p><span class="math inline">\(df\)</span>, <span class="math inline">\(MS\)</span>, and <span class="math inline">\(F\)</span> ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+MS_R &amp;= \frac{SS_R}{df_R} \\
+MS_C &amp;= \frac{SS_C}{df_C} \\
+MS_{RxC} &amp;= \frac{SS_{RxC}}{df_{RxC}} \\
+MS_{within} &amp;= \frac{SS_{within}}{df_{within}} \\
+\end{aligned}
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p>Each mean square is a variance estimate. <span class="math inline">\(MS_{within}\)</span> is the pooled estimate of the within-groups variance. It represents only random or residual variation. <span class="math inline">\(MS_R\)</span>, <span class="math inline">\(MS_C\)</span>, and <span class="math inline">\(MS_{RxC}\)</span> also contain random variation, but include systematic variability too.</p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="f-statistics">F-statistics</h3>
+<p><span class="math inline">\(df\)</span>, <span class="math inline">\(MS\)</span>, and <span class="math inline">\(F\)</span> ratios are defined in the same way as they were for one-way ANOVA. We just have more of them.</p>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><span class="math display">\[
+\begin{aligned}
+F_R &amp;= \frac{MS_R}{MS_{within}} \\
+\\
+F_C &amp;= \frac{MS_C}{MS_{within}} \\
+\\
+F_{RxC} &amp;= \frac{MS_{RxC}}{MS_{within}} \\
+\end{aligned}
+\]</span></p>
+</div><div class="column" style="width:60%;">
+<p>If the null hypotheses are true, these ratios will be ~1.00 because the numerator and denominator of each estimate the same thing. Departures from 1.00 indicate that systematic variability is present. If large enough, we reject the null hypothesis (each considered separately).</p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="degrees-of-freedom">Degrees of freedom</h3>
+<p>The degrees of freedom for the different F ratios might not be the same. Different degrees of freedom define different theoretical F density distributions for determining what is an unusual value under the null hypothesis.</p>
+<p>Which is to say, you might get the same F-ratio for two different tests, but they could have different p-values, if they represent different numbers of groups.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="interpretation-of-significance-tests">Interpretation of significance tests</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Time <span class="sc">~</span> Speed<span class="sc">*</span>Noise, <span class="at">data =</span> Data)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">anova</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: Time
+             Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+Noise         2  341315  170658  13.3075           0.000004252 ***
+Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+Residuals   171 2192939   12824                                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Interpretation?</p>
+<div class="fragment">
+<p>All three null hypotheses are rejected. This only tells us that systemic differences among the means are present; follow-up comparisons are necessary to determine the nature of the differences.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="interpretation-of-significance-tests-1">Interpretation of significance tests</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Time <span class="sc">~</span> Speed<span class="sc">*</span>Noise, <span class="at">data =</span> Data)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">anova</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: Time
+             Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+Noise         2  341315  170658  13.3075           0.000004252 ***
+Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+Residuals   171 2192939   12824                                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Both main effects and the interaction are significant.</p>
+<p>The significant interaction qualifies the main effects:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li class="fragment">The magnitude of the speed main effect varies across the noise conditions.</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment">The magnitude of the noise main effect varies across the speed conditions.</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-main-effects-and-interactions">Visualizing main effects and interactions</h3>
+<p>Different combinations of main effects and interactions yield different shapes when plotted. An important skill is recognizing how plots will change based on the presence or absence of specific effects.</p>
+<p>Main effects are tests of differences in means; a significant main effect will yield a difference – the mean of Group 1 will be different than the mean of Group 2, for example.</p>
+<p>Interactions are tests of the differences of differences of means – is the difference between Group 1 and Group 2 different in Condition A than that difference is in Condition B, for example.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-main-effects-and-interactions-1">Visualizing main effects and interactions</h3>
+
+<img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-15-1.png" width="672" class="r-stretch"><aside class="notes">
+<p>No effect of A Main effect of B No interaction</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-main-effects-and-interactions-2">Visualizing main effects and interactions</h3>
+
+<img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-16-1.png" width="672" class="r-stretch"><aside class="notes">
+<p>Main effect of A Main effect of B Interaction</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-main-effects-and-interactions-3">Visualizing main effects and interactions</h3>
+
+<img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-17-1.png" width="672" class="r-stretch"><aside class="notes">
+<p>No effect of A No effect of B Interaction</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="visualizing-main-effects-and-interactions-4">Visualizing main effects and interactions</h3>
+<p>How would you plot….</p>
+<ul>
+<li class="fragment">A main effect of A, no main effect of B, and no interaction?</li>
+<li class="fragment">A main effect of A, a main effect of B, and no interaction?</li>
+<li class="fragment">No main effect of A, a main effect of B, and an interaction?</li>
+</ul>
+</section>
+<section id="effect-size" class="slide level2">
+<h2>Effect size</h2>
+<p>All of the effects in the ANOVA are statistically significant, but how big are they? An effect size, <span class="math inline">\(\eta^2\)</span>, provides a simple way of indexing effect magnitude for ANOVA designs, especially as they get more complex.</p>
+<p><span class="math display">\[ \eta^2 = \frac{SS_{\text{effect}}}{SS_{\text{total}}}\]</span> If the design is balanced…</p>
+<p><span class="math display">\[ SS_{\text{total}} = SS_{\text{speed}} + SS_{\text{noise}}+SS_{\text{speed:noise}}+SS_{\text{within}}\]</span></p>
+</section>
+<section class="slide level2">
+
+<div class="cell-output-display">
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Source </th>
+   <th style="text-align:right;"> SS </th>
+   <th style="text-align:right;"> eta 2 </th>
+   <th style="text-align:right;"> partial eta 2 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Speed </td>
+   <td style="text-align:right;"> 2805871.4 </td>
+   <td style="text-align:right;width: 10em; "> 0.50 </td>
+   <td style="text-align:right;"> 0.56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Noise </td>
+   <td style="text-align:right;"> 341315.2 </td>
+   <td style="text-align:right;width: 10em; "> 0.06 </td>
+   <td style="text-align:right;"> 0.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Speed:Noise </td>
+   <td style="text-align:right;"> 295719.7 </td>
+   <td style="text-align:right;width: 10em; "> 0.05 </td>
+   <td style="text-align:right;"> 0.12 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Residuals </td>
+   <td style="text-align:right;"> 2192938.9 </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Total </td>
+   <td style="text-align:right;">  </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;">  </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>The Speed main effect accounts for 8 to 9 times as much variance in the outcome as the Noise main effect and the Speed x Noise interaction.</p>
+</section>
+<section class="slide level2">
+
+
+<img data-src="images/eta_sq.jpg" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 id="eta2"><span class="math inline">\(\eta^2\)</span></h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><span style="color:purple">If the design is balanced:</span></p>
+<p>There is no overlap among the independent variables. They are uncorrelated.</p>
+<p>The variance accounted for by any effect is unique. There is no ambiguity about the source of variance accounted for in the outcome.</p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/eta_sq.jpg"></p>
+</div>
+</div>
+<p>The sum of the <span class="math inline">\(\eta^2\)</span> for effects and residual is 1.00.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="eta2-1"><span class="math inline">\(\eta^2\)</span></h3>
+<p>One argument against <span class="math inline">\(\eta^2\)</span> is that its magnitude depends in part on the magnitude of the other effects in the design. If the amount of variability due to Noise or Speed x Noise changes, so to does the effect size for Speed.</p>
+<p><span class="math display">\[ \eta^2_{\text{speed}} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{noise}} + SS_{\text{speed:noise}}+ SS_{\text{within}}}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="eta2-2"><span class="math inline">\(\eta^2\)</span></h3>
+<p>An alternative is to pretend the other effects do not exist and reference the effect sum of squares to residual variability.</p>
+<p><span class="math display">\[ \text{partial }\eta^2_{\text{speed}} = \frac{SS_{\text{speed}}}{SS_{\text{speed}} + SS_{\text{within}}}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="eta2-3"><span class="math inline">\(\eta^2\)</span></h3>
+<p>One rationale for partial <span class="math inline">\(\eta^2\)</span> is that the residual variability represents the expected variability in the absence of any treatments or manipulations. The presence of any treatments or manipulations only adds to total variability. Viewed from that perspective, residual variability is a sensible benchmark against which to judge any effect.</p>
+<p><span class="math display">\[ \text{partial }\eta^2_{\text{effect}} = \frac{SS_{\text{effect}}}{SS_{\text{effect}} + SS_{\text{within}}}\]</span></p>
+<p>Partial <span class="math inline">\(\eta^2\)</span> is sometimes described as the expected effect size in a study in which the effect in question is the only effect present.</p>
+</section>
+<section class="slide level2">
+
+<div class="cell-output-display">
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Source </th>
+   <th style="text-align:right;"> SS </th>
+   <th style="text-align:right;"> eta2 </th>
+   <th style="text-align:right;"> partial eta2 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Speed </td>
+   <td style="text-align:right;"> 2805871.4 </td>
+   <td style="text-align:right;width: 10em; "> 0.50 </td>
+   <td style="text-align:right;"> 0.56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Noise </td>
+   <td style="text-align:right;"> 341315.2 </td>
+   <td style="text-align:right;width: 10em; "> 0.06 </td>
+   <td style="text-align:right;"> 0.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Speed:Noise </td>
+   <td style="text-align:right;"> 295719.7 </td>
+   <td style="text-align:right;width: 10em; "> 0.05 </td>
+   <td style="text-align:right;"> 0.12 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Residuals </td>
+   <td style="text-align:right;"> 2192938.9 </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Total </td>
+   <td style="text-align:right;">  </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;">  </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<p>Partial <span class="math inline">\(\eta^2\)</span> will be larger than <span class="math inline">\(\eta^2\)</span> if the ignored effects account for any variability.</p>
+<p>The sum of partial <span class="math inline">\(\eta^2\)</span> does not have a meaningful interpretation.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="differences-in-means">Differences in means</h3>
+<p>In a factorial design, marginal means or cell means must be calculated in order to interpret main effects and the interaction, respectively. The confidence intervals around those means likewise are needed.</p>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Noise </th>
+   <th style="text-align:right;"> Fast </th>
+   <th style="text-align:right;"> Medium </th>
+   <th style="text-align:right;"> Slow </th>
+   <th style="text-align:right;"> Marginal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="5" style="border-bottom: 1px solid;"><strong></strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Controllable </td>
+   <td style="text-align:right;"> 287.23 </td>
+   <td style="text-align:right;"> 492.72 </td>
+   <td style="text-align:right;"> 576.67 </td>
+   <td style="text-align:right;"> 452.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> None </td>
+   <td style="text-align:right;"> 329.28 </td>
+   <td style="text-align:right;"> 525.29 </td>
+   <td style="text-align:right;"> 630.72 </td>
+   <td style="text-align:right;"> 495.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Uncontrollable </td>
+   <td style="text-align:right;"> 268.16 </td>
+   <td style="text-align:right;"> 304.62 </td>
+   <td style="text-align:right;"> 594.44 </td>
+   <td style="text-align:right;"> 389.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Marginal </td>
+   <td style="text-align:right;"> 294.89 </td>
+   <td style="text-align:right;"> 440.88 </td>
+   <td style="text-align:right;"> 600.61 </td>
+   <td style="text-align:right;"> 445.46 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="precision">Precision</h3>
+<p>If the homogeneity of variances assumption holds, a common estimate of score variability <span class="math inline">\((MS_{within})\)</span> underlies all of the confidence intervals.</p>
+<p><span class="math display">\[ SE_{mean} = \sqrt{\frac{MS_{within}}{N}}\]</span></p>
+<p><span class="math display">\[ CI_{mean} = Mean \pm t_{df_{within}, \alpha = .05}\sqrt{\frac{MS_{within}}{N}}\]</span></p>
+<p>The sample size, <span class="math inline">\(N\)</span>, depends on how many cases are aggregated to create the mean.</p>
+<aside class="notes">
+<p>The <span class="math inline">\(MS_{within}\)</span> is common to all calculations if homogeneity of variances is met. The degrees of freedom for <span class="math inline">\(MS_{within}\)</span> determine the value of <span class="math inline">\(t\)</span> to use.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">anova</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: Time
+             Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+Noise         2  341315  170658  13.3075           0.000004252 ***
+Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+Residuals   171 2192939   12824                                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>To get individual cell means, we ask for all combinations of our two predictor variables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">emmeans</span>(fit, <span class="sc">~</span>Noise<span class="sc">*</span>Speed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Noise          Speed  emmean   SE  df lower.CL upper.CL
+ Controllable   Fast      287 25.3 171      237      337
+ None           Fast      329 25.3 171      279      379
+ Uncontrollable Fast      268 25.3 171      218      318
+ Controllable   Medium    493 25.3 171      443      543
+ None           Medium    525 25.3 171      475      575
+ Uncontrollable Medium    305 25.3 171      255      355
+ Controllable   Slow      577 25.3 171      527      627
+ None           Slow      631 25.3 171      581      681
+ Uncontrollable Slow      594 25.3 171      544      644
+
+Confidence level used: 0.95 </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>The <code>emmeans()</code> function can also produce marginal and cell means along with their confidence intervals. These are the marginal means for the Noise main effect.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>noise_emm <span class="ot">=</span> <span class="fu">emmeans</span>(fit, <span class="sc">~</span>Noise)</span>
+<span id="cb11-2"><a href="#cb11-2"></a>noise_emm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Noise          emmean   SE  df lower.CL upper.CL
+ Controllable      452 14.6 171      423      481
+ None              495 14.6 171      466      524
+ Uncontrollable    389 14.6 171      360      418
+
+Results are averaged over the levels of: Speed 
+Confidence level used: 0.95 </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>In <code>sjPlot()</code>, predicted values are the expected value of Y given all possible values of X, <span style="color:purple">at specific values of M</span> . If you don’t provide specific values of M, you’ll get a plot with all possible values.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">plot_model</span>(fit, <span class="at">type =</span> <span class="st">"pred"</span>, </span>
+<span id="cb13-3"><a href="#cb13-3"></a>           <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"Noise"</span>, <span class="st">"Speed"</span>)) <span class="sc">+</span> </span>
+<span id="cb13-4"><a href="#cb13-4"></a>  <span class="fu">theme_sjplot</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span> </span>
+<span id="cb13-5"><a href="#cb13-5"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="16-factorial_files/figure-revealjs/pred2.plot-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>In <code>sjPlot()</code>, predicted values are the expected value of Y given all possible values of X, <span style="color:purple">at specific values of M</span> . If you don’t specify M at all, it will choose the reference group of M.</p>
+<p><code>type = "pred"</code> gives you cell means.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">plot_model</span>(fit, <span class="at">type =</span> <span class="st">"pred"</span>, </span>
+<span id="cb14-2"><a href="#cb14-2"></a>           <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"Noise"</span>)) <span class="sc">+</span> </span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="fu">theme_sjplot</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span> </span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>In <code>sjPlot()</code>, predicted values are the expected value of Y given all possible values of X, <span style="color:purple">at specific values of M</span> . If you don’t specify M at all, it will choose the reference group of M.</p>
+<p><code>type = "pred"</code> gives you cell means.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">plot_model</span>(fit, <span class="at">type =</span> <span class="st">"pred"</span>, </span>
+<span id="cb15-2"><a href="#cb15-2"></a>           <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"Noise"</span>, </span>
+<span id="cb15-3"><a href="#cb15-3"></a>                     <span class="st">"Speed[Fast]"</span>)) <span class="sc">+</span> </span>
+<span id="cb15-4"><a href="#cb15-4"></a>  <span class="fu">theme_sjplot</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>In <code>sjPlot()</code>, estimated marginal means are the expected value of Y given all possible values of X, <span style="color:purple">ignoring M</span> .</p>
+<p><code>type = "emm"</code> gives you marginal means.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">plot_model</span>(fit, <span class="at">type =</span> <span class="st">"emm"</span>, </span>
+<span id="cb16-2"><a href="#cb16-2"></a>           <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"Noise"</span>)) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="fu">theme_sjplot</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span> </span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-26-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="precision-1">Precision</h3>
+<p>A reminder that comparing the confidence intervals for two means (overlap) is not the same as the confidence interval for the difference between two means.</p>
+<p><span class="math display">\[
+\begin{aligned}
+SE_{\text{mean}} &amp;= \sqrt{\frac{MS_{within}}{N}}\\
+SE_{\text{mean difference}} &amp;= \sqrt{MS_{within}[\frac{1}{N_1}+\frac{1}{N_2}]} \\
+SE_{\text{mean difference}} &amp;= \sqrt{\frac{2MS_{within}}{N}} \\
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="cohens-d">Cohen’s D</h3>
+<p><span class="math inline">\(\eta^2\)</span> is useful for comparing the relative effect sizes of one factor to another. If you want to compare the differences between groups, Cohen’s d is the more appropriate metric. Like in a t-test, you’ll divide the differences in means by the pooled standard deviation. The pooled variance estimate is the <span class="math inline">\(MS_{\text{error}}\)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Time <span class="sc">~</span> Speed<span class="sc">*</span>Noise, <span class="at">data =</span> Data)</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="fu">anova</span>(fit)[,<span class="st">"Mean Sq"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1402935.71  170657.62   73929.93   12824.20</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>MS_error <span class="ot">=</span> <span class="fu">anova</span>(fit)[,<span class="st">"Mean Sq"</span>][<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>So to get the pooled standard deviation:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>pooled_sd <span class="ot">=</span> <span class="fu">sqrt</span>(MS_error)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="cohens-d-1">Cohen’s D</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>(<span class="at">noise_df =</span> <span class="fu">as.data.frame</span>(noise_emm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Noise          emmean   SE  df lower.CL upper.CL
+ Controllable      452 14.6 171      423      481
+ None              495 14.6 171      466      524
+ Uncontrollable    389 14.6 171      360      418
+
+Results are averaged over the levels of: Speed 
+Confidence level used: 0.95 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>(<span class="at">d_none_control =</span> <span class="fu">diff</span>(noise_df[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="st">"emmean"</span>])<span class="sc">/</span>pooled_sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3787367</code></pre>
+</div>
+</div>
+</section>
+<section id="power" class="slide level2">
+<h2>Power</h2>
+<p>The likelihood of finding an effect <em>if the effect actually exists.</em> Power gets larger as we:</p>
+<ul>
+<li class="fragment">increase our sample size</li>
+<li class="fragment">reduce (error) variance</li>
+<li class="fragment">raise our Type I error rate</li>
+<li class="fragment">study larger effects</li>
+</ul>
+</section>
+<section class="slide level2">
+
+
+<img data-src="16-factorial_files/figure-revealjs/unnamed-chunk-30-1.png" width="960" class="r-stretch"></section>
+<section id="power-omnibus-test" class="slide level2">
+<h2>Power (omnibus test)</h2>
+<p>When calculating power for the omnibus test, use the expected multiple <span class="math inline">\(R^2\)</span> value to calculate an effect size:</p>
+<p><span class="math display">\[ f^2 = \frac{R^2}{1-R^2}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="power-omnibus-test-1">Power (omnibus test)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>R2 <span class="ot">=</span> .<span class="dv">10</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a>(<span class="at">f =</span> R2<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>R2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1111111</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="fu">library</span>(pwr)</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="fu">pwr.f2.test</span>(<span class="at">u =</span> <span class="dv">3</span>, <span class="co"># number of predictors in the model</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a>            <span class="at">f2 =</span> f, </span>
+<span id="cb27-4"><a href="#cb27-4"></a>            <span class="at">sig.level =</span> .<span class="dv">05</span>, <span class="co">#alpha</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a>            <span class="at">power =</span>.<span class="dv">90</span>) <span class="co"># desired power</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+     Multiple regression power calculation 
+
+              u = 3
+              v = 127.5235
+             f2 = 0.1111111
+      sig.level = 0.05
+          power = 0.9</code></pre>
+</div>
+</div>
+<p><code>v</code> is the denominator df of freedom, so the number of participants needed is v + p + 1.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="power-for-pairwise-comparisons">Power for pairwise comparisons</h3>
+<p>The comparison of two cell means is analogous to what test?</p>
+<div class="fragment">
+<p>An independent samples t-test. We can use the Cohen’s D value for any pairwise comparison to examine power.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>(<span class="at">noise_df =</span> <span class="fu">as.data.frame</span>(noise_emm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Noise          emmean   SE  df lower.CL upper.CL
+ Controllable      452 14.6 171      423      481
+ None              495 14.6 171      466      524
+ Uncontrollable    389 14.6 171      360      418
+
+Results are averaged over the levels of: Speed 
+Confidence level used: 0.95 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>(<span class="at">d_none_control =</span> <span class="fu">diff</span>(noise_df[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="st">"emmean"</span>])<span class="sc">/</span>pooled_sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3787367</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">pwr.t.test</span>(<span class="at">d =</span> d_none_control, <span class="at">sig.level =</span> .<span class="dv">05</span>, <span class="at">power =</span> .<span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+     Two-sample t test power calculation 
+
+              n = 147.4716
+              d = 0.3787367
+      sig.level = 0.05
+          power = 0.9
+    alternative = two.sided
+
+NOTE: n is number in *each* group</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="follow-up-comparisons">Follow-up comparisons</h3>
+<p>Interpretation of the main effects and interaction in a factorial design will usually require follow-up comparisons. These need to be conducted at the level of the effect.</p>
+<p>Interpretation of a main effect requires comparisons among the <span style="color:purple">marginal means</span> .</p>
+<p>Interpretation of the interaction requires comparisons among the <span style="color:purple">cell means</span> .</p>
+<p>The <code>emmeans</code> package makes these comparisons very easy to conduct.</p>
+</section>
+<section class="slide level2">
+
+<p>Marginal means comparisons</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">emmeans</span>(fit, pairwise<span class="sc">~</span>Noise, <span class="at">adjust =</span> <span class="st">"holm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Noise          emmean   SE  df lower.CL upper.CL
+ Controllable      452 14.6 171      423      481
+ None              495 14.6 171      466      524
+ Uncontrollable    389 14.6 171      360      418
+
+Results are averaged over the levels of: Speed 
+Confidence level used: 0.95 
+
+$contrasts
+ contrast                      estimate   SE  df t.ratio p.value
+ Controllable - None              -42.9 20.7 171  -2.074  0.0395
+ Controllable - Uncontrollable     63.1 20.7 171   3.053  0.0052
+ None - Uncontrollable            106.0 20.7 171   5.128  &lt;.0001
+
+Results are averaged over the levels of: Speed 
+P value adjustment: holm method for 3 tests </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>Cell means comparisons</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">emmeans</span>(fit, pairwise<span class="sc">~</span>Noise<span class="sc">*</span>Speed, <span class="at">adjust =</span> <span class="st">"holm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Noise          Speed  emmean   SE  df lower.CL upper.CL
+ Controllable   Fast      287 25.3 171      237      337
+ None           Fast      329 25.3 171      279      379
+ Uncontrollable Fast      268 25.3 171      218      318
+ Controllable   Medium    493 25.3 171      443      543
+ None           Medium    525 25.3 171      475      575
+ Uncontrollable Medium    305 25.3 171      255      355
+ Controllable   Slow      577 25.3 171      527      627
+ None           Slow      631 25.3 171      581      681
+ Uncontrollable Slow      594 25.3 171      544      644
+
+Confidence level used: 0.95 
+
+$contrasts
+ contrast                                    estimate   SE  df t.ratio p.value
+ Controllable Fast - None Fast                  -42.0 35.8 171  -1.174  1.0000
+ Controllable Fast - Uncontrollable Fast         19.1 35.8 171   0.533  1.0000
+ Controllable Fast - Controllable Medium       -205.5 35.8 171  -5.738  &lt;.0001
+ Controllable Fast - None Medium               -238.1 35.8 171  -6.648  &lt;.0001
+ Controllable Fast - Uncontrollable Medium      -17.4 35.8 171  -0.486  1.0000
+ Controllable Fast - Controllable Slow         -289.4 35.8 171  -8.082  &lt;.0001
+ Controllable Fast - None Slow                 -343.5 35.8 171  -9.592  &lt;.0001
+ Controllable Fast - Uncontrollable Slow       -307.2 35.8 171  -8.579  &lt;.0001
+ None Fast - Uncontrollable Fast                 61.1 35.8 171   1.707  0.9867
+ None Fast - Controllable Medium               -163.4 35.8 171  -4.564  0.0002
+ None Fast - None Medium                       -196.0 35.8 171  -5.473  &lt;.0001
+ None Fast - Uncontrollable Medium               24.7 35.8 171   0.689  1.0000
+ None Fast - Controllable Slow                 -247.4 35.8 171  -6.908  &lt;.0001
+ None Fast - None Slow                         -301.4 35.8 171  -8.418  &lt;.0001
+ None Fast - Uncontrollable Slow               -265.2 35.8 171  -7.405  &lt;.0001
+ Uncontrollable Fast - Controllable Medium     -224.6 35.8 171  -6.271  &lt;.0001
+ Uncontrollable Fast - None Medium             -257.1 35.8 171  -7.180  &lt;.0001
+ Uncontrollable Fast - Uncontrollable Medium    -36.5 35.8 171  -1.018  1.0000
+ Uncontrollable Fast - Controllable Slow       -308.5 35.8 171  -8.615  &lt;.0001
+ Uncontrollable Fast - None Slow               -362.6 35.8 171 -10.124  &lt;.0001
+ Uncontrollable Fast - Uncontrollable Slow     -326.3 35.8 171  -9.111  &lt;.0001
+ Controllable Medium - None Medium              -32.6 35.8 171  -0.910  1.0000
+ Controllable Medium - Uncontrollable Medium    188.1 35.8 171   5.252  &lt;.0001
+ Controllable Medium - Controllable Slow        -84.0 35.8 171  -2.344  0.2627
+ Controllable Medium - None Slow               -138.0 35.8 171  -3.854  0.0026
+ Controllable Medium - Uncontrollable Slow     -101.7 35.8 171  -2.841  0.0707
+ None Medium - Uncontrollable Medium            220.7 35.8 171   6.162  &lt;.0001
+ None Medium - Controllable Slow                -51.4 35.8 171  -1.435  1.0000
+ None Medium - None Slow                       -105.4 35.8 171  -2.944  0.0553
+ None Medium - Uncontrollable Slow              -69.2 35.8 171  -1.931  0.6615
+ Uncontrollable Medium - Controllable Slow     -272.1 35.8 171  -7.597  &lt;.0001
+ Uncontrollable Medium - None Slow             -326.1 35.8 171  -9.106  &lt;.0001
+ Uncontrollable Medium - Uncontrollable Slow   -289.8 35.8 171  -8.093  &lt;.0001
+ Controllable Slow - None Slow                  -54.1 35.8 171  -1.509  1.0000
+ Controllable Slow - Uncontrollable Slow        -17.8 35.8 171  -0.496  1.0000
+ None Slow - Uncontrollable Slow                 36.3 35.8 171   1.013  1.0000
+
+P value adjustment: holm method for 36 tests </code></pre>
+</div>
+</div>
+</section>
+<section id="assumptions" class="slide level2">
+<h2>Assumptions</h2>
+<p>You can check the assumptions of the factorial ANOVA in much the same way you check them for multiple regression; but given the categorical nature of the predictors, some assumptions are easier to check.</p>
+<p>Homogeneity of variance, for example, can be tested using Levene’s test, instead of examining a plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="fu">leveneTest</span>(Time <span class="sc">~</span> Speed<span class="sc">*</span>Noise, <span class="at">data =</span> Data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Levene's Test for Homogeneity of Variance (center = median)
+       Df F value Pr(&gt;F)
+group   8  0.5879  0.787
+      171               </code></pre>
+</div>
+</div>
+</section>
+<section id="unbalanced-designs" class="slide level2">
+<h2>Unbalanced designs</h2>
+<p>If designs are balanced, then the main effects and interpretation effects are independent/orthogonal. In other words, knowing what condition a case is in on Variable 1 will not make it any easier to guess what condition they were part of in Variable 2.</p>
+<p>However, if your design is unbalanced, the main effects and interaction effect are partly confounded.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">table</span>(Data2<span class="sc">$</span>Level, Data2<span class="sc">$</span>Noise)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       Controllable Uncontrollable
+  Soft           10             30
+  Loud           20             20</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares">Sums of Squares</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>In a Venn diagram, the overlap represents the variance shared by the variables. Now there is variance accounted for in the outcome (Time) that cannot be unambiguously attributed to just one of the predictors There are several options for handling the ambiguous regions.</p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/eta_sq_unbalanced.jpg"></p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-iii">Sums of Squares (III)</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/eta_sq_unbalanced_iii.jpg"></p>
+</div><div class="column" style="width:50%;">
+<p>Type III sums of squares is the easiest to understand—the overlapping variance accounted for goes unclaimed by any variable. Effects can only account for the unique variance that they share with the outcome. This is the default in many other statistical programs, including SPSS and SAS.</p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-i">Sums of Squares (I)</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Type I sums of squares allocates the overlapping variance according to some priority rule. All of the variance is claimed, but the rule needs to be justified well or else suspicions about p-hacking are likely. The rule might be based on theory or causal priority or methodological argument.</p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/eta_sq_unbalanced_i.jpg"></p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-i-1">Sums of Squares (I)</h3>
+<p>If a design is quite unbalanced, different orders of effects can produce quite different results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>fit_1 <span class="ot">=</span> <span class="fu">aov</span>(Time <span class="sc">~</span> Noise <span class="sc">+</span> Level, <span class="at">data =</span> Data2)</span>
+<span id="cb43-2"><a href="#cb43-2"></a><span class="fu">summary</span>(fit_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Df  Sum Sq Mean Sq F value        Pr(&gt;F)    
+Noise        1  579478  579478   41.78 0.00000000844 ***
+Level        1  722588  722588   52.10 0.00000000032 ***
+Residuals   77 1067848   13868                          
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>lsr<span class="sc">::</span><span class="fu">etaSquared</span>(fit_1, <span class="at">type =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         eta.sq eta.sq.part
+Noise 0.2445144   0.3517689
+Level 0.3049006   0.4035822</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-i-2">Sums of Squares (I)</h3>
+<p>If a design is quite unbalanced, different orders of effects can produce quite different results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>fit_1 <span class="ot">=</span> <span class="fu">aov</span>(Time <span class="sc">~</span> Level <span class="sc">+</span> Noise, <span class="at">data =</span> Data2)</span>
+<span id="cb47-2"><a href="#cb47-2"></a><span class="fu">summary</span>(fit_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Df  Sum Sq Mean Sq F value            Pr(&gt;F)    
+Level        1 1035872 1035872   74.69 0.000000000000586 ***
+Noise        1  266194  266194   19.20 0.000036815466646 ***
+Residuals   77 1067848   13868                              
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>lsr<span class="sc">::</span><span class="fu">etaSquared</span>(fit_1, <span class="at">type =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         eta.sq eta.sq.part
+Level 0.4370927   0.4924002
+Noise 0.1123222   0.1995395</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-ii">Sums of Squares (II)</h3>
+<p>Type II sums of squares are commonly used but also a bit more complex to understand.</p>
+<p>A technically correct description is that a target effect is allocated the proportion of variance in the outcome that is unshared with other effects that do not contain the target.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-ii-1">Sums of Squares (II)</h3>
+<p>In an A x B design, the A effect is the proportion of variance that is accounted for by A after removing the variance accounted for by B.</p>
+<p>The A x B interaction is allocated the proportion of variance that is accounted for by A x B after removing the variance accounted for by A and B.</p>
+<p>There is no convenient way to illustrate this in a Venn diagram.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="sums-of-squares-1">Sums of Squares</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Effect</th>
+<th>Type I</th>
+<th>Type II</th>
+<th>Type III</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>SS(A)</td>
+<td>SS(A|B)</td>
+<td>SS(A|B,AB)</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>SS(B|A)</td>
+<td>SS(B|A)</td>
+<td>SS(B|A,AB)</td>
+</tr>
+<tr class="odd">
+<td>A:B</td>
+<td>SS(AB|A,B)</td>
+<td>SS(AB|A,B)</td>
+<td>SS(AB|A,B)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<p>The <code>aov( )</code> function in R produces Type I sums of squares. The <code>Anova( )</code> function from the car package provides Type II and Type III sums of squares.</p>
+<p>These work as expected provided the predictors are factors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="fu">Anova</span>(<span class="fu">aov</span>(fit), <span class="at">type =</span> <span class="st">"II"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Anova Table (Type II tests)
+
+Response: Time
+             Sum Sq  Df  F value                Pr(&gt;F)    
+Speed       2805871   2 109.3975 &lt; 0.00000000000000022 ***
+Noise        341315   2  13.3075           0.000004252 ***
+Speed:Noise  295720   4   5.7649             0.0002241 ***
+Residuals   2192939 171                                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>All of the between-subjects variance is accounted for by an effect in Type I sums of squares. The sums of squares for each effect and the residual will equal the total sum of squares.</p>
+<p>For Type II and Type III sums of squares, the sums of squares for effects and residual will be less than the total sum of squares. Some variance (in the form of SS) goes unclaimed.</p>
+<p>The highest order effect (assuming standard ordering) has the same SS in all three models.</p>
+<p>When a design is balanced, Type I, II, and III sums of squares are equivalent.</p>
+</section>
+<section id="summary-and-regression" class="slide level2">
+<h2>Summary (and Regression)</h2>
+<p>Factorial ANOVA is the method by which we can examine whether two (or more) categorical IVs have joint effects on a continuous outcome of interest. Like all general linear models, factorial ANOVA is a specific case of multiple regression. However, we may choose to use an ANOVA framework for the sake of interpretability.</p>
+</section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<h4 id="factorial-anova-1">Factorial ANOVA</h4>
+<p>Interaction tests whether there are differences in mean differences.</p>
+<p>A <span style="color:purple">(marginal) main effect</span> is the effect of IV1 on the DV ignoring IV2.</p>
+<p>A <span style="color:purple">simple main effect</span> is the effect of IV1 on the DV at a specific level of IV2</p>
+</div><div class="column" style="width:50%;">
+<h4 id="regression">Regression</h4>
+<p>Interaction tests whether differences in slopes.</p>
+<p>A <span style="color:purple">marginal effect</span> (MEM or AME) is the typica effect of IV1 at the mean of the other variable or across the sample (respectively).</p>
+<p>A <span style="color:purple">simple slope</span> is the effect of IV1 on the DV assuming IV2 is a specific value.</p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="factorial-anova-2">Factorial ANOVA</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="fu">anova</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: Time
+             Df  Sum Sq Mean Sq  F value                Pr(&gt;F)    
+Speed         2 2805871 1402936 109.3975 &lt; 0.00000000000000022 ***
+Noise         2  341315  170658  13.3075           0.000004252 ***
+Speed:Noise   4  295720   73930   5.7649             0.0002241 ***
+Residuals   171 2192939   12824                                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="regression-1">Regression</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Time ~ Speed * Noise, data = Data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-316.23  -70.82    4.99   79.87  244.40 
+
+Coefficients:
+                                Estimate Std. Error t value
+(Intercept)                      287.234     25.322  11.343
+SpeedMedium                      205.483     35.811   5.738
+SpeedSlow                        289.439     35.811   8.082
+NoiseNone                         42.045     35.811   1.174
+NoiseUncontrollable              -19.072     35.811  -0.533
+SpeedMedium:NoiseNone             -9.472     50.644  -0.187
+SpeedSlow:NoiseNone               12.007     50.644   0.237
+SpeedMedium:NoiseUncontrollable -169.023     50.644  -3.337
+SpeedSlow:NoiseUncontrollable     36.843     50.644   0.727
+                                            Pr(&gt;|t|)    
+(Intercept)                     &lt; 0.0000000000000002 ***
+SpeedMedium                        0.000000042666641 ***
+SpeedSlow                          0.000000000000111 ***
+NoiseNone                                    0.24200    
+NoiseUncontrollable                          0.59502    
+SpeedMedium:NoiseNone                        0.85185    
+SpeedSlow:NoiseNone                          0.81287    
+SpeedMedium:NoiseUncontrollable              0.00104 ** 
+SpeedSlow:NoiseUncontrollable                0.46792    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 113.2 on 171 degrees of freedom
+Multiple R-squared:  0.6109,    Adjusted R-squared:  0.5927 
+F-statistic: 33.56 on 8 and 171 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+</div>
+</div>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next time…</h2>
+<p>Powering interactions</p>
+<p>Polynomials</p>
+<div class="footer footer-default">
+
+</div>
+</section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="16-factorial_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="16-factorial_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/multiplex/socket.io.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/multiplex/multiplex.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="16-factorial_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="16-factorial_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'multiplex': {"secret":null,"id":"3790a29ada223acd","url":"https://reveal-multiplex.glitch.me/"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        target: function(trigger) {
+          return trigger.previousElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto-reveal',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
