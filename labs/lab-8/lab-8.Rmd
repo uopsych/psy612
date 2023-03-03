@@ -331,26 +331,29 @@ Switch how the interaction is visualized by switching the order of `terms`.
 
 Simple effects are the effect of some factor (e.g., interaction partner's expression) at each level of another factor (e.g., at high and low RS separately).
 
-* We'll look at the simple effect of interaction partner having a neutral vs. happy expression on perceived liking at different levels of rejection sensitivity. We'll use the `{emmeans}` package.
-
-* To get simple effects, we combine the `emmeans()` function with the `contrast()` function (both from `{emmeans}`). `emmeans()` works by passing it a model and then specifying which variables you're looking at. Then, we pass that along to `contrast()`, which can give us a variety of different contrasts. 
-
-* If we want simple effects for interaction partner expression at each level of rejection sensitivity we can use `by = "rs"` and `simple = "partner"`.
+We can get these simple effects using the `emmeans` function and calculating the differences between every pair of cell means.
 
 ```{r}
-model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
-  contrast(by = "rs", # by is the variable we are looking at each level of
-           simple = "partner") # simple is what we want simple effects of
+# Comparing cell means
+emmeans(model, pairwise~rs*partner, adjust = "bonferroni")
+
+# for info on types of p-value adjustments you can choose from:
+?summary.emmGrid # scroll to p-value adjustments
 ```
 
->**Question:** What do the results of this simple effects analysis show? 
+>**Question:** Does partner emotion have an effect on perceived liking for people low on rejection sensitivity? For people high on rejection sensitivty? 
 
-* Now let's look at simple effects for rejection sensitivity at each level of partner expression.
 
+>**Question:** Does rejection sensitivity have an effect on perceived liking when partner shows neutral emotions? When partner shows happy emotions? 
+
+
+
+You could also use the `emmeans` function to compare marginal means for each factor individually.
 ```{r}
-model %>% emmeans(specs = c("partner", "rs")) %>% # specify our two factors
-  contrast(by = "partner", # by is the variable we are looking at each level of
-           simple = "rs") # simple is what we want simple effects of
+# Comparing marginal means for partner emotion
+emmeans(model, pairwise~partner, adjust = "bonferroni")
+
+# Comparing marginal means for partner emotion
+emmeans(model, pairwise~rs, adjust = "bonferroni")
 ```
 
->**Question:** What do the results of this simple effects analysis show? 

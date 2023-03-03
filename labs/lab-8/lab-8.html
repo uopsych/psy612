@@ -3309,61 +3309,77 @@ significant interaction effect means?</p>
 <p>Simple effects are the effect of some factor (e.g., interaction
 partner’s expression) at each level of another factor (e.g., at high and
 low RS separately).</p>
-<ul>
-<li><p>We’ll look at the simple effect of interaction partner having a
-neutral vs. happy expression on perceived liking at different levels of
-rejection sensitivity. We’ll use the <code>{emmeans}</code>
-package.</p></li>
-<li><p>To get simple effects, we combine the <code>emmeans()</code>
-function with the <code>contrast()</code> function (both from
-<code>{emmeans}</code>). <code>emmeans()</code> works by passing it a
-model and then specifying which variables you’re looking at. Then, we
-pass that along to <code>contrast()</code>, which can give us a variety
-of different contrasts.</p></li>
-<li><p>If we want simple effects for interaction partner expression at
-each level of rejection sensitivity we can use <code>by = &quot;rs&quot;</code>
-and <code>simple = &quot;partner&quot;</code>.</p></li>
-</ul>
-<pre class="r"><code>model %&gt;% emmeans(specs = c(&quot;partner&quot;, &quot;rs&quot;)) %&gt;% # specify our two factors
-  contrast(by = &quot;rs&quot;, # by is the variable we are looking at each level of
-           simple = &quot;partner&quot;) # simple is what we want simple effects of</code></pre>
-<pre><code>## rs = Low:
-##  contrast       estimate    SE df t.ratio p.value
-##  Neutral effect   -0.225 0.127 76  -1.770  0.0807
-##  Happy effect      0.225 0.127 76   1.770  0.0807
+<p>We can get these simple effects using the <code>emmeans</code>
+function and calculating the differences between every pair of cell
+means.</p>
+<pre class="r"><code># Comparing cell means
+emmeans(model, pairwise~rs*partner, adjust = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## $emmeans
+##  rs   partner emmean   SE df lower.CL upper.CL
+##  Low  Neutral   5.55 0.18 76     5.19     5.91
+##  High Neutral   1.80 0.18 76     1.44     2.16
+##  Low  Happy     6.00 0.18 76     5.64     6.36
+##  High Happy     6.45 0.18 76     6.09     6.81
 ## 
-## rs = High:
-##  contrast       estimate    SE df t.ratio p.value
-##  Neutral effect   -2.325 0.127 76 -18.294  &lt;.0001
-##  Happy effect      2.325 0.127 76  18.294  &lt;.0001
+## Confidence level used: 0.95 
 ## 
-## P value adjustment: fdr method for 2 tests</code></pre>
+## $contrasts
+##  contrast                   estimate    SE df t.ratio p.value
+##  Low Neutral - High Neutral     3.75 0.254 76  14.754  &lt;.0001
+##  Low Neutral - Low Happy       -0.45 0.254 76  -1.770  0.4840
+##  Low Neutral - High Happy      -0.90 0.254 76  -3.541  0.0041
+##  High Neutral - Low Happy      -4.20 0.254 76 -16.524  &lt;.0001
+##  High Neutral - High Happy     -4.65 0.254 76 -18.294  &lt;.0001
+##  Low Happy - High Happy        -0.45 0.254 76  -1.770  0.4840
+## 
+## P value adjustment: bonferroni method for 6 tests</code></pre>
+<pre class="r"><code># for info on types of p-value adjustments you can choose from:
+?summary.emmGrid # scroll to p-value adjustments</code></pre>
+<pre><code>## starting httpd help server ... done</code></pre>
 <blockquote>
-<p><strong>Question:</strong> What do the results of this simple effects
-analysis show?</p>
+<p><strong>Question:</strong> Does partner emotion have an effect on
+perceived liking for people low on rejection sensitivity? For people
+high on rejection sensitivty?</p>
 </blockquote>
-<ul>
-<li>Now let’s look at simple effects for rejection sensitivity at each
-level of partner expression.</li>
-</ul>
-<pre class="r"><code>model %&gt;% emmeans(specs = c(&quot;partner&quot;, &quot;rs&quot;)) %&gt;% # specify our two factors
-  contrast(by = &quot;partner&quot;, # by is the variable we are looking at each level of
-           simple = &quot;rs&quot;) # simple is what we want simple effects of</code></pre>
-<pre><code>## partner = Neutral:
-##  contrast    estimate    SE df t.ratio p.value
-##  Low effect     1.875 0.127 76  14.754  &lt;.0001
-##  High effect   -1.875 0.127 76 -14.754  &lt;.0001
-## 
-## partner = Happy:
-##  contrast    estimate    SE df t.ratio p.value
-##  Low effect    -0.225 0.127 76  -1.770  0.0807
-##  High effect    0.225 0.127 76   1.770  0.0807
-## 
-## P value adjustment: fdr method for 2 tests</code></pre>
 <blockquote>
-<p><strong>Question:</strong> What do the results of this simple effects
-analysis show?</p>
+<p><strong>Question:</strong> Does rejection sensitivity have an effect
+on perceived liking when partner shows neutral emotions? When partner
+shows happy emotions?</p>
 </blockquote>
+<p>You could also use the <code>emmeans</code> function to compare
+marginal means for each factor individually.</p>
+<pre class="r"><code># Comparing marginal means for partner emotion
+emmeans(model, pairwise~partner, adjust = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>## $emmeans
+##  partner emmean    SE df lower.CL upper.CL
+##  Neutral   3.67 0.127 76     3.42     3.93
+##  Happy     6.22 0.127 76     5.97     6.48
+## 
+## Results are averaged over the levels of: rs 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast        estimate   SE df t.ratio p.value
+##  Neutral - Happy    -2.55 0.18 76 -14.188  &lt;.0001
+## 
+## Results are averaged over the levels of: rs</code></pre>
+<pre class="r"><code># Comparing marginal means for partner emotion
+emmeans(model, pairwise~rs, adjust = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>## $emmeans
+##  rs   emmean    SE df lower.CL upper.CL
+##  Low    5.78 0.127 76     5.52     6.03
+##  High   4.12 0.127 76     3.87     4.38
+## 
+## Results are averaged over the levels of: partner 
+## Confidence level used: 0.95 
+## 
+## $contrasts
+##  contrast   estimate   SE df t.ratio p.value
+##  Low - High     1.65 0.18 76   9.180  &lt;.0001
+## 
+## Results are averaged over the levels of: partner</code></pre>
 </div>
 
 
