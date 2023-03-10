@@ -70,7 +70,6 @@ This lab covers how to use bootstrapping in R using the `{boot}` library.
 3. [Writing a function for `boot()`](#functionsBoot)
 4. [Running `boot()`](#runBoot)
 5. [Another bootstrapping example](#example)
-6. [More advanced applications](#advanced)
 
 
 
@@ -219,35 +218,54 @@ What if we wanted to know the standard error associated with the $R^2$ value? No
 First, write a function called `get_r_sq` that will run the above model and extract the R^2 value from the output:
 ```{r}
 # your code here
-
+get_r_sq <- function(data, index){
+  
+  data_subsetted <- data[index,] 
+  
+  fit            <- lm(happiness ~ extraversion + 
+                                   pos_express  + 
+                                   soc_sup      + 
+                                   optimism     + 
+                                   exercise, 
+                      data = data_subsetted)
+  
+  rsq <- summary(fit)$r.squared
+  
+  return(rsq)
+}
 ```
 
 Next, use that function in the `boot` function to resample from the data set 10,000 times, obtaining an estimate of $R^2$ each time:
 ```{r}
 set.seed(21) # don't forget to set.seed()
 
-boot_r_sq <- boot(data      = # your code here
-                  statistic = # your code here
-                  R         = # your code here)
+boot_r_sq <- boot(data      = df,
+                  statistic = get_r_sq,
+                  R         = 10000)
 ```
 
 Examine the mean and SD of the $R^2$ values you obtained through bootstrapping:
 ```{r}
 # your code here
-
+mean(boot_r_sq$t)
+sd(boot_r_sq$t)
 ```
 
 Plot the distribution of $R^2$ values:
 ```{r}
 # your code here
-
+tibble(boot_r_sq = boot_r_sq$t) %>%                   
+  ggplot(aes(x = boot_r_sq)) +                      
+    geom_density(fill = "turquoise", alpha = .6) + 
+    theme_bw()
 ```
 
 
 Obtain a 95%CI around the mean estimate of the $R^2$ value:
 ```{r}
 # your code here
-
+ci <- boot.ci(boot_r_sq, type = "perc")
+ci
 ```
 
 
@@ -349,6 +367,24 @@ Using the same dataset above, calculate bootstrapped estimates of *adjusted* $R^
 
 ```{r}
 # your code here
+get_r2 <- function(data, index, formula){
+  
+  data_subsetted <- data[index,] 
+  
+  fit            <- lm(formula,
+                      data = data_subsetted)
+  
+  rsq <- summary(fit)$adj.r.squared
+  
+  return(rsq)
+}
+
+set.seed(42)
+
+boot_adjr2_model5 <- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                          R         = 1000) 
 ```
 
 ## Minihack 2
@@ -364,4 +400,64 @@ Then, construct a plot of the distribution for each one.
 
 ```{r}
 # your code here
+get_r <- function(data, index, vars){
+  
+  data_subsetted <- data[index,]
+  
+  r              <- cor(data_subsetted[,vars])[2, 1]
+  
+  return(r) 
+}
+
+set.seed(42)
+
+cor_extr_posexp <- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c("extraversion", "pos_express"),
+                        R         = 1000)
+
+cor_extr_socsup <- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c("extraversion", "soc_sup"),
+                        R         = 1000) 
+
+cor_extr_opt    <- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c("extraversion", "optimism"),
+                        R         = 1000)
+
+cor_extr_exer <- boot(data      = df,  
+                      statistic = get_r, 
+                      vars      = c("extraversion", "exercise"), 
+                      R         = 1000)
+
+
+cor_extr_posexp_results <- tibble(r    = cor_extr_posexp$t,
+                                  vars = "Extr., Pos. Expr.")
+
+cor_extr_socsup_results <- tibble(r    = cor_extr_socsup$t,
+                                  vars = "Extr., Soc. Supp.")
+
+cor_extr_opt_results    <- tibble(r    = cor_extr_opt$t,
+                                  vars = "Extr., Opt.")
+
+cor_extr_exer_results   <- tibble(r    = cor_extr_exer$t,
+                                  vars = "Extr., Exercise")
+
+cor_all <- cor_extr_posexp_results %>% 
+  rbind(cor_extr_socsup_results) %>% 
+  rbind(cor_extr_opt_results) %>% 
+  rbind(cor_extr_exer_results) %>% 
+  group_by(vars) %>% 
+  summarize(median = median(r),
+            lower  = quantile(r, probs = .025),
+            upper  = quantile(r, probs = .975))
+
+ggplot(cor_all, aes(x = vars, y = r)) +
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
+                  color = "turquoise3") +
+  coord_flip() +
+  labs(x = NULL,
+       y = expression(paste("Zero-order ", italic(r), " (with bootstrapped 95% CIs)"))) +
+  theme_bw()
 ```

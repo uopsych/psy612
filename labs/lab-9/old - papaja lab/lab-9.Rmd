@@ -1,0 +1,414 @@
+---
+title: "Lab 9: Reproducible Reporting with `{papaja}`"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+bibliography: "lab-9.bib"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+# suppress scientific notation
+options(scipen = 999)
+
+# load required packages
+library(tidyverse) # for pipes, various dplyr functions, and ggplot
+library(psych)     # for the bfi data
+```
+
+Prior to today's lab, make sure that you have installed [LaTeX](https://www.latex-project.org/get/). You can download the Rmd file [here](lab-9.Rmd) and the example `{papaja}` .Rmd file [here](papaja_example_ms.Rmd).
+
+# Purpose
+
+The following lab covers `{papaja}`, a package for creating reproducible, APA-style manuscripts in Rmarkdown. We will go over how to write a manuscript in `{papaja}`, including creating tables, figures, citations, and in-text statistical reporting. This page has some broad (overview) information and links to useful resources.
+
+# What is `{papaja}`?
+
+`{papaja}` is an R package for **P**reparing **APA** **J**ournal **A**rticles. It contains several functions and perhaps most importantly, an .Rmd template that formats an output document (.docx or .pdf) in APA format. Here is the link to [papaja's documentation](https://crsh.github.io/papaja_man/index.html), the most helpful and comprehensive `{papaja}` resource out there.
+
+# Installing `{papaja}`
+
+First, we need to install `{papaja}`. `{papaja}` is not yet on CRAN, so we have to download it from GitHub rather than using `install.packages()`. This requires the `{devtools}` package. Let's install both `{devtools}` and `{papaja}`.
+
+```{r}
+# install the devtools package if necessary
+if(!"devtools" %in% rownames(installed.packages())) install.packages("devtools")
+
+# install the stable development version of papaja from GitHub if necessary
+if(!"papaja" %in% rownames(installed.packages())) devtools::install_github("crsh/papaja")
+
+# load papaja
+library(papaja)
+```
+
+In addition to `{papaja}`, the `{citr}` package is going to be helpful when it comes to citing works in text (within our .Rmd) and the `{corx}` package is going to make it easier to create a table of correlations.
+
+```{r}
+# install the citr package if necessary
+if(!"citr" %in% rownames(installed.packages())) devtools::install_github("crsh/citr")
+
+# install the corx package if necessary
+if(!"corx" %in% rownames(installed.packages())) install.packages("corx")
+
+# load corx
+library(corx)
+```
+
+OK, now we're ready to go! Below I'll briefly review some of the functions we'll be using today before we dive into hands-on work in a `{papaja}` template .Rmd.
+
+# Inserting object values in text
+
+The information covered in this section is not specific to `{papaja}`, but it will be very useful when it comes to preparing manuscripts using `{papaja}`.
+
+To insert a value stored within an object into text in Rmarkdown, you can write it as "r name_of_object" (replacing the quotes with back ticks; i.e., \`).
+
+For example, if you stored the value `5` in an object called `x` you would write "r x" (replacing the quotes with back ticks) to have the number 5 inserted in the text when you knit the Rmarkdown document.
+
+# Tables
+
+There are a few options for making APA-style tables in `{papaja}`, each of which has different strengths and weaknesses.
+
+We'll start by going over `apa_table()` from `{papaja}`.`apa_table()` can be used to format a dataframe as an APA-style table. It is built on top of `knitr::kable()`. When using `apa_table()`, the workflow generally goes something like:
+
+1.  Create a dataframe that contains everything you want in the table.
+2.  use `printnum()` (from `{papaja}`) to format the numeric columns.
+3.  Pass this formatted dataframe to `apa_table()`, and set the caption and note (if applicable).
+4.  Always **set the chunk option `results = "asis"`**.
+
+## Table of descriptives
+
+Let's start by getting a table of descriptive stats. We'll use the `bfi` data from the `{psych}` package and use `bfi.keys` to score the five scale scores.
+
+```{r}
+b5 <- bfi %>% 
+  cbind(scoreVeryFast(keys = bfi.keys, items = bfi))
+```
+
+First, we create a dataframe with the descriptive statistics of our Big Five scales. We'll use some of the `{dplyr}` functions for this.
+
+```{r}
+descriptives <- b5 %>%
+  # select the columns for agreeableness to openness
+  select(agree:openness) %>% 
+  # convert into long format
+  gather(scale, score) %>% 
+  # group_by trait
+  group_by(scale) %>% 
+  # calculate the mean, median, sd, min, and max for each trait
+  summarize(
+    Mean   = mean(score), 
+    Median = median(score), 
+    SD     = sd(score), 
+    Min    = min(score),
+    Max    = max(score))
+```
+
+Next, we format the numerical columns using `printnum()` function from `{papaja}` for this. In essence, this puts everything to 2 decimal points (you can change this), pads with zeroes when necessary, and turns those to strings so they print correctly. "-1" indicates that the first column is non-numerical so does not apply.
+
+```{r}
+descriptives <- descriptives %>%
+  # if the column is numeric, apply the printnum function
+  mutate_if(is.numeric, printnum)
+```
+
+Then, we run `apa_table()` on the dataframe, and we can add a caption and note. You have to set `results = "asis"` in the chunk options for it to render correctly:
+
+```{r descrips-tab, results = "asis"}
+apa_table(descriptives, 
+          caption = "Descriptive statistics of Big Five Scale Scores.", 
+          note    = "This table was created with apa_table().")
+```
+
+Now we have a nicely formatted APA-style table that is fully reproducible.
+
+## Table of correlations
+
+Next, let's get a table of scale inter-correlations for the same dataset. Correlation tables are a little difficult in `{papaja}`, but the `corx()` function from the `{corx}` package makes it a little easier.
+
+Basically, the workflow for this is:
+
+1.  Use `corx()` to create the correlation table.
+2.  Use `apa_table()` to add a caption, note, and print it.
+
+```{r corr_tab, results = "asis"}
+cor <- b5 %>%
+  # select the columns for agreeableness to openness
+  select(agree:openness) %>% 
+  # create the correlation matrix
+  corx(triangle = "lower",
+       stars    = c(0.05, 0.01, 0.001),
+       describe = c(M = mean, SD = sd)) 
+
+apa_table(cor$apa, 
+          caption = "Example correlation matrix",
+          note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
+```
+
+## Regression tables
+
+Now we'll get a regression table using another method available in `{papaja}`. We'll use the `apa_print()` function. This function takes statistical results as input and produces a list containing an APA-style table and several objects useful for printing results in-text (covered below).
+
+The workflow for this method is:
+
+1.  Conduct statistical test(s).\
+2.  Create the APA-style results with `apa_print()`.
+3.  Extract the table from the `apa_print()` object with `$table`.
+
+Let's do that with two regression models. Let's regress `conscientious` on `age` (model 1) and `conscientious` on `age` *and* `education` (model 2).
+
+First, fit the two regression models.
+
+```{r reg}
+# tidy the data
+b5 <- b5 %>% 
+  # convert education to a factor
+  mutate(education = case_when(education == 1 ~ "Some HS",
+                               education == 2 ~ "Finished HS",
+                               education == 3 ~ "Some College",
+                               education == 4 ~ "College Grad",
+                               education == 5 ~ "Grad Degree"),
+         education = factor(education, 
+                            levels = c("Some HS",
+                                       "Finished HS",
+                                       "Some College",
+                                       "College Grad",
+                                       "Grad Degree")),) %>%
+  # remove rows where conscientiousness, age, or education are NA
+  filter(!is.na(conscientious),
+         !is.na(age),
+         !is.na(education))
+
+# fit the regression models
+model_1 <- lm(conscientious ~ age,             data = b5)
+model_2 <- lm(conscientious ~ age + education, data = b5)
+```
+
+Next, use `apa_print()` to create those APA-style results objects:
+
+```{r print_reg}
+# model 1 results
+model_1_results <- apa_print(model_1)
+
+# model 2 results
+model_2_results <- apa_print(model_2)
+
+# model comparison results
+model_comp_results <- apa_print(list(model_1, 
+                                     model_2),
+                                boot_samples = 0)
+```
+
+*Note*: If we didn't set `boot_samples = 0`, `apa_print()` would have produced bootstrapped CIs for the $\Delta R^2$s. We will cover bootstrapping next week.
+
+After we have used `apa_print()` to create the results objects, we can extract the APA tables.
+
+You could get a table for just the Model 1 results using the code below:
+
+```{r reg-tbl-1, results = "asis"}
+model_1_results$table %>% 
+  apa_table(caption = "Model Regressing Conscientiousness on Age",
+            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
+```
+
+Or we could get a table for just the Model 2 results:
+
+```{r reg-tbl-2, results = "asis"}
+model_2_results$table %>% 
+  apa_table(caption = "Model Regressing Conscientiousness on Age & Education",
+            note = "* p < 0.05; ** p < 0.01; *** p < 0.001")
+```
+
+Finally, we can get these results together using the table stored in `model_comp_results`:
+
+```{r reg-tbl-3, results = "asis"}
+model_comp_results$table %>% 
+  apa_table(caption = "Model Comparison: Conscientiousness by Age and Age + Education",
+            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
+```
+
+The last thing I'll mention here is that we can use the chunk labels for our table to reference them in text. For example, we could reference this last table by adding `Table \@ref(tab:reg-tbl-3)` in the `{papaja}` .Rmd.
+
+# Figures
+
+You can also create figures in `{papaja}` manuscripts by using practically any of the methods you already know. I personally like `{ggplot}`, which can be put into APA format by using the `theme_apa()` function from `{papaja}`.
+
+Let's create an APA-formatted plot for the relation between `age` and `conscientious`.
+
+```{r fig-ageXconsc}
+ggplot(b5, aes(x = age, y = conscientious)) +
+  geom_point(alpha   = .5) +
+  geom_smooth(method = "lm") +
+  labs(x = "Age",
+       y = "Conscientiousness") +
+  theme_apa()
+```
+
+The best way to give the figure a caption is to preface it with:
+
+(ref:fig-ageXconsc-cap) Conscientiousness by Age.
+
+You then set the chunk option `fig.cap = "(ref:fig-ageXconsc-cap) "`. There is an example of this in the example `{papaja}` .Rmd, so we will see it in action in a moment.
+
+We are able to extend this process of creating a figure to more complicated plots. For example, let's add `education` to the figure.
+
+```{r fig_ageXedu_consc}
+ggplot(b5, aes(x = age, y = conscientious, color = education)) +
+  geom_point(alpha   = .5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Age",
+       y = "Conscientiousness") +
+  theme_apa()
+```
+
+Or one that has `age` by each of the Big Five personality traits:
+
+```{r b5_age}
+b5 %>% 
+  select(age, agree:openness) %>% 
+  gather(trait, score, -age) %>% 
+  ggplot(aes(x = age, y = score)) +
+    geom_point(alpha   = .5) +
+    geom_smooth(method = "lm") +
+    labs(x = "Age",
+         y = "Scale Score") +
+  facet_grid(~trait) + 
+  theme_apa()
+```
+
+# In-text summaries of tests
+
+One of the most useful aspects of writing manuscripts in .Rmd and `{papaja}` is that we can report our results directly from the statistical models we run in R, reducing the likelihood of copy-and-pasting errors.
+
+We can use `apa_print()` from `{papaja}` to report the results of our statistical tests in text. Abbreviated results (estimate and CI) can be called with `$estimate` from the `apa_print()` object. For example, `model_1_results$estimate$age` will print a nicely formatted printout of the slope for age on conscientiousness:
+
+> Age significantly predicted conscientiousness, `r model_1_results$estimate$age`.
+
+We can instead get the full result (including *t*, *df*, and *p*) by calling the `$full_result` object, so `model_1_results$full_result$age` will be rendered like so:
+
+> Age significantly predicted conscientiousness, `r model_1_results$full_result$age`.
+
+We could get the results of other slopes by changing out `$age` to reference other terms. For example, we could report the result of the difference between some high school and having finished high school with `model_2_results$full_result$educationFinished_HS`:
+
+> Finishing highschool (vs. not finishing highschool) was not associated with Conscientiousness, `r model_2_results$full_result$educationFinished_HS`.
+
+## Regression model results
+
+We can also get model fit results, for both the individual models and for the comparison object. For example:
+
+-   `model_1_results$full_result$modelfit$r2` will print the $R^2$ for model 1.\
+-   `model_2_results$full_result$modelfit$r2` will print the $R^2$ for model 2.\
+-   `model_comp_results$full_result$model2` will print the $\Delta R^2$ value (difference in $R^2$), and the *F* test for that difference.
+
+Putting it all together, we can report those results with something like the following:
+
+> The model with just age (`r model_1_results$full_result$modelfit$r2`) explained significantly more variance than the model that also included (dummy-coded) education (`r model_2_results$full_result$modelfit$r2`), `r model_comp_results$full_result$model2`.
+
+`{papaja}` has various print methods, so be sure to check out [the documentation](https://crsh.github.io/papaja_man/reporting.html#results-from-statistical-tests).
+
+# Bibliography
+
+The final ingredient we will talk about before getting into our example manuscript and the (singular) hack for the lab is the bibliography. All RMDs can include a `bibliography:` entry in the YAML (the header portion of an .Rmd), where you can link to a BibTeX (i.e., `.bib`) file. Bibtex entries look something like this:
+
+    @article{goldberg1990alternative,
+      title={An alternative" description of personality": the big-five factor structure.},
+      author={Goldberg, Lewis R},
+      journal={Journal of personality and social psychology},
+      volume={59},
+      number={6},
+      pages={1216--1229},
+      year={1990},
+      doi = {https://doi.org/10.1037/0022-3514.59.6.1216},
+      publisher={American Psychological Association}
+    }
+
+## Creating a BibTeX file for references
+
+One convenient thing, is that you can get them from [Google Scholar](https://scholar.google.com). Let's take a look at the scholar results when we search for [McClelland & Judd (1993)](https://scholar.google.com/scholar?q=author%3AMcClelland+author%3AJudd&hl=en&as_sdt=0%2C38&as_ylo=1993&as_yhi=1993).
+
+From there, click on the quotes, and then on the BibTeX link, which takes you [here](https://scholar.googleusercontent.com/scholar.bib?q=info:rKTwFfjkzdEJ:scholar.google.com/&output=citation&scisdr=CgUBobNMELLBgrw0rcU:AAGBfm0AAAAAXmAxtcWjQndHyogB114XL1ZSVuLsmcBY&scisig=AAGBfm0AAAAAXmAxtSj0nkwkNRgfVxgHeqAkUn2gU8Ay&scisf=4&ct=citation&cd=-1&hl=en)
+
+You should see this:
+
+    @article{mcclelland1993statistical,
+      title={Statistical difficulties of detecting interactions and moderator effects.},
+      author={McClelland, Gary H and Judd, Charles M},
+      journal={Psychological bulletin},
+      volume={114},
+      number={2},
+      pages={376},
+      year={1993},
+      publisher={American Psychological Association}
+    }
+
+You would then want to copy that into a .bib file (you can edit it within RStudio or choose another text editor), and then make sure you reference that .bib file in the `references:` part of your YAML (we'll see this in the example).
+
+You can also use popular reference managers like [Mendeley](www.mendeley.com) or [Zotero](www.zotero.org) to create BibTeX files.
+
+## In-text citations
+
+Then, we could reference this article by referring to its name. There are basically three options:
+
++------------------------+----------------------------------+-------------------------------+
+| Type                   | code                             | how it renders                |
++========================+==================================+===============================+
+| Parenthetical citation | `[@mcclelland1993statistical]`   | [@mcclelland1993statistical]  |
++------------------------+----------------------------------+-------------------------------+
+| Non-parenthetical      | `@mcclelland1993statistical`     | @mcclelland1993statistical    |
++------------------------+----------------------------------+-------------------------------+
+| just the year          | `[-@mcclelland1993statistical]`. | [-@mcclelland1993statistical] |
++------------------------+----------------------------------+-------------------------------+
+
+Note that you can also put additional text in the brackets. For example,
+
+`[see @mcclelland1993statistical]`
+
+becomes...
+
+[see @mcclelland1993statistical]
+
+You can also add multiple citations by separating them with a `;`. For example,
+
+`[@mcclelland1993statistical; @cohen2013applied]`
+
+becomes...
+
+[@mcclelland1993statistical; @cohen2013applied]
+
+One of the coolest things about using BibTeX is that references will only appear in your reference list that you cite in text! You can see that here, because the 'lab-9.bib' file has four entries and the reference list below has just the two we reference above. That means no more last-minute checks on the reference list to make sure you removed the articles you references in a previous draft (that are no longer referenced). This alone is a huge time saver.
+
+## Citing R packages (& Helper functions from `{papaja}`)
+
+`{papaja}` makes it easy to cite any R package you've used with the `r_refs(file = "r-references.bib")`, which creates a .bib file (named r-references.bib in that example code) with BibTeX entries for all R packages you've called in the script. It is super handy!
+
+You can combine this with the `{cite_r()}` package from `{papaja}`, which will create an in-text citation of all the packages you've used - we'll see this in the example `{papaja}` .Rmd
+
+That is all for this tutorial. Now let's turn to the example .Rmd, and finally work on the hack (time permitting)!
+
+# The single `{papaja}` hack
+
+Today there is just one hack. For this hack, we want you to get started on your final project .Rmd.
+
+1.  Create a new .Rmd file for your final project using the `{papaja}` template.
+
+2.  Edit the YAML to have the title and author of your project
+
+-   Don't worry about the abstract for now, unless you've already written it
+
+3.  Create a .bib file with at least one reference you know you'll need for your final project.
+
+4.  Cite the reference from your .bib (part 3) in text.
+
+5.  Run at least one statistical test.
+
+6.  Report the statistical test from part 4 in-text, in a table, and in a figure.
+
+-   If you don't have your data yet, run a similar test with a built-in dataset or one from a prior lab. The more similar the better - it will make it easier for you to adapt the code for your own data.
+-   Bonus points if you can reference the table and figure in-text.
+
+# References

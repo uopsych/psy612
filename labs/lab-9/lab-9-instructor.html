@@ -2830,7 +2830,6 @@ current data.</p>
 <code>boot()</code></a></li>
 <li><a href="#runBoot">Running <code>boot()</code></a></li>
 <li><a href="#example">Another bootstrapping example</a></li>
-<li><a href="#advanced">More advanced applications</a></li>
 </ol>
 </div>
 <div id="why" class="section level1">
@@ -2987,22 +2986,45 @@ given in the output. Instead, we can estimate the standard error by
 bootstrapping this statistic.</p>
 <p>First, write a function called <code>get_r_sq</code> that will run
 the above model and extract the R^2 value from the output:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+get_r_sq &lt;- function(data, index){
+  
+  data_subsetted &lt;- data[index,] 
+  
+  fit            &lt;- lm(happiness ~ extraversion + 
+                                   pos_express  + 
+                                   soc_sup      + 
+                                   optimism     + 
+                                   exercise, 
+                      data = data_subsetted)
+  
+  rsq &lt;- summary(fit)$r.squared
+  
+  return(rsq)
+}</code></pre>
 <p>Next, use that function in the <code>boot</code> function to resample
 from the data set 10,000 times, obtaining an estimate of <span class="math inline">\(R^2\)</span> each time:</p>
 <pre class="r"><code>set.seed(21) # don&#39;t forget to set.seed()
 
-boot_r_sq &lt;- boot(data      = # your code here
-                  statistic = # your code here
-                  R         = # your code here)</code></pre>
+boot_r_sq &lt;- boot(data      = df,
+                  statistic = get_r_sq,
+                  R         = 10000)</code></pre>
 <p>Examine the mean and SD of the <span class="math inline">\(R^2\)</span> values you obtained through
 bootstrapping:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+mean(boot_r_sq$t)
+sd(boot_r_sq$t)</code></pre>
 <p>Plot the distribution of <span class="math inline">\(R^2\)</span>
 values:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+tibble(boot_r_sq = boot_r_sq$t) %&gt;%                   
+  ggplot(aes(x = boot_r_sq)) +                      
+    geom_density(fill = &quot;turquoise&quot;, alpha = .6) + 
+    theme_bw()</code></pre>
 <p>Obtain a 95%CI around the mean estimate of the <span class="math inline">\(R^2\)</span> value:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+ci &lt;- boot.ci(boot_r_sq, type = &quot;perc&quot;)
+ci</code></pre>
 </div>
 <div id="advanced" class="section level1">
 <h1>More advanced applications</h1>
@@ -3088,7 +3110,25 @@ that looks like:</p>
 <h2>Minihack 1</h2>
 <p>Using the same dataset above, calculate bootstrapped estimates of
 <em>adjusted</em> <span class="math inline">\(R^2\)</span> value:</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+get_r2 &lt;- function(data, index, formula){
+  
+  data_subsetted &lt;- data[index,] 
+  
+  fit            &lt;- lm(formula,
+                      data = data_subsetted)
+  
+  rsq &lt;- summary(fit)$adj.r.squared
+  
+  return(rsq)
+}
+
+set.seed(42)
+
+boot_adjr2_model5 &lt;- boot(data      = df,     
+                          statistic = get_r2, 
+                          formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                          R         = 1000) </code></pre>
 </div>
 <div id="minihack-2" class="section level2">
 <h2>Minihack 2</h2>
@@ -3103,7 +3143,67 @@ that looks like:</p>
 <li>Extraversion and Exercise</li>
 </ol>
 <p>Then, construct a plot of the distribution for each one.</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+get_r &lt;- function(data, index, vars){
+  
+  data_subsetted &lt;- data[index,]
+  
+  r              &lt;- cor(data_subsetted[,vars])[2, 1]
+  
+  return(r) 
+}
+
+set.seed(42)
+
+cor_extr_posexp &lt;- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c(&quot;extraversion&quot;, &quot;pos_express&quot;),
+                        R         = 1000)
+
+cor_extr_socsup &lt;- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c(&quot;extraversion&quot;, &quot;soc_sup&quot;),
+                        R         = 1000) 
+
+cor_extr_opt    &lt;- boot(data      = df,  
+                        statistic = get_r, 
+                        vars      = c(&quot;extraversion&quot;, &quot;optimism&quot;),
+                        R         = 1000)
+
+cor_extr_exer &lt;- boot(data      = df,  
+                      statistic = get_r, 
+                      vars      = c(&quot;extraversion&quot;, &quot;exercise&quot;), 
+                      R         = 1000)
+
+
+cor_extr_posexp_results &lt;- tibble(r    = cor_extr_posexp$t,
+                                  vars = &quot;Extr., Pos. Expr.&quot;)
+
+cor_extr_socsup_results &lt;- tibble(r    = cor_extr_socsup$t,
+                                  vars = &quot;Extr., Soc. Supp.&quot;)
+
+cor_extr_opt_results    &lt;- tibble(r    = cor_extr_opt$t,
+                                  vars = &quot;Extr., Opt.&quot;)
+
+cor_extr_exer_results   &lt;- tibble(r    = cor_extr_exer$t,
+                                  vars = &quot;Extr., Exercise&quot;)
+
+cor_all &lt;- cor_extr_posexp_results %&gt;% 
+  rbind(cor_extr_socsup_results) %&gt;% 
+  rbind(cor_extr_opt_results) %&gt;% 
+  rbind(cor_extr_exer_results) %&gt;% 
+  group_by(vars) %&gt;% 
+  summarize(median = median(r),
+            lower  = quantile(r, probs = .025),
+            upper  = quantile(r, probs = .975))
+
+ggplot(cor_all, aes(x = vars, y = r)) +
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
+                  color = &quot;turquoise3&quot;) +
+  coord_flip() +
+  labs(x = NULL,
+       y = expression(paste(&quot;Zero-order &quot;, italic(r), &quot; (with bootstrapped 95% CIs)&quot;))) +
+  theme_bw()</code></pre>
 </div>
 </div>
 
