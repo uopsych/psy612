@@ -20,12 +20,12 @@ library(tidyverse)
 library(sjPlot)
 ```
 
-#Last time...
+### Last time...
 
 -   Polynomials
 -   Bootstrapping
 
-# Today
+### Today
 
 -   Review
 -   Lessons from machine learning
@@ -71,7 +71,7 @@ spcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)$estimate^2
 
 ## Concept 1: Partial/Semi-partial correlations
 
-In a semi-partial correlation ($sr$) assesses the degree covariation between two variables after removing the covariation between one of those variables (X) and a third variable (C). Correlations squared ($sr^2$) quantify the proportion of variance explained. 
+In a partial correlation ($pr$) assesses the degree covariation between two variables after removing the covariation between both primary variables (X and Y) and a third variable (C). Correlations squared ($pr^2$) quantify the proportion of variance explained. 
 
 ```{r}
 pcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)
@@ -82,10 +82,10 @@ pcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)$estimate^2
 
 ## Concept 1: Partial/Semi-partial correlations
 
-Sometimess we find that the semi-partial correlation squared is larger than the zero-order.
+Sometimes we find that the semi-partial correlation squared is larger than the zero-order.
 
 ```{r}
-data = read.csv("data/vals.csv")
+data = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/vals.csv")
 cor(data$V1, data$V2); cor(data$V1, data$V2)^2
 spcor.test(data$V1, data$V2, data$V3); spcor.test(data$V1, data$V2, data$V3)$estimate^2
 
@@ -114,7 +114,7 @@ Hypothetical data on the combined efficacy of SSRIs and DBT.
 
 ```{r}
 data = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/depresssion.csv")
-psych::describe(data)
+psych::describe(data, fast = T)
 table(data$drug, data$therapy)
 ```
 
@@ -136,13 +136,14 @@ anova(model)
 
 ```{r, echo = F}
 library(emmeans)
+library(tidyverse)
 dep_mean = mean(data$depression)
 mm_drug    = as.data.frame(emmeans(model, ~drug)) %>% 
-  select(drug, drug_mean = emmean)
+  dplyr::select(drug, drug_mean = emmean)
 mm_therapy = as.data.frame(emmeans(model, ~therapy)) %>% 
-  select(drug, therapy_mean = emmean)
+  dplyr::select(therapy, therapy_mean = emmean)
 mm_int     = as.data.frame(emmeans(model, ~drug*therapy)) %>% 
-  select(drug, therapy, cell_mean = emmean)
+  dplyr::select(drug, therapy, cell_mean = emmean)
 
 data = data %>% 
   mutate(
@@ -199,7 +200,7 @@ ggplot(data, aes(x = drug_num, y = depression)) +
                position = position_jitter(height = 0, 
                                           width = .05, 
                                           seed = 1)) +
-  geom_point( 
+  geom_point( aes(color = drug),
              position = position_jitter(height = 0, 
                                           width = .05, 
                                         seed = 1)) +
@@ -310,7 +311,7 @@ Yarkoni and Westfall (2017) describe the goals of explanation and prediction in 
 
 In some ways, these goals work in tandem. Good prediction can help us develop theory of explanation and vice versa. But, statistically speaking, they are in tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes.
 
-::: notess
+::: notes
 
 Y&W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
 
@@ -323,9 +324,11 @@ Y&W: we should spend more time and resources developing predictive models than w
 :::: {.columns}
 ::: {.column width="50%"}
 
-.purple[Overfitting:] mistakenly fitting sample-specific noise as if it were signal - OLS models tend to be overfit because they minimize error for a specific sample
+[Overfitting:]{style="color:purple"} mistakenly fitting sample-specific noise as if it were signal - OLS models tend to be overfit because they minimize error for a specific sample
 
-.purple[Bias:] systematically over or under estimating parameters .purple[Variance:] how much estimates tend to jump around\
+[Bias:]{style="color:purple"} systematically over or under estimating parameters 
+
+[Variance:]{style="color:purple"} how much estimates tend to jump around
 
 :::
 ::: {.column width="50%"}
@@ -366,12 +369,13 @@ Thus, as we get bigger and bigger datasets, the amount of error we have gets sma
 ### Cross-validation
 
 **Cross-validation** is a family of techniques that involve testing and training a model on different samples of data. 
+
   * Replication 
   * Hold-out samples 
   * K-fold 
-  * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other 
+     * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other 
   * Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit 
-  * Can split the dataset into more than 2 sections
+      * Can split the dataset into more than 2 sections
 
 ------------------------------------------------------------------------
 
@@ -390,7 +394,7 @@ summary(model.lm)$r.squared
 
 ### Example: 10-fold cross validation
 
-```{r, message = F}
+```{r cvmodel, message = F, eval = F}
 # new package!
 library(caret)
 # set control parameters
@@ -401,6 +405,14 @@ cv.model <- train(Stress ~ Anxiety*Support*group,
                trControl=ctrl, # what are the control parameters
                method="lm") # what kind of model
 cv.model
+```
+
+------------------------------------------------------------------------
+
+### Example: 10-fold cross validation
+
+```{r, ref.label="cvmodel", message = F, echo = F}
+
 ```
 
 ------------------------------------------------------------------------
@@ -446,4 +458,4 @@ Once you've imposed a shrinkage penalty on your coefficients, you've wandered fa
 
 PSY 613 with Elliot Berkman!
 
-.small[(But first take the final quiz.)]
+[(But first take the final quiz.)]{style="font-size:80%"}

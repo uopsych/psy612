@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="20-final_files/libs/clipboard/clipboard.min.js"></script>
+<script src="20-final_files/libs/quarto-html/tabby.min.js"></script>
+<script src="20-final_files/libs/quarto-html/popper.min.js"></script>
+<script src="20-final_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="20-final_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="20-final_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="20-final_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.2.269">
+
+  <title>Review &amp; Machine Learning</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="20-final_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="20-final_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="20-final_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link href="20-final_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="20-final_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="20-final_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="20-final_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-captioned.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-captioned) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-captioned.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-captioned .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-captioned .callout-caption  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-captioned.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-captioned.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-caption {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-caption {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-caption {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-captioned .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-captioned) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-caption {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-caption {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-caption {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-caption {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-caption {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Review &amp; Machine Learning</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div class="cell">
+
+</div>
+<h3 id="last-time">Last time…</h3>
+<ul>
+<li class="fragment">Polynomials</li>
+<li class="fragment">Bootstrapping</li>
+</ul>
+<h3 id="today">Today</h3>
+<ul>
+<li class="fragment">Review</li>
+<li class="fragment">Lessons from machine learning</li>
+</ul>
+</section>
+<section id="concept-1-partialsemi-partial-correlations" class="slide level2">
+<h2>Concept 1: Partial/Semi-partial correlations</h2>
+<p>A zero-order correlation (<span class="math inline">\(r\)</span>) assesses the degree covariation between two variables (X and Y). Correlations squared (<span class="math inline">\(r^2\)</span>) quantify the proportion of variance explained.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">data</span>(psych<span class="sc">::</span>bfi)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>keys.list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="at">agree=</span><span class="fu">c</span>(<span class="st">"-A1"</span>,<span class="st">"A2"</span>,<span class="st">"A3"</span>,<span class="st">"A4"</span>,<span class="st">"A5"</span>),</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="at">consc=</span><span class="fu">c</span>(<span class="st">"C1"</span>,<span class="st">"C2"</span>,<span class="st">"C3"</span>,<span class="st">"-C4"</span>,<span class="st">"-C5"</span>),</span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="at">extra=</span><span class="fu">c</span>(<span class="st">"-E1"</span>,<span class="st">"-E2"</span>,<span class="st">"E3"</span>,<span class="st">"E4"</span>,<span class="st">"E5"</span>),</span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="at">neuro=</span><span class="fu">c</span>(<span class="st">"N1"</span>,<span class="st">"N2"</span>,<span class="st">"N3"</span>,<span class="st">"N4"</span>,<span class="st">"N5"</span>), </span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="at">openn=</span><span class="fu">c</span>(<span class="st">"O1"</span>,<span class="st">"-O2"</span>,<span class="st">"O3"</span>,<span class="st">"O4"</span>,<span class="st">"-O5"</span>)) </span>
+<span id="cb1-9"><a href="#cb1-9"></a>  keys <span class="ot">&lt;-</span> <span class="fu">make.keys</span>(psychTools<span class="sc">::</span>bfi,keys.list)  <span class="co">#no longer necessary</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a> scores <span class="ot">&lt;-</span> <span class="fu">scoreItems</span>(keys,psychTools<span class="sc">::</span>bfi,<span class="at">min=</span><span class="dv">1</span>,<span class="at">max=</span><span class="dv">6</span>)  <span class="co">#using a keys matrix </span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>bfi_scores <span class="ot">=</span> scores<span class="sc">$</span>scores <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">cor</span>(bfi_scores<span class="sc">$</span>agree, bfi_scores<span class="sc">$</span>extra, <span class="at">use =</span> <span class="st">"pairwise"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4617888</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">cor</span>(bfi_scores<span class="sc">$</span>agree, bfi_scores<span class="sc">$</span>extra, <span class="at">use =</span> <span class="st">"pairwise"</span>)<span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2132489</code></pre>
+</div>
+</div>
+</section>
+<section id="concept-1-partialsemi-partial-correlations-1" class="slide level2">
+<h2>Concept 1: Partial/Semi-partial correlations</h2>
+<p>In a semi-partial correlation (<span class="math inline">\(sr\)</span>) assesses the degree covariation between two variables after removing the covariation between one of those variables (X) and a third variable (C). Correlations squared (<span class="math inline">\(sr^2\)</span>) quantify the proportion of variance explained.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">library</span>(ppcor)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">spcor.test</span>(bfi_scores<span class="sc">$</span>agree, bfi_scores<span class="sc">$</span>extra, bfi_scores<span class="sc">$</span>neuro)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   estimate       p.value statistic    n gp  Method
+1 0.4314948 2.576556e-127  25.29645 2800  1 pearson</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">spcor.test</span>(bfi_scores<span class="sc">$</span>agree, bfi_scores<span class="sc">$</span>extra, bfi_scores<span class="sc">$</span>neuro)<span class="sc">$</span>estimate<span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1861877</code></pre>
+</div>
+</div>
+</section>
+<section id="concept-1-partialsemi-partial-correlations-2" class="slide level2">
+<h2>Concept 1: Partial/Semi-partial correlations</h2>
+<p>In a partial correlation (<span class="math inline">\(pr\)</span>) assesses the degree covariation between two variables after removing the covariation between both primary variables (X and Y) and a third variable (C). Correlations squared (<span class="math inline">\(pr^2\)</span>) quantify the proportion of variance explained.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">pcor.test</span>(bfi_scores<span class="sc">$</span>agree, bfi_scores<span class="sc">$</span>extra, bfi_scores<span class="sc">$</span>neuro)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   estimate      p.value statistic    n gp  Method
+1 0.4390438 3.01335e-132  25.84358 2800  1 pearson</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">pcor.test</span>(bfi_scores<span class="sc">$</span>agree, bfi_scores<span class="sc">$</span>extra, bfi_scores<span class="sc">$</span>neuro)<span class="sc">$</span>estimate<span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1927595</code></pre>
+</div>
+</div>
+</section>
+<section id="concept-1-partialsemi-partial-correlations-3" class="slide level2">
+<h2>Concept 1: Partial/Semi-partial correlations</h2>
+<p>Sometimes we find that the semi-partial correlation squared is larger than the zero-order.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>data <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/uopsych/psy612/master/data/vals.csv"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="fu">cor</span>(data<span class="sc">$</span>V1, data<span class="sc">$</span>V2); <span class="fu">cor</span>(data<span class="sc">$</span>V1, data<span class="sc">$</span>V2)<span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4187802</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1753769</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">spcor.test</span>(data<span class="sc">$</span>V1, data<span class="sc">$</span>V2, data<span class="sc">$</span>V3); <span class="fu">spcor.test</span>(data<span class="sc">$</span>V1, data<span class="sc">$</span>V2, data<span class="sc">$</span>V3)<span class="sc">$</span>estimate<span class="sc">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   estimate    p.value statistic  n gp  Method
+1 0.4749691 0.03987824  2.225389 20  1 pearson</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2255957</code></pre>
+</div>
+</div>
+<p>What’s going on here?</p>
+</section>
+<section class="slide level2">
+
+<p>This is a case of suppression. It can happen when our predictors are highly correlated, but our control variable is not associated with the outcome:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">cor</span>(data) <span class="sc">%&gt;%</span>  <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     V1   V2   V3
+V1 1.00 0.42 0.00
+V2 0.42 1.00 0.47
+V3 0.00 0.47 1.00</code></pre>
+</div>
+</div>
+<p>It can also happen when there is an inconsistency of signs. Recall the formula:</p>
+<p><span class="math display">\[sr = \frac{r_{Y1}- r_{Y2}r_{12}}{1-r_{12}^2}\]</span></p>
+</section>
+<section id="concept-2-interpreting-ss-in-factorial-anova" class="slide level2">
+<h2>Concept 2: Interpreting SS in Factorial ANOVA</h2>
+<p>Hypothetical data on the combined efficacy of SSRIs and DBT.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>data <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/uopsych/psy612/master/data/depresssion.csv"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data, <span class="at">fast =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           vars  n mean   sd min  max range   se
+drug          1 40  NaN   NA Inf -Inf  -Inf   NA
+therapy       2 40  NaN   NA Inf -Inf  -Inf   NA
+depression    3 40 3.34 1.11   1    5     4 0.18</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">table</span>(data<span class="sc">$</span>drug, data<span class="sc">$</span>therapy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         
+          DBT No therapy
+  No drug  10         10
+  SSRI     10         10</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> drug, <span class="at">y =</span> depression, <span class="at">color =</span> therapy)) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(.<span class="dv">5</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(depression <span class="sc">~</span> drug<span class="sc">*</span>therapy, <span class="at">data =</span> data)</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="fu">anova</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: depression
+             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+drug          1 19.044 19.0440 139.858 5.863e-14 ***
+therapy       1 20.164 20.1640 148.083 2.561e-14 ***
+drug:therapy  1  3.721  3.7210  27.327 7.484e-06 ***
+Residuals    36  4.902  0.1362                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"><p>Variability between drug conditions</p>
+</section>
+<section class="slide level2">
+
+
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"><p>Variability between therapy conditions</p>
+</section>
+<section class="slide level2">
+
+
+<img data-src="20-final_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"><p>Variability between cells</p>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(depression <span class="sc">~</span> drug<span class="sc">*</span>therapy, <span class="at">data =</span> data)</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="fu">anova</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: depression
+             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+drug          1 19.044 19.0440 139.858 5.863e-14 ***
+therapy       1 20.164 20.1640 148.083 2.561e-14 ***
+drug:therapy  1  3.721  3.7210  27.327 7.484e-06 ***
+Residuals    36  4.902  0.1362                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="concept-3-checking-assumptions-of-factorial-anovas" class="slide level2">
+<h2>Concept 3: Checking assumptions of Factorial ANOVAs</h2>
+<p>Start with the 6 assumption of regression models</p>
+<ol type="1">
+<li class="fragment">No measurement error</li>
+<li class="fragment">Correct form</li>
+<li class="fragment">Correct model</li>
+<li class="fragment">Homoscedasticity</li>
+<li class="fragment">Independence</li>
+<li class="fragment">Normality of residuals</li>
+</ol>
+</section>
+<section id="concept-3-checking-assumptions-of-factorial-anovas-1" class="slide level2">
+<h2>Concept 3: Checking assumptions of Factorial ANOVAs</h2>
+<p>Start with the 6 assumption of regression models</p>
+<div>
+<ol type="1">
+<li>No measurement error</li>
+<li><del>Correct form</del></li>
+<li>Correct model</li>
+<li>Homoscedasticity</li>
+<li>Independence</li>
+<li>Normality of residuals</li>
+</ol>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="homoscedasticity">Homoscedasticity</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>data <span class="sc">%&gt;%</span> </span>
+<span id="cb31-2"><a href="#cb31-2"></a>  <span class="fu">group_by</span>(therapy, drug) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="#cb31-3"></a>  <span class="fu">summarise</span>(<span class="at">m =</span> <span class="fu">mean</span>(depression, <span class="at">s =</span> <span class="fu">sd</span>(depression)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+# Groups:   therapy [2]
+  therapy    drug        m
+  &lt;chr&gt;      &lt;chr&gt;   &lt;dbl&gt;
+1 DBT        No drug  3.62
+2 DBT        SSRI     1.63
+3 No therapy No drug  4.43
+4 No therapy SSRI     3.66</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>car<span class="sc">::</span><span class="fu">leveneTest</span>(depression <span class="sc">~</span> drug<span class="sc">*</span>therapy, <span class="at">data =</span> data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Levene's Test for Homogeneity of Variance (center = median)
+      Df F value Pr(&gt;F)
+group  3  0.9427 0.4302
+      36               </code></pre>
+</div>
+</div>
+</section>
+<section id="lessons-from-machine-learning" class="slide level2">
+<h2>Lessons from machine learning</h2>
+<p>Yarkoni and Westfall (2017) describe the goals of explanation and prediction in science. - Explanation: describe causal underpinnings of behaviors/outcomes - Prediction: accurately forecast behaviors/outcomes</p>
+<p>In some ways, these goals work in tandem. Good prediction can help us develop theory of explanation and vice versa. But, statistically speaking, they are in tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes.</p>
+<aside class="notes">
+<p>Y&amp;W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that’s true)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="yarkoni-and-westfall-2017" class="slide level2">
+<h2>Yarkoni and Westfall (2017)</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><span style="color:purple">Overfitting:</span> mistakenly fitting sample-specific noise as if it were signal - OLS models tend to be overfit because they minimize error for a specific sample</p>
+<p><span style="color:purple">Bias:</span> systematically over or under estimating parameters</p>
+<p><span style="color:purple">Variance:</span> how much estimates tend to jump around</p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/bias-variance.png"></p>
+</div>
+</div>
+</section>
+<section id="yarkoni-and-westfall-2017-1" class="slide level2">
+<h2>Yarkoni and Westfall (2017)</h2>
+<p><strong>Big Data</strong></p>
+<ul>
+<li class="fragment">Reduce the likelihood of overfitting – more data means less error</li>
+</ul>
+<p><strong>Cross-validation</strong></p>
+<ul>
+<li class="fragment">Is my model overfit?</li>
+</ul>
+<p><strong>Regularization</strong></p>
+<ul>
+<li class="fragment">Constrain the model to be less overfit (and more biased)</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="big-data-sets">Big Data Sets</h3>
+<p>“Every pattern that could be observed in a given dataset reflects some… unknown combination of signal and error” (page 1104).</p>
+<p>Error is random, so it cannot correlate with anything; as we aggregate many pieces of information together, we reduce error.</p>
+<p>Thus, as we get bigger and bigger datasets, the amount of error we have gets smaller and smaller</p>
+</section>
+<section class="slide level2">
+
+<h3 id="cross-validation">Cross-validation</h3>
+<p><strong>Cross-validation</strong> is a family of techniques that involve testing and training a model on different samples of data.</p>
+<ul>
+<li class="fragment">Replication</li>
+<li class="fragment">Hold-out samples</li>
+<li class="fragment">K-fold
+<ul>
+<li class="fragment">Split the original dataset into 2(+) datasets, train a model on one set, test it in the other</li>
+</ul></li>
+<li class="fragment">Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit
+<ul>
+<li class="fragment">Can split the dataset into more than 2 sections</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb35-2"><a href="#cb35-2"></a>stress.data <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="fu">here</span>(<span class="st">"data/stress.csv"</span>))</span>
+<span id="cb35-3"><a href="#cb35-3"></a><span class="fu">library</span>(psych)</span>
+<span id="cb35-4"><a href="#cb35-4"></a><span class="fu">describe</span>(stress.data, <span class="at">fast =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        vars   n  mean    sd  min    max  range   se
+id         1 118 59.50 34.21 1.00 118.00 117.00 3.15
+Anxiety    2 118  7.61  2.49 0.70  14.64  13.94 0.23
+Stress     3 118  5.18  1.88 0.62  10.32   9.71 0.17
+Support    4 118  8.73  3.28 0.02  17.34  17.32 0.30
+group      5 118   NaN    NA  Inf   -Inf   -Inf   NA</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>model.lm <span class="ot">=</span> <span class="fu">lm</span>(Stress <span class="sc">~</span> Anxiety<span class="sc">*</span>Support<span class="sc">*</span>group, </span>
+<span id="cb37-2"><a href="#cb37-2"></a>              <span class="at">data =</span> stress.data)</span>
+<span id="cb37-3"><a href="#cb37-3"></a><span class="fu">summary</span>(model.lm)<span class="sc">$</span>r.squared</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4126943</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="example-10-fold-cross-validation">Example: 10-fold cross validation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co"># new package!</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="fu">library</span>(caret)</span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="co"># set control parameters</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a>ctrl <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method=</span><span class="st">"cv"</span>, <span class="at">number=</span><span class="dv">10</span>)</span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="co"># use train() instead of lm()</span></span>
+<span id="cb39-6"><a href="#cb39-6"></a>cv.model <span class="ot">&lt;-</span> <span class="fu">train</span>(Stress <span class="sc">~</span> Anxiety<span class="sc">*</span>Support<span class="sc">*</span>group, </span>
+<span id="cb39-7"><a href="#cb39-7"></a>               <span class="at">data =</span> stress.data, </span>
+<span id="cb39-8"><a href="#cb39-8"></a>               <span class="at">trControl=</span>ctrl, <span class="co"># what are the control parameters</span></span>
+<span id="cb39-9"><a href="#cb39-9"></a>               <span class="at">method=</span><span class="st">"lm"</span>) <span class="co"># what kind of model</span></span>
+<span id="cb39-10"><a href="#cb39-10"></a>cv.model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="example-10-fold-cross-validation-1">Example: 10-fold cross validation</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear Regression 
+
+118 samples
+  3 predictor
+
+No pre-processing
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 106, 106, 106, 106, 106, 106, ... 
+Resampling results:
+
+  RMSE      Rsquared   MAE     
+  1.550296  0.3307817  1.246434
+
+Tuning parameter 'intercept' was held constant at a value of TRUE</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="regularization">Regularization</h3>
+<p>Penalizing a model as it grows more complex.</p>
+<ul>
+<li class="fragment">Usually involves shrinking coefficient estimates – the model will fit less well in-sample but may be more predictive</li>
+</ul>
+<p><em>lasso regression</em>: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients</p>
+<ul>
+<li class="fragment">coefficients are more biased (tend to underestimate coefficients) but produce less variability in results</li>
+</ul>
+<p><a href="https://www.statology.org/lasso-regression-in-r/">See here for a tutorial</a>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="nhst-no-more">NHST no more</h3>
+<p>Once you’ve imposed a shrinkage penalty on your coefficients, you’ve wandered far from the realm of null hypothesis significance testing. In general, you’ll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they’re focused on different goals. Instead of asking, “how does random chance factor into my result?”, machine learning optimizes (out of sample) prediction. Both methods explicitly deal with random variability. In NHST and Bayesian probability, we’re trying to estimate the degree of randomness; in machine learning, we’re trying to remove it.</p>
+</section>
+<section id="summary-yarkoni-and-westfall-2017" class="slide level2">
+<h2>Summary: Yarkoni and Westfall (2017)</h2>
+<p><strong>Big Data</strong></p>
+<ul>
+<li class="fragment">Reduce the likelihood of overfitting – more data means less error</li>
+</ul>
+<p><strong>Cross-validation</strong></p>
+<ul>
+<li class="fragment">Is my model overfit?</li>
+</ul>
+<p><strong>Regularization</strong></p>
+<ul>
+<li class="fragment">Constrain the model to be less overfit</li>
+</ul>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next time…</h2>
+<p>PSY 613 with Elliot Berkman!</p>
+<p><span style="font-size:80%">(But first take the final quiz.)</span></p>
+<div class="footer footer-default">
+
+</div>
+</section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="20-final_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="20-final_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/multiplex/socket.io.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/multiplex/multiplex.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="20-final_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="20-final_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'multiplex': {"secret":"16789361497621998457","id":"2328bd5dfd43ddb5","url":"https://reveal-multiplex.glitch.me/"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        target: function(trigger) {
+          return trigger.previousElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto-reveal',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>

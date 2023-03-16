@@ -41,6 +41,8 @@ navbar:
         href: "lectures/18-power3.html"
       - text: "19-Polynomials/Bootstrapping"
         href: "lectures/19-poly_boot.html"
+      - text: "20-Review/Machine Learning"
+        href: "lectures/20-final.html"
         
     - text: Labs
       menu:
