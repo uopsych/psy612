@@ -1,0 +1,449 @@
+---
+title: "Review & Machine Learning"
+format: 
+  revealjs:
+    multiplex: true
+    slide-number: true
+    incremental: true
+    touch: true
+    code-overflow: wrap
+    highlightLines: true
+    theme: simple
+execute: 
+  echo: true
+editor: source
+---
+
+
+```{r, echo = F, message = F, warning = F}
+library(tidyverse)
+library(sjPlot)
+```
+
+#Last time...
+
+-   Polynomials
+-   Bootstrapping
+
+# Today
+
+-   Review
+-   Lessons from machine learning
+
+------------------------------------------------------------------------
+
+## Concept 1: Partial/Semi-partial correlations
+
+A zero-order correlation ($r$) assesses the degree covariation between two variables (X and Y). Correlations squared ($r^2$) quantify the proportion of variance explained. 
+
+```{r}
+#| code-fold: true
+library(psych)
+data(psych::bfi)
+keys.list <- list(
+  agree=c("-A1","A2","A3","A4","A5"),
+  consc=c("C1","C2","C3","-C4","-C5"),
+  extra=c("-E1","-E2","E3","E4","E5"),
+  neuro=c("N1","N2","N3","N4","N5"), 
+  openn=c("O1","-O2","O3","O4","-O5")) 
+  keys <- make.keys(psychTools::bfi,keys.list)  #no longer necessary
+ scores <- scoreItems(keys,psychTools::bfi,min=1,max=6)  #using a keys matrix 
+bfi_scores = scores$scores %>% as.data.frame()
+```
+```{r}
+cor(bfi_scores$agree, bfi_scores$extra, use = "pairwise")
+cor(bfi_scores$agree, bfi_scores$extra, use = "pairwise")^2
+```
+
+------------------------------------------------------------------------
+
+## Concept 1: Partial/Semi-partial correlations
+
+In a semi-partial correlation ($sr$) assesses the degree covariation between two variables after removing the covariation between one of those variables (X) and a third variable (C). Correlations squared ($sr^2$) quantify the proportion of variance explained. 
+
+```{r}
+library(ppcor)
+spcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)
+spcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)$estimate^2
+```
+
+------------------------------------------------------------------------
+
+## Concept 1: Partial/Semi-partial correlations
+
+In a semi-partial correlation ($sr$) assesses the degree covariation between two variables after removing the covariation between one of those variables (X) and a third variable (C). Correlations squared ($sr^2$) quantify the proportion of variance explained. 
+
+```{r}
+pcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)
+pcor.test(bfi_scores$agree, bfi_scores$extra, bfi_scores$neuro)$estimate^2
+```
+
+------------------------------------------------------------------------
+
+## Concept 1: Partial/Semi-partial correlations
+
+Sometimess we find that the semi-partial correlation squared is larger than the zero-order.
+
+```{r}
+data = read.csv("data/vals.csv")
+cor(data$V1, data$V2); cor(data$V1, data$V2)^2
+spcor.test(data$V1, data$V2, data$V3); spcor.test(data$V1, data$V2, data$V3)$estimate^2
+
+```
+
+What's going on here?
+
+
+------------------------------------------------------------------------
+
+This is a case of suppression. It can happen when our predictors are highly correlated, but our control variable is not associated with the outcome:
+
+```{r}
+cor(data) %>%  round(2)
+```
+
+It can also happen when there is an inconsistency of signs. Recall the formula:
+
+$$sr = \frac{r_{Y1}- r_{Y2}r_{12}}{1-r_{12}^2}$$
+
+------------------------------------------------------------------------
+
+## Concept 2: Interpreting SS in Factorial ANOVA
+
+Hypothetical data on the combined efficacy of SSRIs and DBT.
+
+```{r}
+data = read.csv("https://raw.githubusercontent.com/uopsych/psy612/master/data/depresssion.csv")
+psych::describe(data)
+table(data$drug, data$therapy)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ggplot(data, aes(x = drug, y = depression, color = therapy)) +
+  geom_point(position = position_dodge(.5)) 
+```
+
+------------------------------------------------------------------------
+
+```{r}
+model = lm(depression ~ drug*therapy, data = data)
+anova(model)
+```
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+library(emmeans)
+dep_mean = mean(data$depression)
+mm_drug    = as.data.frame(emmeans(model, ~drug)) %>% 
+  select(drug, drug_mean = emmean)
+mm_therapy = as.data.frame(emmeans(model, ~therapy)) %>% 
+  select(drug, therapy_mean = emmean)
+mm_int     = as.data.frame(emmeans(model, ~drug*therapy)) %>% 
+  select(drug, therapy, cell_mean = emmean)
+
+data = data %>% 
+  mutate(
+    mean_dep = dep_mean
+  ) %>% 
+  inner_join(mm_drug) %>% 
+  inner_join(mm_therapy) %>% 
+  inner_join(mm_int) %>% 
+  mutate(drug_num = ifelse(drug == "No drug", 0, 1),
+         therapy_num = ifelse(therapy == "No therapy", 0, 1))
+
+
+
+ggplot(data, aes(x = drug_num, y = depression, color = therapy)) +
+  geom_point(position = position_jitter(height = 0, 
+                                          width = .05, 
+                                          seed = 1)) +
+  scale_x_continuous(breaks = c(0,1), labels = c("No drug", "SSRI"))
+```
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+ggplot(data, aes(x = drug_num, y = depression, color = therapy)) +
+  geom_point(position = position_jitter(height = 0, 
+                                          width = .05, 
+                                          seed = 1)) +
+  geom_hline(aes(yintercept = dep_mean), color = "black") +
+  scale_x_continuous(breaks = c(0,1), labels = c("No drug", "SSRI"))
+```
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+ggplot(data, aes(x = drug_num, y = depression)) +
+  geom_segment(aes(xend = drug_num, yend = mean_dep), 
+               position = position_jitter(height = 0, 
+                                          width = .05, 
+                                          seed = 1)) +
+  geom_point(aes(color = therapy), 
+             position = position_jitter(height = 0, 
+                                          width = .05, 
+                                        seed = 1)) +
+  geom_hline(aes(yintercept = dep_mean), color = "black") +
+  scale_x_continuous(breaks = c(0,1), labels = c("No drug", "SSRI"))
+```
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+ggplot(data, aes(x = drug_num, y = depression)) +
+  
+  geom_segment(aes(xend = drug_num, y = drug_mean, yend = mean_dep), 
+               position = position_jitter(height = 0, 
+                                          width = .05, 
+                                          seed = 1)) +
+  geom_point( 
+             position = position_jitter(height = 0, 
+                                          width = .05, 
+                                        seed = 1)) +
+  geom_hline(aes(yintercept = dep_mean), color = "black") +
+  geom_hline(aes(yintercept = drug_mean, color = drug)) +
+
+  scale_x_continuous(breaks = c(0,1), labels = c("No drug", "SSRI"))
+```
+
+Variability between drug conditions
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+ggplot(data, aes(x = drug_num, y = depression)) +
+  
+  geom_segment(aes(xend = drug_num, y = therapy_mean, yend = mean_dep), 
+               position = position_jitter(height = 0, 
+                                          width = .05, 
+                                          seed = 1)) +
+  geom_point( aes(color = therapy),
+             position = position_jitter(height = 0, 
+                                          width = .05, 
+                                        seed = 1)) +
+  geom_hline(aes(yintercept = dep_mean), color = "black") +
+  geom_hline(aes(yintercept = therapy_mean, color = therapy)) +
+
+  scale_x_continuous(breaks = c(0,1), labels = c("No drug", "SSRI"))
+```
+
+Variability between therapy conditions
+
+------------------------------------------------------------------------
+
+```{r, echo = F}
+ggplot(data, aes(x = drug_num, y = depression)) +
+  
+  geom_segment(aes(xend = drug_num, y = cell_mean, yend = mean_dep), 
+               position = position_jitter(height = 0, 
+                                          width = .05, 
+                                          seed = 1)) +
+  geom_point(aes(color = therapy),
+             position = position_jitter(height = 0, 
+                                          width = .05, 
+                                        seed = 1)) +
+  geom_hline(aes(yintercept = dep_mean), color = "black") +
+  geom_hline(aes(yintercept = cell_mean, color = therapy, linetype = drug)) +
+
+  scale_x_continuous(breaks = c(0,1), labels = c("No drug", "SSRI"))
+```
+
+Variability between cells
+
+------------------------------------------------------------------------
+
+```{r}
+model = lm(depression ~ drug*therapy, data = data)
+anova(model)
+```
+
+------------------------------------------------------------------------
+
+## Concept 3: Checking assumptions of Factorial ANOVAs
+
+Start with the 6 assumption of regression models
+
+1.  No measurement error
+2.  Correct form
+3.  Correct model
+4.  Homoscedasticity
+5.  Independence
+6.  Normality of residuals
+
+------------------------------------------------------------------------
+
+## Concept 3: Checking assumptions of Factorial ANOVAs
+
+Start with the 6 assumption of regression models
+
+::: nonincremental
+1.  No measurement error
+2.  ~~Correct form~~
+3.  Correct model
+4.  Homoscedasticity
+5.  Independence
+6.  Normality of residuals
+:::
+
+------------------------------------------------------------------------
+
+### Homoscedasticity
+
+```{r}
+data %>% 
+  group_by(therapy, drug) %>% 
+  summarise(m = mean(depression, s = sd(depression)))
+
+car::leveneTest(depression ~ drug*therapy, data = data)
+```
+
+
+
+------------------------------------------------------------------------
+
+## Lessons from machine learning
+
+Yarkoni and Westfall (2017) describe the goals of explanation and prediction in science. - Explanation: describe causal underpinnings of behaviors/outcomes - Prediction: accurately forecast behaviors/outcomes
+
+In some ways, these goals work in tandem. Good prediction can help us develop theory of explanation and vice versa. But, statistically speaking, they are in tension with one another: statistical models that accurately describe causal truths often have poor prediction and are complex; predictive models are often very different from the data-generating processes.
+
+::: notess
+
+Y&W: we should spend more time and resources developing predictive models than we do not (not necessarily than explanation models, although they probably think that's true)
+
+:::
+
+------------------------------------------------------------------------
+
+## Yarkoni and Westfall (2017)
+
+:::: {.columns}
+::: {.column width="50%"}
+
+.purple[Overfitting:] mistakenly fitting sample-specific noise as if it were signal - OLS models tend to be overfit because they minimize error for a specific sample
+
+.purple[Bias:] systematically over or under estimating parameters .purple[Variance:] how much estimates tend to jump around\
+
+:::
+::: {.column width="50%"}
+
+![](images/bias-variance.png)
+:::
+::::
+
+
+------------------------------------------------------------------------
+
+## Yarkoni and Westfall (2017)
+
+**Big Data** 
+
+  * Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation** 
+
+  * Is my model overfit?
+
+**Regularization** 
+    
+  * Constrain the model to be less overfit (and more biased)
+
+------------------------------------------------------------------------
+
+### Big Data Sets
+
+"Every pattern that could be observed in a given dataset reflects some... unknown combination of signal and error" (page 1104).
+
+Error is random, so it cannot correlate with anything; as we aggregate many pieces of information together, we reduce error.
+
+Thus, as we get bigger and bigger datasets, the amount of error we have gets smaller and smaller
+
+------------------------------------------------------------------------
+
+### Cross-validation
+
+**Cross-validation** is a family of techniques that involve testing and training a model on different samples of data. 
+  * Replication 
+  * Hold-out samples 
+  * K-fold 
+  * Split the original dataset into 2(+) datasets, train a model on one set, test it in the other 
+  * Recycle: each dataset can be a training AND a testing; average model fit results to get better estimate of fit 
+  * Can split the dataset into more than 2 sections
+
+------------------------------------------------------------------------
+
+```{r, message=FALSE, warning = F}
+library(here)
+stress.data = read.csv(here("data/stress.csv"))
+library(psych)
+describe(stress.data, fast = T)
+
+model.lm = lm(Stress ~ Anxiety*Support*group, 
+              data = stress.data)
+summary(model.lm)$r.squared
+```
+
+------------------------------------------------------------------------
+
+### Example: 10-fold cross validation
+
+```{r, message = F}
+# new package!
+library(caret)
+# set control parameters
+ctrl <- trainControl(method="cv", number=10)
+# use train() instead of lm()
+cv.model <- train(Stress ~ Anxiety*Support*group, 
+               data = stress.data, 
+               trControl=ctrl, # what are the control parameters
+               method="lm") # what kind of model
+cv.model
+```
+
+------------------------------------------------------------------------
+
+### Regularization
+
+Penalizing a model as it grows more complex. 
+  
+  * Usually involves shrinking coefficient estimates -- the model will fit less well in-sample but may be more predictive
+
+  *lasso regression*: balance minimizing sum of squared residuals (OLS) and minimizing smallest sum of absolute values of coefficients
+
+  -   coefficients are more biased (tend to underestimate coefficients) but produce less variability in results
+
+[See here for a tutorial](https://www.statology.org/lasso-regression-in-r/).
+
+
+-----------------------------------------------------------------------
+
+### NHST no more                                                 
+
+Once you've imposed a shrinkage penalty on your coefficients, you've wandered far from the realm of null hypothesis significance testing. In general, you'll find that very few machine learning techniques are compatible with probability theory (including Bayesian), because they're focused on different goals. Instead of asking, "how does random chance factor into my result?", machine learning optimizes (out of sample) prediction. Both methods explicitly deal with random variability. In NHST and Bayesian probability, we're trying to estimate the degree of randomness; in machine learning, we're trying to remove it. 
+
+-----------------------------------------------------------------------
+
+## Summary: Yarkoni and Westfall (2017)
+
+**Big Data** 
+  
+  * Reduce the likelihood of overfitting -- more data means less error
+
+**Cross-validation** 
+  
+  * Is my model overfit?
+
+**Regularization** 
+  
+  * Constrain the model to be less overfit
+
+------------------------------------------------------------------------
+
+## Next time...
+
+PSY 613 with Elliot Berkman!
+
+.small[(But first take the final quiz.)]
