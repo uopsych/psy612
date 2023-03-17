@@ -1,7 +1,7 @@
 ---
-title: "Lab 10: Bootstrapping"
-output: 
-  html_document: 
+title: "Intro to Machine Learning and {Papaja}"
+output:
+  html_document:
     fig_caption: yes
     theme: cosmo
     toc: yes
@@ -12,377 +12,381 @@ editor_options:
   chunk_output_type: console
 ---
 
-You will need the Rmd file for today's lab. You can download it [here](https://uopsych.github.io/psy612/labs/lab-10/lab-10.Rmd).
+You can download the Rmd file [here](lab-10.Rmd).
 
 ```{r setup, include=FALSE}
-# suppress scientific notation
-options(scipen = 999)
+# Install and load required packages
+library(caret)
+library(glmnet)
+library(randomForest)
+library(car)
+library(tidyverse)
+library(psych)
 
-# do not evaluate code chunks
-knitr::opts_chunk$set(echo = TRUE,
-                      eval = FALSE)
+# Knit options
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Purpose
+# Background
 
-Bootstrapping is a procedure for empirically determining a sampling distribution when we cannot assume a statistic follows a known distribution. This lab covers how to use bootstrapping in R using the `{boot}` library. 
+Statistical models can be built to serve different research purposes, such as **explanation** or **prediction**.
 
-1. [Why bootstrap?](#why)
-2. [Bootstrapping with `{boot}`](#boot)
-3. [Writing functions in R](#functions)
-4. [Writing a function for `boot()`](#functionsBoot)
-5. [Running `boot()`](#runBoot)
-6. [More advanced applications](#advanced)
+-   When one's purpose is **explanation**, the researcher writes a statistical model that tests a specific literature-informed theory (the model may have even been pre-registered).
+    -   Typically, the researcher wants the model to have interpretable parameter estimates that provide an understanding of the nature of the relationship between each predictor and the outcome variable
+-   When one's purpose is **prediction**, the researcher wants to build a statistical model that does the best at **accurately predicting new data**.
+    -   The model does not necessarily need to produce interpretable parameter estimates as long as, when applied to new data, the statistical model does a good job at predicting those values.
 
-## Libraries
+You could also be interested in achieving **a mix** of these two goals.
 
-Be sure to have the following packages installed and loaded:
+# Machine Learning
 
-```{r lab-8-1, message=FALSE}
-library(tidyverse) # for plotting and data wrangling
-library(rio)       # for importing data
-library(boot)      # for bootstrapping
-```
+Machine learning encompasses a set of techniques that have been developed to **build good predictive models**. That is, the goal of machine learning is to build a statistical model that does the best at predicting new, not-yet-seen data points.
 
-## Data
+## Common Machine Learning Algorithms
 
-We'll work with that Lab 2 dataset we worked with before. Recall that it has:
+There are many algorithms that can be used to build a machine learning model. You can predict continuous or categorical outcomes - just make sure you choose an algorithm that's appropriate for that type of DV!
 
-1. extraversion: self-reported extraversion
-2. pos_express: self-reported positive expressivity
-3. soc_sup: self-reported social support
-4. optimism: self-reported optimism
-5. exercise: self-reported exercise
-6. happiness: self-reported happiness
+-   Linear regression, lm()
+
+-   Logistic regression, LogitBoost()
+
+-   Support vector machines, svm() or svmLinear()
+
+-   Random forests, randomForest()
+
+And there are hundreds more... for a full list: names(getModelInfo())
+
+As the algorithm you use becomes increasingly complex, the parameter estimates may become less and less interpretable, were you to examine them.
+
+# Overfitting
+
+A very important consideration in the building of predictive models is overfitting. **Overfitting is the problem of fitting a model too well to the variability of a specific data set. This could result in the model having poor predictive power when applied to a new data set.**
+
+When building a statistical model, you want to meet a balance between finding a model that seems to fit the data well, **without accounting for so much error that you overfit the model**.
+
+# Training Set vs Testing Set
+
+One of the main innovations of machine learning is that it requires you to build your statistical model using a separate set of data than the one used to test the accuracy of your model.
+
+The original data is split into a **training set** that is used to build and optimize the statistical model, and a **testing set** that is used to test the resulting model's predictive accuracy (i.e., ability to accurately predict new, not-yet-seen data).
+
+You typically want more data in the training set since this data is being used to build your model. Some proportions that are used typically are 70% training, 30% testing, but you can adjust these.
+
+# Cross-Validation
+
+Recall that the statistical model is built using **only the data in the training set**. To avoid overfitting, we do not want the model we build to fit too specifically to the unique error in the training set.
+
+Cross-validation is a technique for splitting the training set multiple times into **mini training-testing sets**. The model is fit using each of the mini training sets and then its predictive accuracy is measured in each of the mini testing sets. **The results are averaged across each of these models**.
+
+Here are a couple of cross-validation approaches:
+
+-   **leave-one-out cross-validation**: Using the training set, fit the statistical model to n-1 observations. Then, test the predictive accuracy of the model on the single observation that's been left out. Repeat this n times.
+
+-   **k-fold cross-validation**: Randomly split the training set into **k** chunks (aka, folds) of roughly equal size. One of the chunks is treated as the testing set. The remaining k-1 chunks are treated as the training set for building the model, and the predictive accuracy of the model is examined examined using the testing set. This process is repeated k times, with each time, a different chunk being treated as the testing set. Typically, people use values of k = 5 or k = 10 (but it can be any value up to n).
+
+# Tuning
+
+In machine learning, there are two types of parameters: model parameters and hyperparameters.
+
+-   Model parameters are estimated from the data (e.g., model coefficients in linear regression)
+
+-   Hyperparameters are values specific to some algorithms that can be "tuned" by the researcher. Different algorithms have different hyperparameters. You won't know the best values of hyperparameters prior to training a model. You have to rely on rules of thumb or try to find the best values through trial and error. This is the tuning process.
+
+# Example: Steps of Machine Learning
+
+We will focus on examples that use a continuous outcome variable (but you can certainly perform machine learning for categorical outcomes, too. Just make sure you use an appropriate algorithm!).
+
+The data set we will use for this example is called `Prestige` from the `car` package. This data set contains various features (aka, variables) across a variety of occupations.
 
 ```{r}
-df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>%
-  janitor::clean_names()
+head(Prestige) 
+str(Prestige)
+
+# see a description of the variables
+# ?Prestige
+
+# Not ideal way of handling missing data, but using for sake of today's example
+Prestige <- na.omit(Prestige)
 ```
 
-# Why Bootstrap?{#why}
+Let's see if we can build a model that does well at predicting **income** from the rest of the variables in the data set.
 
-Recall from lecture that bootstrapping is a general purpose tool to use whenever you can't make assumptions about how a statistic is distributed. Some cases where it is useful include:   
+## Data Splitting
 
-1. When test assumptions  (e.g., normality, homoscedasticity) have been violated  
-2. When you have good reason to believe the sampling distribution is not normal, but don't know what it is 
-3. With highly unbalanced sample sizes 
+First, split the original data into a **training set** and a **testing set**. Remember, the statistical model is built using only the training set.
 
-One of its main uses is to construct CIs, but it can also be used in a standard error formula to produce a test statistic. We will focus just on CIs and plotting the full (bootstrapped) distribution today.
+`createDataPartition` is used to split the original data into a training set and a testing set. The inputs include:
 
-# Bootstrapping with `boot()` {#boot}
+-   **y** = the outcome variable
 
-We're going to focus on using the `boot()` function from the `{boot}` package. `boot()` has many arguments, but there are three that are necessary:   
-   
-1. `data` = This is where you tell `boot()` the name of the dataframe you're working with.   
+-   **times** = the number of times you want to split the data
 
-2. `statistic` = a __function__ that returns the desired statistic when applied to the data.
+-   **p** = the percentage of the data that goes into the training set
 
-3. `R` = the number of resamples. You usually want to set it to a very large number (e.g., 10,000).
-
-And that's it. The only part that is a little tricky is specifying argument 2, because you have to *write your own function* to get the statistic you're looking for. This may be new to all of you, but writing functions in R is a powerful skill and so it is something that is definitely worth practicing. 
-
-# Writing functions in R. {#functions}
-
-You can write your own functions using the `function()` function. Functions have a few different parts:   
-
-1. __Name:__ This is just the name you want to assign to your function.   
-2. __Arguments:__ These go into the `()` when you call `function()`. They are typically names that will be referenced in the body of your function.   
-3. __Body:__ This is where you specify what your function does. The body is encapsulated in curly brackets (`{}`).
-4. __Output:__ This is what comes out of your function, and you specify that with `return()` within the body of your function.
-
-Let's walk through an example. Let's make a function that calculates the mean of a vector, and prints it in the format: "The mean is _", where the blank is filled in with the mean.
+-   **list** = FALSE gives the results in a matrix with the row numbers of the partition that you can pass back into the training data to effectively split it
 
 ```{r}
-# your code here
+set.seed(50) 
+
+# Split the original data set into a training set and a testing set
+partition_data <- createDataPartition(Prestige$income, times = 1, p = .7, list = FALSE)
+
+training.set <- Prestige[partition_data, ] # Training set
+testing.set <- Prestige[-partition_data, ] # Testing set
 ```
 
-Now let's test it out on extraversion from the data we loaded above:
+## Building Model using Training Set
+
+`caret` is an R package that consolidates all of the many various machine learning algorithms into an easy-to-use interface.
+
+The `train` function is used for model training (aka, building a model). It uses the following inputs:
+
+-   **y** = the outcome variable
+    -   **y \~.** means predict y from all other variables in the dataset
+-   **method** = the machine learning algorithm you want to use
+-   **trControl** = the cross-validation method
+-   **tuneGrid** = a data frame of the hyperparameters that you want to be evaluated during model training
+-   **preProc** = any pre-processing adjustments that you want done on the predictor data
+
+Let's build the model using an algorithm we're familiar with: linear regression model
 
 ```{r}
-print_mean(df$extraversion)
+set.seed(21)
+
+ml_linear_model <- train(income ~. , 
+                         data = training.set, 
+                         method = "lm", 
+                         trControl = trainControl(method="cv", number = 5), # k-folds CV with k=5 
+                        #tuneGrid = , # leaving empty because there's no hyperparameters to tune in this case
+                          preProc = c("center")) 
+
+
+ml_linear_model
+ml_linear_model$results
 ```
 
-Looks like that works! Also notice that it didn't create an object in our global environment called `mean`. That variables within a function are local; they only exist within that function (they don't get created in the global environment). 
-
-To learn more about functions, check out [Hadley Wickham's Advanced R](http://adv-r.had.co.nz/)
-
-# Writing a function for `boot()` {#functionsBoot}
-
-Now for `boot()`, we want to write a function that returns the statistic we're interested in bootstrapping. Basically, you want to set up the body such:   
-
-1. Data is subsetted based on the indexes created by `boot()`.    
-2. That subsetted data is then used to calculate the statistic of interest.   
-3. That statistic is returned.   
-
-It has two necessary arguments that are (in order) `data` and `index`. The `data` argument comes first, so whatever you name it will represent the dataframe in the body of the function. The `index` argument comes second, so whatever you name it should be used to subset the data. 
-
-We could create a simple one that subsets our data, passes the subsetted data to the linear model we want to run, saves out the $R^2$ from that model, and then returns it:
+How accurately does this model predict incomes in the testing set?
 
 ```{r}
-# your code here
+linear_predicted <- predict(ml_linear_model, testing.set) 
+
+# Overall accuracy assessment
+postResample(linear_predicted, testing.set$income)
 ```
 
-# Running `boot()` {#runBoot}
+The model we built accounts for 68% of the variability in incomes in the testing set.
 
-Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Let's go ahead and give it a try. We set (in order) the `data`, `statistic`, and `R` arguments
+# Comparing Models
 
-- The data argument is where we provide the name of the dataset.
-- The statistic argument is where we provide the name of the function we created.
-- R is the number of times that we want to sample with replacement
+One of the advantages of this approach is you can easily run and compare models fit using different types of algorithms. Another commonly used machine learning model is called a Support Vector Machine (SVM).
+
+## Support Vector Machine
+
+Unlike linear regression, SVMs **do** have a hyperparameter that can be tuned. You can see what it's called by passing the model algorithm, called `svmLinear`, to the `getModelInfo` function.
 
 ```{r}
-set.seed(42) # don't forget to set.seed()
-
-boot_r2 <- boot(data      = # your code here
-                statistic = # your code here
-                R         = # your code here
-                )
+getModelInfo("svmLinear")$svmLinear$parameters 
 ```
 
-Okay, now let's take a look at what it contains:
+Then, we can choose "tuning" values to try out for this hyperparameter `expand.grid` is the function that allows you to specify tuning values.
 
 ```{r}
-str(boot_r2)
+tuning_values <- expand.grid(C = c(0.001, 0.01, 0.1, 1, 10, 100)) 
 ```
 
-The most important object in the list returned by `boot()` is `t`, which is a matrix that contains our bootstrapped results. It will be the length of `R`, so in this case it will be length 10,000 (i.e., 10,000 rows); this means there are 10,000 estimates of $R^2$, each pertaining to the estimate obtained in one of the resamplings. 
-
-## Getting Useful Information from `boot()` Results
-
-We could get the mean of bootstrapped estimates:
+Now, let's build the model using the training set.
 
 ```{r}
-mean(boot_r2$t)
-```
-
-And median:
-
-```{r}
-median(boot_r2$t)
-```
-
-And, we can get the 95% CI by using `boot.ci()`, passing the results of `boot()` as the first argument, and setting `type = "perc"` for percentiles.
-
-```{r}
-ci <- boot.ci(boot_r2, type = "perc")
-ci
-```
-
-You might also be wondering what we get when we just call the `boot_r2`:
-
-```{r}
-boot_r2
-```
-
-The `original` value refers to the estimate you would have obtained if you had not used bootstrapping, the `bias` value refers to the difference between the bootstrapped estimate and the estimate you would have obtained if you had not used bootstrapping, and `std.error` refers to the standard deviation of the sample distribution.
-
-Let's confirm that the`original` value really refers to the estimate we would have obtained if we did not use bootstrapping:
-
-```{r}
-# run original model
-fit <- lm(happiness ~ extraversion + 
-                      pos_express  + 
-                      soc_sup      + 
-                      optimism     + 
-                      exercise, 
-          data = df)
-
-# compare and contrast
-summary(fit)$r.squared
-boot_r2
-```
-
-Let's also confirm that the `bias` value really refers to the difference between the bootstrapped estimate and the estimate we would have obtained if we had not used bootstrapping.
-
-```{r}
-# compare and contrast
-mean(boot_r2$t) - boot_r2$t0
-boot_r2
-```
-
-Finally, let's confirm the `std.error` really refers to the standard deviation of the sample distribution.
-
-```{r}
-# compare and contrast
-sd(boot_r2$t)
-boot_r2
-```
-
-## Plotting Bootstrapped Results
-
-We can also generate plots to describe our bootstrapped distribution. Let's do that using `{ggplot2}`. The only sort of tricky part is that we have to turn the bootstrapped results into a dataframe or tibble first. I've done this below using the `tibble()` function from the `{tidyverse}`
-
-First, let's create a density plot
-
-```{r}
-# create a density 
-tibble(rsquared = boot_r2$t) %>%                   
-  ggplot(aes(x = rsquared)) +                      
-    geom_density(fill = "turquoise", alpha = .6) + 
-    theme_bw()                                     
-```
-
-Alternatively, we could produce a histogram. Let's do that and also set up vertical lines for the 95% CI and Median values:
-
-```{r}
-tibble(rsquared = boot_r2$t) %>% 
-  ggplot(aes(x = rsquared)) +
-    geom_histogram(fill = "turquoise", alpha = .6) + 
-    geom_vline(aes(xintercept = ci$percent[4]),
-               size     = 1,
-               color    = "blueviolet",
-               linetype = "dashed") +
-    geom_vline(aes(xintercept = median(boot_r2$t)), 
-               size  = 2,
-               color = "blueviolet") + 
-    geom_vline(aes(xintercept = ci$percent[5]),
-               size     = 1,
-               color    = "blueviolet",
-               linetype = "dashed") +
-    theme_bw() 
-```
-
-That plot contains a lot of useful information - we can see the lower limit is a little above .45 and the upper limit is right around .65, with the median value between .55 and .6. Plus, you get a sense of the shape of the distribution as well.
-
-# More advanced applications {#advanced}
-
-What we've done so far works pretty well, but there are benefits to making a slightly more flexible function for more complicated cases. For example, let's say we wanted to compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
-
-```{r}
-get_r2 <- function(data, index, formula){
-  
-  data_subsetted <- data[index,] 
-  
-  # your code here
-  
-  rsq <- summary(fit)$r.squared
-  
-  return(rsq)
-}
-
-```
-
-Next, we'll run `boot()`, changing the formula to each of the models we're interested in.
-
-```{r}
-# set seed
 set.seed(42)
 
-# bootstrap r-squared for different models
-boot_r2_model1 <- boot(data      = df,     
-                       statistic = get_r2, 
-                       formula   = happiness ~ extraversion,
-                       R         = 1000) 
+ml_svm_model <- train(income ~. , 
+                      data = training.set, 
+                      method = "svmLinear", 
+                      trControl = trainControl(method="cv", number = 5), 
+                      tuneGrid = tuning_values, 
+                      preProc = c("center"))
 
-boot_r2_model2 <- boot(data      = df,     
-                       statistic = get_r2, 
-                       formula   = happiness ~ extraversion + pos_express,
-                       R         = 1000) 
-
-boot_r2_model3 <- boot(data      = df,     
-                       statistic = get_r2, 
-                       formula   = happiness ~ extraversion + pos_express + soc_sup,
-                       R         = 1000) 
-
-boot_r2_model4 <- boot(data      = df,     
-                       statistic = get_r2, 
-                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
-                       R         = 1000) 
-
-boot_r2_model5 <- boot(data      = df,     
-                       statistic = get_r2, 
-                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
-                       R         = 1000) 
+ml_svm_model
+ml_svm_model$results
 ```
 
-Let's pull out the bootstrapped estimates from each model and label them with the name of the model they came from. Let's also list the predictors used by creating a variable called `predictors`.
+How accurately does this model predict incomes in the testing set?
 
 ```{r}
-r2_model1_results <- tibble(rsq        = boot_r2_model1$t,
-                            predictors = "Extr.")
+svm_predicted <- predict(ml_svm_model, testing.set) 
 
-r2_model2_results <- tibble(rsq        = boot_r2_model2$t,
-                            predictors = "Extr. + Pos. Expr.")
-
-r2_model3_results <- tibble(rsq        = boot_r2_model3$t,
-                            predictors = "Extr. + Pos. Expr. + Soc. Supp.")
-
-r2_model4_results <- tibble(rsq        = boot_r2_model4$t,
-                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
-
-r2_model5_results <- tibble(rsq        = boot_r2_model5$t,
-                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
+# Overall accuracy assessment
+postResample(svm_predicted, testing.set$income)
 ```
 
-Now, we can put the dataframes together, and calculate the medians and CIs for each of the models:
+The model we built accounts for 71% of the variability in incomes in the testing set.
+
+## Random Forest
+
+Let's try one more algorithm called Random Forest.
+
+Find the hyperparameters that can be tuned.
 
 ```{r}
-r2_all_models <- r2_model1_results %>%
-  rbind(r2_model2_results) %>% 
-  rbind(r2_model3_results) %>% 
-  rbind(r2_model4_results) %>% 
-  rbind(r2_model5_results) %>% 
-  group_by(predictors) %>%
-  mutate(median = median(rsq),
-         lower  = quantile(rsq, probs = .025),
-         upper  = quantile(rsq, probs = .975))
+getModelInfo("rf")$rf$parameters
+tuning_values <- expand.grid(mtry = c(2, 3, 4, 5))
 ```
 
-Finally, we could display the $R^2$ and bootstrapped CIs for each model to compare them.
+Build the model using the training set.
 
 ```{r}
-ggplot(r2_all_models, aes(x = predictors, y = rsq)) +
-  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
-                  color = "turquoise3") +
-  coord_flip() +
-  labs(x = NULL,
-       y = expression(paste(R^{2}, " (with bootstrapped 95% CIs)"))) +
-  theme_bw()
+set.seed(47)
+
+ml_rf_model <- train(income ~. , 
+                  data = training.set, 
+                  method = "rf", 
+                  trControl = trainControl(method="cv", number = 5), 
+                  tuneGrid = tuning_values,
+                  preProc = c("center"))
+
+ml_rf_model
+ml_rf_model$results
 ```
 
-We could instead show their full distribution using `geom_density`, and fill the color of the density geoms according to the model they correspond to. Let's take a look at what that looks like:
+How accurately does this model predict incomes in the testing set?
 
 ```{r}
-ggplot(r2_all_models, aes(x = rsq, fill = predictors)) + 
-  geom_density(alpha = .5) +
-  labs(x = expression(paste("Bootstrapped estimates of ", R^{2}))) +
-  guides(fill = guide_legend(nrow = 3)) +
-  scale_fill_viridis_d() +
-  theme_bw() +
-  theme(legend.position = "bottom") 
+# Testing predictive ability of model in testing set
+rf_predicted <- predict(ml_rf_model, testing.set)
+
+postResample(rf_predicted, testing.set$income) 
 ```
 
-This is a nice visualization because it makes it more clear that adding `optimism` and then adding `exercise` seem to have the biggest impact on $R^2$, with the other three models showing a little more overlap. 
+The model we built accounts for 77% of the variability in incomes in the testing set.
 
-# Minihacks
-
-## Minihack 1
-
-Using the same dataset above, calculate bootstrapped estimates of *adjusted* $R^2$ for the same 5 models we ran above:   
-
-1. Happiness on Extraversion   
-2. Happiness on Extraversion & Positive Expressivity
-3. Happiness on Extraversion, Positive Expressivity, & Social Support   
-4. Happiness on Extraversion, Positive Expressivity, Optimism, & Social Support   
-5. Happiness on Extraversion, Positive Expressivity, Optimism, Social Support, & Exercise  
+## Which model did the best?
 
 ```{r}
-# your code here
+RMSE_Testing <- c(postResample(linear_predicted, testing.set$income)[1], postResample(svm_predicted, testing.set$income)[1], postResample(rf_predicted, testing.set$income)[1])
+
+RSq_Testing <- c(postResample(linear_predicted, testing.set$income)[2], postResample(svm_predicted, testing.set$income)[2], postResample(rf_predicted, testing.set$income)[2])
+
+Algorithm <- c("Linear Regression", "Support Vector Machine", "Random Forest")
+
+compare_models <- data.frame(cbind(Algorithm, RMSE_Testing, RSq_Testing))
+
+compare_models
 ```
 
-## Minihack 2
+# Papaja
 
-Get bootstrapped estimates of correlations between:
+`Papaja` is a package that allows you to produce APA-formatted reporting, tables, and graphs directly from your .rmd file.
 
-1. Extraversion and Positive Expressivity   
-2. Extraversion and Social Support   
-3. Extraversion and Optimism   
-4. Extraversion and exercise   
-
-Then, plot these alongside one another using one of the methods covered today.
+We need to install a version of LaTeX that works with R (I chose `tinytex`), `papaja`, and `corx`.
 
 ```{r}
-# your code here
+# tinytex::install_tinytex()
+library(tinytex) # LaTeX
+
+# install.packages("papaja")
+library(papaja) # for producing APA-style output
+
+# install.packages("citr")
+library(citr) # for citing works in-text
 ```
 
+# Inserting Object Values in Text
+
+To insert a value stored within an object into text in Rmarkdown, you can write it as "r name_of_object" (replacing the quotes with back ticks; i.e., \`).
+
+For example, if you stored the value `5` in an object called `x` you would write "r x" (replacing the quotes with back ticks) to have the number 5 inserted in the text when you knit the Rmarkdown document.
+
+```{r}
+M <- 2.37
+SD <- 1.22
+```
+
+The mean of the sample was `r M` and the standard deviation was `r SD`.
+
+# Tables
+
+## Descriptive Statistics
+
+First, let's get descriptive statistics for a set of variables. We can go ahead and keep using the `Prestige` data set.
+
+```{r}
+descriptives <- describe(Prestige) %>%
+  select(n, mean, sd) 
+
+colnames(descriptives) <- c("N", "Mean", "SD")
+
+descriptives # raw table
+```
+
+Next, we format the numerical columns using `printnum()` function from `{papaja}` for this. In essence, this puts everything to 2 decimal points (you can change this), pads with zeroes when necessary, and turns those to strings so they print correctly. "-1" indicates that the first column is non-numerical so does not apply.
+```{r}
+descriptives <- descriptives %>%
+  mutate_if(is.numeric, printnum)
+```
+
+
+To convert this table into APA-style, we can use the `apa_table()` function. **Make sure** in the code chunk options you set `results = "asis"` for it to render correctly. We're also going to give the code chunk a label:
+
+```{r descrips-tab, results = "asis"}
+apa_table(descriptives, 
+          caption = "Descriptive Statistics", 
+          note    = "This table was created with apa_table().")
+```
+
+
+## Regression Results
+
+As an example, let's run a regression predicting income from the other variables in the `Prestige` data set. 
+```{r}
+head(Prestige)
+
+regr_model <- lm(income ~ ., data = Prestige)
+summary(regr_model)
+```
+
+
+The `apa_print()` function can be used to convert results from a statistical analysis into an APA-results object that can then be passed to `apa_table()`.
+```{r}
+apa_regr_model <- apa_print(regr_model)
+```
+
+The table is stored in the `$table` component of this object. Pass it to the `apa_table()` function. **Make sure** in the code chunk options you set `results = "asis"` for it to render correctly. We're also going to give the code chunk a label:
+```{r reg-tbl-1, results = "asis"}
+apa_regr_model$table %>% 
+  apa_table(caption = "Regression Model Predicting Income from Education, Women, Prestige, Census and Type",
+            note    = "* p < 0.05; ** p < 0.01; *** p < 0.001")
+```
+
+
+
+# Figures 
+
+You can convert `ggplot` figures into APA-style by adding `theme_apa()`.
+
+```{r}
+ggplot(Prestige, aes(x = prestige, y = income)) +
+  geom_point(alpha   = .5) +
+  geom_smooth(method = "lm") +
+  labs(x = "Prestige",
+       y = "Income") +
+  theme_apa()
+```
+
+
+
+# In-text summaries of tests
+
+One of the most useful aspects of writing manuscripts in .Rmd and `{papaja}` is that we can report our results directly from the statistical models we run in R, reducing the likelihood of copy-and-pasting errors.
+
+We can use `apa_print()` from `{papaja}` to report the results of our statistical tests in text. Abbreviated results can be called with `$estimate` from the `apa_print()` object. For example, `apa_regr_model$estimate$prestige` will print a nicely formatted printout of the slope for prestige on income:
+
+> Prestige was a significant, positive predictor of income while controlling for education, percentage of women, census, and position type, `r apa_regr_model$estimate$prestige`.
+
+
+We can instead get the full result (including *t*, *df*, and *p*) by calling the `$full_result` object, so `apa_regr_model$full_result$prestige` will be rendered like so:
+
+> Prestige was a significant, positive predictor of income while controlling for education, percentage of women, census, and position type, `r apa_regr_model$full_result$prestige`.
+
+You can also extract the R-squared value and its corresponding F-test:
+
+> The model accounted for a significant amount of variability in people's income, (`r apa_regr_model$full_result$modelfit$r2`).

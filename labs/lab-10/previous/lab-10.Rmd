@@ -1,0 +1,388 @@
+---
+title: "Lab 10: Bootstrapping"
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: TRUE
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+You will need the Rmd file for today's lab. You can download it [here](https://uopsych.github.io/psy612/labs/lab-10/lab-10.Rmd).
+
+```{r setup, include=FALSE}
+# suppress scientific notation
+options(scipen = 999)
+
+# do not evaluate code chunks
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = FALSE)
+```
+
+# Purpose
+
+Bootstrapping is a procedure for empirically determining a sampling distribution when we cannot assume a statistic follows a known distribution. This lab covers how to use bootstrapping in R using the `{boot}` library. 
+
+1. [Why bootstrap?](#why)
+2. [Bootstrapping with `{boot}`](#boot)
+3. [Writing functions in R](#functions)
+4. [Writing a function for `boot()`](#functionsBoot)
+5. [Running `boot()`](#runBoot)
+6. [More advanced applications](#advanced)
+
+## Libraries
+
+Be sure to have the following packages installed and loaded:
+
+```{r lab-8-1, message=FALSE}
+library(tidyverse) # for plotting and data wrangling
+library(rio)       # for importing data
+library(boot)      # for bootstrapping
+```
+
+## Data
+
+We'll work with that Lab 2 dataset we worked with before. Recall that it has:
+
+1. extraversion: self-reported extraversion
+2. pos_express: self-reported positive expressivity
+3. soc_sup: self-reported social support
+4. optimism: self-reported optimism
+5. exercise: self-reported exercise
+6. happiness: self-reported happiness
+
+```{r}
+df <- import("https://raw.githubusercontent.com/uopsych/psy612/master/labs/lab-2/data/PSY612_Lab2_Data.csv") %>%
+  janitor::clean_names()
+```
+
+# Why Bootstrap?{#why}
+
+Recall from lecture that bootstrapping is a general purpose tool to use whenever you can't make assumptions about how a statistic is distributed. Some cases where it is useful include:   
+
+1. When test assumptions  (e.g., normality, homoscedasticity) have been violated  
+2. When you have good reason to believe the sampling distribution is not normal, but don't know what it is 
+3. With highly unbalanced sample sizes 
+
+One of its main uses is to construct CIs, but it can also be used in a standard error formula to produce a test statistic. We will focus just on CIs and plotting the full (bootstrapped) distribution today.
+
+# Bootstrapping with `boot()` {#boot}
+
+We're going to focus on using the `boot()` function from the `{boot}` package. `boot()` has many arguments, but there are three that are necessary:   
+   
+1. `data` = This is where you tell `boot()` the name of the dataframe you're working with.   
+
+2. `statistic` = a __function__ that returns the desired statistic when applied to the data.
+
+3. `R` = the number of resamples. You usually want to set it to a very large number (e.g., 10,000).
+
+And that's it. The only part that is a little tricky is specifying argument 2, because you have to *write your own function* to get the statistic you're looking for. This may be new to all of you, but writing functions in R is a powerful skill and so it is something that is definitely worth practicing. 
+
+# Writing functions in R. {#functions}
+
+You can write your own functions using the `function()` function. Functions have a few different parts:   
+
+1. __Name:__ This is just the name you want to assign to your function.   
+2. __Arguments:__ These go into the `()` when you call `function()`. They are typically names that will be referenced in the body of your function.   
+3. __Body:__ This is where you specify what your function does. The body is encapsulated in curly brackets (`{}`).
+4. __Output:__ This is what comes out of your function, and you specify that with `return()` within the body of your function.
+
+Let's walk through an example. Let's make a function that calculates the mean of a vector, and prints it in the format: "The mean is _", where the blank is filled in with the mean.
+
+```{r}
+# your code here
+```
+
+Now let's test it out on extraversion from the data we loaded above:
+
+```{r}
+print_mean(df$extraversion)
+```
+
+Looks like that works! Also notice that it didn't create an object in our global environment called `mean`. That variables within a function are local; they only exist within that function (they don't get created in the global environment). 
+
+To learn more about functions, check out [Hadley Wickham's Advanced R](http://adv-r.had.co.nz/)
+
+# Writing a function for `boot()` {#functionsBoot}
+
+Now for `boot()`, we want to write a function that returns the statistic we're interested in bootstrapping. Basically, you want to set up the body such:   
+
+1. Data is subsetted based on the indexes created by `boot()`.    
+2. That subsetted data is then used to calculate the statistic of interest.   
+3. That statistic is returned.   
+
+It has two necessary arguments that are (in order) `data` and `index`. The `data` argument comes first, so whatever you name it will represent the dataframe in the body of the function. The `index` argument comes second, so whatever you name it should be used to subset the data. 
+
+We could create a simple one that subsets our data, passes the subsetted data to the linear model we want to run, saves out the $R^2$ from that model, and then returns it:
+
+```{r}
+# your code here
+```
+
+# Running `boot()` {#runBoot}
+
+Now, we have the function that `boot()` can use to bootstrap our model $R^2$. Let's go ahead and give it a try. We set (in order) the `data`, `statistic`, and `R` arguments
+
+- The data argument is where we provide the name of the dataset.
+- The statistic argument is where we provide the name of the function we created.
+- R is the number of times that we want to sample with replacement
+
+```{r}
+set.seed(42) # don't forget to set.seed()
+
+boot_r2 <- boot(data      = # your code here
+                statistic = # your code here
+                R         = # your code here
+                )
+```
+
+Okay, now let's take a look at what it contains:
+
+```{r}
+str(boot_r2)
+```
+
+The most important object in the list returned by `boot()` is `t`, which is a matrix that contains our bootstrapped results. It will be the length of `R`, so in this case it will be length 10,000 (i.e., 10,000 rows); this means there are 10,000 estimates of $R^2$, each pertaining to the estimate obtained in one of the resamplings. 
+
+## Getting Useful Information from `boot()` Results
+
+We could get the mean of bootstrapped estimates:
+
+```{r}
+mean(boot_r2$t)
+```
+
+And median:
+
+```{r}
+median(boot_r2$t)
+```
+
+And, we can get the 95% CI by using `boot.ci()`, passing the results of `boot()` as the first argument, and setting `type = "perc"` for percentiles.
+
+```{r}
+ci <- boot.ci(boot_r2, type = "perc")
+ci
+```
+
+You might also be wondering what we get when we just call the `boot_r2`:
+
+```{r}
+boot_r2
+```
+
+The `original` value refers to the estimate you would have obtained if you had not used bootstrapping, the `bias` value refers to the difference between the bootstrapped estimate and the estimate you would have obtained if you had not used bootstrapping, and `std.error` refers to the standard deviation of the sample distribution.
+
+Let's confirm that the`original` value really refers to the estimate we would have obtained if we did not use bootstrapping:
+
+```{r}
+# run original model
+fit <- lm(happiness ~ extraversion + 
+                      pos_express  + 
+                      soc_sup      + 
+                      optimism     + 
+                      exercise, 
+          data = df)
+
+# compare and contrast
+summary(fit)$r.squared
+boot_r2
+```
+
+Let's also confirm that the `bias` value really refers to the difference between the bootstrapped estimate and the estimate we would have obtained if we had not used bootstrapping.
+
+```{r}
+# compare and contrast
+mean(boot_r2$t) - boot_r2$t0
+boot_r2
+```
+
+Finally, let's confirm the `std.error` really refers to the standard deviation of the sample distribution.
+
+```{r}
+# compare and contrast
+sd(boot_r2$t)
+boot_r2
+```
+
+## Plotting Bootstrapped Results
+
+We can also generate plots to describe our bootstrapped distribution. Let's do that using `{ggplot2}`. The only sort of tricky part is that we have to turn the bootstrapped results into a dataframe or tibble first. I've done this below using the `tibble()` function from the `{tidyverse}`
+
+First, let's create a density plot
+
+```{r}
+# create a density 
+tibble(rsquared = boot_r2$t) %>%                   
+  ggplot(aes(x = rsquared)) +                      
+    geom_density(fill = "turquoise", alpha = .6) + 
+    theme_bw()                                     
+```
+
+Alternatively, we could produce a histogram. Let's do that and also set up vertical lines for the 95% CI and Median values:
+
+```{r}
+tibble(rsquared = boot_r2$t) %>% 
+  ggplot(aes(x = rsquared)) +
+    geom_histogram(fill = "turquoise", alpha = .6) + 
+    geom_vline(aes(xintercept = ci$percent[4]),
+               size     = 1,
+               color    = "blueviolet",
+               linetype = "dashed") +
+    geom_vline(aes(xintercept = median(boot_r2$t)), 
+               size  = 2,
+               color = "blueviolet") + 
+    geom_vline(aes(xintercept = ci$percent[5]),
+               size     = 1,
+               color    = "blueviolet",
+               linetype = "dashed") +
+    theme_bw() 
+```
+
+That plot contains a lot of useful information - we can see the lower limit is a little above .45 and the upper limit is right around .65, with the median value between .55 and .6. Plus, you get a sense of the shape of the distribution as well.
+
+# More advanced applications {#advanced}
+
+What we've done so far works pretty well, but there are benefits to making a slightly more flexible function for more complicated cases. For example, let's say we wanted to compare several models with different sets of variables in terms of $R^2$. One straightforward way to implement this would be to add an additional argument that controls the formula of our `lm()`. Let's try it:
+
+```{r}
+get_r2 <- function(data, index, formula){
+  
+  data_subsetted <- data[index,] 
+  
+  # your code here
+  
+  rsq <- summary(fit)$r.squared
+  
+  return(rsq)
+}
+
+```
+
+Next, we'll run `boot()`, changing the formula to each of the models we're interested in.
+
+```{r}
+# set seed
+set.seed(42)
+
+# bootstrap r-squared for different models
+boot_r2_model1 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion,
+                       R         = 1000) 
+
+boot_r2_model2 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express,
+                       R         = 1000) 
+
+boot_r2_model3 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express + soc_sup,
+                       R         = 1000) 
+
+boot_r2_model4 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism,
+                       R         = 1000) 
+
+boot_r2_model5 <- boot(data      = df,     
+                       statistic = get_r2, 
+                       formula   = happiness ~ extraversion + pos_express + soc_sup + optimism + exercise,
+                       R         = 1000) 
+```
+
+Let's pull out the bootstrapped estimates from each model and label them with the name of the model they came from. Let's also list the predictors used by creating a variable called `predictors`.
+
+```{r}
+r2_model1_results <- tibble(rsq        = boot_r2_model1$t,
+                            predictors = "Extr.")
+
+r2_model2_results <- tibble(rsq        = boot_r2_model2$t,
+                            predictors = "Extr. + Pos. Expr.")
+
+r2_model3_results <- tibble(rsq        = boot_r2_model3$t,
+                            predictors = "Extr. + Pos. Expr. + Soc. Supp.")
+
+r2_model4_results <- tibble(rsq        = boot_r2_model4$t,
+                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt.")
+
+r2_model5_results <- tibble(rsq        = boot_r2_model5$t,
+                            predictors = "Extr. + Pos. Expr. + Soc. Supp. + Opt. + Exercise")
+```
+
+Now, we can put the dataframes together, and calculate the medians and CIs for each of the models:
+
+```{r}
+r2_all_models <- r2_model1_results %>%
+  rbind(r2_model2_results) %>% 
+  rbind(r2_model3_results) %>% 
+  rbind(r2_model4_results) %>% 
+  rbind(r2_model5_results) %>% 
+  group_by(predictors) %>%
+  mutate(median = median(rsq),
+         lower  = quantile(rsq, probs = .025),
+         upper  = quantile(rsq, probs = .975))
+```
+
+Finally, we could display the $R^2$ and bootstrapped CIs for each model to compare them.
+
+```{r}
+ggplot(r2_all_models, aes(x = predictors, y = rsq)) +
+  geom_pointrange(aes(y = median, ymin = lower, ymax = upper),
+                  color = "turquoise3") +
+  coord_flip() +
+  labs(x = NULL,
+       y = expression(paste(R^{2}, " (with bootstrapped 95% CIs)"))) +
+  theme_bw()
+```
+
+We could instead show their full distribution using `geom_density`, and fill the color of the density geoms according to the model they correspond to. Let's take a look at what that looks like:
+
+```{r}
+ggplot(r2_all_models, aes(x = rsq, fill = predictors)) + 
+  geom_density(alpha = .5) +
+  labs(x = expression(paste("Bootstrapped estimates of ", R^{2}))) +
+  guides(fill = guide_legend(nrow = 3)) +
+  scale_fill_viridis_d() +
+  theme_bw() +
+  theme(legend.position = "bottom") 
+```
+
+This is a nice visualization because it makes it more clear that adding `optimism` and then adding `exercise` seem to have the biggest impact on $R^2$, with the other three models showing a little more overlap. 
+
+# Minihacks
+
+## Minihack 1
+
+Using the same dataset above, calculate bootstrapped estimates of *adjusted* $R^2$ for the same 5 models we ran above:   
+
+1. Happiness on Extraversion   
+2. Happiness on Extraversion & Positive Expressivity
+3. Happiness on Extraversion, Positive Expressivity, & Social Support   
+4. Happiness on Extraversion, Positive Expressivity, Optimism, & Social Support   
+5. Happiness on Extraversion, Positive Expressivity, Optimism, Social Support, & Exercise  
+
+```{r}
+# your code here
+```
+
+## Minihack 2
+
+Get bootstrapped estimates of correlations between:
+
+1. Extraversion and Positive Expressivity   
+2. Extraversion and Social Support   
+3. Extraversion and Optimism   
+4. Extraversion and exercise   
+
+Then, plot these alongside one another using one of the methods covered today.
+
+```{r}
+# your code here
+```
+
