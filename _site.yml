@@ -74,7 +74,9 @@ navbar:
       href: bonus.html
   right:
     - text: "Previous years"
-      menu: 
+      menu:
+        - text: "2023"
+          href: https://uopsych.github.io/psy612_2023/
         - text: "2022"
           href: https://uopsych.github.io/psy612_2022/
         - text: "2021"
